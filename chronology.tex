@@ -1,0 +1,83 @@
+\documentclass[a4paper,11pt,oneside,onecolumn,openany,final,svgnames]{memoir}
+\input{packages}
+\input{abbreviations}
+\title{PhD plans}
+\title{Géraud Le Falher}
+\begin{document}
+\maketitle
+\begin{description}
+	\item[Oct. 14] State of the art for \pcc{} (see
+		\href{run:support/cc.pdf}{A few words on Correlation Clustering})
+	\item[Nov. 14 --- Jan. 15] Trying different ways of closing the
+		triangles of a general graph without introducing bad cycle in
+		order to transfer the \ccPivot{} algorithm (see
+		\href{run:support/december.pdf}{Combinatorial
+		Correlation Clustering on general unweighted graphs} and the Dating presentation
+		\href{run:support/presentationeng.pdf}{Signed graphs: clustering and link prediction})
+	\item[Jan. 15 --- Apr. 15]{Predicting link signs by building a low
+		stretch spanning tree dubbed \gtx{}, which works by extracting
+		stars, connecting them in a graph, and repeating on this reduced graph
+		(see \href{run:support/nips2015.pdf}{some experimental results}).}
+	\item[Mar. 15] Visit to Claudio. The setting was a graph where nodes have profiles and be
+		similar along various ways, and the problems were either answering online
+		similarity queries or recovering hidden profiles (see
+		\href{run:support/contextual_clustering.pdf}{Contextual Clustering}).
+	\item[May. 15] Implementing \shz{}~\autocite{Vitale2012} (actually it took a week, but I wasn't so
+		much in the lab in May)
+	\item[Jun. 15 --- Aug. 15] 
+		I supervised the internship of Paul Dennetiere on the implementation of a parallel
+		algorithm for \pcc{} described by \textcite{Pan2014} (see the
+		\href{run:support/stage_cc.pdf}{internship description}, a
+		\href{run:support/draft_paul.pdf}{draft of the technical part of Paul's report} and
+		some ideas on \href{run:support/parallel_postprocessing.pdf}{parallel post
+		processing} we didn't have time to explore).
+
+		I worked on building trees that minimized the stretch of the distances between a
+		set of revealed nodes and the other ones (see a
+		\href{run:support/sujet2_lowstretch.pdf}{a MVA project topic} and
+		\href{run:support/constrained_low_stretch.pdf}{some initial experiments}).
+
+		Two others summaries of what I did until then can be found in my
+		\href{run:support/postermlss.pdf}{MLSS poster} and my
+		\href{run:support/progress.pdf}{first year progress report}.
+	\item[Sep. 15]
+		When Fabio came back from Finland, he told me about a problem on graph
+		reconstruction. I can't fully remember the setting, but I think the general idea
+		was to make some queries about the existence of certain edges. Trivially, by
+		making $\Theta(|V|^2)$ queries, we know the full topology so the question of
+		was can we do better. I didn't write much about except
+		\href{run:support/permutation.pdf}{one thing about counting permutation on a
+		line graph}, but this is very incomplete.
+	\item[Oct. 15 --- Nov. 15] Following Michael's visit during the summer, we
+		worked on a binary node classification problem where the bias is that a node
+		is labeled $+1$ iff at least two of its neighbors are labeled $+1$. This
+		lead to a propagation algorithm based on triangles chain (see
+		\href{run:support/NodeClassification_triangle_mail_fabio_nov15.pdf}{some Fabio writeup on the topic}).
+	\item[Nov. 15 --- May. 16] Edge classification in the troll trust model (see
+		the \href{https://arxiv.org/pdf/1606.00182.pdf}{arxiv version of the AISTATS paper})
+	\item[Jun.16 --- Dec. 16] Edge clustering
+	\item[Dec. 16] Students of the MVA did a project on \pcc{} under perturbation,
+		here is the \href{run:support/sujet1_ccpert.pdf}{topic description} and
+		\href{run:support/Dubreuil_Ramzi_report.pdf}{their report}.
+	\item[Jan. 17 --- Feb. 17] We worked with Fabio on a more robust version of
+		the \shz{} algorithm that decreases its confidence to labeled nodes when
+		they are implicated in further prediction mistake but
+		\href{run:support/trees.pdf}{experimental results} are not very satisfying.
+	\item[Mar. 17 --- May. 17] Edge clustering
+\end{description}
+
+During my thesis, I also published my Master's thesis in a
+conference~\autocite{Thesis15} and kept working on Urban Informatics, which
+resulted in poster~\autocite{WWWDemo16} and a journal
+paper~\autocite{GeotopicTBD16}.
+
+Furthermore I (loosely) maintained a list of references on
+\href{run:support/dist.pdf}{distributed graph processing frameworks} and
+\href{run:support/embedding.pdf}{neural network based graph embedding methods}.
+
+\begingroup
+% \setstretch{0.9}
+\setlength\bibitemsep{2pt}
+\printbibliography
+\endgroup
+\end{document}
