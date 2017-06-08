@@ -53,6 +53,7 @@ want to defend in that work…
 	  can draw 2D histogram of MCC w.r.t $`p`$ and $`q`$ node parameters
 	- when edges are sorted by creation time
 	- trying to infer $`p`$ and $`q`$ directly without regularization
+	- also removed from the paper experiments is the reciprocal edge heuristics
 
 - A natural extension would be to handle weighted graphs, or at least clarify
 	how we relate to [a ICDM'16 paper](http://cs.umd.edu/~srijan/wsn/) that
