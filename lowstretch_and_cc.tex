@@ -1,0 +1,28 @@
+\documentclass[a4paper,11pt,oneside,onecolumn,openany,notitlepage,final,svgnames]{article}
+\input{packages}
+\input{abbreviations}
+\usepackage{charter}
+\usepackage{fullpage}
+\title{Edge sign prediction in general graphs and connection with \pcc{}}
+
+\begin{document}
+\maketitle
+
+According to \href{https://web.stanford.edu/class/cs224w/slides/handout-bionets.pdf}%
+{this description of various biological networks}, \emph{gene regulatory network} are directed and
+contains activation and inhibition links, as \href{https://en.wikipedia.org/wiki/Gene_regulatory_network#Overview}%
+{showed on Wikipedia}. There are some online databases such as
+\href{http://regulondb.ccg.unam.mx/menu/download/datasets/index.jsp}%
+{RegulonDB} or \href{http://www.pathwaycommons.org/pcviz/}{Pathway Commons} (this last one provide
+network in the BioPAX format, which can be visualized by
+\href{http://www.cytoscape.org/}{CytoScape}).
+Another sources is the \href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2708159/table/T1}{Table 1}
+of \autocite{BioSigned09}.
+
+\begingroup
+\setstretch{0.9}
+\setlength\bibitemsep{2pt}
+\printbibliography
+\endgroup
+
+\end{document}
