@@ -1,6 +1,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{csquotes}
+\usepackage{babel}
+\usepackage{geometry}
 \usepackage{setspace}
+\usepackage{microtype}
 \usepackage[citestyle=alphabetic, bibstyle=ieee-alphabetic, isbn=false, maxnames=1, minnames=1,
 sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
 \AtEveryBibitem{
@@ -27,6 +31,9 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
 \addbibresource{/home/orphee/data/projects/biblio/library.bib}
 \addbibresource{more.bib}
 \usepackage{xcolor}
+\usepackage[marginpar]{todo}
+\usepackage[np,autolanguage]{numprint}
+\usepackage{varioref}
 \usepackage{hyperref}
 \hypersetup{%
     % draft,    % = no hyperlinking at all (useful in b/w printouts)
@@ -38,3 +45,12 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
     hypertexnames=true, pdfhighlight=/O,%nesting=true,%frenchlinks,%
     urlcolor=Chocolate, linkcolor=DodgerBlue, citecolor=LimeGreen, %pagecolor=RoyalBlue,%
 }
+\newcommand{\marginpars}[1]{\marginpar{\small#1}}
+\usepackage{caption}
+\usepackage[margin=0pt,font+=small,labelformat=parens,labelsep=space,
+skip=6pt,list=false,hypcap=false]{subcaption}
+\captionsetup{compatibility=false}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\graphicspath{{./assets/}}
+\usepackage[capitalize,noabbrev]{cleveref}

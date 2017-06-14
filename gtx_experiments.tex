@@ -1,0 +1,241 @@
+In this \namecref{sub:gtx_empirical_evaluation}, we provide empirical evidences of the properties of
+\gtx{} over several classes of graph, and compare it with a \bfs{} baseline.\marginpars{If time
+allows, it would be interesting to implement some methods of \vref{sub:gtx_state_of_the_art} and add
+them to the comparison}\todo*{implement more low stretch methods} Namely, we consider three kinds of
+graph topology (with both synthetic and real world instances that carry signs on their edges) and
+evaluate $(i)$ what average stretch is reached by various trees and $(ii)$ how accurate is the sign
+prediction.
+
+\subsubsection{Graph topology}
+
+The three kinds of topology we consider are:
+\begin{description}
+	\item[\grid{}] which are 2D lattices, where each node has four neighbors except on the boundary.
+		The synthetic ones are square, while the \enquote{real world} ones represents the four neighbors
+		pixel connectivity of the pictures showed in \autoref{fig:gtx_xp_bwpics}.
+	\item[\lpa{}] which are built synthetically according to the model of \textcite{Barabasi1999}.
+		While this does not follow the more rigorous specification of \textcite{PAmodel04}, informally,
+		we start with a line graph of $m$ nodes and add node one by one until the graph consists of $n$
+		nodes. Each time a new node is added, it is connected to $m$ of the existing nodes with a
+		probability proportional to their degree. Here we choose $m=3.13$, that is when adding a new
+		node, we pick $3$ or $4$ existing neighbors such the initial expected number of neighbors for
+		each new nodes is $3.13$. Such graphs are quite sparse and have short diameter, thus providing a
+		crude but reasonable approximation of online social networks. Therefore, the real world
+		instances of the \lpa{} model are \wik{}, \sla{} and \epi{}\marginpars{as used in the first
+		chapter}\todo*{add a ref to first chapter} along with \gplus{}. The last one is constructed from
+		ego networks of \gplus{}\footnote{Available at
+		\url{http://snap.stanford.edu/data/egonets-Gplus.html}} by keeping the largest connected
+		component of users whose gender is known. Basic statistics of those real \lpa{} graphs are
+		presented in (\autoref{tab:gtx_xp_dataset}). 
+	\item[\triangle{}] which consists of a Delaunay triangulation of random 2D points\footnote{As
+		implemented by the \textsf{graph-tool} library (\url{https://graph-tool.skewed.de})}.
+\end{description}
+
+\begin{table}[htpb]
+	\centering
+	\caption{Dataset description }\label{tab:gtx_xp_dataset}
+	\begin{tabular}{lrrcc}
+		\toprule
+             & $|V|$  & $|E|$    & fraction of $+$ edges & $\frac{2|E|}{|V|\cdot(|V|-1)}$ \\
+		\midrule
+		\wik{}   & \np{7065}   & \np{99936}    & 78.5\%                & $4.00\cdot 10^{3}$             \\
+		\gplus{} & \np{74917}  & \np{10130461} & 67.6\%                & $3.61\cdot 10^{3}$             \\
+		\sla{}   & \np{82052}  & \np{498527}   & 76.4\%                & $1.48\cdot 10^{4}$             \\
+		\epi{}   & \np{119070} & \np{701569}   & 83.2\%                & $9.90\cdot 10^{5}$             \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+	\centering
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/zmonastery}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/zworld}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/nips_poster}
+	\end{subfigure}
+
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/zmonastery_bin}
+		\caption{monastery}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/zworld_bin}
+		\caption{world}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/nips_poster_bin}
+		\caption{poster}
+	\end{subfigure}
+
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/nips_logo}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/space}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/waterfall}
+	\end{subfigure}
+
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/nips_logo_bin}
+		\caption{logo}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/space_bin}
+		\caption{space}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.32\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/waterfall_bin}
+		\caption{waterfall}
+	\end{subfigure}
+	\caption{Real world pictures and their binarized version}\label{fig:gtx_xp_bwpics}
+\end{figure}
+
+\subsubsection{Stretch}
+
+The first property of Galaxy trees we wish to evaluate is their stretch, which depends only of graph
+topology. Namely, let $G$ be a graph over vertex set $V$ with $|V|=n$ and edge set
+$E$.\Todo[MOVE]{Stretch definition is likely to happen somewhere earlier} Furthermore, let $T$ be a
+spanning tree of $G$ and $\etest{}$ the edges of $G$ not in $T$. Then we define the \emph{average
+test edge stretch} as $\frac{1}{|\etest{}|} \sum_{(u,v) \in \etest{}} |\mathrm{path}^T_{u,v}|$,
+where $|\mathrm{path}^T_{u,v}|$ is the unique path between $u$ and $v$ in $T$.
+
+As we consider unweighted graphs, we compare \gtx{} with a natural baseline, namely a spanning tree
+rooted at the highest degree node and obtained through a breadth first visit of the graph. This
+involves randomness in order in which nodes are visited. Likewise in \gtx{}, the choice of the edge
+linking two stars is not always unique, meaning that we have to break ties at random.  Therefore,
+for each graph, we repeat the tree construction 12 times and present the average result, noting that
+the variance (showed as error bar in \autoref{fig:gtx_xp_st}) is small.
+
+On \lpa{} and \triangle{}, we see that both trees exhibits logarithmic stretch, although with a
+larger constant for \gtx{}. Note that this is also the case for others low stretch tree methods
+\autocite[\S 5.3.1]{papplow}. On \grid{} however, \gtx{} preserves this logarithmic stretch growth
+while this is visually no longer the case for \bfs{}.
+
+\begin{figure}[tbh]
+	\centering
+	\begin{subfigure}[b]{0.9\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/gridst}
+		\caption{\grid{} }\label{fig:gtx_xp_gridst}
+	\end{subfigure}
+
+	\begin{subfigure}[b]{0.9\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/past}
+		\caption{\lpa{} }\label{fig:gtx_xp_past}
+	\end{subfigure}
+
+	\begin{subfigure}[b]{0.9\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/trst}
+		\caption{\triangle{} }\label{fig:gtx_xp_trst}
+	\end{subfigure}
+	\caption{Stretch over graphs of increasing size}\label{fig:gtx_xp_st}
+\end{figure}
+
+\subsubsection{Sign prediction}
+
+The second design goal of Galaxy trees is to accurately predict the sign of edges in $\etest{}$.
+Except for the three real datasets that already include signs\footnote{We nonetheless perform some
+preprocessing in order to make them undirected to remove the small proportion of conflicting edges
+(e.g. positive from $u$ to $v$ but negative from $v$ to $u$).}, all the other are constructed,
+meaning we have to set sign on their edges in the first place. This is done by partitioning the
+nodes into two clusters. For \gplus{} we use node gender, for pictures we use node color (black or
+white), and for all others, we propagate labels $0$ and $1$ from randomly selected high degree nodes.
+Once each node belongs to one of the two clusters, we set the sign of an edge between two nodes to
+be $+$ if they are in the same cluster and $-$ otherwise.  Predicting using path parity will thus
+gives perfect result. To test performance in real or adversarial situation, we then add noise, that
+is we select a fraction of edges uniformly at random and flip their sign. 
+
+We evaluate the performance of our prediction using the Matthews Correlation\Todo{merge this
+definition of MCC with the one in first chapter} Coefficient (MCC)~\autocite{MCC00} \[
+	\mathrm{MCC} = \frac{ TP \times TN - FP \times FN } {\sqrt{ (TP + FP) ( TP + FN ) (
+			TN + FP ) ( TN + FN ) } } = \pm \sqrt{\frac{\chi^2}{n}}
+\]
+Since we do not have confidence score, we cannot use AUC. Yet we have to account for the large sign
+unbalance and thus cannot rely on accuracy or $F_1$ measure.  Therefore we choose MCC, which
+combines all the four numbers of the confusion matrix in a single metric. It ranges from $+1$
+(perfect prediction) to $-1$ (inverse prediction) through $0$ (random prediction). As a
+demonstration of MCC usefulness, predicting all edges but one to be positive on Slashdot gives
+$.764$ accuracy, $.886$ $F_1$ score\marginpars{Actually the $F_1$ score is $.866$ for positive
+edges, $0$ for negative ones and $.661$ if we can take an average weighted by class size.} but
+$-0.0007$ MCC.
+
+As showed in \autoref{fig:gtx_xp_mcc}, when the noise level is low, \gtx{} performs better than
+\bfs{}. As the noise level gets higher, they have similar performance. Note also than in
+\autoref{fig:gtx_xp_pasynthmcc}, \gtx{} is less sensible to the size of the graph.
+
+\begin{figure}[tbh]
+	\centering
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/grsynthmcc}
+		\caption{Synthetic \grid{} }\label{fig:gtx_xp_grsynthmcc}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/grrwmcc}
+		\caption{Pictures \grid{} }\label{fig:gtx_xp_grrwmcc}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/pasynthmcc}
+		\caption{Synthetic \lpa{} }\label{fig:gtx_xp_pasynthmcc}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/trmcc}
+		\caption{\triangle{} }\label{fig:gtx_xp_trmcc}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/parwmcc}
+		\caption{Real world network }\label{fig:gtx_xp_parwmcc}
+	\end{subfigure}
+	\caption{MCC over various graphs}\label{fig:gtx_xp_mcc}
+\end{figure}
+
+To further assess the quality of our trees, we plug them in them into a successful heuristic method
+to predict edge sign: \asym{}~\autocite{Kunegis2009}. \Todo{It might also be interesting to see if
+that would be a good training set for our troll method, although it has to be checked it makes sense
+from a running time point of view.} It computes the exponential of the adjacency matrix after it has
+been reduce to $z$ dimension. This allows to count the sign of all paths between two pairs of nodes
+with decreasing weight depending of their length. To simulate an active learning setting, we reveal
+only a subset of edge in $A$. This subset can be: $i)$ the edges forming a \bfs{}, $ii)$ the edges
+forming a \gtx{} $iii)$ $|V|-1$ edges chosen uniformly at random.
+
+We set the parameter $z$ equal to $15$ because $i)$ it is one of the best in \cite[Fig.
+11]{Kunegis2009}, $ii)$ it performs well on real dataset in \cite[Fig.3]{Cesa-Bianchi2012a}, and
+$iii)$ it was good in our initial testing (\texttt{20150401\_wed\_spectral.ipynb}).
+
+As the \asym{} has a $O(n^3)$ complexity and uses quite some memory at prediction time, the larger
+graphs used previously are not all included. The conclusion of \autoref{fig:gtx_xp_asym} is that
+except on social network, it is better to use spanning trees than random edges. Specifically, \gtx{}
+on \grid{} and \bfs{} elsewhere.
+
+\begin{figure}[tbh]
+	\centering
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/grsynthasym}
+		\caption{Synthetic \grid{} \label{fig:gtx_xp_grsynthasym}}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/grrwasym}
+		\caption{\enquote{Real} \grid{} }\label{fig:gtx_xp_grrwasym}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/pasynthasym}
+		\caption{Synthetic \lpa{} }\label{fig:gtx_xp_pasynthasym}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/trasym}
+		\caption{\triangle{} }\label{fig:gtx_xp_trasym}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.47\textwidth}
+		\includegraphics[width=\textwidth]{gtx_exp/parwasym}
+		\caption{Real world network }\label{fig:gtx_xp_parwasym}
+	\end{subfigure}
+	\caption{\asym{} over various graphs}\label{fig:gtx_xp_asym}
+\end{figure}
+
+Finally\marginpars{Actually I never did it because \shz{} wasn't implemented at the time, so now is
+a good occasion}\todo*{Run shazoo on galaxy tree} we also compare \gtx{} with \bfs{} and \rst{} on
+the task of nodes prediction using \shz{} algorithm~\autocite{Vitale2012}.
