@@ -1,0 +1,15 @@
+\titleformat{\subsubsection}%
+  [hang]% shape
+  {\normalfont\itshape}% format applied to label+text
+  {\thesubsubsection}% label
+  {1em}% horizontal separation between label and title body
+  {}% before the title body
+  []% after the title body
+
+\titlespacing*{\subsubsection}{0pt}{3ex plus 1ex minus .2ex}{1.0ex plus.2ex}
+\makeatletter
+\renewcommand\subsubsection{\@startsection {subsubsection}{3}{\z@}%
+                                   {-3ex \@plus -1ex \@minus -.2ex}%
+                                   {1ex \@plus.2ex}%
+                                   {\normalfont\normalsize\itshape}}
+\makeatother
