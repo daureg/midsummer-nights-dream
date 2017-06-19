@@ -1,0 +1,55 @@
+We first describe two primitives we use to implement \gtx{}, namely \extractStar{} and
+\collapseStar{}.
+
+\extractStar{} takes as input a graph $G_t=(V_t, E_t)$, and optionally a \emph{threshold function}
+$t_f$ or a \emph{degree function} $d_f$. While the graph is not exhausted, it repeatedly samples a
+star center $c_i$, creates a star $S_i$ with $c_i$ neighbors, removes all the nodes of $S_i$ from
+$V_t$ and all the edges incident to $S_i$ from $E_t$, and finally decrements the degree of the 2-hop
+neighbors of $c_i$.\Todo{add a figure} Upon completion, it returns a list of stars and a mapping of
+each node of $V_t$ to the unique star it belongs to. We consider three heuristics to choose centers:
+
+\begin{itemize}
+  \item choose the node with the current highest degree, with ties broken arbitrarily
+  \item if $n_i$ is the number of node remaining in $V_t$ before choosing the \ith{} center, choose
+    a node \uar{} among those with a degree larger than $t_f(n_i)$. Setting the threshold function
+    to be the identity therefore recovers the previous strategy, but the idea here is to choose
+    among a small set of high degree nodes, for instance by letting $t_f(n) = \sqrt{n}$
+  \item if $\degr(u)$ is the degree of node $u$, choose node proportionally to $d_f(\degr(u))$, where
+    again the degree function favors high degree nodes, for instance $d_f(\degr(u)) = \degr(u)^2$.
+\end{itemize}
+
+Let us analyze the complexity of the highest degree heuristic when $|V_t|=n$ and $|E_t|=m$. We first
+build a priority queue of all the nodes sorted by their degree, which takes $O(n)$ time.  Then, at
+each iteration of the inner loop, we find the center of the next star by extracting the maximum of
+the queue, and we decrease the priority (\ie the degree) of all nodes adjacent to the new star.
+Since both operations require constant time when using a Strict Fibonacci
+Heap~\autocite{FibonacciHeaps12} and there are at most $n$ iterations of that loop, a coarse
+approximation of the runtime of \extractStar{} is $O(n^2)$. However, observe that there can be at
+most $m$ decrease operations (since degree $0$ nodes form a singleton star in constant time),
+reducing the complexity to $O(m)$.
+
+\bigskip
+
+The second routine, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
+and an optional $\emph{eccentricity}$ array we will describe soon. It builds a new graph $G_{t+1}$
+where each star becomes a node and there is a link between two nodes $s_1$ and $s_2$ if the nodes
+making up $s_1$ and $s_2$ are connected in $E_t$. For that, we first shuffle $E_t$ and go through
+it. When we  find an edge w hose endpoints belong to two different stars not yet connected, we use
+that edge to connect these two stars. This trivially takes $O(m)$ times.
+
+A variant instead keeps track of all edges connecting each pair of stars to choose one that will
+best contribute to our low stretch objective. Namely, when connecting two stars, we would prefer to
+join their centers rather than two peripheral points. For that we maintain an eccentricity count for
+all of the nodes of the original $G_0$, which is incremented by $1$ each time a node is chosen to be
+on the periphery of a star.\Todo{Show an example of a small 3 levels nested stars}
+For each pair of stars, we thus choose the edge across them with minimal sum of its endpoints'
+eccentricity. This requires another pass over the edges, preserving the $O(m)$ runtime.
+
+\bigskip
+
+We are then ready to describe the complete \gtx{} algorithm.\footnote{Note that for clarity, we
+removed some bookkeeping, mainly related to maintaining mapping between nodes at different level of
+contraction. Yet the full python implementation is available at
+\url{https://github.com/daureg/magnet/blob/master/veverica/new_galaxy.py}.} Intuitively, until each
+connected component is reduced to a single node, we first extract stars from the current graph $G_t$
+and then collapse them to form $G_{t+1}$.
