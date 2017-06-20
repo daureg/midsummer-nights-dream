@@ -3,9 +3,22 @@ We first describe two primitives we use to implement \gtx{}, namely \extractStar
 
 \extractStar{} takes as input a graph $G_t=(V_t, E_t)$, and optionally a \emph{threshold function}
 $t_f$ or a \emph{degree function} $d_f$. While the graph is not exhausted, it repeatedly samples a
-star center $c_i$, creates a star $S_i$ with $c_i$ neighbors, removes all the nodes of $S_i$ from
-$V_t$ and all the edges incident to $S_i$ from $E_t$, and finally decrements the degree of the 2-hop
-neighbors of $c_i$.\Todo{add a figure} Upon completion, it returns a list of stars and a mapping of
+star center $c_i$, creates a star $S_i^t$ with $c_i$ neighbors, removes all the nodes of $S_i^t$ from
+$V_t$ and all the edges incident to $S_i^t$ from $E_t$, and finally decrements the degree of the 2-hop
+neighbors of $c_i$.
+\begin{marginfigure}
+  \centering
+  \includegraphics[height=0.15\textheight]{assets/tikz/gtx_star_tikz.pdf}
+  \caption[A sample star]{A sample star created at the $t^\mathrm{th}$ level. The black node
+    % \tikz{\node[vertex,rare] {$c_i$};}
+    is the center $c_i$ of the star $S_i^t$, which is made of the four light gray peripheral nodes
+  % \tikz{\node[vertex,medium] {$p_1$};} to \tikz{\node[vertex,medium] {$p_4$};}
+  as well as the solid edges. The 2-hops neighbors of $c_i$ are the white nodes
+  % \tikz{\node[vertex] {$h_1$};} to \tikz{\node[vertex] {$h_3$};}
+  $h_1$ to $h_3$, whose degree will decrease once we $S_i^t$ is removed from $G_t$.}
+  \label{fig:gtx_star_simple}
+\end{marginfigure}
+Upon completion, it returns a list of stars and a mapping of
 each node of $V_t$ to the unique star it belongs to. We consider three heuristics to choose centers:
 
 \begin{itemize}
