@@ -1,0 +1,24 @@
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{decorations.pathreplacing}
+\tikzset{%
+  show curve controls/.style={
+    postaction={
+      decoration={
+        show path construction,
+        curveto code={
+          \draw [blue] 
+            (\tikzinputsegmentfirst) -- (\tikzinputsegmentsupporta)
+            (\tikzinputsegmentlast) -- (\tikzinputsegmentsupportb);
+          \fill [red, opacity=0.5] 
+            (\tikzinputsegmentsupporta) circle [radius=.25ex]
+            (\tikzinputsegmentsupportb) circle [radius=.25ex];
+        }
+      },
+      decorate
+}}}
+\tikzstyle{vertex}=[draw,circle,black,inner sep=2pt]
+\tikzstyle{edge}=[line width=1.3pt,color=Black]
+\tikzstyle{rare}=[fill=black,text=white]
+\tikzstyle{medium}=[fill=black!15!white]
