@@ -58,7 +58,59 @@ on the periphery of a star.\Todo{Show an example of a small 3 levels nested star
 For each pair of stars, we thus choose the edge across them with minimal sum of its endpoints'
 eccentricity. This requires another pass over the edges, preserving the $O(m)$ runtime.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.98\linewidth]{tikz/gtx_eccentricity_tikz.pdf}
+  \caption[The hierarchical structure of stars created by \gtx{}]{%
+    The execution of the \gtx{} algorithm. The original graph is made of the solid edges
+    connecting the nodes labeled by their id. Edges forming the final spanning tree are in black
+    while the others are in gray. The four shades of gray, from white to dark gray
+    denote increasing node eccentricity (as computed at the end of the algorithm). The \ith{} star
+    created during the \jth{} iteration of the algorithm is denoted $S_i^j$. Refer to the main text
+    for a complete walk through.}
+  \label{fig:gtx_eccentricity}
+\end{figure}
+
+\begin{figure}[bthp]
+  \centering
+  \begin{subfigure}[b]{0.47\textwidth}
+    \centering
+    \includegraphics[height=7cm]{tikz/gtx_run_level1_tikz}
+    \caption{Resulting graph after the first iteration}\label{fig:gtx_run1}
+  \end{subfigure}~
+  \begin{subfigure}[b]{0.47\textwidth}
+    \centering
+    \includegraphics[height=3cm]{tikz/gtx_run_level2_tikz}
+    \caption{Resulting graph after the second iteration}\label{fig:gtx_run2}
+    \vspace{\baselineskip}
+    \includegraphics[height=3cm]{tikz/gtx_run_level3_tikz}
+    \caption{Resulting graph after the third iteration}\label{fig:gtx_run3}
+  \end{subfigure}~
+  \caption{The other iterations of \gtx{}}\label{fig:gtx_run}
+\end{figure}
+
 \bigskip
+
+Let us start with the initial graph $G_0$ depicted in \autoref{fig:gtx_eccentricity} and initialize
+the eccentricity of all nodes to $0$. When running \extractStar{}, we see that the maximum degree is
+$4$, achieved at nodes $\{1, 6, 11, 16, 21, 26, 31, 36, 41\}$. For the sake of simplicity, assume
+nodes are picked according to their id. First, node $1$ is gonna form the star
+$\textcolor{DodgerBlue}{S_1^1}$ with peripheral nodes $2$, $3$, $4$ and $5$. This will increment the
+eccentricity of those peripheral nodes by $1$. Then node $6$ forms its star
+$\textcolor{DodgerBlue}{S_2^1}$ with $7$,$8$,$9$ and $10$. The process continues until node $41$ is
+chosen to be the center of star $\textcolor{DodgerBlue}{S_9^1}$, at which point $V_0$ has been
+exhausted and \extractStar{} terminates.
+
+We then call \collapseStar{}, with the eccentricity reducing variant. This will create all possible
+links between pairs of star. For instance, the edge between nodes $19$ and $29$ leads to the edge
+between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This was actually the
+only possible edge between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$.
+Consider on the other hand the case of edges $(2, 6)$ and $(2, 9)$. They both connect
+$\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. Yet at this point in time, the
+eccentricity of node $2$ is $1$, the eccentricity of node $6$ is $0$ and the eccentricity of node
+$9$ is $1$. The edge $(2, 6)$ has therefore the smallest total eccentricity and is chosen to connect
+$\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. The full result of the
+\collapseStar{} procedure can be seen on \autoref{fig:gtx_run1}.
 
 We are then ready to describe the complete \gtx{} algorithm.\footnote{Note that for clarity, we
 removed some bookkeeping, mainly related to maintaining mapping between nodes at different level of
