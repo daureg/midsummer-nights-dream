@@ -2,7 +2,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{csquotes}
 \usepackage{babel}
-\usepackage{geometry}
+\usepackage[heightrounded]{geometry}
 \usepackage{setspace}
 \usepackage{microtype}
 \usepackage[citestyle=alphabetic, bibstyle=ieee-alphabetic, isbn=false, maxnames=1, minnames=1,
@@ -34,6 +34,8 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
 \usepackage{amsmath}
 \usepackage{sidenotes}
 \renewcommand{\footnote}[1]{\sidenote{\footnotesize #1}}
+\usepackage{enumitem}
+\usepackage{tabulary}
 \usepackage[marginpar]{todo}
 \usepackage[np,autolanguage]{numprint}
 \input{drawing}
@@ -47,7 +49,7 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
     breaklinks=true, pdfpagemode=UseNone, pageanchor=true, pdfpagemode=UseOutlines,%
     plainpages=false, bookmarksnumbered, bookmarksopen=true, bookmarksopenlevel=1,%
     hypertexnames=true, pdfhighlight=/O,%nesting=true,%frenchlinks,%
-    urlcolor=Chocolate, linkcolor=DodgerBlue, citecolor=LimeGreen, %pagecolor=RoyalBlue,%
+    urlcolor=Chocolate, linkcolor=RoyalBlue, citecolor=LimeGreen, %pagecolor=RoyalBlue,%
 }
 \newcommand{\marginpars}[1]{\marginpar{\small#1}}
 \usepackage{caption}
