@@ -39,6 +39,15 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
 \usepackage[marginpar]{todo}
 \usepackage[np,autolanguage]{numprint}
 \input{drawing}
+
+\usepackage[noend]{algpseudocode}
+\newcommand*\Let[2]{\State #1 $\gets$ #2}
+% \def\algorithmautorefname{Algorithm}
+% \makeatletter
+% \DeclareCaptionLabelFormat{numberless}{\ALG@name#1}
+% \captionsetup[algorithm]{labelformat=numberless}
+% \makeatother
+
 \usepackage{varioref}
 \usepackage{hyperref}
 \hypersetup{%

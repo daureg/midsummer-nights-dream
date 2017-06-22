@@ -1,15 +1,29 @@
-We first describe two primitives we use to implement \gtx{}, namely \extractStar{} and
-\collapseStar{}.
+The \gtx{} algorithm takes as input a graph topology $G_0=(V_0, E_0)$ and produces a sequence of
+graphs $\{G_t\}_{t=1}^T$ of decreasing size until each connected component of $G_0$ is reduced to a
+single node. As we will prove later, after reaching this point, the algorithm has selected $|V_0| -
+1$ edges that form a spanning tree of $G_0$. $G_{t+1}$ is obtained from $G_t$ by composing two
+primitives so that we can informally write $G_{t+1} = \left(\collapseStar{} \circ
+\extractStar{}\right)(G_t)$.
+
+\extractStar{} partitions the graph $G_t$ into a set of stars and \collapseStar{} build the graph
+made of those stars using the edges in $E_t$. We provide more details on those two operations in the
+following, as well as their complexity analysis. Then we state formally the \gtx{} algorithm and prove
+its termination and correctness.  Finally, we study its properties, such as the number of iterations
+needed to finish and the stretch of the resulting tree. For simplicity and without loss of
+generality, we assume that $G_0$ consist of a single connected component.
+
+\medskip
 
 \extractStar{} takes as input a graph $G_t=(V_t, E_t)$, and optionally a \emph{threshold function}
-$t_f$ or a \emph{degree function} $d_f$. While the graph is not exhausted, it repeatedly samples a
-star center $c_i$, creates a star $S_i^t$ with $c_i$ neighbors, removes all the nodes of $S_i^t$ from
-$V_t$ and all the edges incident to $S_i^t$ from $E_t$, and finally decrements the degree of the 2-hop
-neighbors of $c_i$.
+$t_f$ or a \emph{degree function} $d_f$. While the nodeset $V_t$ is not exhausted, it repeatedly samples a
+star center $c_i$, creates a star $S_i^t$ with the neighbors of $c_i$, removes all the nodes of $S_i^t$ from
+$V_t$ and all the edges incident to $S_i^t$ from $E_t$, and finally decrements accordingly the
+degree of the 2-hop neighbors of $c_i$ (see \autoref{fig:gtx_star_simple} for a visual
+representation of this notation).
 \begin{marginfigure}
   \centering
   \includegraphics[height=0.15\textheight]{assets/tikz/gtx_star_tikz.pdf}
-  \caption[A sample star]{A sample star created at the $t^\mathrm{th}$ level. The black node
+  \caption[A sample star]{A sample star created during the \tth{} extraction level. The black node
     % \tikz{\node[vertex,rare] {$c_i$};}
     is the center $c_i$ of the star $S_i^t$, which is made of the four light gray peripheral nodes
   % \tikz{\node[vertex,medium] {$p_1$};} to \tikz{\node[vertex,medium] {$p_4$};}
@@ -21,49 +35,114 @@ neighbors of $c_i$.
 Upon completion, it returns a list of stars and a mapping of
 each node of $V_t$ to the unique star it belongs to. We consider three heuristics to choose centers:
 
-\begin{itemize}
+\begin{itemize}%[nosep]
   \item choose the node with the current highest degree, with ties broken arbitrarily
   \item if $n_i$ is the number of node remaining in $V_t$ before choosing the \ith{} center, choose
     a node \uar{} among those with a degree larger than $t_f(n_i)$. Setting the threshold function
     to be the identity therefore recovers the previous strategy, but the idea here is to choose
     among a small set of high degree nodes, for instance by letting $t_f(n) = \sqrt{n}$
-  \item if $\degr(u)$ is the degree of node $u$, choose node proportionally to $d_f(\degr(u))$, where
-    again the degree function favors high degree nodes, for instance $d_f(\degr(u)) = \degr(u)^2$.
+  \item if $\degr(u)$ is the degree of node $u$, choose node proportionally to $d_f(\degr(u))$.
+    Again, the degree function is designed so that it favors the selection of high degree nodes. For
+    instance, one could use $d_f(\degr(u)) = \degr(u)^2$.
 \end{itemize}
 
-Let us analyze the complexity of the highest degree heuristic when $|V_t|=n$ and $|E_t|=m$. We first
-build a priority queue of all the nodes sorted by their degree, which takes $O(n)$ time.  Then, at
-each iteration of the inner loop, we find the center of the next star by extracting the maximum of
-the queue, and we decrease the priority (\ie the degree) of all nodes adjacent to the new star.
-Since both operations require constant time when using a Strict Fibonacci
-Heap~\autocite{FibonacciHeaps12} and there are at most $n$ iterations of that loop, a coarse
-approximation of the runtime of \extractStar{} is $O(n^2)$. However, observe that there can be at
-most $m$ decrease operations (since degree $0$ nodes form a singleton star in constant time),
-reducing the complexity to $O(m)$.
+We now give the pseudo code of \extractStar{} for the highest degree variant.\footnote{Note that for
+clarity, we removed some bookkeeping code in all listings, mainly the part related to maintaining
+mapping between nodes at different level of contraction. However, the full python implementation
+is available at \url{https://github.com/daureg/magnet/blob/master/veverica/new_galaxy.py\#L27}.}
+We assume that $G$ is the adjacency list of the graph, so that $G[u]$ is the set of neighbors of
+$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. The other piece of notation is $\textsc{Star}$, which
+simply create a star given a center and a list of peripheral nodes.  \vspace{-\baselineskip}
 
-\bigskip
+\begin{center}
+  \rule{\textwidth}{.3pt}
+  \begin{algorithmic}[1]
+    \Function{\extractStar{}}{$G_t=(V_t,E_t)$}
+      \State Let $Q$ be a max-priority queue. The key of element $x$ is $Q[x]$
+      \Let{$stars$}{[]}
+      \Let{$remaining$}{$\emptyset$}
+      \ForAll{node $u$ in $V_t$}
+        % \State $\textsc{Insert}\\left(Q,\,u\right)$ \Comment with the key $\degr(u)$
+        \State \Call{Insert}{$Q,\,u$} \Comment with the key $\degr(u)$
+        \Let{$remaining$}{$remaining \bigcup \left\{u\right\}$}
+      \EndFor
+      \While{$Q$ is not empty}
+        \Let{$c_i$}{\Call{Extract-Max}{$Q$}}
+        \If{$c_i$ not in $remaining$}
+          \State \textbf{continue} \Comment{$c_i$ is part of an existing star so there is
+          nothing to do}
+        \EndIf
+        \Let{$periphery$}{$G[c_i] \bigcap remaining$}
+        \Let{$stars$}{$stars \bigcap $\Call{Star}{$c_i,\, periphery$}}
+        \Let{$remaining$}{$remaining \setminus\left\{c_i\right\} \setminus periphery$}
+        \For{$p$ in $periphery$}
+          \For{$h$ in $G[p] \bigcap remaining$}
+            \State \Call{Decrease-Key}{$Q,\, h,\, Q[h]-1$}
+          \EndFor
+        \EndFor
+      \EndWhile
+      \State \textbf{return} $stars$
+    \EndFunction
+  \end{algorithmic}
+  \rule{\textwidth}{.3pt}
+\end{center}
+
+\extractStar{} terminates because at each iteration of the while loop line 8, we remove one node
+from $Q$ and never add any. Let us analyze the complexity when $|V_t|=n$ and $|E_t|=m$. We first
+build a priority queue of all the nodes sorted by their degree (line 5--7), which takes $O(n)$ time.
+Then, at each iteration of the inner loop, we find the center of the next star by extracting the
+maximum of the queue (line 9), we build the corresponding star (line 12--14) and we decrease the
+priority (\ie the degree) of all nodes adjacent to the new star (line 15--17).  Since both
+operations require constant time when using a Strict Fibonacci Heap~\autocite{FibonacciHeaps12} and
+there are $n$ iterations of that loop, a coarse approximation of the runtime of \extractStar{} is
+$O(n^2)$. However, observe that there can be at most $m$ decrease operations (since after that, all
+nodes still in the queue have an effective degree of $0$, meaning that $periphery$ will the empty
+set and lines 13--17 will run in constant time), reducing the complexity to $O(m+n)$.
+
+The other two variants are more time consuming because they require additional bookkeeping. Their
+randomization make them useful in an adversarial context but it also renders their analysis more
+challenging, not necessarily for the runtime of \extractStar{} but mostly for the tree construction.
+Therefore, we only briefly describe the implementations here.\footnote{Although they are available
+online at 
+\nolinkurl{https://github.com/daureg/magnet/blob/master/veverica/}%
+\{\href{https://github.com/daureg/magnet/blob/master/veverica/ThresholdSampler.py}%
+{ThresholdSampler.py}, \href{https://github.com/daureg/magnet/blob/master/veverica/NodeSampler.py}%
+{NodeSampler.py}\}.} For the threshold function, we
+maintain two queues, $high$ and $low$, containing nodes whose degree is respectively above and below
+the current threshold. We select a node \uar{} in $high$, remove the corresponding star from $G_t$,
+recompute the new threshold and if necessary, move nodes which fell under the threshold from $high$
+to $low$ and those who climb above the threshold from $low$ to $high$. For the degree function, we
+can draw any node as center proportionally to its weight (where the weight of node $u$ is defined as
+$d_f\left(\degr(u)\right)$), but we cannot use the standard method of computing the cumulative sum
+of weights since each iteration change some of them. Therefore, we construct a binary tree whose
+leaves are the nodes of $V_t$ and where each tree nodes maintain the sum of weights in its left and
+right subtrees. To sample, we draw a random number between $0$ and the total weight of the tree.
+When degrees are updated (or graph node removed), we update the weights along a path from the
+corresponding leaves to the root of the tree.
+
+\medskip
 
 The second routine, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
 and an optional $\emph{eccentricity}$ array we will describe soon. It builds a new graph $G_{t+1}$
 where each star becomes a node and there is a link between two nodes $s_1$ and $s_2$ if the nodes
 making up $s_1$ and $s_2$ are connected in $E_t$. For that, we first shuffle $E_t$ and go through
-it. When we  find an edge w hose endpoints belong to two different stars not yet connected, we use
+it. When we find an edge whose endpoints belong to two different stars not yet connected, we use
 that edge to connect these two stars. This trivially takes $O(m)$ times.
 
 A variant instead keeps track of all edges connecting each pair of stars to choose one that will
 best contribute to our low stretch objective. Namely, when connecting two stars, we would prefer to
 join their centers rather than two peripheral points. For that we maintain an eccentricity count for
 all of the nodes of the original $G_0$, which is incremented by $1$ each time a node is chosen to be
-on the periphery of a star.\Todo{Show an example of a small 3 levels nested stars}
+on the periphery of a star.\Todo{link that to the walk through example.}
 For each pair of stars, we thus choose the edge across them with minimal sum of its endpoints'
 eccentricity. This requires another pass over the edges, preserving the $O(m)$ runtime.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.98\linewidth]{tikz/gtx_eccentricity_tikz.pdf}
+  \includegraphics[width=0.78\linewidth]{tikz/gtx_eccentricity_tikz.pdf}
   \caption[The hierarchical structure of stars created by \gtx{}]{%
     The execution of the \gtx{} algorithm. The original graph is made of the solid edges
-    connecting the nodes labeled by their id. Edges forming the final spanning tree are in black
+    connecting the nodes labeled by  their index. Edges forming the final spanning tree are in black
     while the others are in gray. The four shades of gray, from white to dark gray
     denote increasing node eccentricity (as computed at the end of the algorithm). The \ith{} star
     created during the \jth{} iteration of the algorithm is denoted $S_i^j$. Refer to the main text
@@ -75,46 +154,40 @@ eccentricity. This requires another pass over the edges, preserving the $O(m)$ r
   \centering
   \begin{subfigure}[b]{0.47\textwidth}
     \centering
-    \includegraphics[height=7cm]{tikz/gtx_run_level1_tikz}
+    \includegraphics[height=5cm]{tikz/gtx_run_level1_tikz}
     \caption{Resulting graph after the first iteration}\label{fig:gtx_run1}
   \end{subfigure}~
   \begin{subfigure}[b]{0.47\textwidth}
     \centering
-    \includegraphics[height=3cm]{tikz/gtx_run_level2_tikz}
+    \includegraphics[height=2.2cm]{tikz/gtx_run_level2_tikz}
     \caption{Resulting graph after the second iteration}\label{fig:gtx_run2}
     \vspace{\baselineskip}
-    \includegraphics[height=3cm]{tikz/gtx_run_level3_tikz}
+    \includegraphics[height=2.2cm]{tikz/gtx_run_level3_tikz}
     \caption{Resulting graph after the third iteration}\label{fig:gtx_run3}
   \end{subfigure}~
   \caption{The other iterations of \gtx{}}\label{fig:gtx_run}
 \end{figure}
 
-\bigskip
+\medskip
 
+We illustrate the operation of the \gtx{} algorithm on small (and somewhat contrived) example.
 Let us start with the initial graph $G_0$ depicted in \autoref{fig:gtx_eccentricity} and initialize
 the eccentricity of all nodes to $0$. When running \extractStar{}, we see that the maximum degree is
 $4$, achieved at nodes $\{1, 6, 11, 16, 21, 26, 31, 36, 41\}$. For the sake of simplicity, assume
-nodes are picked according to their id. First, node $1$ is gonna form the star
-$\textcolor{DodgerBlue}{S_1^1}$ with peripheral nodes $2$, $3$, $4$ and $5$. This will increment the
+nodes are picked according to their index. First, node $1$ is forms the star
+$\textcolor{DodgerBlue}{S_1^1}$ with peripheral nodes $2$, $3$, $4$ and $5$. This increments the
 eccentricity of those peripheral nodes by $1$. Then node $6$ forms its star
-$\textcolor{DodgerBlue}{S_2^1}$ with $7$,$8$,$9$ and $10$. The process continues until node $41$ is
-chosen to be the center of star $\textcolor{DodgerBlue}{S_9^1}$, at which point $V_0$ has been
-exhausted and \extractStar{} terminates.
+$\textcolor{DodgerBlue}{S_2^1}$ with $7$, $8$, $9$ and $10$. The process continues until node $41$ is
+chosen to be the center of star $\textcolor{DodgerBlue}{S_9^1}$, at which point the max-priority
+queue has been exhausted and \extractStar{} finishes.
 
-We then call \collapseStar{}, with the eccentricity reducing variant. This will create all possible
-links between pairs of star. For instance, the edge between nodes $19$ and $29$ leads to the edge
-between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This was actually the
+We then call \collapseStar{}, with the eccentricity reducing variant. This will connect all possible
+pairs of star. For instance, the edge between nodes $19$ and $29$ leads to the edge
+between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This is actually the
 only possible edge between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$.
 Consider on the other hand the case of edges $(2, 6)$ and $(2, 9)$. They both connect
-$\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. Yet at this point in time, the
-eccentricity of node $2$ is $1$, the eccentricity of node $6$ is $0$ and the eccentricity of node
+$\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. Yet at this point of the algorithm,
+the eccentricity of node $2$ is $1$, the eccentricity of node $6$ is $0$ and the eccentricity of node
 $9$ is $1$. The edge $(2, 6)$ has therefore the smallest total eccentricity and is chosen to connect
 $\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. The full result of the
 \collapseStar{} procedure can be seen on \autoref{fig:gtx_run1}.
-
-We are then ready to describe the complete \gtx{} algorithm.\footnote{Note that for clarity, we
-removed some bookkeeping, mainly related to maintaining mapping between nodes at different level of
-contraction. Yet the full python implementation is available at
-\url{https://github.com/daureg/magnet/blob/master/veverica/new_galaxy.py}.} Intuitively, until each
-connected component is reduced to a single node, we first extract stars from the current graph $G_t$
-and then collapse them to form $G_{t+1}$.
