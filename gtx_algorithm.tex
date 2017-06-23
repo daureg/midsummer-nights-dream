@@ -1,4 +1,4 @@
-The \gtx{} algorithm takes as input a graph topology $G_0=(V_0, E_0)$ and produces a sequence of
+The \gtx{} algorithm takes as input an unweighted graph topology $G_0=(V_0, E_0)$ and produces a sequence of
 graphs $\{G_t\}_{t=1}^T$ of decreasing size until each connected component of $G_0$ is reduced to a
 single node. As we will prove later, after reaching this point, the algorithm has selected $|V_0| -
 1$ edges that form a spanning tree of $G_0$. $G_{t+1}$ is obtained from $G_t$ by composing two
@@ -14,6 +14,7 @@ generality, we assume that $G_0$ consist of a single connected component.
 
 \medskip
 
+\paragraph{\extractStar{}}\label{par:extractstar}%
 \extractStar{} takes as input a graph $G_t=(V_t, E_t)$, and optionally a \emph{threshold function}
 $t_f$ or a \emph{degree function} $d_f$. While the nodeset $V_t$ is not exhausted, it repeatedly samples a
 star center $c_i$, creates a star $S_i^t$ with the neighbors of $c_i$, removes all the nodes of $S_i^t$ from
@@ -59,10 +60,8 @@ simply create a star given a center and a list of peripheral nodes.  \vspace{-\b
   \begin{algorithmic}[1]
     \Function{\extractStar{}}{$G_t=(V_t,E_t)$}
       \State Let $Q$ be a max-priority queue. The key of element $x$ is $Q[x]$
-      \Let{$stars$}{[]}
-      \Let{$remaining$}{$\emptyset$}
+      \Let{$stars$, $inner\_edges$, $remaining$}{$[]$, $\emptyset$, $\emptyset$}
       \ForAll{node $u$ in $V_t$}
-        % \State $\textsc{Insert}\\left(Q,\,u\right)$ \Comment with the key $\degr(u)$
         \State \Call{Insert}{$Q,\,u$} \Comment with the key $\degr(u)$
         \Let{$remaining$}{$remaining \bigcup \left\{u\right\}$}
       \EndFor
@@ -74,6 +73,7 @@ simply create a star given a center and a list of peripheral nodes.  \vspace{-\b
         \EndIf
         \Let{$periphery$}{$G[c_i] \bigcap remaining$}
         \Let{$stars$}{$stars \bigcap $\Call{Star}{$c_i,\, periphery$}}
+        \Let{$inner\_edges$}{$inner\_edges \bigcup \{(c_i, p): p \in periphery\}$}
         \Let{$remaining$}{$remaining \setminus\left\{c_i\right\} \setminus periphery$}
         \For{$p$ in $periphery$}
           \For{$h$ in $G[p] \bigcap remaining$}
@@ -81,7 +81,8 @@ simply create a star given a center and a list of peripheral nodes.  \vspace{-\b
           \EndFor
         \EndFor
       \EndWhile
-      \State \textbf{return} $stars$
+      \State \textbf{return} $stars$, $inner\_edges$, $membership$%
+      \Comment{$membership$ maps the nodes of $V_t$ to the index of the star they belong to}
     \EndFunction
   \end{algorithmic}
   \rule{\textwidth}{.3pt}
@@ -102,6 +103,7 @@ set and lines 13--17 will run in constant time), reducing the complexity to $O(m
 The other two variants are more time consuming because they require additional bookkeeping. Their
 randomization make them useful in an adversarial context but it also renders their analysis more
 challenging, not necessarily for the runtime of \extractStar{} but mostly for the tree construction.
+\marginpars{Which means this paragraph can be skipped at first.}
 Therefore, we only briefly describe the implementations here.\footnote{Although they are available
 online at 
 \nolinkurl{https://github.com/daureg/magnet/blob/master/veverica/}%
@@ -122,20 +124,123 @@ corresponding leaves to the root of the tree.
 
 \medskip
 
+\paragraph{\collapseStar{}}\label{par:collapsestar}%
 The second routine, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
-and an optional $\emph{eccentricity}$ array we will describe soon. It builds a new graph $G_{t+1}$
+and an optional $\emph{eccentricity}$ array we will describe soon\marginpars{Actually, we could make
+eccentricity the default behavior, which would simplify the pseudo code}. It builds a new graph $G_{t+1}$
 where each star becomes a node and there is a link between two nodes $s_1$ and $s_2$ if the nodes
-making up $s_1$ and $s_2$ are connected in $E_t$. For that, we first shuffle $E_t$ and go through
-it. When we find an edge whose endpoints belong to two different stars not yet connected, we use
-that edge to connect these two stars. This trivially takes $O(m)$ times.
+making up $s_1$ and $s_2$ are connected in $E_t$.
 
-A variant instead keeps track of all edges connecting each pair of stars to choose one that will
-best contribute to our low stretch objective. Namely, when connecting two stars, we would prefer to
-join their centers rather than two peripheral points. For that we maintain an eccentricity count for
-all of the nodes of the original $G_0$, which is incremented by $1$ each time a node is chosen to be
-on the periphery of a star.\Todo{link that to the walk through example.}
-For each pair of stars, we thus choose the edge across them with minimal sum of its endpoints'
-eccentricity. This requires another pass over the edges, preserving the $O(m)$ runtime.
+\begin{center}
+  \rule{\textwidth}{.3pt}
+  \begin{algorithmic}[1]
+    \Function{\collapseStar{}}{$G_t=(V_t,E_t),\,membership,\,eccentricity$}
+      \State Let $G_{t+1}$ be an empty graph
+      \State Let $cross\_edges$ be a HashMap mapping edges in $G_{t+1}$ to set of edges in $G_t$
+      \ForAll{edge $(u, v)$ in \Call{Shuffle}{$E_t$}}
+        \Let{$s_u,\,s_v$}{$membership[u]$, $membership[v]$}%
+        \Comment{swap if needed so that $s_u < s_v$}
+        \If{$s_u = s_v$}
+          \State \textbf{continue}
+        \EndIf
+        \If{$eccentricity$ is not \textbf{null}}
+          \Let{$cross\_edges[(s_u, s_v)]$}{$cross\_edges[(s_u, s_v)] \bigcup \{(u, v)\}$}
+          % \State $cross\_edges[(s_u, s_v)].$\Call{Add}{$(u, v)$}
+        \ElsIf{$(s_u, s_v)$ not in $cross\_edges$}
+          \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u, v)\}$}
+          \State Add edge $(s_u, s_v)$ to $G_{t+1}$
+        \EndIf
+      \EndFor
+      \If{$eccentricity$ is not \textbf{null}}
+        \ForAll{$\Big(\underbrace{(u,v)}_{\text{key}},\,
+          \underbrace{candidate\_edges}_{\text{value}}\Big)$
+          in $cross\_edges.$\Call{Items}{$\,$}}
+          \Let{$(u_0, v_0)$}{$\argmin_{(u,v)\in candidate\_edges} eccentricity[u]+eccentricity[v]$}
+          \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u_0, v_0)\}$}
+          \State Add edge $(s_u, s_v)$ to $G_{t+1}$
+        \EndFor
+      \EndIf
+      \State \textbf{return} $G_{t+1}$, $cross\_edges$
+    \EndFunction
+  \end{algorithmic}
+  \rule{\textwidth}{.3pt}
+\end{center}
+
+For that, we first shuffle $E_t$ and go through it (line 4). When we find an edge whose endpoints
+belong to two different stars not yet connected (line 10), we use that edge to connect these two
+stars (line 11--12) This trivially takes $O(m)$ times.  A variant instead keeps track of all edges
+connecting each pair of stars (line 9) to choose one that will best contribute to our low stretch
+objective. Namely, when connecting two stars, we would prefer to join their centers rather than two
+peripheral points. For that we maintain an eccentricity count for all of the nodes of the original
+$G_0$, which is incremented by $1$ each time a node is chosen to be on the periphery of a
+star.\footnote{We will discuss this construction in more details when describing the main \gtx{}
+function since it takes place there.} For each pair of stars, we thus choose the edge across them
+with minimal sum of its endpoints' eccentricity (line 15--17)\marginpars{Line 15 is actually a
+simplification since the $eccentricity$ array is only defined for nodes in $V_0$ so when
+\collapseStar{} is called on $G_3$ for instance, $u$ and $v$ are nodes of $V_3$ and we have to
+retrieve the actual corresponding edge in $E_0$. Maybe I could simply add a HashMap from $E_t$ to
+$E_0$ like in the python code…}. This only requires another pass over the edges, thus preserving the
+$O(m)$ runtime.
+
+\paragraph{Putting the pieces together}\label{par:full_gtx}%
+\extractStar{} and \collapseStar{} are truly the core the of \gtx{} algorithm but to obtain our
+final spanning tree, we need additional works, namely updating the eccentricity of the nodes of
+$V_0$ and keeping track of each edge within and between along every contraction level.
+
+\begin{algorithm}
+  \caption{\gtx{}($G_0=(V_0,E_0)$) \label{alg:gtx}}
+	\begin{algorithmic}[1]
+    \State Let $eccentricity$ be an array of size $|V_0|$ initially all set to $0$
+    \Let{$G_t$}{$G_0$}
+    \Let{$inner\_edges\_seq$, $outer\_edges\_seq$}{$[]$, $[]$}
+    \Repeat
+      \Let{$stars$, $inner\_edges$, $membership$}{\Call{Extract-Stars}{$G_t$}}
+      \State $inner\_edges\_seq$.\Call{Append}{$inner\_edges$}
+      \State \Call{Update-Eccentricity}{$stars$, $eccentricity$, $original\_node$}
+      \Let{$full\_membership$, $original\_node$}{\Call{Update-Nodes-Mapping}{$full\_membership$, $star\_membership$}}
+      \Let{$G_{t+1}$, $\!outer\_edges$}{\Call{Collapse-Stars}{$E_t \!\setminus\! inner\_edges$,
+      $\!membership$, $\!eccentricity$}}
+      \State $outer\_edges\_seq$.\Call{Append}{$outer\_edges$}
+      \Let{$G_{t}$}{$G_{t+1}$}
+    \Until{$|outer\_edges|>0$}
+    \State \textbf{return} \Call{Assemble-Spanning-Trees}{$inner\_edges\_seq$, $outer\_edges\_seq$}
+		\begin{center}
+      \vspace{-.5\baselineskip}
+			\rule{0.5\textwidth}{.2pt}
+		\end{center}
+    \includegraphics{assets/tmp-code/update_eccentricity.pdf}
+    \includegraphics{assets/tmp-code/update_nodes_mapping.pdf}
+    \includegraphics{assets/tmp-code/assemble_spanning_tree.pdf}
+	\end{algorithmic}
+\end{algorithm}
+
+Basically, at every collapse level, we first extract stars from the current graph (line 5), then
+update the eccentricity and nodes mapping (lines 7--8) and finally collapse the graph (line 9) We
+perform these operations until there are no edge connecting stars anymore. At this point, we revisit
+every outer edges to form the spanning tree (line 13). Because the main loop does not perform any
+work besides calling other function, assuming there are T collapse steps, the complexity of \gtx{}
+is $O(T(m+n)) = O(Tm)$. \marginpars{I didn't write pseudo code for the three helping functions but
+instead put their verbatim python version. They are mostly plumbing code, the only interesting
+aspect is their complexity.  \texttt{update\_centrality} and \texttt{update\_nodes\_mapping} takes
+$O(n_0)$ time since they go through every node of the original graph. As for
+\texttt{assemble\_spanning\_tree}, it goes again through every edges visited at every level of
+contraction, meaning it's $O(Tm)$. However, we already visited those edges at least once so it only
+adds a constant factor $2$ in the overall complexity of the \gtx{} algorithm.} 
+
+\paragraph{Exemple of \gtx{}}
+\label{par:exemple_of_gtx}
+
+We illustrate the operation of the \gtx{} algorithm on small (and somewhat contrived) example.
+Let us start with the initial graph $G_0$ depicted in \autoref{fig:gtx_eccentricity}
+\vpageref{fig:gtx_eccentricity} and initialize
+the eccentricity of all nodes to $0$. When running \extractStar{}, we see that the maximum degree is
+$4$, achieved at nodes $\{1, 6, 11, 16, 21, 26, 31, 36, 41\}$. For the sake of simplicity, assume
+nodes are picked according to their index. First, node $1$ is forms the star
+$\textcolor{DodgerBlue}{S_1^1}$ with peripheral nodes $2$, $3$, $4$ and $5$. This increments the
+eccentricity of those peripheral nodes by $1$. Then node $6$ forms its star
+$\textcolor{DodgerBlue}{S_2^1}$ with $7$, $8$, $9$ and $10$. The process continues until node $41$ is
+chosen to be the center of star $\textcolor{DodgerBlue}{S_9^1}$, at which point the max-priority
+queue has been exhausted and \extractStar{} finishes.
 
 \begin{figure}[htbp]
   \centering
@@ -168,19 +273,6 @@ eccentricity. This requires another pass over the edges, preserving the $O(m)$ r
   \caption{The other iterations of \gtx{}}\label{fig:gtx_run}
 \end{figure}
 
-\medskip
-
-We illustrate the operation of the \gtx{} algorithm on small (and somewhat contrived) example.
-Let us start with the initial graph $G_0$ depicted in \autoref{fig:gtx_eccentricity} and initialize
-the eccentricity of all nodes to $0$. When running \extractStar{}, we see that the maximum degree is
-$4$, achieved at nodes $\{1, 6, 11, 16, 21, 26, 31, 36, 41\}$. For the sake of simplicity, assume
-nodes are picked according to their index. First, node $1$ is forms the star
-$\textcolor{DodgerBlue}{S_1^1}$ with peripheral nodes $2$, $3$, $4$ and $5$. This increments the
-eccentricity of those peripheral nodes by $1$. Then node $6$ forms its star
-$\textcolor{DodgerBlue}{S_2^1}$ with $7$, $8$, $9$ and $10$. The process continues until node $41$ is
-chosen to be the center of star $\textcolor{DodgerBlue}{S_9^1}$, at which point the max-priority
-queue has been exhausted and \extractStar{} finishes.
-
 We then call \collapseStar{}, with the eccentricity reducing variant. This will connect all possible
 pairs of star. For instance, the edge between nodes $19$ and $29$ leads to the edge
 between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This is actually the
@@ -190,4 +282,53 @@ $\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. Yet at this
 the eccentricity of node $2$ is $1$, the eccentricity of node $6$ is $0$ and the eccentricity of node
 $9$ is $1$. The edge $(2, 6)$ has therefore the smallest total eccentricity and is chosen to connect
 $\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. The full result of the
-\collapseStar{} procedure can be seen on \autoref{fig:gtx_run1}.
+\collapseStar{} procedure is $G_1$, which can be seen on \autoref{fig:gtx_run1}.
+
+We now run \extractStar{} on $G_1$. Because all nodes have degree $2$, they could all be chosen to
+be the center of a star yet we again consider them ordered by their index and therefore choose
+$\textcolor{DodgerBlue}{S_1^1}$ to be the center of the star $\textcolor{Orange}{S_1^2}$ with
+peripheral nodes $\textcolor{DodgerBlue}{S_2^1}$ and $\textcolor{DodgerBlue}{S_3^1}$. The original
+nodes belonging to those peripheral stars (nodes $4$ to $15$) have their eccentricity incremented by
+$1$. The next node with highest degree in $G_1$ is now $\textcolor{DodgerBlue}{S_4^1}$, which forms
+a star with $\textcolor{DodgerBlue}{S_5^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This choice means
+that nodes $21$ through $30$ have their eccentricity incremented by $1$. Finally,
+$\textcolor{DodgerBlue}{S_7^1}$ forms the last star with $\textcolor{DodgerBlue}{S_8^1}$ and
+$\textcolor{DodgerBlue}{S_9^1}$. Then \collapseStar{} connects the resulting three stars, and this
+time there is only a single choice between each pair of stars, leading to the graph $G_2$ showed in
+\autoref{fig:gtx_run2}
+
+The action of \extractStar{} on $G_2$ is quite simple, because there is only one star that can be
+created, so let say we choose $\textcolor{Orange}{S_1^2}$ as its center, with
+$\textcolor{Orange}{S_2^2}$ and $\textcolor{Orange}{S_3^2}$ as peripheral nodes.  This increases the
+eccentricity of their underlying $G_0$ nodes by $1$ (namely nodes $16$ to $45$).  Because there is
+only one star $\textcolor{Green}{S_1^3}$ left, \collapseStar{} returns $G_3$ showed in
+\autoref{fig:gtx_run3} and an empty list of outer edges, meaning that the inner loop of \gtx{} is
+finished and we can go through every edges we chose between stars at every level to recover the
+final spanning tree, showed with black edges in \autoref{fig:gtx_eccentricity}
+\vpageref{fig:gtx_eccentricity}. For completeness, we can also look at the edges which are not in
+the spanning tree and therefore contribute to the stretch of the tree. In that case the average
+stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
+
+\begin{table}[htpb]
+  \centering
+  \caption{Stretch of the example tree}
+  \label{tab:gtx_example_stretch}
+  \begin{tabulary}{\linewidth}{lLr}
+    \toprule
+    test edge & path in the tree & length \\
+    \midrule
+    $2,9$   & $2$--$6$--$9$                       & $2$ \\
+    $3,12$  & $3$--$1$--$4$--$14$--$11$--$12$     & $6$ \\
+    $13,29$ & $13$--$11$--$15$--$26$--$29$        & $4$ \\
+    $20,24$ & $20$--$16$--$17$--$23$--$21$--$24$  & $5$ \\
+    $25,42$ & $25$--$21$--$23$--$17$--$16$--$19$--$29$--$26$--$15$--$11$--$14$--$4$--$1$--$2$--$6$--$8$--$37$--$36$--$39$-- $32$--$31$--$35$--$43$--$41$--$45$ & $24$ \\
+    $33,38$ & $33$--$31$--$32$--$39$--$36$--$38$  & $5$ \\
+    $34,43$ & $34$--$31$--$35$--$43$              & $3$ \\
+    \bottomrule
+  \end{tabulary}
+\end{table}
+
+\paragraph{Number of iterations needed}\label{par:number_of_iteration}%
+\textcolor{red}{\LARGE First give the example of line graph, say it's worst case because of barbell
+graph (use simple inkscape figures or paper), then tree and its longest path from root, then graph
+and spanning tree}

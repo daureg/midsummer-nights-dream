@@ -38,8 +38,12 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
 \usepackage{tabulary}
 \usepackage[marginpar]{todo}
 \usepackage[np,autolanguage]{numprint}
+\usepackage{listings}
+\lstset{frame=none, language=Python, tabsize=4,}
+\usepackage{inconsolata}
 \input{drawing}
 
+\usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
 \newcommand*\Let[2]{\State #1 $\gets$ #2}
 % \def\algorithmautorefname{Algorithm}
@@ -68,4 +72,4 @@ skip=6pt,list=false,hypcap=false]{subcaption}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \graphicspath{{./assets/}}
-\usepackage[capitalize,noabbrev]{cleveref}
+% \usepackage[capitalize,noabbrev]{cleveref}
