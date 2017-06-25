@@ -2,10 +2,10 @@ The \gtx{} algorithm takes as input an unweighted graph topology $G_0=(V_0, E_0)
 graphs $\{G_t\}_{t=1}^T$ of decreasing size until each connected component of $G_0$ is reduced to a
 single node. As we will prove later, after reaching this point, the algorithm has selected $|V_0| -
 1$ edges that form a spanning tree of $G_0$. Intuitively, $G_{t+1}$ is obtained from $G_t$ by composing two
-primitives so that we can informally write $G_{t+1} = \left(\collapseStar{} \circ
+primitives so that we can informally write $G_{t+1} = \left(\contractStar{} \circ
 \extractStar{}\right)(G_t)$.
 
-\extractStar{} partitions the graph $G_t$ into a set of stars and \collapseStar{} build the graph
+\extractStar{} partitions the graph $G_t$ into a set of stars and \contractStar{} build the graph
 made of those stars using the edges in $E_t$. We provide more details on those two operations in the
 following, as well as their complexity analysis. Then we state formally the \gtx{} algorithm and prove
 its termination and correctness.  Finally, we study its properties, such as the number of iterations
@@ -25,7 +25,7 @@ representation of this notation).
 \begin{marginfigure}
   \centering
   \includegraphics[height=0.15\textheight]{assets/tikz/gtx_star_tikz.pdf}
-  \caption[A sample star]{A sample star created during the \tth{} collapse level. The black node
+  \caption[A sample star]{A sample star created during the \tth{} contraction level. The black node
     % \tikz{\node[vertex,rare] {$c_i$};}
     is the center $c_i$ of the star $S_i^t$, which is also made of the four light gray peripheral nodes
   % \tikz{\node[vertex,medium] {$p_1$};} to \tikz{\node[vertex,medium] {$p_4$};}
@@ -125,8 +125,8 @@ corresponding leaves to the root of the tree.
 
 \medskip
 
-\paragraph{\collapseStar{}}\label{par:collapsestar}%
-The second routine, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
+\paragraph{\contractStar{}}\label{par:contractstar}%
+The second routine, \contractStar{} takes as input the result of \extractStar{}, along with $E_t$
 and an optional $\emph{eccentricity}$ array we will describe soon\marginpars{Actually, we could make
 eccentricity the default behavior, which would simplify the pseudo code}. It builds a new graph $G_{t+1}$
 where each star becomes a node and where there is a link between two nodes $s_1$ and $s_2$ if the nodes
@@ -135,7 +135,7 @@ making up $s_1$ and $s_2$ are connected in $E_t$.
 \begin{center}
   \rule{\textwidth}{.3pt}
   \begin{algorithmic}[1]
-    \Function{\collapseStar{}}{$E_t,\,membership,\,eccentricity$}
+    \Function{\contractStar{}}{$E_t,\,membership,\,eccentricity$}
       \State Let $G_{t+1}$ be an empty graph
       \State Let $cross\_edges$ be a mapping from edges in $G_{t+1}$ to set of edges in $G_t$
       \ForAll{edge $(u, v)$ in \Call{Shuffle}{$E_t$}}
@@ -178,13 +178,13 @@ star.\footnote{We will discuss this construction in more details when describing
 function since it takes place there.} For each pair of stars, we thus choose the edge across them
 with minimal sum of its endpoints' eccentricity (line 15--17)\marginpars{Line 15 is actually a
 simplification since the $eccentricity$ array is only defined for nodes in $V_0$ so when
-\collapseStar{} is called on $G_3$ for instance, $u$ and $v$ are nodes of $V_3$ and we have to
+\contractStar{} is called on $G_3$ for instance, $u$ and $v$ are nodes of $V_3$ and we have to
 retrieve the actual corresponding edge in $E_0$. Maybe I could simply add a HashMap from $E_t$ to
 $E_0$ like in the python code…}. This only requires another pass over the edges, thus preserving the
 $O(m)$ runtime.
 
 \paragraph{Putting the pieces together}\label{par:full_gtx}%
-\extractStar{} and \collapseStar{} are truly the core the of \gtx{} algorithm but to obtain our
+\extractStar{} and \contractStar{} are truly the core the of \gtx{} algorithm but to obtain our
 final spanning tree, we need additional work, namely updating the eccentricity of the nodes of
 $V_0$ and keeping track of each edge within and between stars along every contraction level.
 
@@ -199,7 +199,7 @@ $V_0$ and keeping track of each edge within and between stars along every contra
       \State $inner\_edges\_seq$.\Call{Append}{$inner\_edges$}
       \State \Call{Update-Eccentricity}{$stars$, $eccentricity$, $original\_node$}
       \Let{$full\_membership$, $original\_node$}{\Call{Update-Nodes-Mapping}{$full\_membership$, $membership$}}
-      \Let{$G_{t+1}$, $\!outer\_edges$}{\Call{Collapse-Stars}{$E_t \!\setminus\! inner\_edges$,
+      \Let{$G_{t+1}$, $\!outer\_edges$}{\Call{Contract-Stars}{$E_t \!\setminus\! inner\_edges$,
       $\!membership$, $\!eccentricity$}}
       \State $outer\_edges\_seq$.\Call{Append}{$outer\_edges$}
       \Let{$G_{t}$}{$G_{t+1}$}
@@ -222,11 +222,11 @@ $O(n_0)$ time since they go through every node of the original graph. As for
 \texttt{assemble\_spanning\_tree}, it goes again through every edges visited at every level of
 contraction, meaning it's $O(Tm)$. However, we already visited those edges at least once so it only
 adds a constant factor $2$ in the overall complexity of the \gtx{} algorithm.} 
-at every collapse level, we first extract stars from the current graph (line 5), then
-update the eccentricity and nodes mapping (lines 7--8) and finally collapse the graph (line 9) We
+at every contraction level, we first extract stars from the current graph (line 5), then
+update the eccentricity and nodes mapping (lines 7--8) and finally contract the graph (line 9) We
 perform these operations until there are no edge connecting stars anymore. At this point, we revisit
 every outer edges to form the spanning tree (line 13). Because the main loop does not perform any
-work besides calling other function, assuming there are T collapse steps, the complexity of \gtx{}
+work besides calling other function, assuming there are $T$ contract steps, the complexity of \gtx{}
 is $O(T(m+n)) = O(Tm)$.
 
 Later we hope to found an upper bound of $T$ in terms of $m$, and also to refine the analysis to
@@ -284,7 +284,7 @@ queue has been exhausted and \extractStar{} finishes.
   \caption{The other iterations of \gtx{}}\label{fig:gtx_run}
 \end{figure}
 
-We then call \collapseStar{}, with the eccentricity reducing variant. This will connect all possible
+We then call \contractStar{}, with the eccentricity reducing variant. This will connect all possible
 pairs of star. For instance, the edge between nodes $19$ and $29$ leads to the edge
 between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This is actually the
 only possible edge between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$.
@@ -293,7 +293,7 @@ $\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. Yet at this
 the eccentricity of node $2$ is $1$, the eccentricity of node $6$ is $0$ and the eccentricity of node
 $9$ is $1$. The edge $(2, 6)$ has therefore the smallest total eccentricity and is chosen to connect
 $\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. The full result of the
-\collapseStar{} procedure is $G_1$, which can be seen on \autoref{fig:gtx_run1}.
+\contractStar{} procedure is $G_1$, which can be seen on \autoref{fig:gtx_run1}.
 
 We now run \extractStar{} on $G_1$. Because all nodes have degree $2$, they could all be chosen to
 be the center of a star yet we again consider them ordered by their index and therefore choose
@@ -304,7 +304,7 @@ $1$. The next node with highest degree in $G_1$ is now $\textcolor{DodgerBlue}{S
 a star with $\textcolor{DodgerBlue}{S_5^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This choice means
 that nodes $21$ through $30$ have their eccentricity incremented by $1$. Finally,
 $\textcolor{DodgerBlue}{S_7^1}$ forms the last star with $\textcolor{DodgerBlue}{S_8^1}$ and
-$\textcolor{DodgerBlue}{S_9^1}$. Then \collapseStar{} connects the resulting three stars, and this
+$\textcolor{DodgerBlue}{S_9^1}$. Then \contractStar{} connects the resulting three stars, and this
 time there is only a single choice between each pair of stars, leading to the graph $G_2$ showed in
 \autoref{fig:gtx_run2}
 
@@ -312,7 +312,7 @@ The action of \extractStar{} on $G_2$ is quite simple, because there is only one
 created, so let say we choose $\textcolor{Orange}{S_1^2}$ as its center, with
 $\textcolor{Orange}{S_2^2}$ and $\textcolor{Orange}{S_3^2}$ as peripheral nodes.  This increases the
 eccentricity of their underlying $G_0$ nodes by $1$ (namely nodes $16$ to $45$).  Because there is
-only one star $\textcolor{Green}{S_1^3}$ left, \collapseStar{} returns $G_3$ showed in
+only one star $\textcolor{Green}{S_1^3}$ left, \contractStar{} returns $G_3$ showed in
 \autoref{fig:gtx_run3} and an empty list of outer edges, meaning that the inner loop of \gtx{} is
 finished and we can go through every edges we chose between stars at every level to recover the
 final spanning tree, showed with black edges in \autoref{fig:gtx_eccentricity}
@@ -344,7 +344,7 @@ stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
 \textcolor{red}{\LARGE Draft}
 
 A crucial quantity of the \gtx{} algorithm, both in terms of complexity and resulting stretch, is
-the number of collapses $T$ needed before termination. While this is still elusive to express in the
+the number of contraction $T$ needed before termination. While this is still elusive to express in the
 general case, let us first look at some simple cases. For instance, a very sparse example of graph
 is the line graph. While it is already a tree, let us look how the \gtx{} algorithm operates on it.
 Say we have $n$ nodes in that line. There a star is made at most of three consecutive nodes. In the
