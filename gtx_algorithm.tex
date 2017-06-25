@@ -214,18 +214,28 @@ $V_0$ and keeping track of each edge within and between along every contraction 
 	\end{algorithmic}
 \end{algorithm}
 
-Basically, at every collapse level, we first extract stars from the current graph (line 5), then
-update the eccentricity and nodes mapping (lines 7--8) and finally collapse the graph (line 9) We
-perform these operations until there are no edge connecting stars anymore. At this point, we revisit
-every outer edges to form the spanning tree (line 13). Because the main loop does not perform any
-work besides calling other function, assuming there are T collapse steps, the complexity of \gtx{}
-is $O(T(m+n)) = O(Tm)$. \marginpars{I didn't write pseudo code for the three helping functions but
+As described in \autoref{alg:gtx}, \marginpars{I didn't write pseudo code for the three helping functions but
 instead put their verbatim python version. They are mostly plumbing code, the only interesting
 aspect is their complexity.  \texttt{update\_centrality} and \texttt{update\_nodes\_mapping} takes
 $O(n_0)$ time since they go through every node of the original graph. As for
 \texttt{assemble\_spanning\_tree}, it goes again through every edges visited at every level of
 contraction, meaning it's $O(Tm)$. However, we already visited those edges at least once so it only
 adds a constant factor $2$ in the overall complexity of the \gtx{} algorithm.} 
+at every collapse level, we first extract stars from the current graph (line 5), then
+update the eccentricity and nodes mapping (lines 7--8) and finally collapse the graph (line 9) We
+perform these operations until there are no edge connecting stars anymore. At this point, we revisit
+every outer edges to form the spanning tree (line 13). Because the main loop does not perform any
+work besides calling other function, assuming there are T collapse steps, the complexity of \gtx{}
+is $O(T(m+n)) = O(Tm)$.
+
+Later we hope to found an upper bound of $T$ in terms of $m$, and also to refine the analysis to
+leverage the fact that $\sum_{t=0}^T |E_t|$ is significantly smaller than $Tm$. For now, let us
+prove the termination of \gtx{} by observing that, assuming $|E_t|>0$, $|E_{t+1}| < |E_t|$ since
+at least two nodes in $G_t$ are connected and will therefore form a star, which will remove all the
+inner edges of that star. As for the fact that we get a tree, note that a star is a tree, therefore
+a star of star is a tree, and so on.\Todo{make the two arguments about \gtx{} correctness more
+formal, and also explain that since all nodes are part of the ultimate star, this tree is a spanning
+one. Motivate the name of \gtx{}.}
 
 \paragraph{Exemple of \gtx{}}
 \label{par:exemple_of_gtx}
@@ -329,6 +339,26 @@ stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
 \end{table}
 
 \paragraph{Number of iterations needed}\label{par:number_of_iteration}%
-\textcolor{red}{\LARGE First give the example of line graph, say it's worst case because of barbell
-graph (use simple inkscape figures or paper), then tree and its longest path from root, then graph
-and spanning tree}
+
+\textcolor{red}{\LARGE Draft}
+
+A crucial quantity of the \gtx{} algorithm, both in terms of complexity and resulting stretch, is
+the number of collapses $T$ needed before termination. While this is still elusive to express in the
+general case, let us first look at some simple cases. For instance, a very sparse example of graph
+is the line graph. While it is already a tree, let us look how the \gtx{} algorithm operates on it.
+Say we have $n$ nodes in that line. There a star is made at most of three consecutive nodes. In the
+worst case, centers will be chosen such that we have a succession of three and two nodes stars (as
+in \autoref{fig:gtx_line_graph}).%
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=0.9\linewidth]{assets/tmp-code/line_graph.pdf}
+  \caption{A line graph with stars in red}
+  \label{fig:gtx_line_graph}
+\end{marginfigure}
+This will results in $\nicefrac{2n}{5}$ stars, which is less than half of $n$ and because in that
+case $n\approx m$, \gtx{} will finish after $O(\log m)$ iterations. Note that a barbell graph (two
+cliques connected by a line) would require a number of iterations proportional to the length of that
+central line, despite having many more edges. This suggests unsurprisingly that the diameter of the graph
+could be a good parameter to quantify the number of iteration needed. Indeed, take a tree a consider
+the length $p$ of its longest path from the root to a leaf. By a similar argument as the one used in
+the line case, it seems \gtx{} will terminate after $O(\log p)$ iterations.
