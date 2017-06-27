@@ -257,9 +257,10 @@ queue has been exhausted and \extractStar{} finishes.
   \centering
   \includegraphics[width=0.78\linewidth]{tikz/gtx_eccentricity_tikz.pdf}
   \caption[The hierarchical structure of stars created by \gtx{}]{%
-    The execution of the \gtx{} algorithm. The original graph is made of the solid edges
-    connecting the nodes labeled by  their index. Edges forming the final spanning tree are in black
-    while the others are in gray. The four shades of gray, from white to dark gray
+    The execution of the \gtx{} algorithm. The original graph is made of the solid and dashed edges
+    connecting the nodes labeled by their index. Edges forming the final spanning tree are solid
+    while the others are dashed. Their colors indicate at which iteration they were chosen to be inside a
+    star. The four shades of gray, from white to dark gray
     denote increasing node eccentricity (as computed at the end of the algorithm). The \ith{} star
     created during the \jth{} iteration of the algorithm is denoted $S_i^j$. Refer to the main text
     for the complete description of the execution.}

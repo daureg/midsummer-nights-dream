@@ -1,23 +1,24 @@
 \documentclass[svgnames,11pt,tikz]{standalone}
 \input{preambule}
 \begin{document}
-\tikzstyle{star}=[circle,DodgerBlue,very thick,fill opacity=.2]
-\tikzstyle{star-label}=[opacity=1, , font=\Large]
-\tikzstyle{removed}=[Gray,line width=1.15pt]
-\begin{tikzpicture}[auto,vertex/.append style={minimum width=8mm}]
-  \draw[star,Orange] (2.260, -1.063) circle [radius=4.4]  node[star-label,font=\LARGE,xshift=-10, yshift=110] {$S_1^2$};
-  \draw[star,Orange] (6.504, -9.728) circle [radius=4.4]  node[star-label,font=\LARGE,xshift=-10, yshift=110] {$S_2^2$};
-  \draw[star,Orange] (11.641, 1.189) circle [radius=4.4]  node[star-label,font=\LARGE,xshift=-10, yshift=110] {$S_3^2$};
+\tikzstyle{star}=[DodgerBlue,line width=2pt]
+\tikzstyle{star-label}=[font=\Large]
+\tikzstyle{removed}=[dashed,line width=1.7pt]
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=8mm},
+  edge/.append style={line width=2.2pt,color=DodgerBlue!90!Black}]
+  \draw[star,Orange] (2.260, -1.063) circle [radius=4.4]  node[star-label,font=\LARGE,xshift=-10, yshift=110] {$\mathbf{S_1^2}$};
+  \draw[star,Orange] (6.504, -9.728) circle [radius=4.4]  node[star-label,font=\LARGE,xshift=-10, yshift=110] {$\mathbf{S_2^2}$};
+  \draw[star,Orange] (11.641, 1.189) circle [radius=4.4]  node[star-label,font=\LARGE,xshift=-10, yshift=110] {$\mathbf{S_3^2}$};
 
-  \draw[star] (0.000, -0.000) circle [radius=1.8]  node[star-label,xshift=-30, yshift=25] {$S_1^1$};
-  \draw[star] (1.689, -3.448) circle [radius=1.8]  node[star-label,xshift=-30, yshift=5] {$S_2^1$};
-  \draw[star] (3.734, 0.896) circle [radius=1.8]  node[star-label,xshift=-30, yshift=5] {$S_3^1$};
-  \draw[star] (4.245, -8.664) circle [radius=1.8]  node[star-label,xshift=-22, yshift=-25] {$S_4^1$};
-  \draw[star] (5.934, -12.113) circle [radius=1.8]  node[star-label,xshift=-15, yshift=35] {$S_5^1$};
-  \draw[star] (7.978, -7.768) circle [radius=1.8]  node[star-label,xshift=30, yshift=25] {$S_6^1$};
-  \draw[star] (9.381, 2.252) circle [radius=1.8]  node[star-label,xshift=-15, yshift=30] {$S_7^1$};
-  \draw[star] (11.071, -1.196) circle [radius=1.8]  node[star-label,xshift=-30, yshift=25] {$S_8^1$};
-  \draw[star] (13.115, 3.149) circle [radius=1.8]  node[star-label,xshift=-30, yshift=20	] {$S_9^1$};
+  \draw[star] (0.000, -0.000) circle [radius=1.8]  node[star-label,xshift=-30, yshift=25] {$\mathbf{S_1^1}$};
+  \draw[star] (1.689, -3.448) circle [radius=1.8]  node[star-label,xshift=-30, yshift=5] {$\mathbf{S_2^1}$};
+  \draw[star] (3.734, 0.896) circle [radius=1.8]  node[star-label,xshift=-30, yshift=5] {$\mathbf{S_3^1}$};
+  \draw[star] (4.245, -8.664) circle [radius=1.8]  node[star-label,xshift=-22, yshift=-25] {$\mathbf{S_4^1}$};
+  \draw[star] (5.934, -12.113) circle [radius=1.8]  node[star-label,xshift=-15, yshift=35] {$\mathbf{S_5^1}$};
+  \draw[star] (7.978, -7.768) circle [radius=1.8]  node[star-label,xshift=30, yshift=25] {$\mathbf{S_6^1}$};
+  \draw[star] (9.381, 2.252) circle [radius=1.8]  node[star-label,xshift=-15, yshift=30] {$\mathbf{S_7^1}$};
+  \draw[star] (11.071, -1.196) circle [radius=1.8]  node[star-label,xshift=-30, yshift=25] {$\mathbf{S_8^1}$};
+  \draw[star] (13.115, 3.149) circle [radius=1.8]  node[star-label,xshift=-30, yshift=20	] {$\mathbf{S_9^1}$};
 
   \node[vertex,fill=black!0,] (n1) at (0.000, -0.000) {1};
   \node[vertex,fill=black!25,] (n2) at (0.223, -1.179) {2};
@@ -69,10 +70,10 @@
   \draw[edge] (n1) edge [bend left =0] node[] {} (n3);
   \draw[edge] (n1) edge [bend left =0] node[] {} (n4);
   \draw[edge] (n1) edge [bend left =0] node[] {} (n5);
-  \draw[edge] (n2) edge [bend left =25] node[] {} (n6);
-  \draw[edge,removed] (n2) edge [bend left =0] node[] {} (n9);
-  \draw[edge,removed] (n3) edge [bend left =-20] node[] {} (n12);
-  \draw[edge] (n4) edge [bend left =20] node[] {} (n14);
+  \draw[edge,Orange!90!Black] (n2) edge [bend left =25] node[] {} (n6);
+  \draw[edge,removed,Orange!90!Black] (n2) edge [bend left =0] node[] {} (n9);
+  \draw[edge,removed,Orange!90!Black] (n3) edge [bend left =-20] node[] {} (n12);
+  \draw[edge,Orange!90!Black] (n4) edge [bend left =20] node[] {} (n14);
   % \draw[edge] (n3) edge [bend left =-20] node[] {} (n18);
   \draw[edge] (n6) edge [bend left =0] node[] {} (n7);
   \draw[edge] (n6) edge [bend left =0] node[] {} (n8);
@@ -80,27 +81,27 @@
   \draw[edge] (n6) edge [bend left =0] node[] {} (n10);
   % \draw[edge] (n7) edge [bend left =-15] node[] {} (n43);
   % \draw[edge] (n9) edge [bend left =-10] node[] {} (n32);
-  \draw[edge] (n8) .. controls ++(-40:3) and ++(240: 2) .. (n37);
+  \draw[edge,Green!90!Black] (n8) .. controls ++(-40:3) and ++(240: 2) .. (n37);
   \draw[edge] (n11) edge [bend left =0] node[] {} (n12);
   \draw[edge] (n11) edge [bend left =0] node[] {} (n13);
   \draw[edge] (n11) edge [bend left =0] node[] {} (n14);
   \draw[edge] (n11) edge [bend left =0] node[] {} (n15);
-  \draw[edge,removed] (n13) edge [bend left =0] node[] {} (n29);
+  \draw[edge,removed,Green!90!Black] (n13) edge [bend left =0] node[] {} (n29);
   % \draw[edge] (n12) edge [bend left =0] node[] {} (n18);
-  \draw[edge] (n15) .. controls ++(-40:3) and ++(64: 3.5) .. (n26);
+  \draw[edge,Green!90!Black] (n15) .. controls ++(-40:3) and ++(64: 3.5) .. (n26);
   \draw[edge] (n16) edge [bend left =0] node[] {} (n17);
   \draw[edge] (n16) edge [bend left =0] node[] {} (n18);
   \draw[edge] (n16) edge [bend left =0] node[] {} (n19);
   \draw[edge] (n16) edge [bend left =0] node[] {} (n20);
-  \draw[edge] (n17) edge [bend left =0] node[] {} (n23);
+  \draw[edge,Orange!90!Black] (n17) edge [bend left =0] node[] {} (n23);
   %\draw[edge] (n19) edge [bend left =0] node[] {} (n27);
-  \draw[edge] (n19) edge [bend left =0] node[] {} (n29);
-  \draw[edge,removed] (n20) edge [bend left =0] node[] {} (n24);
+  \draw[edge,Orange!90!Black] (n19) edge [bend left =0] node[] {} (n29);
+  \draw[edge,removed,Orange!90!Black] (n20) edge [bend left =0] node[] {} (n24);
   \draw[edge] (n21) edge [bend left =0] node[] {} (n22);
   \draw[edge] (n21) edge [bend left =0] node[] {} (n23);
   \draw[edge] (n21) edge [bend left =0] node[] {} (n24);
   \draw[edge] (n21) edge [bend left =0] node[] {} (n25);
-  \draw[edge,removed] (n25) edge [bend left =-20] node[] {} (n42);
+  \draw[edge,removed,Green!90!Black] (n25) edge [bend left =-20] node[] {} (n42);
   \draw[edge] (n26) edge [bend left =0] node[] {} (n27);
   \draw[edge] (n26) edge [bend left =0] node[] {} (n28);
   \draw[edge] (n26) edge [bend left =0] node[] {} (n29);
@@ -109,10 +110,10 @@
   \draw[edge] (n31) edge [bend left =0] node[] {} (n33);
   \draw[edge] (n31) edge [bend left =0] node[] {} (n34);
   \draw[edge] (n31) edge [bend left =0] node[] {} (n35);
-  \draw[edge] (n32) edge [bend left =0] node[] {} (n39);
-  \draw[edge] (n35) edge [bend left =0] node[] {} (n43);
-  \draw[edge,removed] (n33) edge [bend left =-25] node[] {} (n38);
-  \draw[edge,removed] (n34) edge [bend left =20] node[] {} (n43);
+  \draw[edge,Orange!90!Black] (n32) edge [bend left =0] node[] {} (n39);
+  \draw[edge,Orange!90!Black] (n35) edge [bend left =0] node[] {} (n43);
+  \draw[edge,removed,Orange!90!Black] (n33) edge [bend left =-25] node[] {} (n38);
+  \draw[edge,removed,Orange!90!Black] (n34) edge [bend left =20] node[] {} (n43);
   \draw[edge] (n36) edge [bend left =0] node[] {} (n37);
   \draw[edge] (n36) edge [bend left =0] node[] {} (n38);
   \draw[edge] (n36) edge [bend left =0] node[] {} (n39);
@@ -122,9 +123,9 @@
   \draw[edge] (n41) edge [bend left =0] node[] {} (n44);
   \draw[edge] (n41) edge [bend left =0] node[] {} (n45);
 
-  \draw[Green, line width=2pt] (11.8, 6.5) 
+  \draw[star, Green!90!Black] (11.8, 6.5) 
   .. controls ++(190:1) and ++(55: 2) .. (-2, 2.5)
   .. controls  ++(55: -4) and ++(170:4) .. (6, -15) 
-  .. controls  ++(-10:9) and ++(10:9) .. node[pos=.4,font=\Huge,xshift=-15pt] {$S_1^3$} cycle ;
+  .. controls  ++(-10:9) and ++(10:9) .. node[pos=.4,font=\Huge,xshift=-15pt] {$\mathbf{S_1^3}$} cycle ;
 \end{tikzpicture}
 \end{document}
