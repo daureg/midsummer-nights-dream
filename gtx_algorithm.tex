@@ -4,6 +4,9 @@ single node. As we will prove later, after reaching this point, the algorithm ha
 1$ edges that form a spanning tree of $G_0$. Intuitively, $G_{t+1}$ is obtained from $G_t$ by composing two
 primitives so that we can informally write $G_{t+1} = \left(\collapseStar{} \circ
 \extractStar{}\right)(G_t)$.
+% [from a CMU NIPS submission http://www.stat.cmu.edu/~arinaldo/papers/mutualfriends.pdf] We
+% consider Mutual-Friends to be *an algorithmic primitive*, by which we mean a kind of subroutine for
+% a more complicated function that iterates Mutual-Friends, similarly to [5].
 
 \extractStar{} partitions the graph $G_t$ into a set of stars and \collapseStar{} build the graph
 made of those stars using the edges in $E_t$. We provide more details on those two operations in the
@@ -11,6 +14,8 @@ following, as well as their complexity analysis. Then we state formally the \gtx
 its termination and correctness.  Finally, we study its properties, such as the number of iterations
 needed to finish and the stretch of the resulting tree. For simplicity and without loss of
 generality, we assume that $G_0$ through $G_T$ consist of a single connected component.
+\marginpars{Actually, we only need to assume that $G_0$ is connected because then we can prove that
+the other subsequent $G_t$ will be as well.}
 
 \medskip
 
@@ -364,3 +369,26 @@ central line, despite having many more edges. This suggests unsurprisingly that 
 could be a good parameter to quantify the number of iteration needed. Indeed, take a tree a consider
 the length $p$ of its longest path from the root to a leaf. By a similar argument as the one used in
 the line case, it seems \gtx{} will terminate after $O(\log p)$ iterations.
+
+While we assume that $G_t$ is connected, it might happen during the execution of \extractStar{} that%
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=0.95\linewidth]{assets/tikz/gtx_singleton_tikz.pdf}
+  \caption{The formation of a singleton star}
+  \label{fig:gtx_singleton}
+\end{marginfigure}
+the degree of a node $u$ drops to zero because because all of its neighbors were claimed by the
+periphery of previous stars. Such a node then forms a \emph{singleton star}, as illustrated in
+\autoref{fig:gtx_singleton}, where after the creation of \starone{1} and \starone{2}, $c_3$ is the
+single node of the third star \starone{3}.%
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=0.95\linewidth]{assets/tikz/gtx_noreduc_tikz.pdf}
+  \caption{A case were too many singletons \enquote{waste} one iteration of \gtx{}}
+  \label{fig:gtx_noreduc}
+\end{marginfigure}
+In the case no singleton are formed during one execution of \extractStar{}, the number of nodes is
+reduced by at least $2$ (because each star is made of at least two nodes). On the other hand, we can
+construct a graph with singletons where the factor of reduction in number of nodes and edges can be
+arbitrarily close to $1$. Consider \autoref{fig:gtx_noreduc} and assume that first extract two stars
+centered in $c_1$ and $c_2$.%

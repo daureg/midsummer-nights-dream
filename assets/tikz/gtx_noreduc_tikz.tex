@@ -1,0 +1,110 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=2mm}]
+
+  \node[vertex,] (c1) at (0.000,0.000) {$c_1$};
+  \node[vertex,medium] (p1) at (-3.000,1.500) {$$};
+  \draw[edge,] (c1) edge [bend left =0] node[] {} (p1);
+  \node[vertex,fill=Black!50] (h1) at (-2.559,2.107) {$$};
+  \draw[edge,] (p1) edge [bend left =0] node[] {} (h1);
+  \node[vertex,fill=Black!50] (h2) at (-2.844,2.234) {$$};
+  \draw[edge,] (p1) edge [bend left =0] node[] {} (h2);
+  \node[vertex,fill=Black!50] (h3) at (-3.156,2.234) {$$};
+  \draw[edge,] (p1) edge [bend left =0] node[] {} (h3);
+  \node[vertex,fill=Black!50] (h4) at (-3.441,2.107) {$$};
+  \draw[edge,] (p1) edge [bend left =0] node[] {} (h4);
+  \node[vertex,medium] (p2) at (-1.800,1.500) {$$};
+  \draw[edge,] (c1) edge [bend left =0] node[] {} (p2);
+  \node[vertex,fill=Black!50] (h5) at (-1.359,2.107) {$$};
+  \draw[edge,] (p2) edge [bend left =0] node[] {} (h5);
+  \node[vertex,fill=Black!50] (h6) at (-1.644,2.234) {$$};
+  \draw[edge,] (p2) edge [bend left =0] node[] {} (h6);
+  \node[vertex,fill=Black!50] (h7) at (-1.956,2.234) {$$};
+  \draw[edge,] (p2) edge [bend left =0] node[] {} (h7);
+  \node[vertex,fill=Black!50] (h8) at (-2.241,2.107) {$$};
+  \draw[edge,] (p2) edge [bend left =0] node[] {} (h8);
+  \node[vertex,medium] (p3) at (-0.600,1.500) {$$};
+  \draw[edge,] (c1) edge [bend left =0] node[] {} (p3);
+  \node[vertex,fill=Black!50] (h9) at (-0.159,2.107) {$$};
+  \draw[edge,] (p3) edge [bend left =0] node[] {} (h9);
+  \node[vertex,fill=Black!50] (h10) at (-0.444,2.234) {$$};
+  \draw[edge,] (p3) edge [bend left =0] node[] {} (h10);
+  \node[vertex,fill=Black!50] (h11) at (-0.756,2.234) {$$};
+  \draw[edge,] (p3) edge [bend left =0] node[] {} (h11);
+  \node[vertex,fill=Black!50] (h12) at (-1.041,2.107) {$$};
+  \draw[edge,] (p3) edge [bend left =0] node[] {} (h12);
+  \node[vertex,medium] (p4) at (0.600,1.500) {$$};
+  \draw[edge,] (c1) edge [bend left =0] node[] {} (p4);
+  \node[vertex,fill=Black!50] (h13) at (1.041,2.107) {$$};
+  \draw[edge,] (p4) edge [bend left =0] node[] {} (h13);
+  \node[vertex,fill=Black!50] (h14) at (0.756,2.234) {$$};
+  \draw[edge,] (p4) edge [bend left =0] node[] {} (h14);
+  \node[vertex,fill=Black!50] (h15) at (0.444,2.234) {$$};
+  \draw[edge,] (p4) edge [bend left =0] node[] {} (h15);
+  \node[vertex,fill=Black!50] (h16) at (0.159,2.107) {$$};
+  \draw[edge,] (p4) edge [bend left =0] node[] {} (h16);
+  \node[vertex,medium] (p5) at (1.800,1.500) {$$};
+  \draw[edge,] (c1) edge [bend left =0] node[] {} (p5);
+  \node[vertex,fill=Black!50] (h17) at (2.241,2.107) {$$};
+  \draw[edge,] (p5) edge [bend left =0] node[] {} (h17);
+  \node[vertex,fill=Black!50] (h18) at (1.956,2.234) {$$};
+  \draw[edge,] (p5) edge [bend left =0] node[] {} (h18);
+  \node[vertex,fill=Black!50] (h19) at (1.644,2.234) {$$};
+  \draw[edge,] (p5) edge [bend left =0] node[] {} (h19);
+  \node[vertex,fill=Black!50] (h20) at (1.359,2.107) {$$};
+  \draw[edge,] (p5) edge [bend left =0] node[] {} (h20);
+  \node[vertex,medium] (p6) at (3.000,1.500) {$$};
+  \draw[edge,] (c1) edge [bend left =0] node[] {} (p6);
+  \node[vertex,fill=Black!50] (h21) at (3.441,2.107) {$$};
+  \draw[edge,] (p6) edge [bend left =0] node[] {} (h21);
+  \node[vertex,fill=Black!50] (h22) at (3.156,2.234) {$$};
+  \draw[edge,] (p6) edge [bend left =0] node[] {} (h22);
+  \node[vertex,fill=Black!50] (h23) at (2.844,2.234) {$$};
+  \draw[edge,] (p6) edge [bend left =0] node[] {} (h23);
+  \node[vertex,fill=Black!50] (h24) at (2.559,2.107) {$$};
+  \draw[edge,] (p6) edge [bend left =0] node[] {} (h24);
+  \node[vertex,] (c2) at (0.000,4.500) {$c_2$};
+  \node[vertex,medium] (pu1) at (-3.000,3.000) {$$};
+  \draw[edge,] (c2) edge [bend left =0] node[] {} (pu1);
+  \draw[edge,] (pu1) edge [bend left =0] node[] {} (h1);
+  \draw[edge,] (pu1) edge [bend left =0] node[] {} (h2);
+  \draw[edge,] (pu1) edge [bend left =0] node[] {} (h3);
+  \draw[edge,] (pu1) edge [bend left =0] node[] {} (h4);
+  \node[vertex,medium] (pu2) at (-1.800,3.000) {$$};
+  \draw[edge,] (c2) edge [bend left =0] node[] {} (pu2);
+  \draw[edge,] (pu2) edge [bend left =0] node[] {} (h5);
+  \draw[edge,] (pu2) edge [bend left =0] node[] {} (h6);
+  \draw[edge,] (pu2) edge [bend left =0] node[] {} (h7);
+  \draw[edge,] (pu2) edge [bend left =0] node[] {} (h8);
+  \node[vertex,medium] (pu3) at (-0.600,3.000) {$$};
+  \draw[edge,] (c2) edge [bend left =0] node[] {} (pu3);
+  \draw[edge,] (pu3) edge [bend left =0] node[] {} (h9);
+  \draw[edge,] (pu3) edge [bend left =0] node[] {} (h10);
+  \draw[edge,] (pu3) edge [bend left =0] node[] {} (h11);
+  \draw[edge,] (pu3) edge [bend left =0] node[] {} (h12);
+  \node[vertex,medium] (pu4) at (0.600,3.000) {$$};
+  \draw[edge,] (c2) edge [bend left =0] node[] {} (pu4);
+  \draw[edge,] (pu4) edge [bend left =0] node[] {} (h13);
+  \draw[edge,] (pu4) edge [bend left =0] node[] {} (h14);
+  \draw[edge,] (pu4) edge [bend left =0] node[] {} (h15);
+  \draw[edge,] (pu4) edge [bend left =0] node[] {} (h16);
+  \node[vertex,medium] (pu5) at (1.800,3.000) {$$};
+  \draw[edge,] (c2) edge [bend left =0] node[] {} (pu5);
+  \draw[edge,] (pu5) edge [bend left =0] node[] {} (h17);
+  \draw[edge,] (pu5) edge [bend left =0] node[] {} (h18);
+  \draw[edge,] (pu5) edge [bend left =0] node[] {} (h19);
+  \draw[edge,] (pu5) edge [bend left =0] node[] {} (h20);
+  \node[vertex,medium] (pu6) at (3.000,3.000) {$$};
+  \draw[edge,] (c2) edge [bend left =0] node[] {} (pu6);
+  \draw[edge,] (pu6) edge [bend left =0] node[] {} (h21);
+  \draw[edge,] (pu6) edge [bend left =0] node[] {} (h22);
+  \draw[edge,] (pu6) edge [bend left =0] node[] {} (h23);
+  \draw[edge,] (pu6) edge [bend left =0] node[] {} (h24);
+
+  \draw[black,line width=1pt,line cap=round, <-]  ($(c1) + (3:15pt)$) arc (0:180:15pt) 
+  node[pos=-.2,yshift=-5pt,anchor=south west] {$p$ branches};
+  \draw[black,line width=1pt,line cap=round, <-]  ($(p4) + (-5:10pt)$) arc (0:180:10pt) 
+  node[pos=-.2,xshift=-34pt,rotate=35, yshift=-34pt,font=\small,anchor=south west] {$q$ branches};
+\end{tikzpicture}
+\end{document}
