@@ -17,11 +17,9 @@ generality, we assume that $G_0$ through $G_T$ consist of a single connected com
 \marginpars{Actually, we only need to assume that $G_0$ is connected because then we can prove that
 the other subsequent $G_t$ will be as well.}
 
-\medskip
-
 \paragraph{\extractStar{}}\label{par:extractstar}%
-\extractStar{} takes as input a graph $G_t=(V_t, E_t)$, and optionally a \emph{threshold function}
-$t_f$ or a \emph{degree function} $d_f$. While the nodeset $V_t$ is not exhausted, it repeatedly samples a
+\extractStar{} takes as input a graph $G_t=(V_t, E_t)$.
+While the nodeset $V_t$ is not exhausted, it repeatedly samples a
 node $c_i$, creates a star $S_i^t$ with $c_i$ at its center and the neighbors of $c_i$ on the
 periphery, removes all the nodes of $S_i^t$ from
 $V_t$ and all the edges incident to $S_i^t$ from $E_t$, and finally decrements accordingly the
@@ -39,96 +37,80 @@ representation of this notation).
   $h_1$ to $h_3$, whose degree will decrease once $S_i^t$ is removed from $G_t$.}
   \label{fig:gtx_star_simple}
 \end{marginfigure}%
-Upon completion, it returns a list of stars and a mapping of
-each node of $V_t$ to the unique star it belongs to. We consider three heuristics to sample centers:
+Upon completion, it returns a list of stars,
+a list of each star edges,
+and a map (or associative array) of each node of $V_t$ to the unique star it belongs to.
+According to the definition of \textcite{HashTableBook08}, an associative array is an abstract data
+type composed of a collection of (key, value) pairs, such that each possible key appears at most
+once in the collection. It efficiently supports the addition, removal and modification of a pair, as
+well as the lookup of a value associated with a particular key.
 
-\begin{itemize}%[nosep]
-  \item choose the node with the current highest degree, with ties broken arbitrarily
-  \item if $n_i$ is the number of node remaining in $V_t$ before choosing the \ith{} center, choose
-    a node \uar{} among those with a degree larger than $t_f(n_i)$. Setting the threshold function
-    to be the identity therefore recovers the previous strategy, but the idea here is to choose
-    among a small set of high degree nodes, for instance by letting $t_f(n) = \sqrt{n}$
-  \item if $\degr_i(u)$ is the degree of node $u$ before iteration \ith{}, choose node
-    proportionally to $d_f(\degr_i(u))$.  Again, the degree function is designed so that it favors the
-    selection of high degree nodes. For instance, one could use $d_f(\degr_i(u)) = \degr_i(u)^2$.
-\end{itemize}
-
-We now give the pseudo code of \extractStar{} for the highest degree variant.\footnote{Note that for
+As showed in the following pseudo code\footnote{Note that for
 clarity, we removed some bookkeeping code in all listings, mainly the part related to maintaining
-mapping between nodes at different level of contraction. However, the full python implementation
-is available at \url{https://github.com/daureg/magnet/blob/master/veverica/new_galaxy.py\#L27}.}
-We assume that $G$ is the adjacency list of the graph, so that $G[u]$ is the set of neighbors of
-$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. The other piece of notation is $\textsc{Star}$, which
-simply create a star given a center and a list of peripheral nodes.  \vspace{-\baselineskip}
+mapping between nodes at different collapse level. However, the full python implementation
+is available at \url{https://github.com/daureg/magnet/blob/master/veverica/new_galaxy.py\#L27}.}, we
+sample centers by choosing the node with the current highest degree, with ties broken
+arbitrarily.\footnote{We also consider more involved heuristics but in the interest of simplicity,
+they are presented later on~\vpageref{ssec:gtx_center_choice}.} This is achieved efficiently by
+maintaining a max-priority queue $Q$, initially containing all the nodes of $V_t$. The priority of a
+node is its current degree and we equipped $Q$ with two standard operations described
+by~\textcite[section 6.5]{CormenAlgo09}: \textsc{Extract-Max}$(Q)$ removes and returns the
+node of $Q$ with the largest degree and \textsc{Decrease-Key}$(Q$, $u$, $\Delta)$ decrements
+the degree of the node $u$ by an amount $\Delta$.
+We also assume that $G$ is the adjacency list of the graph, so that $G[u]$ is the set of neighbors of
+$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. Finally $membership$ is a map, initially empty, and we
+define the \textsc{Star} function, which creates a star given a center $c$, a list $periphery$ of
+peripheral nodes, and a star index $i$. After creating the \ith{} star, for every node $u$ belonging
+to that star, the \textsc{Star} function sets $membership[u] = i$.
+\vspace{-\baselineskip}
 
 \begin{center}
   \rule{\textwidth}{.3pt}
   \begin{algorithmic}[1]
     \Function{\extractStar{}}{$G_t=(V_t,E_t)$}
-      \State Let $Q$ be a max-priority queue. The key of element $x$ is $Q[x]$
-      \Let{$stars$, $inner\_edges$, $remaining$}{$[]$, $\emptyset$, $\emptyset$}
-      \ForAll{node $u$ in $V_t$}
-        \State \Call{Insert}{$Q,\,u$} \Comment with the key $\degr(u)$
-        \Let{$remaining$}{$remaining \bigcup \left\{u\right\}$}
-      \EndFor
+      \State Let $Q$ be the max-priority queue described above
+      \State Let $remaining$ be a set of nodes initially containing all the nodes in $V_t$
+      \State Let $membership$ be an empty map
+      \Let{$stars$}{$[]$}
+      \Let{$inner\_edges$}{$\emptyset$}
       \While{$Q$ is not empty}
-        \Let{$c_i$}{\Call{Extract-Max}{$Q$}}
-        \If{$c_i$ not in $remaining$}
-          \State \textbf{continue} \Comment{$c_i$ is part of an existing star so there is
+        \Let{$c$}{\Call{Extract-Max}{$Q$}}
+        \If{$c$ not in $remaining$}
+          \State \textbf{continue} \Comment{$c$ is part of an existing star so there is
           nothing to do}
         \EndIf
-        \Let{$periphery$}{$G[c_i] \bigcap remaining$}
-        \Let{$stars$}{$stars \bigcup \{$\Call{Star}{$c_i,\, periphery$}\}}
-        \Let{$inner\_edges$}{$inner\_edges \bigcup \{(c_i, p): p \in periphery\}$}
-        \Let{$remaining$}{$remaining \setminus\left\{c_i\right\} \setminus periphery$}
+        \Let{$periphery$}{$G[c] \bigcap remaining$}
+        \Let{$stars$}{$stars \bigcup \{$\Call{Star}{$c$, $periphery$, $|stars|$}\}}
+        \Let{$inner\_edges$}{$inner\_edges \bigcup \{(c, p): p \in periphery\}$}
+        \Let{$remaining$}{$remaining \setminus \left\{ \{c_i\} \cup \setminus periphery\right\}$}
         \For{$p$ in $periphery$}
           \For{$h$ in $G[p] \bigcap remaining$}
-            \State \Call{Decrease-Key}{$Q,\, h,\, Q[h]-1$}
+            \State \Call{Decrease-Key}{$Q$, $h$, $1$}
           \EndFor
         \EndFor
       \EndWhile
-      \State \textbf{return} $stars$, $inner\_edges$, $membership$%
-      \Comment{$membership$ maps the nodes of $V_t$ to the index of the star they belong to}
+      \State \textbf{return} $stars$, $inner\_edges$, $membership$
     \EndFunction
   \end{algorithmic}
   \rule{\textwidth}{.3pt}
 \end{center}
 
-\extractStar{} terminates because at each iteration of the while loop line 8, we remove one node
-from $Q$ and never add any. Let us analyze the complexity when $|V_t|=n$ and $|E_t|=m$. We first
-build a priority queue of all the nodes sorted by their degree (line 5--7), which takes $O(n)$ time.
-Then, at each iteration of the inner loop, we find the center of the next star by extracting the
-maximum of the queue (line 9), we build the corresponding star (line 12--14) and we decrease the
+\begin{prop}
+  For any graph $G=(V,E)$, \extractStar$(G)$ terminates in $O(|E|)$ time.
+\end{prop}
+\begin{proof}
+\extractStar{} terminates because at each iteration of the while loop line 7, we remove one node
+from $Q$ and never add any. Let us now analyze the complexity. We first
+build a priority queue of all the nodes according to their degree (line 2), which takes $O(|V|)$ time.
+Then, at each iteration of the while loop, we find the center of the next star by extracting the
+maximum of the queue (line 8), we build the corresponding star (line 11--13) and we decrease the
 priority (\ie{} the degree) of all nodes adjacent to the new star (line 15--17).  Since both
-operations require constant time when using a Strict Fibonacci Heap~\autocite{FibonacciHeaps12} and
-there are $n$ iterations of that loop, a coarse approximation of the runtime of \extractStar{} is
-$O(n^2)$. However, observe that there can be at most $m$ decrease operations (since after that, all
-nodes still in the queue have an effective degree of $0$, meaning that $periphery$ will the empty
-set and lines 13--17 will run in constant time), reducing the complexity to $O(m+n)$.
-
-The other two variants are more time consuming because they require additional bookkeeping. Their
-randomization make them useful in an adversarial context but it also renders the analysis  of the
-resulting spanning tree more challenging\marginpars{Which means this paragraph can be skipped at first.}
-Therefore, we only briefly describe the implementations here.\footnote{Although they are available
-online at 
-\nolinkurl{https://github.com/daureg/magnet/blob/master/veverica/}%
-\{\href{https://github.com/daureg/magnet/blob/master/veverica/ThresholdSampler.py}%
-{ThresholdSampler.py}, \href{https://github.com/daureg/magnet/blob/master/veverica/NodeSampler.py}%
-{NodeSampler.py}\}.} For the threshold function, we
-maintain two queues, $high$ and $low$, containing nodes whose degree is respectively above and below
-the current threshold. We select a node \uar{} in $high$, remove the corresponding star from $G_t$,
-recompute the new threshold and if necessary, move nodes which fell under the threshold from $high$
-to $low$ and those who climb above the threshold from $low$ to $high$. For the degree function, we
-can draw any node as center proportionally to its weight (where the weight of node $u$ is defined as
-$d_f\left(\degr(u)\right)$). Yet we cannot use the standard method of computing the cumulative sum
-of weights since some of them change at each iteration. Therefore, we construct a binary tree whose
-leaves are the nodes of $V_t$ and where each tree nodes maintain the sum of weights in its left and
-right subtrees. To sample, we draw a random number $r$ between $0$ and the total weight of the tree and
-go down from the root to the leaf spanning the weight interval containing $r$.
-When degrees are updated (or graph node removed), we update the weights along a path from the
-corresponding leaves to the root of the tree.
-
-\medskip
+queue operations require constant time when using a Strict Fibonacci Heap~\autocite{FibonacciHeaps12} and
+there are $|V|$ iterations of that loop, a coarse approximation of the runtime of \extractStar{} is
+$O(|V|^2)$. However, observe that there can be at most $|E|$ decrease operations (since after that, all
+nodes still in the queue have an effective degree of $0$, meaning that $periphery$ will be the empty
+set and lines 12--17 will run in constant time), reducing the complexity to $O(|E|+|V|)$.
+\end{proof}
 
 \paragraph{\collapseStar{}}\label{par:collapsestar}%
 The second routine, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
@@ -392,3 +374,45 @@ reduced by at least $2$ (because each star is made of at least two nodes). On th
 construct a graph with singletons where the factor of reduction in number of nodes and edges can be
 arbitrarily close to $1$. Consider \autoref{fig:gtx_noreduc} and assume that first extract two stars
 centered in $c_1$ and $c_2$.%
+
+\paragraph{Variants of \extractStar{}}
+\label{ssec:gtx_center_choice}
+
+The execution of \extractStar{} is mainly deterministic, except for the fact the ties between nodes
+with the same highest degree are broken arbitrarily. While this allows for an efficient
+implementation, and simplify the analysis of the resulting sequence of stars and therefore the
+induced spanning tree, in can be detrimental in an adversarial context, where we could end up with a
+tree forcing a lot of mistakes. We add an element of randomization to \extractStar{} by letting it
+use of two optional arguments, a \emph{threshold function} $\tau$ or a \emph{degree function}
+$\widetilde{d}$. Such functions modify the center sampling process in the following way:
+\begin{itemize}%[nosep]
+  \item if $n_{t,i}$ is the number of node remaining in $V_t$ before choosing the \ith{} center, choose
+    a node \uar{} among those with a degree larger than $\tau(n_{t,i})$. The idea is to choose
+    among a small set of high degree nodes, for instance by letting $\tau(n) = \sqrt{n}$. Note
+    however we cannot guarantee there will always be nodes with degree above the threshold, in which
+    case we default on the highest degree node
+  \item if $\degr_i(u)$ is the degree of node $u$ before choosing the \ith{} center, choose node
+    proportionally to $\widetilde{d}(\degr_i(u))$. Again, the degree function is designed so that it
+    favors the selection of high degree nodes. For instance, one could use
+    $\widetilde{d}(\degr_i(u)) = \degr_i(u)^2$.
+\end{itemize}
+
+These two variants are more time consuming because they require additional bookkeeping.
+Therefore, we don't provide a full complexity analysis and only briefly sketch their implementations
+here.\footnote{Although they are available online at 
+\nolinkurl{https://github.com/daureg/magnet/blob/master/veverica/}%
+\{\href{https://github.com/daureg/magnet/blob/master/veverica/ThresholdSampler.py}%
+{ThresholdSampler.py}, \href{https://github.com/daureg/magnet/blob/master/veverica/NodeSampler.py}%
+{NodeSampler.py}\}.} For the threshold function, we
+maintain two queues, $high$ and $low$, containing nodes whose degree is respectively above and below
+the current threshold. We select a node \uar{} in $high$, remove the corresponding star from $G_t$,
+recompute the new threshold and if necessary, move nodes which fell under the threshold from $high$
+to $low$ and those who climb above the threshold from $low$ to $high$. For the degree function, we
+can draw any node as center proportionally to its weight (where the weight of node $u$ is defined as
+$d_f\left(\degr(u)\right)$). Yet we cannot use the standard method of computing the cumulative sum
+of weights since some of them change at each iteration. Therefore, we construct a binary tree whose
+leaves are the nodes of $V_t$ and where each tree nodes maintain the sum of weights in its left and
+right subtrees. To sample, we draw a random number $r$ between $0$ and the total weight of the tree and
+go down from the root to the leaf spanning the weight interval containing $r$.
+When degrees are updated (or graph node removed), we update the weights along a path from the
+corresponding leaves to the root of the tree.
