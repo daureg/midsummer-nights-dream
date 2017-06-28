@@ -1,4 +1,4 @@
-\begin{table*}[htpb]
+\begin{table*}[thpb]
   \centering
   \caption{List of notations used in this thesis}\label{tab:notations}%
   \vspace{-.5\baselineskip}
@@ -6,14 +6,22 @@
     \toprule
     Symbol & Meaning \\
     \midrule
-    $G$ & A graph, either directed or undirected \\
-    $V$, $V_t$ & The set of all the nodes of a graph. Unless noted otherwise, nodes are indexed from $1$ to $|V|$ \\
-    $E$, $E_t$ & The set of all the edges of a graph \\
-    $\degr(u)$ & The total degree of node $u$ (that is the number of edges incident to $u$
+    $G$ & An unweighted graph, that can be either directed or undirected \\
+    $V$ & The set of all the nodes of a graph, with $|V|=n$. Unless noted otherwise, nodes are indexed from $1$ to $n$ \\
+    $E$ & The set of all the edges of a graph, with $|E|=m$ \\
+    $u$ & A generic node of $G$. When referring to several nodes, we naturally use $u$, $v$, $w$ and so on. \\
+    $(u,v)$ & An undirected edge between nodes $u$ and $v$ \\
+    % \euv{} & A directed edge from node $u$ to node $v$ \\
+    $\yuv{}$ & The sign of the edge $(u,v)$, which can be either $+1$ or $-1$ \\
+    $Y(E)$ & The labeling of $E$, that is the set of all signs of $E$: $Y(E) = \{\yuv , (u,v)\in E\}$ \\
+    $\etrain$ & A subset of $E$, given or chosen, of which we observe the signs \\
+    $\degr(u)$ & The total degree of node $u$ (that is, the number of edges incident to $u$,
     regardless of their direction) \\
-    $(u,v)$, $(i,j)$ & An undirected edges between nodes $u$ and $v$ (or $i$ and $j$) \\
-    $\mathcal{N}(u)$ & The set of all neighbors of $u$, regardless of edge direction. We thus have
-    $|\mathcal{N}(u)| = \degr(u)$ \\
+    $\mathcal{N}(u)$ & The set of all neighbors of $u$, regardless of edge direction. It thus holds
+    that $|\mathcal{N}(u)| = \degr(u)$ \\
+    $T$ & An unweighted and undirected tree \\
+    $\pathtuv$ & The unique path between $u$ and $v$ in the tree $T$, represented by an ordered list of edges \\
+    $|\pathtuv|$ & The length of the path between $u$ and $v$ in the tree $T$, that is its number of edges \\
     \bottomrule
   \end{tabulary}
 \end{table*}
