@@ -237,12 +237,11 @@ Let us start with the initial graph $G_0$ depicted in \autoref{fig:gtx_eccentric
 \vpageref{fig:gtx_eccentricity} and initialize
 the eccentricity of all nodes to $0$. When running \extractStar{}, we see that the maximum degree is
 $4$, achieved at nodes $\{1, 6, 11, 16, 21, 26, 31, 36, 41\}$. For the sake of simplicity, assume
-nodes are picked according to their index. First, node $1$ is forms the star
-$\textcolor{DodgerBlue}{S_1^1}$ with peripheral nodes $2$, $3$, $4$ and $5$. This increments the
-eccentricity of those peripheral nodes by $1$. Then node $6$ forms its star
-$\textcolor{DodgerBlue}{S_2^1}$ with $7$, $8$, $9$ and $10$. The process continues until node $41$ is
-chosen to be the center of star $\textcolor{DodgerBlue}{S_9^1}$, at which point the max-priority
-queue has been exhausted and \extractStar{} finishes.
+nodes are picked according to their index. First, node $1$ forms the star $\starone{1}$ with
+peripheral nodes $2$, $3$, $4$ and $5$. This increments the eccentricity of those peripheral nodes
+by $1$. Then node $6$ forms its star $\starone{2}$ with $7$, $8$, $9$ and $10$. The process
+continues until node $41$ is chosen to be the center of star $\starone{9}$, at which point the
+max-priority queue has been exhausted and \extractStar{} finishes.
 
 \begin{figure}[htbp]
   \centering
@@ -276,38 +275,33 @@ queue has been exhausted and \extractStar{} finishes.
   \caption{The other iterations of \gtx{}}\label{fig:gtx_run}
 \end{figure}
 
-We then call \collapseStar{}, with the eccentricity reducing variant. This will connect all possible
-pairs of star. For instance, the edge between nodes $19$ and $29$ leads to the edge
-between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This is actually the
-only possible edge between $\textcolor{DodgerBlue}{S_4^1}$ and $\textcolor{DodgerBlue}{S_6^1}$.
-Consider on the other hand the case of edges $(2, 6)$ and $(2, 9)$. They both connect
-$\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. Yet at this point of the algorithm,
-the eccentricity of node $2$ is $1$, the eccentricity of node $6$ is $0$ and the eccentricity of node
-$9$ is $1$. The edge $(2, 6)$ has therefore the smallest total eccentricity and is chosen to connect
-$\textcolor{DodgerBlue}{S_1^1}$ and $\textcolor{DodgerBlue}{S_2^1}$. The full result of the
+We then call \collapseStar{}. This will connect all possible pairs of star. For instance, the edge
+between nodes $19$ and $29$ leads to the edge between $\starone{4}$ and $\starone{6}$. This is
+actually the only possible edge between $\starone{4}$ and $\starone{6}$.  Consider on the other hand
+the case of edges $(2, 6)$ and $(2, 9)$. They both connect $\starone{1}$ and $\starone{2}$. Yet at
+this point of the algorithm, the eccentricity of node $2$ is $1$, the eccentricity of node $6$ is
+$0$ and the eccentricity of node $9$ is $1$. The edge $(2, 6)$ has therefore the smallest total
+eccentricity and is chosen to connect $\starone{1}$ and $\starone{2}$. The full result of the
 \collapseStar{} procedure is $G_1$, which can be seen on \autoref{fig:gtx_run1}.
 
 We now run \extractStar{} on $G_1$. Because all nodes have degree $2$, they could all be chosen to
-be the center of a star yet we again consider them ordered by their index and therefore choose
-$\textcolor{DodgerBlue}{S_1^1}$ to be the center of the star $\textcolor{Orange}{S_1^2}$ with
-peripheral nodes $\textcolor{DodgerBlue}{S_2^1}$ and $\textcolor{DodgerBlue}{S_3^1}$. The original
-nodes belonging to those peripheral stars (nodes $4$ to $15$) have their eccentricity incremented by
-$1$. The next node with highest degree in $G_1$ is now $\textcolor{DodgerBlue}{S_4^1}$, which forms
-a star with $\textcolor{DodgerBlue}{S_5^1}$ and $\textcolor{DodgerBlue}{S_6^1}$. This choice means
-that nodes $21$ through $30$ have their eccentricity incremented by $1$. Finally,
-$\textcolor{DodgerBlue}{S_7^1}$ forms the last star with $\textcolor{DodgerBlue}{S_8^1}$ and
-$\textcolor{DodgerBlue}{S_9^1}$. Then \collapseStar{} connects the resulting three stars, and this
-time there is only a single choice between each pair of stars, leading to the graph $G_2$ showed in
-\autoref{fig:gtx_run2}
+be the center of a star yet we again they are picked according to their index and therefore we
+choose $\starone{1}$ to be the center of the star $\startwo{1}$ with peripheral nodes $\starone{2}$
+and $\starone{3}$. The original nodes belonging to those peripheral stars (nodes $4$ to $15$) have
+their eccentricity incremented by $1$. The next node with highest degree in $G_1$ is now
+$\starone{4}$, which forms a star with $\starone{5}$ and $\starone{6}$. This choice means that nodes
+$21$ through $30$ have their eccentricity incremented by $1$. Finally, $\starone{7}$ forms the last
+star with $\starone{8}$ and $\starone{9}$. Then \collapseStar{} connects the resulting three stars,
+and this time there is only a single choice between each pair of stars, leading to the graph $G_2$
+showed in \autoref{fig:gtx_run2}
 
 The action of \extractStar{} on $G_2$ is quite simple, because there is only one star that can be
-created, so let say we choose $\textcolor{Orange}{S_1^2}$ as its center, with
-$\textcolor{Orange}{S_2^2}$ and $\textcolor{Orange}{S_3^2}$ as peripheral nodes.  This increases the
-eccentricity of their underlying $G_0$ nodes by $1$ (namely nodes $16$ to $45$).  Because there is
-only one star $\textcolor{Green}{S_1^3}$ left, \collapseStar{} returns $G_3$ showed in
-\autoref{fig:gtx_run3} and an empty list of outer edges, meaning that the inner loop of \gtx{} is
-finished and we can go through every edges we chose between stars at every level to recover the
-final spanning tree, showed with black edges in \autoref{fig:gtx_eccentricity}
+created, so let say we choose $\startwo{1}$ as its center, with $\startwo{2}$ and $\startwo{3}$ as
+peripheral nodes. This increases the eccentricity of their underlying $G_0$ nodes by $1$ (namely
+nodes $16$ to $45$). Because there is only one star $\starthree{1}$ left, \collapseStar{} returns
+$G_3$ showed in \autoref{fig:gtx_run3} and an empty list of outer edges, meaning that the inner loop
+of \gtx{} is finished and we can go through every edges we chose between stars at every level to
+recover the final spanning tree, showed with solid edges in \autoref{fig:gtx_eccentricity}
 \vpageref{fig:gtx_eccentricity}. For completeness, we can also look at the edges which are not part
 of the spanning tree and therefore contribute to the stretch of the tree. In that case the average
 stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
