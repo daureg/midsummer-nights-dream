@@ -148,16 +148,16 @@ Specifically, given a constant $q\in [0, \nicefrac{1}{2})$, each sign of $Y$ is 
 probability smaller than $q$.
 
 In this section, we are interested in active learning algorithms, that first query a subset
-$\etrain$ of the edges, observe the signs in $\etest$ and use them to predict the remaining signs.
-More precisely, we focus on an algorithm that query a spanning tree $T$ of $G$ and predict the sign
+$\etrain$ of the edges, observe the signs in $\etrain$ and use them to predict the remaining signs.
+More precisely, we focus on an algorithm that queries spanning tree $T$ of $G$ and predicts the sign
 of an edge $(u,v) \in \etest = E \setminus E_T$ as the parity of $\pathtuv$. While this
 can\Todo{state it formally then ;)} be stated more formally~\autocite[Section
 4.1]{Cesa-Bianchi2012b}, it makes sense intuitively that since each sign has been potentially
-flipped, the longer the path in $T$, the more likely its parity will be not be equal to the truth
-$\yuv{}$. Therefore we would like each such path to be as short as possible and in the rest of this
-section, we describe a way to build spanning tree tailored for this situation.
+flipped, the longer the path in $T$, the more likely its parity will be not be equal to the true
+sign $\yuv{}$. Therefore we would like each such path to be as short as possible. In the following,
+we describe a way to build spanning trees tailored for this situation.
 
-\subsection{\gtx{}: a simple low stretch tree construction}
+\subsection{\gtx{}: a spanning tree designed for sign prediction}
 \label{sub:gtx_a_simple_low_stretch_tree_construction}
 
 \input{gtx_algorithm}
