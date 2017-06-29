@@ -1,0 +1,40 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+\tikzstyle{star}=[DodgerBlue,line width=1.3pt,fill=White]
+\tikzstyle{star-label}=[font=\Large]
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=7mm},
+  edge/.append style={line width=1.5pt,color=DodgerBlue}]
+
+  \draw[draw=none, fill opacity=.7, fill=Red] (-.30,-1.5) -- (.77,-3.34) -- (2.34,-2.42) -- (1.37,-.77) -- cycle;
+  \draw[star] (0,0) circle [radius=1.7]  node[star-label,xshift=-30, yshift=25] {${S_1^1}$};
+  \draw[star] (2.189,-3.948) circle [radius=1.7]  node[star-label,xshift=30, yshift=0] {${S_2^1}$};
+
+  \node[vertex,fill=black!0,] (n1) at (0.000, -0.000) {1};
+  \node[vertex,fill=black!25,] (n2) at (0.223, -1.179) {2};
+  \node[vertex,fill=black!25,] (n3) at (-1.179, -0.223) {3};
+  \node[vertex,fill=black!25,] (n4) at (-0.223, 1.179) {4};
+  \node[vertex,fill=black!25,] (n5) at (1.179, 0.223) {5};
+  \node[vertex,fill=black!0, ]  (n6) at (2.189,-3.948) {6};
+  \node[vertex,fill=black!25,]  (n7) at (2.908,-4.909) {7};
+  \node[vertex,fill=black!25,]  (n8) at (1.228,-4.667) {8};
+  \node[vertex,fill=black!25,]  (n9) at (1.471,-2.987) {9};
+  \node[vertex,fill=black!25,] (n10) at (3.150,-3.230) {10};
+
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n2);
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n3);
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n4);
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n5);
+
+  \draw[edge,Orange] (n2) edge [bend left =29] node[pos=0.35,below=0pt] {\small $1$} (n6);
+  \draw[edge,Orange] (n2) edge [bend left =0] node[above=0pt] {\small $2$} (n9);
+  \draw[edge,Orange] (n3) edge [bend left =16] node[above=1pt] {\small $2$} (n8);
+  \draw[edge,Orange] (n5) edge [bend left =-25] node[pos=0.3,below=2pt] {\small $2$} (n10);
+
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n7);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n8);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n9);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n10);
+  \node[text=Red!80!White,anchor=west,font=\small] (ce) at (1.5, -1) {$cross\_edges[(s_1, s_2)]$};
+\end{tikzpicture}
+\end{document}

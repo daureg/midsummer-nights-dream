@@ -117,62 +117,75 @@ since $G$ is connected.
 \end{proof}
 
 \paragraph{\collapseStar{}}\label{par:collapsestar}%
-The second primitive, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
-and an optional $\emph{eccentricity}$ array we will describe soon\marginpars{Actually, we could make
-eccentricity the default behavior, which would simplify the pseudo code}. It builds a new graph $G_{t+1}$
-where each star becomes a node and where there is a link between two nodes $s_1$ and $s_2$ if the nodes
-making up $s_1$ and $s_2$ are connected in $E_t$.
+
+The second primitive, \collapseStar{} takes as input the edges $E_t$ of the current graph, along
+with the $membership$ result of \extractStar{} and an $eccentricity$ array. It builds a new graph
+$G_{t+1}$ where each star from \extractStar{} becomes a node and where there is a link between two
+nodes $s_u$ and $s_v$ if the nodes in $V_t$ making up $s_u$ and $s_v$ are connected in $E_t$. The
+$eccentricity$ array is needed because when connecting two stars, we would prefer to join their
+center rather than two of their peripheral points. Therefore, we maintain an eccentricity count for
+all of the nodes of the original $G_0$, which is incremented by $1$ each time a node is chosen to be
+on the periphery of a star. In other words, the eccentricity of an original node quantifies to which
+extent it has been pushed to the border of the galaxy.
+
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=0.92\linewidth]{assets/tikz/gtx_cross_edges_tikz.pdf}
+  \caption[Cross edge representation]{In that graphs, there are four possible edges between the two
+  stars $s_1$ and $s_2$, and all are part of $cross\_edges[(s_1, s_2)]$ here represented in light
+red. Those edges are labeled with the sum of eccentricity of their underlying endpoints, and the
+minimal one is linking a peripheral node of $s_1$ directly to the center of $s_2$.}
+  \label{fig:gtx_cross_edge}
+\end{marginfigure}%
+\collapseStar{} not only returns the new graph $G_{t+1}$ but also a map $cross\_edges$. This map is
+used to keep track of which edge in $E_t$ connects any pair of node in $V_{t+1}$ (as illustrated in
+\autoref{fig:gtx_cross_edge}). It associates to any edge in $E_{t+1}$ a set of edges from $E_t$.
+This set can have an arbitrary size during the execution of \collapseStar{}, yet it is guaranteed to
+contain a single edge upon termination. Although this does not appear in the following pseudo code,
+in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge in $cross\_edges$.
 
 \begin{center}
   \rule{\textwidth}{.3pt}
   \begin{algorithmic}[1]
     \Function{\collapseStar{}}{$E_t,\,membership,\,eccentricity$}
       \State Let $G_{t+1}$ be an empty graph
-      \State Let $cross\_edges$ be a mapping from edges in $G_{t+1}$ to set of edges in $G_t$
-      \ForAll{edge $(u, v)$ in \Call{Shuffle}{$E_t$}}
-        \Let{$s_u,\,s_v$}{$membership[u]$, $membership[v]$}%
-        \Comment{swap if needed so that $s_u < s_v$}
-        \If{$s_u = s_v$}
-          \State \textbf{continue}
-        \EndIf
-        \If{$eccentricity$ is not \textbf{null}}
+      \State Let $cross\_edges$ be the map described above
+      \ForAll{edge $(u, v)$ in $E_t$}
+      \Let{$s_u$}{$membership[u]$}
+      \Let{$s_v$}{$membership[v]$}
+        \If{$u$ and $v$ are not in the same star (\ie{} $s_u \neq s_v$)}
           \Let{$cross\_edges[(s_u, s_v)]$}{$cross\_edges[(s_u, s_v)] \bigcup \{(u, v)\}$}
-          % \State $cross\_edges[(s_u, s_v)].$\Call{Add}{$(u, v)$}
-        \ElsIf{$(s_u, s_v)$ not in $cross\_edges$}
-          \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u, v)\}$}
-          \State Add edge $(s_u, s_v)$ to $G_{t+1}$
         \EndIf
       \EndFor
-      \If{$eccentricity$ is not \textbf{null}}
-        \ForAll{$\Big(\underbrace{(s_u,s_v)}_{\text{key}},\,
-          \underbrace{candidate\_edges}_{\text{value}}\Big)$
-          in $cross\_edges.$\Call{Items}{$\,$}}
-          \Let{$(u_0, v_0)$}{$\argmin_{(u,v)\in candidate\_edges} eccentricity[u]+eccentricity[v]$}
-          \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u_0, v_0)\}$}
-          \State Add edge $(s_u, s_v)$ to $G_{t+1}$
-        \EndFor
-      \EndIf
+      \ForAll{pair of will-be connected stars $(s_u,s_v)$ in $cross\_edges$}
+        \Let{$possible\_underlying\_edges$}{$cross\_edges[(s_u, s_v)]$}
+        % \Let{$(u_0, v_0)$}{$\argmin_{(u,v)\in candidate\_edges} eccentricity[u]+eccentricity[v]$}
+        \State $$(u_0, v_0) \gets \argmin_{(u,v)\in possible\_underlying\_edges} eccentricity[u]+eccentricity[v]$$
+        \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u_0, v_0)\}$}
+        \Let{$E_{t+1}$}{$E_{t+1} \bigcup \{(s_u, s_v)\}$}
+      \EndFor
       \State \textbf{return} $G_{t+1}$, $cross\_edges$
     \EndFunction
   \end{algorithmic}
   \rule{\textwidth}{.3pt}
 \end{center}
 
-For that, we first shuffle $E_t$ and iterate on it (line 4). When we find an edge whose endpoints
-belong to two different stars not yet connected (line 10), we use that edge to connect these two
-stars (line 11--12) This trivially takes $O(m)$ times.  A variant instead keeps track of all edges
-connecting each pair of stars (line 9) to choose one that will best contribute to our low stretch
-objective. Namely, when connecting two stars, we would prefer to join their centers rather than two
-peripheral points. For that we maintain an eccentricity count for all of the nodes of the original
-$G_0$, which is incremented by $1$ each time a node is chosen to be on the periphery of a
-star.\footnote{We will discuss this construction in more details when describing the main \gtx{}
-function since it takes place there.} For each pair of stars, we thus choose the edge across them
-with minimal sum of its endpoints' eccentricity (line 15--17)\marginpars{Line 15 is actually a
-simplification since the $eccentricity$ array is only defined for nodes in $V_0$ so when
-\collapseStar{} is called on $G_3$ for instance, $u$ and $v$ are nodes of $V_3$ and we have to
-retrieve the actual corresponding edge in $E_0$. Maybe I could simply add a HashMap from $E_t$ to
-$E_0$ like in the python code…}. This only requires another pass over the edges, thus preserving the
-$O(m)$ runtime.
+\begin{prop}
+  \label{prop:gtx_time_collapsestar}
+  For any graph $G=(V,E)$, \collapseStar$(E$, $membership$, $eccentricity)$ terminates in $O(|E|)$
+  time.
+\end{prop}
+\begin{proof}
+  \marginpars{\small Line 11 is actually a simplification since the $eccentricity$ array is only
+  defined for nodes in $V_0$ so when \collapseStar{} is called on $G_3$ for instance, $u$ and $v$
+  are nodes of $V_3$ and we have to retrieve the actual corresponding edge in $E_0$. Maybe I could
+  simply add a map from $E_t$ to $E_0$ like in the real python code…}
+  The analysis of \collapseStar is rather straightforward because the function only executes two
+  loops over its edges argument. During the for loop of line 4, we only perform constant time
+  operations on maps. Likewise, in the for loop of line 9, the most expensive is finding the minimum
+  in line 11. Computing the eccentricity of an edge is done in constant time and only once for each
+  edge of $E$.  As a consequence, the total time of \collapseStar{} is indeed $O(|E|)$.
+\end{proof}
 
 \paragraph{Putting the pieces together}\label{par:full_gtx}%
 \extractStar{} and \collapseStar{} are truly the core the of \gtx{} algorithm but to obtain our
