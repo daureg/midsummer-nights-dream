@@ -117,7 +117,7 @@ since $G$ is connected.
 \end{proof}
 
 \paragraph{\collapseStar{}}\label{par:collapsestar}%
-The second routine, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
+The second primitive, \collapseStar{} takes as input the result of \extractStar{}, along with $E_t$
 and an optional $\emph{eccentricity}$ array we will describe soon\marginpars{Actually, we could make
 eccentricity the default behavior, which would simplify the pseudo code}. It builds a new graph $G_{t+1}$
 where each star becomes a node and where there is a link between two nodes $s_1$ and $s_2$ if the nodes
@@ -212,7 +212,7 @@ aspect is their complexity.  \texttt{update\_centrality} and \texttt{update\_nod
 $O(n_0)$ time since they go through every node of the original graph. As for
 \texttt{assemble\_spanning\_tree}, it goes again through every edges visited at every level of
 contraction, meaning it's $O(Tm)$. However, we already visited those edges at least once so it only
-adds a constant factor $2$ in the overall complexity of the \gtx{} algorithm.} 
+adds a constant factor $2$ in the overall complexity of the \gtx{} algorithm.}
 at every collapse level, we first extract stars from the current graph (line 5), then
 update the eccentricity and nodes mapping (lines 7--8) and finally collapse the graph (line 9) We
 perform these operations until there are no edge connecting stars anymore. At this point, we revisit
@@ -232,7 +232,7 @@ one. Motivate the name of \gtx{}.}
 \paragraph{Exemple of \gtx{}}
 \label{par:exemple_of_gtx}
 
-We illustrate the operation of the \gtx{} algorithm on small (and somewhat contrived) example.
+We illustrate the operation of the \gtx{} algorithm on a small (and somewhat contrived) example.
 Let us start with the initial graph $G_0$ depicted in \autoref{fig:gtx_eccentricity}
 \vpageref{fig:gtx_eccentricity} and initialize
 the eccentricity of all nodes to $0$. When running \extractStar{}, we see that the maximum degree is
@@ -363,7 +363,7 @@ While we assume that $G_t$ is connected, it might happen during the execution of
   \caption{The formation of a singleton star}
   \label{fig:gtx_singleton}
 \end{marginfigure}
-the degree of a node $u$ drops to zero because because all of its neighbors were claimed by the
+the degree of a node $u$ drops to zero because all of its neighbors were claimed by the
 periphery of previous stars. Such a node then forms a \emph{singleton star}, as illustrated in
 \autoref{fig:gtx_singleton}, where after the creation of \starone{1} and \starone{2}, $c_3$ is the
 single node of the third star \starone{3}.%
@@ -376,7 +376,7 @@ single node of the third star \starone{3}.%
 In the case no singleton are formed during one execution of \extractStar{}, the number of nodes is
 reduced by at least $2$ (because each star is made of at least two nodes). On the other hand, we can
 construct a graph with singletons where the factor of reduction in number of nodes and edges can be
-arbitrarily close to $1$. Consider \autoref{fig:gtx_noreduc} and assume that first extract two stars
+arbitrarily close to $1$. Consider \autoref{fig:gtx_noreduc} and assume that we first extract two stars
 centered in $c_1$ and $c_2$.%
 
 \paragraph{Variants of \extractStar{}}
@@ -403,7 +403,7 @@ $\widetilde{d}$. Such functions modify the center sampling process in the follow
 
 These two variants are more time consuming because they require additional bookkeeping.
 Therefore, we don't provide a full complexity analysis and only briefly sketch their implementations
-here.\footnote{Although they are available online at 
+here.\footnote{Although they are available online at
 \nolinkurl{https://github.com/daureg/magnet/blob/master/veverica/}%
 \{\href{https://github.com/daureg/magnet/blob/master/veverica/ThresholdSampler.py}%
 {ThresholdSampler.py}, \href{https://github.com/daureg/magnet/blob/master/veverica/NodeSampler.py}%
