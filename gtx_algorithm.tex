@@ -25,6 +25,14 @@ periphery, removes all the nodes of $S_i^t$ from
 $V_t$ and all the edges incident to $S_i^t$ from $E_t$, and finally decrements accordingly the
 degree of the 2-hop neighbors of $c_i$ (see \autoref{fig:gtx_star_simple} for a visual
 representation of this notation).
+Upon completion, it returns a list of stars,
+the set of all the edges within a star,
+and a map (or associative array) that associates each node of $V_t$ to the index of the
+unique star it belongs to.
+According to the definition of \textcite{HashTableBook08}, an associative array is an abstract data
+type composed of a collection of (key, value) pairs, such that each possible key appears at most
+once in the collection. It efficiently supports the addition, removal and modification of a pair, as
+well as the lookup of a value associated with a particular key.
 \begin{marginfigure}
   \centering
   \includegraphics[height=0.15\textheight]{assets/tikz/gtx_star_tikz.pdf}
@@ -36,29 +44,22 @@ representation of this notation).
   % \tikz{\node[vertex] {$h_1$};} to \tikz{\node[vertex] {$h_3$};}
   $h_1$ to $h_3$, whose degree will decrease once $S_i^t$ is removed from $G_t$.}
   \label{fig:gtx_star_simple}
-\end{marginfigure}%
-Upon completion, it returns a list of stars,
-a list of each star edges,
-and a map (or associative array) of each node of $V_t$ to the unique star it belongs to.
-According to the definition of \textcite{HashTableBook08}, an associative array is an abstract data
-type composed of a collection of (key, value) pairs, such that each possible key appears at most
-once in the collection. It efficiently supports the addition, removal and modification of a pair, as
-well as the lookup of a value associated with a particular key.
+\end{marginfigure}
 
 As showed in the following pseudo code\footnote{Note that for
 clarity, we removed some bookkeeping code in all listings, mainly the part related to maintaining
 mapping between nodes at different collapse level. However, the full python implementation
 is available at \url{https://github.com/daureg/magnet/blob/master/veverica/new_galaxy.py\#L27}.}, we
 sample centers by choosing the node with the current highest degree, with ties broken
-arbitrarily.\footnote{We also consider more involved heuristics but in the interest of simplicity,
-they are presented later on~\vpageref{ssec:gtx_center_choice}.} This is achieved efficiently by
+arbitrarily.\footnote{We also consider more involved heuristics but, in the interest of simplicity,
+they are presented later~\vpageref{ssec:gtx_center_choice}.} This is achieved efficiently by
 maintaining a max-priority queue $Q$, initially containing all the nodes of $V_t$. The priority of a
-node is its current degree and we equipped $Q$ with two standard operations described
+node is its current degree and we equip $Q$ with two standard operations described
 by~\textcite[section 6.5]{CormenAlgo09}: \textsc{Extract-Max}$(Q)$ removes and returns the
 node of $Q$ with the largest degree and \textsc{Decrease-Key}$(Q$, $u$, $\Delta)$ decrements
 the degree of the node $u$ by an amount $\Delta$.
 We also assume that $G$ is the adjacency list of the graph, so that $G[u]$ is the set of neighbors of
-$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. Finally $membership$ is a map, initially empty, and we
+$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. Finally $membership$ is a map and we
 define the \textsc{Star} function, which creates a star given a center $c$, a list $periphery$ of
 peripheral nodes, and a star index $i$. After creating the \ith{} star, for every node $u$ belonging
 to that star, the \textsc{Star} function sets $membership[u] = i$.
@@ -69,7 +70,7 @@ to that star, the \textsc{Star} function sets $membership[u] = i$.
   \begin{algorithmic}[1]
     \Function{\extractStar{}}{$G_t=(V_t,E_t)$}
       \State Let $Q$ be the max-priority queue described above
-      \State Let $remaining$ be a set of nodes initially containing all the nodes in $V_t$
+      \State Let $remaining$ be a set of nodes, initially containing all the nodes in $V_t$
       \State Let $membership$ be an empty map
       \Let{$stars$}{$[]$}
       \Let{$inner\_edges$}{$\emptyset$}
@@ -79,12 +80,12 @@ to that star, the \textsc{Star} function sets $membership[u] = i$.
           \State \textbf{continue} \Comment{$c$ is part of an existing star so there is
           nothing to do}
         \EndIf
-        \Let{$periphery$}{$G[c] \bigcap remaining$}
+        \Let{$periphery$}{$G_t[c] \bigcap remaining$}
         \Let{$stars$}{$stars \bigcup \{$\Call{Star}{$c$, $periphery$, $|stars|$}\}}
         \Let{$inner\_edges$}{$inner\_edges \bigcup \{(c, p): p \in periphery\}$}
-        \Let{$remaining$}{$remaining \setminus \left\{ \{c_i\} \cup \setminus periphery\right\}$}
+        \Let{$remaining$}{$remaining \setminus \left\{ \{c_i\} \cup periphery\right\}$}
         \For{$p$ in $periphery$}
-          \For{$h$ in $G[p] \bigcap remaining$}
+          \For{$h$ in $G_t[p] \bigcap remaining$}
             \State \Call{Decrease-Key}{$Q$, $h$, $1$}
           \EndFor
         \EndFor
@@ -96,20 +97,23 @@ to that star, the \textsc{Star} function sets $membership[u] = i$.
 \end{center}
 
 \begin{prop}
-  For any graph $G=(V,E)$, \extractStar$(G)$ terminates in $O(|E|)$ time.
+  For any connected graph $G=(V,E)$, \extractStar$(G)$ terminates in $O(|E|)$ time.
 \end{prop}
 \begin{proof}
 \extractStar{} terminates because at each iteration of the while loop line 7, we remove one node
-from $Q$ and never add any. Let us now analyze the complexity. We first
-build a priority queue of all the nodes according to their degree (line 2), which takes $O(|V|)$ time.
-Then, at each iteration of the while loop, we find the center of the next star by extracting the
-maximum of the queue (line 8), we build the corresponding star (line 11--13) and we decrease the
-priority (\ie{} the degree) of all nodes adjacent to the new star (line 15--17).  Since both
-queue operations require constant time when using a Strict Fibonacci Heap~\autocite{FibonacciHeaps12} and
-there are $|V|$ iterations of that loop, a coarse approximation of the runtime of \extractStar{} is
-$O(|V|^2)$. However, observe that there can be at most $|E|$ decrease operations (since after that, all
-nodes still in the queue have an effective degree of $0$, meaning that $periphery$ will be the empty
-set and lines 12--17 will run in constant time), reducing the complexity to $O(|E|+|V|)$.
+from $Q$ and never add any. Let us now analyze its complexity. We first build a priority queue of
+all the nodes according to their degree (line 2), which requires $O(|V|)$ insertions into $Q$. Then
+we execute $|V|$ iterations of the while loop. However, the main idea here is that we process each
+node and each edge exactly once. We first find the center $c$ of the next star by extracting the
+maximum of the queue (line 8) and testing if $c$ is still part of the graph, which happens $|V|$
+time. Then we build the corresponding star (line 11--14). In total, we test the membership of $|V|$
+nodes in line 11, $\textsc{Star}$ updates the $membership$ map $|V|$ times in line 12,
+$inner\_edges$ consists of $|E|$ edges at most in line 13 and $remaining$ is only updated $|V|$
+times in line 14. Finally, we decrease the priority (\ie{} the degree) of all nodes adjacent to the
+new star (line 15--17). Each decrement is supported by a single edge, thus \textsc{Decrease-Keys} is
+called at most $|E|$ times. Since all queue operations require constant time when using a Strict
+Fibonacci Heap~\autocite{FibonacciHeaps12}, the complexity is $O(|E|+|V|)$, which is also $O(|E|)$
+since $G$ is connected.
 \end{proof}
 
 \paragraph{\collapseStar{}}\label{par:collapsestar}%
