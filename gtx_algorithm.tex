@@ -493,3 +493,9 @@ right subtrees. To sample, we draw a random number $r$ between $0$ and the total
 go down from the root to the leaf spanning the weight interval containing $r$.
 When degrees are updated (or graph node removed), we update the weights along a path from the
 corresponding leaves to the root of the tree.
+
+A variant of the \gtx{} algorithm as a whole we did not explore so much in practice is its ability
+to produce spanner by stopping early. Basically if we stop at iteration $t$, we output the graph
+$G_t$ (which in general is not a tree) with its edges unfolded to lie in $E_0$. This corresponds to
+a trade off between having more edges than $|V_0|-1$ but potentially making shorter connection and
+thus having a lower stretch.
