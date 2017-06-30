@@ -97,12 +97,13 @@ to that star, the \textsc{Star} function sets $membership[u] = i$.
 \end{center}
 
 \begin{prop}
+  \label{prop:gtx_time_extractstar}
   For any connected graph $G=(V,E)$, \extractStar$(G)$ terminates in $O(|E|)$ time.
 \end{prop}
 \begin{proof}
 \extractStar{} terminates because at each iteration of the while loop line 7, we remove one node
 from $Q$ and never add any. Let us now analyze its complexity. We first build a priority queue of
-all the nodes according to their degree (line 2), which requires $O(|V|)$ insertions into $Q$. Then
+all the nodes according to their degree (line 2), which requires $|V|$ insertions into $Q$. Then
 we execute $|V|$ iterations of the while loop. However, the main idea here is that we process each
 node and each edge exactly once. We first find the center $c$ of the next star by extracting the
 maximum of the queue (line 8) and testing if $c$ is still part of the graph, which happens $|V|$
@@ -131,8 +132,8 @@ extent it has been pushed to the border of the galaxy.
 \begin{marginfigure}
   \centering
   \includegraphics[width=0.92\linewidth]{assets/tikz/gtx_cross_edges_tikz.pdf}
-  \caption[Cross edge representation]{In that graphs, there are four possible edges between the two
-  stars $s_1$ and $s_2$, and all are part of $cross\_edges[(s_1, s_2)]$ here represented in light
+  \caption[Cross edge representation]{In this graph, there are four possible edges between the two
+  stars $s_1$ and $s_2$, and all are part of $cross\_edges[(s_1, s_2)]$, here represented in light
 red. Those edges are labeled with the sum of eccentricity of their underlying endpoints, and the
 minimal one is linking a peripheral node of $s_1$ directly to the center of $s_2$.}
   \label{fig:gtx_cross_edge}
@@ -179,9 +180,9 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
   time.
 \end{prop}
 \begin{proof}
-  The analysis of \collapseStar is rather straightforward because the function only executes two
-  loops over its edges argument. During the for loop of line 4, we only perform constant time
-  operations on maps. Likewise, in the for loop of line 9, the most expensive is finding the minimum
+  The analysis of \collapseStar{} is rather straightforward because the function only executes two
+  loops over $E$. During the for loop of line 4, it only performs constant time
+  operations on maps. Likewise, in the for loop of line 9, the most expensive operation is finding the minimum
   in line 11. Computing the eccentricity of an edge is done in constant time and only once for each
   edge of $E$.  As a consequence, the total time of \collapseStar{} is indeed $O(|E|)$.
 \end{proof}
@@ -292,7 +293,7 @@ a star of star is a tree, and so on.\Todo{make the two arguments about \gtx{} co
 formal, and also explain that since all nodes are part of the ultimate star, this tree is a spanning
 one. Motivate the name of \gtx{}.}
 
-\paragraph{Exemple of \gtx{}}
+\paragraph{Example of \gtx{}}
 \label{par:exemple_of_gtx}
 
 We illustrate the operation of the \gtx{} algorithm on a small (and somewhat contrived) example.
@@ -396,9 +397,9 @@ A crucial quantity of the \gtx{} algorithm, both in terms of complexity and resu
 the number of collapses $T$ needed before termination. While this is still elusive to express in the
 general case, let us first look at some simple cases. For instance, a very sparse example of graph
 is the line graph. While it is already a tree, let us look how the \gtx{} algorithm operates on it.
-Say we have $n$ nodes in that line. There a star is made at most of three consecutive nodes. In the
-worst case, centers will be chosen such that we have a succession of three and two nodes stars (as
-in \autoref{fig:gtx_line_graph}).%
+Say we have $n$ nodes and $m$ edges in that line. There a star is made at most of three
+consecutive nodes. In the worst case, centers will be chosen such that we have a succession of three
+and two nodes stars, as in \autoref{fig:gtx_line_graph}.%
 \begin{marginfigure}
   \centering
   \includegraphics[width=0.9\linewidth]{assets/tmp-code/line_graph.pdf}
@@ -406,14 +407,14 @@ in \autoref{fig:gtx_line_graph}).%
   \label{fig:gtx_line_graph}
 \end{marginfigure}
 This will results in $\nicefrac{2n}{5}$ stars, which is less than half of $n$ and because in that
-case $n\approx m$, \gtx{} will finish after $O(\log m)$ iterations. Note that a barbell graph (two
-cliques connected by a line) would require a number of iterations proportional to the length of that
+case $n=m+1$, \gtx{} will finish after $O(\log m)$ iterations. Note that a barbell graph (two
+cliques connected by a line) would requires a number of iterations proportional to the length of that
 central line, despite having many more edges. This suggests unsurprisingly that the diameter of the graph
-could be a good parameter to quantify the number of iteration needed. Indeed, take a tree a consider
+could be a good parameter to quantify the number of iterations needed. Indeed, take a tree and consider
 the length $p$ of its longest path from the root to a leaf. By a similar argument as the one used in
 the line case, it seems \gtx{} will terminate after $O(\log p)$ iterations.
 
-While we assume that $G_t$ is connected, it might happen during the execution of \extractStar{} that%
+While all $G_t$ are connected, it might happen during the execution of \extractStar{} that%
 \begin{marginfigure}
   \centering
   \includegraphics[width=0.95\linewidth]{assets/tikz/gtx_singleton_tikz.pdf}
