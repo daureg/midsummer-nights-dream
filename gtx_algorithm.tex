@@ -432,10 +432,25 @@ single node of the third star \starone{3}.%
   \label{fig:gtx_noreduc}
 \end{marginfigure}
 In the case no singleton are formed during one execution of \extractStar{}, the number of nodes is
-reduced by at least $2$ (because each star is made of at least two nodes). On the other hand, we can
+reduced by at least a factor $2$ (because each star is made of at least two nodes). On the other hand, we can
 construct a graph with singletons where the factor of reduction in number of nodes and edges can be
-arbitrarily close to $1$. Consider \autoref{fig:gtx_noreduc} and assume that we first extract two stars
-centered in $c_1$ and $c_2$.%
+arbitrarily close to $1$. Consider \autoref{fig:gtx_noreduc}, where $c_1$ and $c_2$ have a degree
+$p$ and their neighbors (in light gray) all have a degree $q$, which we can vary from $1$ to $p-1$.
+At this step $t$, we thus have $|V_t| = 2(1+p)+pq$ and $|E_t| = 2(p+qp)$. Next we run \extractStar{}
+and assume that we first extract the two stars centered in $c_1$ and $c_2$. This reduces the
+effective degree of all the middle nodes (in dark gray) to $0$ and they thus form singletons, that
+are all connected to the first two stars by \collapseStar{}. As a result, at step $t+1$ we have
+$|V_{t+1}| = 2 + pq$ and $|E_{t+1}| = 2pq$, so that
+\begin{equation*}
+\frac{|V_{t+1}|}{|V_t|} = \frac{pq+2}{p(q+2) + 2} \qquad \text{and} \qquad
+\frac{|E_{t+1}|}{|E_t|} = \frac{2pq}{2p(q+1)} = \frac{q}{q+1}
+\end{equation*}
+When we let $p$ goes to infinity, setting $q=1$ makes $\frac{|V_{t+1}|}{|V_t|}$ tend to
+$\nicefrac{1}{3}$ and $\frac{|E_{t+1}|}{|E_t|}$ to $\nicefrac{1}{2}$ while setting $q=p-1$ makes
+both $\frac{|V_{t+1}|}{|V_t|}$ and $\frac{|E_{t+1}|}{|E_t|}$ tend to $1$. Note however that in both
+cases, this is not really a problem because at the next iteration, there will be only two stars (one
+of them will be a singleton). Is it always like that? In other words, can we have a situation where
+a large number of singletons is carried over several consecutive iterations?
 
 \paragraph{Variants of \extractStar{}}
 \label{ssec:gtx_center_choice}
