@@ -159,7 +159,10 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
       \EndFor
       \ForAll{pair of will-be connected stars $(s_u,s_v)$ in $cross\_edges$}
         \Let{$possible\_underlying\_edges$}{$cross\_edges[(s_u, s_v)]$}
-        % \Let{$(u_0, v_0)$}{$\argmin_{(u,v)\in candidate\_edges} eccentricity[u]+eccentricity[v]$}
+        \marginpars{\small Line 11 is actually a simplification since the $eccentricity$ array is only
+        defined for nodes in $V_0$ so when \collapseStar{} is called on $G_3$ for instance, $u$ and $v$
+        are nodes of $V_3$ and we have to retrieve the actual corresponding edge in $E_0$. Maybe I could
+        simply add a map from $E_t$ to $E_0$ like in the real python code…}
         \State $$(u_0, v_0) \gets \argmin_{(u,v)\in possible\_underlying\_edges} eccentricity[u]+eccentricity[v]$$
         \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u_0, v_0)\}$}
         \Let{$E_{t+1}$}{$E_{t+1} \bigcup \{(s_u, s_v)\}$}
@@ -176,10 +179,6 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
   time.
 \end{prop}
 \begin{proof}
-  \marginpars{\small Line 11 is actually a simplification since the $eccentricity$ array is only
-  defined for nodes in $V_0$ so when \collapseStar{} is called on $G_3$ for instance, $u$ and $v$
-  are nodes of $V_3$ and we have to retrieve the actual corresponding edge in $E_0$. Maybe I could
-  simply add a map from $E_t$ to $E_0$ like in the real python code…}
   The analysis of \collapseStar is rather straightforward because the function only executes two
   loops over its edges argument. During the for loop of line 4, we only perform constant time
   operations on maps. Likewise, in the for loop of line 9, the most expensive is finding the minimum
@@ -190,9 +189,27 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
 \paragraph{Putting the pieces together}\label{par:full_gtx}%
 \extractStar{} and \collapseStar{} are truly the core the of \gtx{} algorithm but to obtain our
 final spanning tree, we need additional work, namely updating the eccentricity of the nodes of
-$V_0$ and keeping track of each edge within and between stars along every contraction level.
+$V_0$ and keeping track of each edge within and between stars along every collapse steps. Despite
+our earlier promise, this entails showing some bookkeeping code, because it has an influence on the
+runtime of \gtx{}. \Todo{Those maps could probably use better names}
+Namely in the listing of \autoref{alg:gtx} \vpageref{alg:gtx}, we use the three following maps:
 
-\begin{algorithm}
+\vspace{0.5\baselineskip}
+\noindent\begin{tabulary}{187mm}{lllL}
+  \toprule
+  name               & keys set at $t$ & values set at $t$   & comment \\
+  \midrule
+  $star\_membership$ & nodes in $V_t$  & nodes in $V_{t+1}$  & this is the map returned by
+  \extractStar{}$(G_t)$ \\
+  $full\_membership$ & nodes in $V_0$  & nodes in $V_{t+1}$  & at $t=0$, this is equals to
+  $star\_membership$ and then it gets updated at every iteration to maintain its original keys set.  \\
+  $original\_node$   & nodes in $V_t$  & sets of $V_0$ nodes & This can be seen as the reverse of
+  $full\_membership$ and it is the one needed to update the eccentricity of the original nodes. \\
+  \bottomrule
+\end{tabulary}
+\vspace{0.5\baselineskip}
+
+\begin{algorithm}[tbh]
   \caption{\gtx{}($G_0=(V_0,E_0)$) \label{alg:gtx}}
 	\begin{algorithmic}[1]
     \State Let $eccentricity$ be an array of size $|V_0|$ initially all set to $0$
@@ -200,15 +217,15 @@ $V_0$ and keeping track of each edge within and between stars along every contra
     \Let{$inner\_edges\_seq$, $outer\_edges\_seq$}{$[]$, $[]$}
     \Repeat
       \Let{$stars$, $inner\_edges$, $membership$}{\Call{Extract-Stars}{$G_t$}}
-      \State $inner\_edges\_seq$.\Call{Append}{$inner\_edges$}
+      \State Add $inner\_edges$ to the list $inner\_edges\_seq$
       \State \Call{Update-Eccentricity}{$stars$, $eccentricity$, $original\_node$}
       \Let{$full\_membership$, $original\_node$}{\Call{Update-Nodes-Mapping}{$full\_membership$, $membership$}}
       \Let{$G_{t+1}$, $\!outer\_edges$}{\Call{Collapse-Stars}{$E_t \!\setminus\! inner\_edges$,
       $\!membership$, $\!eccentricity$}}
-      \State $outer\_edges\_seq$.\Call{Append}{$outer\_edges$}
+      \State Add $outer\_edges$ to the list $outer\_edges\_seq$
       \Let{$G_{t}$}{$G_{t+1}$}
     \Until{$|outer\_edges|>0$}
-    \State \textbf{return} \Call{Assemble-Spanning-Trees}{$inner\_edges\_seq$, $outer\_edges\_seq$}
+    \State \textbf{return} \Call{Assemble-Spanning-Tree}{$inner\_edges\_seq$, $outer\_edges\_seq$}
 		\begin{center}
       \vspace{-.5\baselineskip}
 			\rule{0.5\textwidth}{.2pt}
@@ -219,19 +236,52 @@ $V_0$ and keeping track of each edge within and between stars along every contra
 	\end{algorithmic}
 \end{algorithm}
 
-As described in \autoref{alg:gtx}, \marginpars{I didn't write pseudo code for the three helping functions but
-instead put their verbatim python version. They are mostly plumbing code, the only interesting
-aspect is their complexity.  \texttt{update\_centrality} and \texttt{update\_nodes\_mapping} takes
-$O(n_0)$ time since they go through every node of the original graph. As for
-\texttt{assemble\_spanning\_tree}, it goes again through every edges visited at every level of
-contraction, meaning it's $O(Tm)$. However, we already visited those edges at least once so it only
-adds a constant factor $2$ in the overall complexity of the \gtx{} algorithm.}
-at every collapse level, we first extract stars from the current graph (line 5), then
-update the eccentricity and nodes mapping (lines 7--8) and finally collapse the graph (line 9) We
-perform these operations until there are no edge connecting stars anymore. At this point, we revisit
-every outer edges to form the spanning tree (line 13). Because the main loop does not perform any
-work besides calling other function, assuming there are T collapse steps, the complexity of \gtx{}
-is $O(T(m+n)) = O(Tm)$.
+As described in \autoref{alg:gtx}, at every collapse level, we first extract stars from the current
+graph (line 5), then update the eccentricity and node mappings (lines 7--8) and finally collapse the
+graph (line 9). We perform these operations until there are no edge connecting stars anymore. At
+this point, we revisit every outer edges to build the spanning tree (line 13).
+
+\begin{prop}
+  \label{prop:gtx_correct}
+  For any connected graph $G_0$, \gtx$(G_0)$ terminates after $K\leq |V_0|$ iterations. Furthermore,
+  it runs in $O(K|E_0|)$ time and returns a spanning tree of $G_0$.
+\end{prop}
+We will need the following lemma.
+\begin{lemma}
+  \label{lem:gtx_stay_connected}
+  If $G_0$ is connected, then any subsequent graph $G_t,\, t \leq K$ is also connected.
+\end{lemma}
+\begin{proof}
+ Suppose not and assume, to the contrary, that there exists at least one (or more) disconnected
+ graph in $\{G_t\}_{t=1}^K$ and let $t_0$ be the smallest index such that $G_{t_0}$ is disconnected.
+ Then there exist two nodes $s_u$ and $s_v$ in $V_{t_0}$ with no path between them in $E_{t_0}$.
+ Letting $\mathcal{U}, \mathcal{V} \subset V_{t_0-1}$ be respectively the nodes forming stars $u$
+ and $v$, this implies there is no path between nodes in $\mathcal{U}$ and nodes in $\mathcal{V}$.
+ However, $G_{t_0-1}$ is connected by hypothesis, which leads to a contradiction.
+\end{proof}
+
+\begin{proof}[Proof of \autoref{prop:gtx_correct}]
+  Let us first show that \gtx{} terminates in less than $|V_0|$ iterations. This follows from the
+  fact that every time we collapse the graph $G_t$, we strictly reduce the number of nodes. Indeed,
+  according to \autoref{lem:gtx_stay_connected}, $G_t$ is connected so at least two nodes of $V_t$
+  are joined by an edge and will form a star, \ie{} a single node. We can thus claim that $|V_{t+1}| <
+  |V_t|$. Note also that for all $t$, $|V_t| > 0$ and that when $|V_t|=1$, \extractStar{} creates a
+  singleton and \collapseStar{} does not return any outer edges so \gtx{} finishes, proving that the
+  number of iterations $K$ satisfies $K \leq |V_0|$.
+
+ Then we analyze the time complexity. We already now that during the \tth{} iteration,
+ \extractStar{} and \collapseStar{} take time $O(|E_t|)$. We provide only the actual python code
+ instead of pseudo code for the remaining functions since they do not present any special
+ interesting algorithmic aspect. However, we can say that \textsc{Update-Eccentricity} and
+ \textsc{Update-Nodes-Mapping} take $O(|V_0|)$ time since they go through every node of the original
+ graph. Because $G_0$ is connected, $|V_0| \leq |E_0|$, and since for all $t$, $|E_t| \leq |E_0|$,
+ we have that the \gtx{} inner loop takes $O(K|E_0|)$ time. Finally, since
+ \textsc{assemble-spanning-tree} goes again through every edge visited at every collapse step, it
+ also takes $O(K|E_0|)$ time, which is thus the overall complexity of the \gtx{} algorithm.
+
+  Finally we prove that \gtx{} indeed returns a spanning tree of $G_0$.
+\end{proof}
+
 
 Later we hope to found an upper bound of $T$ in terms of $m$, and also to refine the analysis to
 leverage the fact that $\sum_{t=0}^T |E_t|$ is significantly smaller than $Tm$. For now, let us
