@@ -8,6 +8,8 @@ run our algorithm in parallel on each connected components of $G_0$.} the \gtx{}
 repeatedly applies these two primitives to produce a sequence of graphs $\{G_t\}_{t=0}^K$ of
 decreasing size, until $G_K$ is made of a single node. All the edges selected while reaching
 this stage then form the spanning tree we were looking for.
+This can be seen as a simple instantiation of a general procedure described in \autocite[Section
+5.2]{LowerBound95}.
 % [from a CMU NIPS submission http://www.stat.cmu.edu/~arinaldo/papers/mutualfriends.pdf] We
 % consider Mutual-Friends to be *an algorithmic primitive*, by which we mean a kind of subroutine for
 % a more complicated function that iterates Mutual-Friends, similarly to [5].
