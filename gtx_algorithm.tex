@@ -298,8 +298,8 @@ We will need the following lemma.
   those edges were cycle free in $G_{t+1}$, this remains the case in $G_t$. Therefore we have build
   a spanning tree $T_t$ of $G_t$. By repeating this procedure, the \gtx{} algorithm eventually
   builds a spanning tree of $G_0$.
-
 \end{proof}
+\vspace{-2\baselineskip}
 \begin{figure*}[h]
   \centering
 	\begin{subfigure}[b]{37mm}
@@ -404,8 +404,8 @@ peripheral nodes. This increases the eccentricity of their underlying $G_0$ node
 nodes $16$ to $45$). Because there is only one star $\starthree{1}$ left, \collapseStar{} returns
 $G_3$ showed in \autoref{fig:gtx_run3} and an empty list of outer edges, meaning that the inner loop
 of \gtx{} is finished and we can go through every edges we chose between stars at every level to
-recover the final spanning tree, showed with solid edges in \autoref{fig:gtx_eccentricity}
-\vpageref{fig:gtx_eccentricity}. For completeness, we can also look at the edges which are not part
+recover the final spanning tree, a process illustrated in \autoref{fig:gtx_spanning_tree}
+\vpageref{fig:gtx_spanning_tree}. For completeness, we can also look at the edges which are not part
 of the spanning tree and therefore contribute to the stretch of the tree. In that case the average
 stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
 
@@ -433,27 +433,28 @@ stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
 \textcolor{red}{\LARGE Draft}
 
 A crucial quantity of the \gtx{} algorithm, both in terms of complexity and resulting stretch, is
-the number of collapses $T$ needed before termination. While this is still elusive to express in the
+the number of collapses $K$ needed before termination. While this is still elusive to express in the
 general case, let us first look at some simple cases. For instance, a very sparse example of graph
 is the line graph. While it is already a tree, let us look how the \gtx{} algorithm operates on it.
-Say we have $n$ nodes and $m$ edges in that line. There a star is made at most of three
+Say we have $n$ nodes and $m$ edges in that line. Here, a star is made at most of three
 consecutive nodes. In the worst case, centers will be chosen such that we have a succession of three
 and two nodes stars, as in \autoref{fig:gtx_line_graph}.%
 \begin{marginfigure}
   \centering
-  \includegraphics[width=0.9\linewidth]{assets/tmp-code/line_graph.pdf}
-  \caption{A line graph with stars in red}
+  \includegraphics[width=0.9\linewidth]{assets/tikz/gtx_line_tikz.pdf}
+  \caption{A line graph with stars in blue}
   \label{fig:gtx_line_graph}
 \end{marginfigure}
 This will results in $\nicefrac{2n}{5}$ stars, which is less than half of $n$ and because in that
 case $n=m+1$, \gtx{} will finish after $O(\log m)$ iterations. Note that a barbell graph (two
-cliques connected by a line) would requires a number of iterations proportional to the length of that
+cliques connected by a line) would requires a number of iterations logarithmic in the length of that
 central line, despite having many more edges. This suggests unsurprisingly that the diameter of the graph
 could be a good parameter to quantify the number of iterations needed. Indeed, take a tree and consider
 the length $p$ of its longest path from the root to a leaf. By a similar argument as the one used in
 the line case, it seems \gtx{} will terminate after $O(\log p)$ iterations.
 
-While all $G_t$ are connected, it might happen during the execution of \extractStar{} that%
+While all $G_t$ are connected according to \autoref{lem:gtx_stay_connected}, it might happen during
+the execution of \extractStar{} that%
 \begin{marginfigure}
   \centering
   \includegraphics[width=0.95\linewidth]{assets/tikz/gtx_singleton_tikz.pdf}
@@ -463,13 +464,7 @@ While all $G_t$ are connected, it might happen during the execution of \extractS
 the degree of a node $u$ drops to zero because all of its neighbors were claimed by the
 periphery of previous stars. Such a node then forms a \emph{singleton star}, as illustrated in
 \autoref{fig:gtx_singleton}, where after the creation of \starone{1} and \starone{2}, $c_3$ is the
-single node of the third star \starone{3}.%
-\begin{marginfigure}
-  \centering
-  \includegraphics[width=0.95\linewidth]{assets/tikz/gtx_noreduc_tikz.pdf}
-  \caption{A case were too many singletons \enquote{waste} one iteration of \gtx{}}
-  \label{fig:gtx_noreduc}
-\end{marginfigure}
+single node of the third star \starone{3}.
 In the case no singleton are formed during one execution of \extractStar{}, the number of nodes is
 reduced by at least a factor $2$ (because each star is made of at least two nodes). On the other hand, we can
 construct a graph with singletons where the factor of reduction in number of nodes and edges can be
@@ -478,7 +473,13 @@ $p$ and their neighbors (in light gray) all have a degree $q$, which we can vary
 At this step $t$, we thus have $|V_t| = 2(1+p)+pq$ and $|E_t| = 2(p+qp)$. Next we run \extractStar{}
 and assume that we first extract the two stars centered in $c_1$ and $c_2$. This reduces the
 effective degree of all the middle nodes (in dark gray) to $0$ and they thus form singletons, that
-are all connected to the first two stars by \collapseStar{}. As a result, at step $t+1$ we have
+are all connected to the first two stars by \collapseStar{}. As a result, at step $t+1$ we have%
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=0.95\linewidth]{assets/tikz/gtx_noreduc_tikz.pdf}
+  \caption{A case were too many singletons \enquote{waste} one iteration of \gtx{}}
+  \label{fig:gtx_noreduc}
+\end{marginfigure}
 $|V_{t+1}| = 2 + pq$ and $|E_{t+1}| = 2pq$, so that
 \begin{equation*}
 \frac{|V_{t+1}|}{|V_t|} = \frac{pq+2}{p(q+2) + 2} \qquad \text{and} \qquad

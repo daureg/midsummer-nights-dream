@@ -30,11 +30,11 @@
 
 
 
-    \draw[->] (0,-2) -- (0,-2.9);
+    \draw[edge,->] (0,-1) -- (0,-2.4);
 
-    \node[vertex,fill=DodgerBlue,text=black] (s1) at (-2,-3.7) {$S_1^1$};
-    \node[vertex,fill=DodgerBlue,text=black] (s2) at (2,-3.7) {$S_2^1$};
-    \node[vertex,fill=DodgerBlue,text=black] (s3) at (0,-3.7) {$S_3^1$};
+    \node[vertex,fill=DodgerBlue,text=black] (s1) at (-2,-3) {$S_1^1$};
+    \node[vertex,fill=DodgerBlue,text=black] (s2) at (2,-3) {$S_2^1$};
+    \node[vertex,fill=DodgerBlue,text=black] (s3) at (0,-3) {$S_3^1$};
     \foreach \source/\dest in {3/2, 1/3}
     \draw[edge] (s\source) -- (s\dest);
   \end{tikzpicture}
