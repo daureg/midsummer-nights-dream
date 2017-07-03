@@ -1,0 +1,25 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=8mm,font=\LARGE},
+  edge/.append style={line width=2.2pt}]
+  \node[text=white] (ph1) at (-1.5,1.5)  {.};
+  \node[text=white] (ph2) at (7.5,-13.5) {.};
+  \node[text=white] (ph3) at (14.5,4.5)  {.};
+
+  \node[vertex,fill=DodgerBlue] (s11) at (0.000, -0.000)  {$S_1^1$};
+  \node[vertex,fill=DodgerBlue] (s21) at (1.689, -3.448)  {$S_2^1$};
+  \node[vertex,fill=DodgerBlue] (s31) at (3.734, 0.896)   {$S_3^1$};
+  \node[vertex,fill=DodgerBlue] (s41) at (4.245, -8.664)  {$S_4^1$};
+  \node[vertex,fill=DodgerBlue] (s51) at (5.934, -12.113) {$S_5^1$};
+  \node[vertex,fill=DodgerBlue] (s61) at (7.978, -7.768)  {$S_6^1$};
+  \node[vertex,fill=DodgerBlue] (s71) at (9.381, 2.252)   {$S_7^1$};
+  \node[vertex,fill=DodgerBlue] (s81) at (11.071, -1.196) {$S_8^1$};
+  \node[vertex,fill=DodgerBlue] (s91) at (13.115, 3.149)  {$S_9^1$};
+
+  \foreach \source/\dest in {11/21,11/31,41/51,41/61,71/81,71/91}
+  \draw[edge,Orange] (s\source) -- (s\dest);
+  \foreach \source/\dest in {21/81,31/61}
+  \draw[edge,Green] (s\source) -- (s\dest);
+\end{tikzpicture}
+\end{document}

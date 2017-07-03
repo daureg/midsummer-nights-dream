@@ -271,27 +271,66 @@ We will need the following lemma.
   number of iterations $K$ satisfies $K \leq |V_0|$.
 
  Then we analyze the time complexity. We already now that during the \tth{} iteration,
- \extractStar{} and \collapseStar{} take time $O(|E_t|)$. We provide only the actual python code
- instead of pseudo code for the remaining functions since they do not present any special
- interesting algorithmic aspect. However, we can say that \textsc{Update-Eccentricity} and
+ \extractStar{} and \collapseStar{} take time $O(|E_t|)$. We only provide the actual python code
+ instead of pseudo code for the remaining functions since they do not present any relevant
+ algorithmic aspect. However, we can say that \textsc{Update-Eccentricity} and\marginpars{We can get
+ rid of this $O(|V_0|)$ at each iteration by ignoring eccentricity and taking a random edge between
+ star, although it's difficult to tell how it would affect the quality of the resulting tree.}
  \textsc{Update-Nodes-Mapping} take $O(|V_0|)$ time since they go through every node of the original
  graph. Because $G_0$ is connected, $|V_0| \leq |E_0|$, and since for all $t$, $|E_t| \leq |E_0|$,
  we have that the \gtx{} inner loop takes $O(K|E_0|)$ time. Finally, since
- \textsc{assemble-spanning-tree} goes again through every edge visited at every collapse step, it
+ \textsc{Assemble-Spanning-Tree} goes again through every edge visited at every collapse step, it
  also takes $O(K|E_0|)$ time, which is thus the overall complexity of the \gtx{} algorithm.
 
-  Finally we prove that \gtx{} indeed returns a spanning tree of $G_0$.
+
+  Finally we prove that \gtx{} indeed returns a spanning tree of $G_0$. Specifically, we show that
+  by starting from $G_K$ and going in reverse order, we build a spanning tree $T_t$ of every $G_t$,
+  including eventually $G_0$. This process is illustrated on \autoref{fig:gtx_spanning_tree} and
+  works as follow: when moving from $G_{t+1}$ to $G_t$, we expand the nodes of $G_{t+1}$ into star
+  of nodes of $V_t$ and update all the outer edges we met so far to have their endpoints in $V_t$.
+  These outer edges are exactly $T_{t+1}$ and by translating them into $E_t$ and adding the inner
+  star edges of $G_t$, we build $T_t$. $G_K$ consists of a single node with no edges so we have
+  trivially that $T_K$ = $G_K$. Then, assume we have a spanning tree $T_{t+1}$ of $G_{t+1}$, so that
+  all nodes in $V_{t+1}$ are connected without cycle. Expanding each node of $V_{t+1}$ into a star
+  of $V_t$ nodes ensures that the spanning property is preserved since each node of $V_t$ is covered
+  by construction. Those stars are also without cycle by construction. The second step, translating
+  the existing edges of $T_{t+1}$, only connects nodes belonging to different stars and because
+  those edges were cycle free in $G_{t+1}$, this remains the case in $G_t$. Therefore we have build
+  a spanning tree $T_t$ of $G_t$. By repeating this procedure, the \gtx{} algorithm eventually
+  builds a spanning tree of $G_0$.
+
 \end{proof}
+\begin{figure*}[h]
+  \centering
+	\begin{subfigure}[b]{37mm}
+    \centering
+		\includegraphics[width=\textwidth]{assets/tikz/gtx_st_g3_tikz.pdf}
+		\caption{Spanning tree of $G_3$}\label{fig:gtx_spanning_tree_3}
+	\end{subfigure}~
+	\begin{subfigure}[b]{45mm}
+    \centering
+		\includegraphics[width=\textwidth]{assets/tikz/gtx_st_g2_tikz.pdf}
+		\caption{Spanning tree of $G_2$}\label{fig:gtx_spanning_tree_2}
+	\end{subfigure}~
+	\begin{subfigure}[b]{49mm}
+    \centering
+		\includegraphics[width=\textwidth]{assets/tikz/gtx_st_g1_tikz.pdf}
+		\caption{Spanning tree of $G_1$}\label{fig:gtx_spanning_tree_1}
+	\end{subfigure}~
+	\begin{subfigure}[b]{53mm}
+    \centering
+		\includegraphics[width=\textwidth]{assets/tikz/gtx_st_g0_tikz.pdf}
+		\caption{Spanning tree of $G_0$}\label{fig:gtx_spanning_tree_0}
+	\end{subfigure}~
+  \caption{Unfolding stars to recover spanning trees}
+  \label{fig:gtx_spanning_tree}
+\end{figure*}
 
-
-Later we hope to found an upper bound of $T$ in terms of $m$, and also to refine the analysis to
-leverage the fact that $\sum_{t=0}^T |E_t|$ is significantly smaller than $Tm$. For now, let us
-prove the termination of \gtx{} by observing that, assuming $|E_t|>0$, $|E_{t+1}| < |E_t|$ since
-at least two nodes in $G_t$ are connected and will therefore form a star, which will remove all the
-inner edges of that star. As for the fact that we get a tree, note that a star is a tree, therefore
-a star of star is a tree, and so on.\Todo{make the two arguments about \gtx{} correctness more
-formal, and also explain that since all nodes are part of the ultimate star, this tree is a spanning
-one. Motivate the name of \gtx{}.}
+The bound of \autoref{prop:gtx_correct} amounts to $O(|V_0||E_0|)$, which we believe is overly
+pessimistic. First because we expect the number of nodes to decrease by more than one at each step,
+maybe leading to only $O(\log |V_0|)$ iterations. More importantly, instead of bounding
+$\sum_{t=0}^K |E_t|$ by $K|E_0|$, we hope to show that $E_{t+1} = rE_t$ with $r<1$ so that this sum
+is $O(|E_0|)$.
 
 \paragraph{Example of \gtx{}}
 \label{par:exemple_of_gtx}

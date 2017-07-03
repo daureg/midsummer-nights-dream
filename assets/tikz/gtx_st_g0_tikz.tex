@@ -1,0 +1,101 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=7mm,inner sep=0.5pt,font=\Large},
+  edge/.append style={line width=2.8pt,color=DodgerBlue}]
+  \node[text=white] (ph1) at (-1.5,1.5)  {.};
+  \node[text=white] (ph2) at (7.5,-13.5) {.};
+  \node[text=white] (ph3) at (14.5,4.5)  {.};
+
+  \node[vertex] (n1) at (0.000, -0.000) {1};
+  \node[vertex] (n2) at (0.223, -1.179) {2};
+  \node[vertex] (n3) at (-1.179, -0.223) {3};
+  \node[vertex] (n4) at (-0.223, 1.179) {4};
+  \node[vertex] (n5) at (1.179, 0.223) {5};
+  \node[vertex] (n6) at (1.689, -3.448) {6};
+  \node[vertex] (n7) at (2.408, -4.409) {7};
+  \node[vertex] (n8) at (0.728, -4.167) {8};
+  \node[vertex] (n9) at (0.971, -2.487) {9};
+  \node[vertex] (n10) at (2.650, -2.730) {10};
+  \node[vertex] (n11) at (3.734, 0.896) {11};
+  \node[vertex] (n12) at (4.391, -0.108) {12};
+  \node[vertex] (n13) at (2.730, 0.240) {13};
+  \node[vertex] (n14) at (3.077, 1.901) {14};
+  \node[vertex] (n15) at (4.738, 1.553) {15};
+  \node[vertex] (n16) at (4.245, -8.664) {16};
+  \node[vertex] (n17) at (4.450, -9.846) {17};
+  \node[vertex] (n18) at (3.062, -8.870) {18};
+  \node[vertex] (n19) at (4.039, -7.482) {19};
+  \node[vertex] (n20) at (5.427, -8.459) {20};
+  \node[vertex] (n21) at (5.934, -12.113) {21};
+  \node[vertex] (n22) at (5.614, -13.269) {22};
+  \node[vertex] (n23) at (4.777, -11.793) {23};
+  \node[vertex] (n24) at (6.254, -10.956) {24};
+  \node[vertex] (n25) at (7.090, -12.433) {25};
+  \node[vertex] (n26) at (7.978, -7.768) {26};
+  \node[vertex] (n27) at (8.018, -8.967) {27};
+  \node[vertex] (n28) at (6.779, -7.808) {28};
+  \node[vertex] (n29) at (7.939, -6.568) {29};
+  \node[vertex] (n30) at (9.178, -7.728) {30};
+  \node[vertex] (n31) at (9.381, 2.252) {31};
+  \node[vertex] (n32) at (8.964, 1.127) {32};
+  \node[vertex] (n33) at (8.256, 2.669) {33};
+  \node[vertex] (n34) at (9.799, 3.377) {34};
+  \node[vertex] (n35) at (10.507, 1.835) {35};
+  \node[vertex] (n36) at (11.071, -1.196) {36};
+  \node[vertex] (n37) at (11.078, -2.396) {37};
+  \node[vertex] (n38) at (9.871, -1.203) {38};
+  \node[vertex] (n39) at (11.064, 0.004) {39};
+  \node[vertex] (n40) at (12.271, -1.189) {40};
+  \node[vertex] (n41) at (13.115, 3.149) {41};
+  \node[vertex] (n42) at (13.437, 1.993) {42};
+  \node[vertex] (n43) at (11.959, 2.827) {43};
+  \node[vertex] (n44) at (12.794, 4.305) {44};
+  \node[vertex] (n45) at (14.271, 3.470) {45};
+
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n2);
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n3);
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n4);
+  \draw[edge] (n1) edge [bend left =0] node[] {} (n5);
+  \draw[edge,Orange] (n2) edge [bend left =25] node[] {} (n6);
+  \draw[edge,Orange] (n4) edge [bend left =20] node[] {} (n14);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n7);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n8);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n9);
+  \draw[edge] (n6) edge [bend left =0] node[] {} (n10);
+  \draw[edge,Green] (n8) .. controls ++(-40:3) and ++(240: 2) .. (n37);
+  \draw[edge] (n11) edge [bend left =0] node[] {} (n12);
+  \draw[edge] (n11) edge [bend left =0] node[] {} (n13);
+  \draw[edge] (n11) edge [bend left =0] node[] {} (n14);
+  \draw[edge] (n11) edge [bend left =0] node[] {} (n15);
+  \draw[edge,Green] (n15) .. controls ++(-40:3) and ++(64: 3.5) .. (n26);
+  \draw[edge] (n16) edge [bend left =0] node[] {} (n17);
+  \draw[edge] (n16) edge [bend left =0] node[] {} (n18);
+  \draw[edge] (n16) edge [bend left =0] node[] {} (n19);
+  \draw[edge] (n16) edge [bend left =0] node[] {} (n20);
+  \draw[edge,Orange] (n17) edge [bend left =0] node[] {} (n23);
+  \draw[edge,Orange] (n19) edge [bend left =0] node[] {} (n29);
+  \draw[edge] (n21) edge [bend left =0] node[] {} (n22);
+  \draw[edge] (n21) edge [bend left =0] node[] {} (n23);
+  \draw[edge] (n21) edge [bend left =0] node[] {} (n24);
+  \draw[edge] (n21) edge [bend left =0] node[] {} (n25);
+  \draw[edge] (n26) edge [bend left =0] node[] {} (n27);
+  \draw[edge] (n26) edge [bend left =0] node[] {} (n28);
+  \draw[edge] (n26) edge [bend left =0] node[] {} (n29);
+  \draw[edge] (n26) edge [bend left =0] node[] {} (n30);
+  \draw[edge] (n31) edge [bend left =0] node[] {} (n32);
+  \draw[edge] (n31) edge [bend left =0] node[] {} (n33);
+  \draw[edge] (n31) edge [bend left =0] node[] {} (n34);
+  \draw[edge] (n31) edge [bend left =0] node[] {} (n35);
+  \draw[edge,Orange] (n32) edge [bend left =0] node[] {} (n39);
+  \draw[edge,Orange] (n35) edge [bend left =0] node[] {} (n43);
+  \draw[edge] (n36) edge [bend left =0] node[] {} (n37);
+  \draw[edge] (n36) edge [bend left =0] node[] {} (n38);
+  \draw[edge] (n36) edge [bend left =0] node[] {} (n39);
+  \draw[edge] (n36) edge [bend left =0] node[] {} (n40);
+  \draw[edge] (n41) edge [bend left =0] node[] {} (n42);
+  \draw[edge] (n41) edge [bend left =0] node[] {} (n43);
+  \draw[edge] (n41) edge [bend left =0] node[] {} (n44);
+  \draw[edge] (n41) edge [bend left =0] node[] {} (n45);
+\end{tikzpicture}
+\end{document}
