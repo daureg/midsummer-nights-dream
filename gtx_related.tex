@@ -1,0 +1,36 @@
+Looking for subgraphs $H$ of $G$ that best preserve the distance in $G$ while being sparse is an old
+problem, especially driven by network design in fields such as transportation and electrical
+circuit. For instance, \textcite{Johnson1978} define the following problem\footnote{We adapt their
+notations to match ours}:  
+\begin{problem}[Network Design Problem]
+  \label{prob:gtx_ndp}
+  Given an undirected integer-weighted graph $G=(V, E, w)$, a budget $B\in\Nbb$ and a criterion
+  threshold $C\in \Nbb$, does there exist a spanning subgraph $G'=(V, E')$ of $G$ with weight
+  $w(E') \leq B$ and criterion value $F(G') \leq C$, where the criterion function $F(G')$ denotes
+  the sum of the weights of the shortest paths in $G'$ between all vertex pairs?
+\end{problem}
+Note that their definition of stretch includes all possible edges in $G$ and not only those in $E$.
+They prove that this problem is \NPc{} by exhibiting a reduction from the \textsc{Knapsack}
+problem. Finally they prove that the simpler problem of finding a spanning tree on an unweighted
+graph, that is
+\begin{problem}[Simple Network Design Problem]
+  \autoref{prob:gtx_ndp} with $w$ being the equal to $1$ for all edges in $E$ and $B=|V|-1$.
+\end{problem}
+is also \NPc{} by reduction from \textsc{Exact 3-Cover}.
+
+Earlier but slightly less related, \textcite{OptimalNetwork69} studies the following problem:
+\begin{problem}[Optimal Network Problem]
+  \label{prob:gtx_scott}
+  Given a set $V$ of $n$ vertices, find a set of spanning edges $E\subset V^2$ that minimizes
+  the sum of the length of the shortest paths  between all vertex pairs while the
+  total length of the resulting network does not exceed some upper bound $B\in\Nbb$.
+\end{problem}
+This can be seen as a special case of \autoref{prob:gtx_ndp} with $G$ being the
+unweighted\marginpars{according to the experiments, it's not clear whether there are weights or
+not…} $n$-complete graph. He proposes a backtracking solution and two local search approximate
+algorithms.
+
+% Quandt R. E. (1960). Models of transportation and optimal network construction.  J. reg. Sri. 2,27-45.
+% KNIGHT U. G. W. (1960a). The logical design of electrical networks using linear programming methods.  Proc. Instn elect.  Engrs A107, 306-319.
+% KNIGHT U. G. W. (1960b).  Logical design of electrical networks. J. Instn elect. Engrs 6, 228-230.
+% Then look back at Alon for Pelleg solution in the late 80's
