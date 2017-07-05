@@ -467,6 +467,75 @@ the degree of a node $u$ drops to zero because all of its neighbors were claimed
 periphery of previous stars. Such a node then forms a \emph{singleton star}, as illustrated in
 \autoref{fig:gtx_singleton}, where after the creation of \starone{1} and \starone{2}, $c_3$ is the
 single node of the third star \starone{3}.
+
+Such singleton stars are problematic because when too many are created, we can end up having
+$|V_{t+1}|$ almost as large as $|V_t|$. Consider for instance the graph $G_t$ at the top of
+\autoref{fig:gtx_manysingles} (which is actually a tree). It has of order $k^3$ nodes and because
+all nodes at level 2 will be selected as center of their star, the graph $G_{t+1}$ (showed at the
+bottom of \autoref{fig:gtx_manysingles}) also have around $k^3$ nodes, meaning that
+$\frac{|V_{t+1}|}{|V_t|}$ tends to $1$ as $k$ goes to infinity. This is because
+$k\left(k(k+1)\right)$ singleton stars were created. Let us denote the fraction of singleton stars
+over the total number of nodes by $\alpha$. In that case,
+$$\alpha = \frac{k\left(k(k+1)\right)}{1+k+k(k+1)+k^2(k+1)}
+= 1 - \frac{1+2k+k^2}{1+2k+2k^2+k^3}
+= 1 - \frac{1+k}{1+k+k^2}$$
+We will now see that when so many singleton stars are created at one iteration, the next iteration
+greatly reduces the number of nodes so that over the course of two iterations, we have the following
+result:
+
+\begin{lemma}
+  \label{lemma:gtx_lessnodes}
+  During the execution of the \gtx{} algorithm, for all $t \leq K-2$, $|V_{t+2}| \leq
+  \frac{2}{3}|V_t|$.
+\end{lemma}
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=\linewidth]{assets/raw/lots_of_singletons_bw.png}
+  \caption{A case were too many singletons \enquote{waste} one iteration of \gtx{}}
+  \label{fig:gtx_manysingles}
+\end{marginfigure}
+\begin{proof}
+  Say that at iteration $t$ of \gtx{}, we have $n_t$ nodes and assume a fraction $\alpha$ of them
+  are gonna form singleton stars. This means there will be at most $\frac{1-\alpha}{2}n_t$
+  \emph{proper} stars, because such stars are made of at least two nodes. Now fix a constant
+  $\lambda \in (0,1)$, for instance $\lambda = \nicefrac{9}{10}$. If $\alpha \leq \lambda$, $n_{t+1}
+  \leq (\frac{1-\alpha}{2} + \alpha)n_t = \frac{1+\alpha}{2}n_t = \frac{19}{20}n_t$ and we get a
+  constant rate reduction of the number of nodes. On the other hand, if $\alpha > \lambda$, we could
+  be in the situation of the previous example and have $\alpha$ tends to $1$. Then we only have a
+  few proper stars and by construction, each singleton star is connected to least one proper star.
+  In the worst case, those connections are uniform so that each of these proper star has a degree
+  $\frac{\alpha n_t}{\frac{1-\alpha}{2}n_t} = \frac{2\alpha}{1-\alpha}$ which goes to infinity when
+  $\alpha$ goes to $1$ and is greater than $18$ when $\alpha$ is greater than $\nicefrac{9}{10}$.
+  Even ignoring the fact that those proper stars are connected, it follows that in the next
+  iteration, the number of node will be reduced by the degree of those proper stars. Setting in the
+  worst case $n_{t+1}=\frac{1+\alpha}{2}n_t$, we thus have $$n_{t+2} \leq
+  \frac{n_{t+1}}{\frac{2\alpha}{1-\alpha}} = \frac{1-\alpha^2}{4\alpha}n_t$$
+  \begin{marginfigure}
+    \centering
+    \includegraphics[width=\linewidth]{assets/tmp-code/gtx_reduc.pdf}
+    \caption{The fraction of $n_t$ nodes remaining in $n_{t+2}$ for the three cases described in the
+    main text.}
+    % \label{fig:gtx_manysingles}
+  \end{marginfigure}
+  This defines three ways to go from $n_t$ to $n_{t+2}$: if the first iteration has $\alpha>\lambda$,
+  then we just seen that in the worst case we have at least $n_{t+2}\leq
+  \frac{1-\lambda^2}{4\lambda}n_t$; if the first iteration has $\alpha < \lambda$, then either the
+  second also has  $\alpha < \lambda$ (in which case $n_{t+2}\leq
+  \left(\frac{1+\lambda}{2}\right)^2n_t$) or the second has $\alpha>\lambda$ (in which case
+  $n_{t+2}\leq \frac{1+\lambda}{2}n_t$). We can optimize over $\lambda$ by finding its value such
+  that $\frac{1-\lambda^2}{4\lambda}=\frac{1+\lambda}{2}$, yielding $\lambda = \frac{1}{3}$. Then,
+  that in any event, $n_{t+2}\leq \frac{2}{3}n_t$ as claimed.
+\end{proof}
+
+From that we conclude that the number of iterations of the \gtx{} algorithm satisfies $K=O(\log
+|V_0|)$. We would like to prove a similar result on the edges so that the overall complexity of the
+\gtx{} algorithm would be $O(|V_0|\log |V_0|+|E_0|)$. However, this does not follow directly from the
+reduction of number of nodes. Indeed we can have a situation where most of the edges of $E_t$ are
+between the stars of $G_t$ and thus will remain in the next iteration. Still, we hope that
+similarly to the previous proof, this high density of outer edges will lead to strong collapse in
+the next iteration.
+
+\iffalse
 In the case no singleton are formed during one execution of \extractStar{}, the number of nodes is
 reduced by at least a factor $2$ (because each star is made of at least two nodes). On the other hand, we can
 construct a graph with singletons where the factor of reduction in number of nodes and edges can be
@@ -493,6 +562,7 @@ both $\frac{|V_{t+1}|}{|V_t|}$ and $\frac{|E_{t+1}|}{|E_t|}$ tend to $1$. Note h
 cases, this is not really a problem because at the next iteration, there will be only two stars (one
 of them will be a singleton). Is it always like that? In other words, can we have a situation where
 a large number of singletons is carried over several consecutive iterations?
+\fi
 
 \paragraph{Variants of \extractStar{}}
 \label{ssec:gtx_center_choice}
