@@ -1,7 +1,7 @@
-Looking for subgraphs $H$ of $G$ that best preserve the distance in $G$ while being sparse is an old
-problem, especially driven by network design in fields such as transportation and electrical
-circuit. For instance, \textcite{Johnson1978} define the following problem\footnote{We adapt their
-notations to match ours}:  
+Looking for a subgraph $H$ of $G$ that best preserve the distance in $G$ while being sparse is an old
+problem, especially driven by network design in fields such as transportation~\autocite{RoadNetworks60}
+and electrical circuits~\autocite{electricalNetworks60}. For instance, \textcite{Johnson1978} define
+the following problem\footnote{We adapt their notations to match ours}:  
 \begin{problem}[Network Design Problem]
   \label{prob:gtx_ndp}
   Given an undirected integer-weighted graph $G=(V, E, w)$, a budget $B\in\Nbb$ and a criterion
@@ -13,10 +13,32 @@ Note that their definition of stretch includes all possible edges in $G$ and not
 They prove that this problem is \NPc{} by exhibiting a reduction from the \textsc{Knapsack}
 problem. Finally they prove that the simpler problem of finding a spanning tree on an unweighted
 graph, that is
+\vspace{-.5\baselineskip}
 \begin{problem}[Simple Network Design Problem]
   \autoref{prob:gtx_ndp} with $w$ being the equal to $1$ for all edges in $E$ and $B=|V|-1$.
+\end{problem}%
+\vspace{-.5\baselineskip}
+\noindent is also \NPc{} by reduction from \textsc{Exact 3-Cover}.
+
+\begin{problem}[Optimal Communication Spanning Tree~\autocite{Requirements74}]
+Given a set of nodes $V=\{v_1, \ldots, v_n\}$, a set of distances $d_{ij}$ and a set of requirements
+$r_{ij}$ between $v_i$ and $v_j$, find a spanning tree connecting these $n$ nodes such that the
+total cost of communication of the spanning tree is a minimum among all spanning trees. The cost of
+communication for a pair of nodes is $r_{i,j}$ multiplied by the sum of the distances of arcs which
+form the unique path connecting $v_i$ and $v_j$ in the spanning tree. The cost of a spanning tree is
+the sum of costs over all pairs of nodes.
 \end{problem}
-is also \NPc{} by reduction from \textsc{Exact 3-Cover}.
+
+Given a weighted graph $G=(V,E,w)$, if we let $d_{ij}$ be $w((i,j))$ and $r_{ij}$ be $1$ if
+$(i,j)\in E$ and $0$ otherwise, it seems to me this correspond to the weighted low stretch problem.
+However, \textcite[Section 4]{lognMetricBoundConf03} claim a $O(\log n)$ approximation so maybe I'm
+wrong.
+
+This defines two kind of structures, spanning trees and spanners (which are still sparse subgraphs
+yet containing more than $|V|-1$ edges).
+
+\paragraph{Trees}
+\label{par:trees}
 
 Earlier but slightly less related, \textcite{OptimalNetwork69} studies the following problem:
 \begin{problem}[Optimal Network Problem]
@@ -25,12 +47,23 @@ Earlier but slightly less related, \textcite{OptimalNetwork69} studies the follo
   the sum of the length of the shortest paths  between all vertex pairs while the
   total length of the resulting network does not exceed some upper bound $B\in\Nbb$.
 \end{problem}
-This can be seen as a special case of \autoref{prob:gtx_ndp} with $G$ being the
-unweighted\marginpars{according to the experiments, it's not clear whether there are weights or
+This can be seen as a special case of \autoref{prob:gtx_ndp} with $G$ being the unweighted
+\marginpars{according to the experiments, it's not clear whether there are weights or
 not…} $n$-complete graph. He proposes a backtracking solution and two local search approximate
-algorithms.
+algorithms. Some early branch and bound heuristic solutions to \autoref{prob:gtx_scott} are surveyed
+in~\autoref[Section 2.3.2]{networkDesignSurvey89} although they do not come with asymptotic
+guarantee on the stretch. Furthermore, \textcite{optimApproxNP80} proves that for any $\epsilon \in
+(0,1)$, finding a $|V|^{1-\epsilon}$ approximation is \NPc{}.
 
-% Quandt R. E. (1960). Models of transportation and optimal network construction.  J. reg. Sri. 2,27-45.
-% KNIGHT U. G. W. (1960a). The logical design of electrical networks using linear programming methods.  Proc. Instn elect.  Engrs A107, 306-319.
-% KNIGHT U. G. W. (1960b).  Logical design of electrical networks. J. Instn elect. Engrs 6, 228-230.
-% Then look back at Alon for Pelleg solution in the late 80's
+\paragraph{Spanners}
+\label{par:spanners}
+
+
+% check some surveys of the 80's
+% http://pubsonline.informs.org/doi/abs/10.1287/trsc.18.1.1
+% http://onlinelibrary.wiley.com/doi/10.1002/net.3230190305/full
+% early solutions
+% http://onlinelibrary.wiley.com/doi/10.1002/net.3230090104/full
+% http://onlinelibrary.wiley.com/doi/10.1002/net.3230130309/full
+% later solution?
+% http://ieeexplore.ieee.org/document/81738
