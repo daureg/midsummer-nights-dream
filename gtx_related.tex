@@ -31,7 +31,7 @@ the sum of costs over all pairs of nodes.
 
 Given a weighted graph $G=(V,E,w)$, if we let $d_{ij}$ be $w((i,j))$ and $r_{ij}$ be $1$ if
 $(i,j)\in E$ and $0$ otherwise, it seems to me this correspond to the weighted low stretch problem.
-However, \textcite[Section 4]{lognMetricBoundConf03} claim a $O(\log n)$ approximation so maybe I'm
+However, \textcite[Section 3, page 453]{lognMetricBoundConf03} claim a $O(\log n)$ approximation so maybe I'm
 wrong.
 
 This defines two kind of structures, spanning trees and spanners (which are still sparse subgraphs
@@ -51,7 +51,7 @@ This can be seen as a special case of \autoref{prob:gtx_ndp} with $G$ being the 
 \marginpars{according to the experiments, it's not clear whether there are weights or
 not…} $n$-complete graph. He proposes a backtracking solution and two local search approximate
 algorithms. Some early branch and bound heuristic solutions to \autoref{prob:gtx_scott} are surveyed
-in~\autoref[Section 2.3.2]{networkDesignSurvey89} although they do not come with asymptotic
+in~\autocite[Section 2.3.2]{networkDesignSurvey89} although they do not come with asymptotic
 guarantee on the stretch. Furthermore, \textcite{optimApproxNP80} proves that for any $\epsilon \in
 (0,1)$, finding a $|V|^{1-\epsilon}$ approximation is \NPc{}.
 

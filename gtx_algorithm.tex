@@ -219,12 +219,13 @@ Namely in the listing of \autoref{alg:gtx} \vpageref{alg:gtx}, we use the three 
     \Let{$G_t$}{$G_0$}
     \Let{$inner\_edges\_seq$, $outer\_edges\_seq$}{$[]$, $[]$}
     \Repeat
-      \Let{$stars$, $inner\_edges$, $membership$}{\Call{Extract-Stars}{$G_t$}}
+      \Let{$stars$, $inner\_edges$, $star\_membership$}{\Call{Extract-Stars}{$G_t$}}
       \State Add $inner\_edges$ to the list $inner\_edges\_seq$
       \State \Call{Update-Eccentricity}{$stars$, $eccentricity$, $original\_node$}
-      \Let{$full\_membership$, $original\_node$}{\Call{Update-Nodes-Mapping}{$full\_membership$, $membership$}}
+      \Let{$full\_membership$, $original\_node$}{\Call{Update-Nodes-Mapping}{$full\_membership$,
+      $star\_membership$}}
       \Let{$G_{t+1}$, $\!outer\_edges$}{\Call{Collapse-Stars}{$E_t \!\setminus\! inner\_edges$,
-      $\!membership$, $\!eccentricity$}}
+      $\!star\_membership$, $\!eccentricity$}}
       \State Add $outer\_edges$ to the list $outer\_edges\_seq$
       \Let{$G_{t}$}{$G_{t+1}$}
     \Until{$|outer\_edges|>0$}
@@ -485,7 +486,7 @@ result:
 
 \begin{lemma}
   \label{lemma:gtx_lessnodes}
-  During the execution of the \gtx{} algorithm, for all $t \leq K-2$, $|V_{t+2}| \leq
+  During the execution of the \gtx{} algorithm, for all $0\leq t \leq K-2$, $|V_{t+2}| \leq
   \frac{2}{3}|V_t|$.
 \end{lemma}
 \begin{marginfigure}
