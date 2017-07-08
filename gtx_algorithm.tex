@@ -483,6 +483,8 @@ $$\alpha = \frac{k\left(k(k+1)\right)}{1+k+k(k+1)+k^2(k+1)}
 We will now see that when so many singleton stars are created at one iteration, the next iteration
 greatly reduces the number of nodes so that over the course of two iterations, we have the following
 result:
+{\color{blue}{\large the following is actually incorrect but I leave it for now for illustration
+purpose}
 
 \begin{lemma}
   \label{lemma:gtx_lessnodes}
@@ -508,7 +510,7 @@ result:
   In the worst case, those connections are uniform so that each of these proper stars has degree at least
   $\frac{\alpha n_t}{\frac{1-\alpha}{2}n_t} = \frac{2\alpha}{1-\alpha}$ which goes to infinity when
   $\alpha$ goes to $1$ and is greater than $18$ when $\alpha$ is greater than $\nicefrac{9}{10}$.
-  Even ignoring the fact that those proper stars are connected, it follows that in the next
+  \textbf{Even ignoring the fact that those proper stars are connected}, it follows that in the next
   iteration, the number of node will be reduced by the degree of those proper stars. Setting in the
   worst case $n_{t+1}=\frac{1+\alpha}{2}n_t$, we thus have $$n_{t+2} \leq
   \frac{n_{t+1}}{\frac{2\alpha}{1-\alpha}} = \frac{1-\alpha^2}{4\alpha}n_t$$
@@ -530,7 +532,15 @@ result:
 \end{proof}
 
 From that we conclude that the number of iterations of the \gtx{} algorithm satisfies $K=O(\log
-|V_0|)$. We would like to prove a similar result on the edges so that the overall complexity of the
+|V_0|)$.}
+The problem is that we cannot ignore the fact that proper stars are connected, since one of them can
+be connected to all others and have the highest degree. That proper star is then chosen as the first
+center, all other proper stars become its periphery and all their attached singletons star remain
+singleton stars at the next iteration. This actually what happens on \autoref{fig:gtx_manysingles},
+an example where $|V_{t+2}| \sim |V_t| \sim k^3$. This could even be worse if proper stars are
+connected in such a hierarchical way that singleton stars can survive for many iterations.
+
+We would like to prove a similar result on the edges so that the overall complexity of the
 \gtx{} algorithm would be $O(|V_0|\log |V_0|+|E_0|)$. However, this does not follow directly from the
 reduction of number of nodes. Indeed, we can have a situation where most of the edges of $E_t$ are
 between the stars of $G_t$ and thus will remain in the next iteration. Still, we hope that
