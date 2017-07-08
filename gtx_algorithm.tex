@@ -622,4 +622,6 @@ A variant of the \gtx{} algorithm as a whole we did not explore so much in pract
 to produce spanner by stopping early. Basically if we stop at iteration $t$, we output the graph
 $G_t$ (which in general is not a tree) with its edges unfolded to lie in $E_0$. This corresponds to
 a trade off between having more edges than $|V_0|-1$ but potentially making shorter connection and
-thus having a lower stretch.
+thus having a lower stretch. This would also be interesting in the sign prediction setting. Assuming
+the treewidth of $G_t$ is decreasing with $t$, maybe we could show there is \enquote{reasonable}
+number of paths between $u$ and $v$, compute their parity and take a majority vote on the results.
