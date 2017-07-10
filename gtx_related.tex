@@ -19,6 +19,10 @@ graph, that is
 \end{problem}%
 \vspace{-.5\baselineskip}
 \noindent is also \NPc{} by reduction from \textsc{Exact 3-Cover}.
+In this setting of a spanning tree minimizing the stretch over all pairs of nodes, \enquote{
+\textcite{AllPairStrech08} obtained a $(c log n)^{O(\log \Delta)}$ factor, where $c$ is the optimal
+maximum stretch and $\Delta$ is the diameter.  They also showed $O(1)$ approximation for the case
+where the graph is unweighted. The constant was later reduced to $6$ by \textcite{AllPairStrech10}}
 
 \begin{problem}[Optimal Communication Spanning Tree~\autocite{Requirements74}]
 Given a set of nodes $V=\{v_1, \ldots, v_n\}$, a set of distances $d_{ij}$ and a set of requirements
@@ -31,8 +35,9 @@ the sum of costs over all pairs of nodes.
 
 Given a weighted graph $G=(V,E,w)$, if we let $d_{ij}$ be $w((i,j))$ and $r_{ij}$ be $1$ if
 $(i,j)\in E$ and $0$ otherwise, it seems to me this correspond to the weighted low stretch problem.
-However, \textcite[Section 3, page 453]{lognMetricBoundConf03} claim a $O(\log n)$ approximation so maybe I'm
-wrong.
+% However, \textcite[Section 3, page 453]{lognMetricBoundConf03} claim a $O(\log n)$ approximation so maybe I'm
+% wrong. Turns out, they refer to a distribution over trees and this $O(\log n)$ is the expected
+% stretch of a tree sampled from this distribution
 
 This defines two kind of structures, spanning trees and spanners (which are still sparse subgraphs
 yet containing more than $|V|-1$ edges).
@@ -54,6 +59,84 @@ algorithms. Some early branch and bound heuristic solutions to \autoref{prob:gtx
 in~\autocite[Section 2.3.2]{networkDesignSurvey89} although they do not come with asymptotic
 guarantee on the stretch. Furthermore, \textcite{optimApproxNP80} proves that for any $\epsilon \in
 (0,1)$, finding a $|V|^{1-\epsilon}$ approximation is \NPc{}.
+
+Next is the seminal paper of \textcite{LowerBound95}. It touches on many topics, and frame the
+problem in a game theoretic way but here we only focus on two of their results: a lower bound of
+$\Omega(\log n)$ for the average stretch of any tree and their construction of a tree with $\exp
+O(\sqrt{\log n\log\log n})$ average stretch in time $O(m^2)$. The lower bound follows from an
+existing result in extremal graph theory~\autocite[pages 107--109]{ExtremalGraph04}: there is a
+positive constant $a$ such that for all $n\in \Nbb$, one can construct a graph $G$ with $n$ vertices
+and $2n$ edges such that every cycle $G$ has a length of at least $a\log n$. Now consider any
+spanning tree $T$ of $G$.  While all the $n-1$ edges of $T$ have a stretch of $1$, the $n+1$
+remaining ones form a cycle in $T$ hence in $G$ as well and thus incur a stretch of at least $a\log
+n$. This shows that the average stretch is at least $\frac{1}{2}a\log n$.
+
+They construct a low stretch spanning tree in a bottom up manner like the \gtx{} algorithm. First,
+they extend the definition of stretch to multigraph~\autocite[Section 4]{LowerBound95} and then
+describe a procedure to transform in linear time any multigraph $G$ with $n$ nodes to a multigraph
+$G'$ on the same nodeset with at most $n(n+1)$ edges such the average stretch of $G'$ is at most
+twice that of $G$~\autocite[Lemma 5.2]{LowerBound95}. The next ingredient is an algorithm to build a
+low diameter decomposition of a multigraph $G$, parametrized by a number $x(n)$ depending of $n$. It
+works by repeatedly selecting an arbitrary node and growing a ball around it until the number of
+edges leaving the ball is at most a fraction $\nicefrac{1}{x(n)}$ of the number of edges with both
+endpoints in the ball. The key property of this decomposition is that it yields a partition of $G$
+in clusters such that the radius of each cluster is small (namely at most $O(x(n)\log n)$) and there
+is most a fraction $\nicefrac{1}{x(n)}$ of edges between clusters. Finally, the iterative procedure
+is a follows: once a partition has been built, we compute a shortest path spanning tree in each
+cluster that are then collapsed into super nodes to form the next graph $G'$ and the process repeats.
+Another difference from \gtx{}, besides the partition procedure, is that $G'$ is a multigraph,
+taking into account the number of edges joining cluster, while \collapseStar{} picks only the most
+direct one.
+
+Another interesting idea from this paper is to consider a distribution over trees instead of a
+single instance, especially when one is concern about the maximum stretch instead of the average
+one. For instance, on a cycle with $n$ nodes, a tree is obtained by removing one edge, and that edge
+incurs a stretch of $n-1$. The uniform distribution over such trees has a maximum stretch of
+$2\left(1 - \frac{1}{n}\right)$~\autocite{circle2k89}.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Reproduction of Table 1 from~\autocite{Abraham2012} showing the evolution of the best
+  asymptotic average stretch over time.}\label{tab:gtx_related}
+  \begin{tabular}{lll}
+    \toprule
+    work                      & average stretch                          & time                    \\
+    \midrule
+    \autocite{LowerBound95}   & $\exp(O(\sqrt{\log n\log\log n}))$       & $O(m^2)$                \\
+    \autocite{LowerStretch05} & $O((\log n)^2 \log \log n)$              & $O(m \log^2 n)$         \\
+    \autocite{nearlyTight08}  & $O(\log n(\log \log n)^3)$              & $O(m \log^2 n)$         \\
+    % \autocite{nearlyTight08}  & $O(\log n \log\log n(\log\log\log n)^3)$ & $O(m^2)$                \\
+    \autocite{TighterSDD11}   & $O(\log n(\log \log n)^3 )$              & $O(m \log n\log\log n)$ \\
+    \autocite{Abraham2012}    & $O(\log n \log \log n)$                  & $O(m \log n\log\log n)$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\autocite{LowerStretch05} is the star decomposition described in section 3 of \autocite{papplow},
+which was modified by \autocite{nearlyTight08} to improve the stretch. Then \textcite{TighterSDD11}
+improved the runtime by rounding the edge weights to the closest power of $2$ and using a modified
+implementation of the Dijkstra's algorithm in the case of at most $k$ distinct edge
+weights~\autocite{FastPathFewWeights10}. Finally, \textcite{Abraham2012} describe an even more
+complex but tighter petal decomposition.
+\begin{marginfigure}
+  \centering
+  \includegraphics[width=.95\textwidth]{assets/raw/star_decomp.pdf}
+  \caption{Star decomposition (reproduced from Figure 1 of~\autocite{LowerStretch05})}
+  \label{fig:gtx_star_decomp}
+\end{marginfigure}
+
+
+If the tree is non spanning (\ie{} it can include edges not from the original graph as long as the
+distances in tree remain larger the distances in the graph), the average stretch can be reduced to
+$\Theta(\log n)$~\autocite{lognMetricBoundConf03}. Furthermore, when the objective if to minimize
+the average stretch over all possible pairs of node, then \textcite{constantDistortion07} achieve a
+universal constant bound.
+
+Special case of graph
+series parallel
+\enquote{In a subsequent paper, \textcite{seriesParallel06} proved that every series-parallel
+unweighted graph admits a spanning tree of average stretch $O(log n)$. This bound is tight as it
+matches the lower bound established in~\autocite{cutsTrees99}.}
 
 \paragraph{Spanners}
 \label{par:spanners}
