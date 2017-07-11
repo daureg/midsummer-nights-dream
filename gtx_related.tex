@@ -138,9 +138,99 @@ series parallel
 unweighted graph admits a spanning tree of average stretch $O(log n)$. This bound is tight as it
 matches the lower bound established in~\autocite{cutsTrees99}.}
 
+more special cases are in~\autocite{specialCase14}, although it's for the minimum max stretch
+$t^\star$.
+\enquote{Note also that a number of particular graph classes (like interval
+graphs, permutation graphs, asteroidal-triple–free graphs, strongly chordal graphs,
+dually chordal graphs, and others) admit tree $t$-spanners for small values of $t$}
+
+A tangential problem is \enquote{Light Approximate Shortest-path Trees (LASTs).  Given a set of
+“sources” and a sink, a LAST is a tree of weight close to the minimum spanning tree (MST) on the
+sources and the sink, such that the tree distance from any source to the sink is close to the
+shortest-path distance. Khuller, Raghavachari, and Young (KRY95) defined and studied LASTs in the
+offline setting and showed that one can get constant stretch with cost constant times the
+MST.}\footnote{FOCS'17 \href{https://arxiv.org/abs/1611.00052}{arxiv.org/abs/1611.00052}}
+
 \paragraph{Spanners}
 \label{par:spanners}
 
+the subgraph $H$ is said to be an $(\alpha, \beta)$-spanner of $G$ if, for a pair of parameters
+$\alpha \geq 1$, $\beta \geq 0$, and for every pair $u, v \in V$ of vertices, it holds that $d_H(u,
+v) \leq \alpha\cdot d_G(u, v)+\beta$.
+
+They have applications in computing approximately shortest
+paths [9, 22, 28, 37], routing [48], distance oracles and
+labeling schemes [49, 56, 36] and synchronization [7].
+
+From 6:They also appear in biology in the process of reconstructing phylogenetic trees from
+matrices, whose entries represent genetic distances among contemporary living species (H. J.
+Bandelt, A. W. M. Dress, Reconstructing the Shape of a Tree from Observed Dissimilarity Data, Adv.
+in Appl. Math. 7 (1986)). Robotics researchers have studied spanners under the constraints of
+Euclidean geometry, where vertices of the graph are points in space, and edges are line segments
+joining pairs of points (Chew), (Dobkin), $[DJ], [K], [KG], [LL]$. 
+
+studied in 1; 4; 6; 9; 15; 19; 22; 24; 26; 28; 30; 31; 37; 43; 51; 52; 57; 58
+
+
+
+\begin{tabulary}{\textwidth}{LLLLL}
+  \toprule
+  work  & average stretch & edge size                              & weighted & time                                             \\
+  \midrule
+  46    & $4k + 1$        & $O(n^{1+\nicefrac{1}{k}})$             & no       & polynomial                                       \\
+  6     & $2k +1$         & $O(n\cdot \ceil{n^{\nicefrac{1}{k}}})$ & yes      & $O\left(m(n^{1+\nicefrac{1}{k}}+n\log n)\right)$ \\
+  40    & $2k-1$          & $O(n^{1+\nicefrac{1}{k}}+n)$           & no       & $O(m)$                                           \\
+  Elkin & $2k-1$          & $n \cdot (1 + O(\frac{\log k}{n}))$    & no       & $O(m)$                                           \\
+  \bottomrule
+\end{tabulary}
+
+% 22: E. Cohen, "Fast algorithms for constructing t-spanners and paths with stretch t," Proceedings
+% of 1993 IEEE 34th Annual Foundations of Computer Science, Palo Alto, CA, 1993, pp. 648-658.  doi:
+% 10.1109/SFCS.1993.366822
+We construct t-spanners of size (number of edges) Õ(n 1+(2+\epsilon)/t )
+(for any \epsilon > 0 and t such that t/(2+\epsilon) is integral). These spanners can be constructed
+by a randomized algorithm that runs in Õ(mn (2+\epsilon)/t ) time.
+
+
+% Halperin and Zwick [40].  Their deterministic algorithm, for an integer parame- ter k ≥ 1,
+% computes a (2k − 1)-spanner with n 1+1/k + n edges in O(|E|) time. (Their result improved previous
+% pioneering work by [46, 22].)
+
+Describe the greedy algorithm of 6. Using (55 On Dynamic Shortest Paths Problems Liam Roditty, Uri
+Zwick, 2004), it runs in $O(\alpha n^{2+\nicefrac{1}{\alpha}})$
+
+peleg 2007 hardness results
+
+46: Peleg, D. and Schäffer, A. A. (1989), Graph spanners. J. Graph Theory, 13: 99–116.
+doi:10.1002/jgt.3190130114
+
+study the problem on unweighted graph. Application to routing scheme (48: D. Peleg and E. Upfal, A
+tradeoff between space and efficiency for routing tables. 20th ACM Symposium on the Theory of
+Computing, Chicago (1988))
+Special case for the complete graph weighted by the distance in a 2D plan. Existing $\sqrt{10}$
+spanner for the $\ell_1$ metric (L. P. Chew, There is a planar graph almost as good as the complete
+graph.  Proceedings of the 2nd ACM Symposium on Computational Geometry, (1986)) (improved to
+$\sqrt{4+2\sqrt{2}}$ by N. Bonichon, C. Gavoille, N. Hanusse, L. Perkovic The stretch factor of
+$\ell_1$ and $\ell_{\infty}$ Delaunay triangulations European Symposium on Algorithms (ESA) (2012))
+and $\phi \pi$ for $\ell_2$ (D. P. Dobkin, S. J. Friedman, and K. J. Supowit, Delaunay graphs are
+almost as good as complete graphs. 28th IEEE Symposium on the Foundations of Computer Science,
+(1987)) (improved to $1.998$ by Ge Xia. 2011. Improved upper bound on the stretch factor of delaunay
+triangulations. In Proceedings of the twenty-seventh annual symposium on Computational geometry
+(SoCG '11)). See (Prosenjit Bose, Michiel Smid, On plane geometric spanners: A survey and open
+problems, Computational Geometry, Volume 46, Issue 7, 2013) for more on the 2D case.
+In undirected graph, finding a spanner with less than $k$ edges is \NPc{} (theorem 2.2)
+For $k<n$, one can construct in polynomial time a $(4\log_k n +1)$ spanner with less than $kn$ edges
+(theorem 2.4) giving for instance ($k=2$) $O(\log n)$ spanner with $O(n)$ edges and
+($k=n^{\nicefrac{1}{r}}$, $r\geq 1$) a $(4r+1)$ spanner with $O(n^{1+\nicefrac{1}{r}})$ edges
+(matching lower bound within constant factor). For every $d \geq 0$, the $d$-dimensional cube has a
+$3$-spanner with fewer than $7\time 2^d$ edges (Lemma 2.10 from 47: D. Peleg and J. D. Ullman. An
+optimal synchronizer for the hypercube. SIAM J. on Comput., 18:740–747, 1989)
+For chordal graphs: for every $n$-vertex chordal graph there exists a $2$-spanner with
+$O(n\sqrt{n})$ edges (matching lower bound), a $3$-spanner with $O(n \log n)$ edges and a $5$-spanner
+with $O(n)$ edges.
+Much more difficult for directed graph, according to Theorem 4.2: For every $t \geq 1$ there are
+infinitely many $n$-vertex directed graphs for which every $t$-spanner requires
+$\Omega(\nicefrac{n^2}{t^2})$ edges.
 
 % check some surveys of the 80's
 % http://pubsonline.informs.org/doi/abs/10.1287/trsc.18.1.1
