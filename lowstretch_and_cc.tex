@@ -24,6 +24,7 @@ svgnames, marginals=raggedouter, english,
 \subsection{Reliance on the sign generative model}
 \label{sub:reliance_on_the_sign_generative_model}
 
+\iffalse
 The method presented in the previous chapter hinges crucially upon our sign generative model. Yet
 one can imagine contexts where this model is not applicable, especially when nodes do not represent
 human beings. One way to alleviate this issue was introduced with our online algorithm, where this
@@ -38,10 +39,12 @@ limitations\marginpars{limitations is not the right word, maybe \emph{strong con
 	\item In the online setting, we evaluate our performance by the regret\marginpars{ref to regret equation},
 		whereas in general we are interested in more classical measures of predictive accuracy.
 \end{enumerate}
+\fi
 
-\subsubsection{Experience on directed biological network}
-\label{ssub:experience_on_directed_biological_network}
+\subsubsection{Experience on directed biological networks}
+\label{ssub:experience_on_directed_biological_networks}
 
+\iffalse
 Take for instance a biological network.
 
 According to \href{https://web.stanford.edu/class/cs224w/slides/handout-bionets.pdf}%
@@ -81,6 +84,7 @@ otherwise.  This corresponds naturally to the situation modeled by the \pcc{} pr
 
 \newpage
 
+\iffalse
 \section{Low stretch trees and spanners}
 \label{sec:low_stretch_trees_and_spanners}
 
@@ -111,14 +115,13 @@ we describe a way to build spanning trees tailored for this situation.
 \subsection{\gtx{}: a spanning tree designed for sign prediction}
 \label{sub:gtx_a_simple_low_stretch_tree_construction}
 
-\input{gtx_algorithm}
+% \input{gtx_algorithm}
 
 \subsection{Related works}
 \label{sub:gtx_related_works}
 
-\input{gtx_related}
+% \input{gtx_related}
 
-\iffalse
 \url{http://www.siam.org/meetings/da17/schedule.html} SODA 13B \url{http://dl.acm.org/citation.cfm?id=3039686}
 for instance the Elkin paper \enquote{Our centralized randomized algorithm computes (with
 probability close to 1), a $(2k - 1)$-spanner with $n \cdot (1 + O(\frac{\log k}{n}))$ edges in
@@ -148,12 +151,13 @@ better in practice than those with a guaranteed low stretch.} this is improved b
 
 
 \begingroup
-\small
+\newgeometry{hmargin=2cm,vmargin=1.3cm}
 \setstretch{0.9}
 \todos
 
 \setlength\bibitemsep{2pt}
 \printbibliography
+\restoregeometry
 \endgroup
 
 % \bibliography{/home/orphee/data/projects/biblio/library.bib,more.bib}
