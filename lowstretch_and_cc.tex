@@ -62,71 +62,22 @@ of \cite{BioSigned09}.
 other domain? coref, images (is it directed?), entity resolution…\marginpars{Actually it's difficult
 to find other kind of graph because all constructed ones (like image, coreference,
 deduplication) are inherently symmetric}
+\fi
 
 \subsection{Need for a directed graph}
 \label{sub:need_for_a_directed_graph}
 
-
+\iffalse
 A more serious limitation is that our sign model only applies to directed graphs. Consider
 another model, where each node $i$ is endowed with an integer $c_i \in \{1, \ldots, k\}$ that
 specifies its cluster and let the sign of the undirected edge $i,j$ be $+$ if $c_i = c_j$ and $-$
 otherwise.  This corresponds naturally to the situation modeled by the \pcc{} problem.
+\fi
 
 \section{\pcc{}}
 \label{sec:correlation_clustering}
 
-\subsection{Problem setting and applications}
-\label{sub:problem_setting}
-
-\subsection{Relation with edge sign prediction}
-\label{sub:relation_with_edge_sign_prediction}
-
-\iffalse
-For the 2 clusters case ($k=2$), characterization proven already in 1936 by \textcite{Konig36}, as noted in
-\cite{Zaslavsky2012} (commenting on \cite{harary1953}: \enquote{Although Thm. 3 was anticipated by
-\textcite[Theorem X.11]{Konig36}  without the terminology of signs, here is the
-first recognition of the crucial fact that labelling edges by elements of a
-group—specifically, the sign group—can lead to a general theory.})
-and \cite{Huffner2010} (\enquote{\textcite{Konig36} proved the following characterization of
-	balanced graphs. For a graph $G = (V , E)$, the following are equivalent:\marginpars{There is a
-	proof in \autocite[p. 111]{BookKleinberg2010}, maybe I can rewrite it as well}
-	\begin{enumerate}
-		\item $V$ can be partitioned into two sets $V_1$ and $V_2$ called sides such that there is no
-			negative edge $\{v, w\} \in E$ with both $v, w \in V_1$ or both $v, w \in V_2$ and no negative
-			edge $\{v, w\}$ with $v \in V_1$ and $w \in V_2$ .
-		\item $V$ can be colored with two colors such that for all $\{v, w\} \in E^-$, the vertices $v$
-			and $w$ have different colors, and for all $\{v, w\} \in E^+$, the vertices $v$ and $w$ have
-			the same color. The color classes correspond to the sides.
-		\item $G$ does not contain cycles with an odd number of negative edges.
-	\end{enumerate}
-	Using the characterization by a coloring, it is easy to see that balance of a signed
-graph can be checked in linear time by depth-first search.})
-\fi
-
-\subsection{State of the art}
-\label{sub:state_of_the_art}
-
-% ICML paper this year that touch something very related multicut and give recent applications in
-% vision https://arxiv.org/abs/1503.03791
-
-\subsection{Variants and extensions}
-\label{sub:variants_and_extensions}
-
-\subsubsection{\pcc{} under stability assumption}
-\label{ssub:cc_under_stability_assumption}
-
-\iffalse
-Haris Angelidakis, Konstantin Makarychev, and Yury Makarychev. 2017.
-Algorithms for Stable and Perturbation-Resilient Problems. STOC’17
-\href{http://ttic.uchicago.edu/~yury/papers/two-stable.pdf}{10.1145/3055399.3055487}
-improves over the one cited in the internship description
-\fi
-
-\subsubsection{Parallel \pcc{}}
-\label{ssub:parallel_cc}
-
-\subsection{Empirical evaluation?}
-\label{sub:cc_empiracal_evaluation}
+\input{cc_part}
 
 \newpage
 
