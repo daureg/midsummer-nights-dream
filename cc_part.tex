@@ -1,6 +1,54 @@
 \subsection{Problem setting and applications}
 \label{sub:problem_setting}
 
+
+Like other clustering frameworks, in \pcc{}, we are given a set of objects and we want to gather
+them into groups (called clusters) so that objects belonging to one cluster are similar to each
+other while being dissimilar to objects from all the other clusters.
+
+In \pcc{}, we formalize this problem by considering objects as the nodes of a graph $G$, whose edges
+weight encode similarity. Namely, in the most general case, for nodes $u$ and $v$, the edge between
+$u$ and $v$ is associated with two positive numbers:
+$w_{u,v}^+$ denotes the strength of the similarity between $u$ and $w$;
+$w_{u,v}^-$ denotes the strength of the dissimilarity between $u$ and $w$.
+Note however that in many applications, only one of these two numbers is non zero in which case we
+more conveniently set $w_{u,v} = \begin{cases}
+	 w_{u,v}^+ & \quad \text{if } w_{u,v}^+ > 0 \text{ and } w_{u,v}^-=0 \\
+	-w_{u,v}^- & \quad \text{if } w_{u,v}^+ = 0 \text{ and } w_{u,v}^->0 \\
+\end{cases}$
+
+Now consider a clustering \cluster{} of $V$, that is a function from $V$ to $\Nbb{}^{|V|}_{>0}$
+that assigns to each node a cluster index. For instance, $\cluster(u) = 3$ means that $u$ belongs
+to the third cluster. We can evaluate how \cluster{} fits our clustering paradigm in two ways,
+either by the number of \emph{agreements}, that is the weighted number of positive edges inside
+clusters plus the weighted number of negative edges across clusters; or by the number of
+\emph{disagreements}, that is the weighted number of negative edges inside clusters plus the
+weighted number of positive edges across clusters. Given a cost function $c$, which is usually the
+identity, \pcc{} can then be seen as graph optimization problem, either of maximizing agreements
+(\maxa{}):
+\begin{equation}
+	\max_{\cluster{}} \sum_{\cluster(u) = \cluster(v)} c(w_{uv}^+) +
+	\sum_{\cluster(u) \neq \cluster(v)} c(w_{uv}^-)
+	\label{eq:maxa}
+\end{equation}
+or minimizing disagreements (\mind{}):
+\begin{equation}
+	\min_{\cluster{}} \sum_{\cluster(u) = \cluster(v)} c(w_{uv}^-) +
+	\sum_{\cluster(u) \neq \cluster(v)} c(w_{uv}^+)
+	\label{eq:mind}
+\end{equation}
+
+Although an optimal clustering $\cluster^\star$ achieves the same value on both \eqref{eq:maxa}
+and \eqref{eq:mind}, we will see in \autoref{sub:state_of_the_art} that the latter objective is in
+some sense \enquote{easier}.
+
+\begin{figure}[hbt]
+	\centering
+	\includegraphics[width=0.9\linewidth]{assets/tikz/cc_objectives_tikz.pdf}
+	\caption[]{A clustering of a small with two disagreements due to two cycles with one negative edge.}
+	\label{fig:cc_objectives}
+\end{figure}
+
 \subsection{Relation with edge sign prediction}
 \label{sub:relation_with_edge_sign_prediction}
 
