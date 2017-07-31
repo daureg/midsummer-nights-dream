@@ -1,8 +1,8 @@
 \documentclass[svgnames,10pt]{standalone}
 \input{preambule}
 \tikzstyle{legend}=[inner sep=0pt,black,font=\small]
-\tikzstyle{pose}=[line width=2.0pt,solid,black]
-\tikzstyle{nege}=[line width=2.0pt,dashed,black]
+\tikzstyle{pose}=[line width=1.8pt,solid,black]
+\tikzstyle{nege}=[line width=1.8pt,dashed,black]
 \tikzstyle{c1}=[fill=DodgerBlue]
 \tikzstyle{c2}=[fill=Orange]
 \tikzstyle{c3}=[fill=SpringGreen]
@@ -19,15 +19,18 @@
     \foreach \source/\dest in {2/3,4/5,6/8}
       \draw[nege] (\source) edge  (\dest);
 
-    \draw[pose] (-2,3.9) edge (-1.3,3.9) node (poslegend) {};
+    \draw[pose,red] (6) edge  (7);
+    \draw[nege,red] (2) edge  (4);
+
+    \iffalse
+    \draw[pose] (-2,3.9) edge (-1.3,3.9);
     \node[legend] at (-0.7,3.9) {$+$ edge};
-    \draw[nege] (0.1,3.9) edge (0.8,3.9) node (neglegend) {};
+    \draw[nege] (0.1,3.9) edge (0.8,3.9);
     \node[legend] at (1.5,3.9) {$-$ edge};
     \draw[pose,red] (2.2,3.97) edge (3,3.97);
     \draw[nege,red] (2.2,3.83) edge (3,3.83);
     \node[legend] at (4.25,3.9) {disagreements};
+    \fi
 
-    \draw[pose,red] (6) edge  (7);
-    \draw[nege,red] (2) edge  (4);
   \end{tikzpicture}
 \end{document}

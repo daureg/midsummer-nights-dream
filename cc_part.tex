@@ -1,7 +1,6 @@
 \subsection{Problem setting and applications}
 \label{sub:problem_setting}
 
-
 Like other clustering frameworks, in \pcc{}, we are given a set of objects and we want to gather
 them into groups (called clusters) so that objects belonging to one cluster are similar to each
 other while being dissimilar to objects from all the other clusters.
@@ -40,14 +39,126 @@ or minimizing disagreements (\mind{}):
 
 Although an optimal clustering $\cluster^\star$ achieves the same value on both \eqref{eq:maxa}
 and \eqref{eq:mind}, we will see in \autoref{sub:state_of_the_art} that the latter objective is in
-some sense \enquote{easier}.
+some sense \enquote{easier}. Another interesting feature of the \pcc{} problem is that contrary to
+other clustering formulations, it does not require us to set the number of clusters $k$ beforehand.
+Instead, $k$ emerges as a natural property of the solution. Since clustering is an unsupervised
+problem, this is generally handy. However, in some situations, we may have prior knowledge on how
+many clusters are the data, or external constraints. This can be handled with parametrized version
+of \pcc{} \autocites{Giotis2006}{Fomin2014}\marginpars{According to many articles, \pcc{} and
+cluster editing are equivalent, but even on complete graphs or on $(V,E^+)$ I don't see why.}.
+% The cluster edit distance of a graph is the smallest number of edges to change for it to admit a
+% perfect clustering (i.e., a union of cliques).  Equivalently, it is the cost of the optimal
+% correlation clustering. [From KDDTuto14, slides 204]
 
+In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of its optimal solution.
 \begin{figure}[hbt]
 	\centering
-	\includegraphics[width=0.9\linewidth]{assets/tikz/cc_objectives_tikz.pdf}
-	\caption[]{A clustering of a small with two disagreements due to two cycles with one negative edge.}
+	\includegraphics[width=0.8\linewidth]{assets/tikz/cc_objectives_tikz.pdf}
+	\caption[Small example of \pcc{}]{A small graph with eight nodes and ten edges. Solid edges
+	represent positive edges and dashed edges represent negative edges. A clustering \cluster{}
+	is showed with 3 clusters: $\{1, 2, 4\}$, $\{3, 5, 6\}$ and $\{7, 8\}$. \cluster{} incurs two
+	disagreements: the negative edge between nodes $1$ and $2$ within the blue cluster, and the
+	positive edge $6,7$ between the orange and green clusters. Those disagreements are created
+	by two cycles with one negative edge and thus cannot be avoided, meaning that \cluster{} is
+	optimal. However it is not the unique solution, for instance merging the orange and green
+	clusters would also yields two disagreements.}
 	\label{fig:cc_objectives}
 \end{figure}
+
+\subsubsection{Applications}
+\label{ssub:cc_applications}
+
+According to \textcite[Section 5]{Demaine2006}, \pcc{} is well suited to several situations:
+\begin{itemize}
+   \item when the items to be clustered do not belong to a natural metric space (preventing
+      approaches such as $k$-means) but we still know for some pairs whether they are similar or
+      not.
+   \item when we do not know the number of clusters beforehand but we have a similarity measure. In
+      that case, we can select a problem-specific similarity threshold and set all edges with a
+      similarity larger than the threshold to be positive while the others are set to negative.
+   \item when we have a classic clustering problem (that is a set of objects, a distance between
+      them and an objective function to minimize) with additional pairwise constraints of the form
+      \emph{must-link/cannot-link}. Instead of restraining a clustering algorithm to the space of
+      feasible solution, we convert the distances between objects and the constraints into signed
+      edges and solve the resulting \pcc{} problem. 
+\end{itemize}
+
+In addition to these general considerations, \pcc{} has also been used in several domains:
+\begin{description}
+   \item[Computer Vision] For instance image segmentation
+      \autocites{Bagon2011}{Kim2011}{VolumeSegmentation12}.
+
+\Textcite{Shape3D17} develop a method to extract a network of descriptive curves from 3D shapes.
+After an initial stage of generating many such \emph{flowlines}, they describe in Section 6 a \pcc{}
+formulation to extract \emph{reliable} representative flowlines, using geometric constraints to give 
+
+\textsc{Learning to Divide and Conquer for Online Multi-Target Tracking}
+In order to track several targets across sequential video frames, \textcite{multiTracking15} propose
+a multistage framework. One step revolves around a cost matrix $A$ and zones
+
+\item[Natural Language Processing] 
+   coreference resolution is solved by \textcite[Section 2.3]{graphicalCoreference04} using a
+undirected graphical model on which performing inference is equivalent to \pcc{}.
+	     \Textcite{Elsner2009} compared various heuristics with a bound of the optimal solution
+	     obtained through SDP relaxation and show that best performing ones are within few
+	     percents of it, provided they are followed by a local search step.
+Another application in NLP is clustering words based on distributional embedding while adding
+antonym constraints~\autocite{SignedWordRatings}.
+\item[Biology]
+
+		\Textcite{Mason2009} analyze a signed co-expression networks of genes
+		involved in embryonic stem cells to find which genes are related to
+		pluripotency or self-renewal.  Also something about haplotype assembly
+		\autocite{Das2015}.
+
+\Textcite{Ben-Dor99} assume there exists a perfect clustering, and receive as
+input a complete similarity matrix, which is corrupted by measurement error.
+They give an $O(n^2(\log n)^c)$ algorithm that recover the planted disjoint
+cliques with high probability.
+
+	   \enquote{They examined dynamical systems, where a gene is modeled as a vertex and an
+	      activating connection is modeled as a positive edge and an inhibiting connection is
+	      modeled as a negative edge. The claim is that biological dynamical systems are close
+	      to being balanced, and that finding a minimum set of edges to delete to make the graph
+	      balanced can be used to decompose the graph into “monotone subsystems”, which exhibit
+	   stable behavior and thus allow a better understanding of the dynamics of a
+	system.}\autocite{monotoneBiology07}
+
+     \item[Network science]
+study political vote \autocites{BrazilCC17}{Jiang2015}{Mendonca2015}. Also in politics
+community structure \autocites{Traag2009}{CommunityUN12} (more in the variants part)
+
+Visualization of signed social graph \autocite{Luca10}
+
+
+\item[Others]
+   \begin{itemize}
+	\item duplicate detection, also called entity resolution \autocite{DeDup09}
+
+statistical physics (Barahona 1982), Barahona F (1982) On the computational complexity of Ising
+	   spin glass models. J Phys A: Math Gen 15(10):3241–3253 \autocite{Ising82}
+
+portfolio risk analysis
+	   \enquote{In this context, each security is represented by a vertex in the signed graph
+	      while the correlation between securities is represented by the set of signed edges. A
+	      balanced signed graph with only positive edges represents a speculative portfolio
+	      since all its securities tend to move in the same direction, either on the upside or
+	      on the downside. On the other hand, a balanced signed graph with at least one negative
+	      edge is associated with a limited risk portfolio. Such a portfolio is defined by two
+	      sets of securities, each set with a tendency to move in tandem, while some pair of
+	      assets (connected by negative edges) tend to move in opposite directions providing the
+	      investors with a hedging guarantee. According to Harary et al. (2003), an unbalanced
+	   signed graph represents an unpredictable portfolio.}\autocite{portfolio02}
+
+Given an electrical circuit layout, \textcite{circuitDesign07} extract a graph of its components
+(called shifter) that must be assigned one of two possible phases. Because two shifters next to some
+specific shape must be in opposite phase and two shifters separated by less than a specified
+distance must be of the same phase, the authors look for a two-clustering of the nodes that will
+minimize the number of disagreements.
+% [21] N. Gülpinar, G. Gutin, G. Mitra, and A. Zverovitch. Extracting pure network submatrices in linear programs using signed graphs. Discrete Applied Mathematics, 137:359–372, 2004
+% + Figueiredo2011
+   \end{itemize}
+\end{description}
 
 \subsection{Relation with edge sign prediction}
 \label{sub:relation_with_edge_sign_prediction}
