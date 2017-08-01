@@ -85,79 +85,131 @@ According to \textcite[Section 5]{Demaine2006}, \pcc{} is well suited to several
 
 In addition to these general considerations, \pcc{} has also been used in several domains:
 \begin{description}
-   \item[Computer Vision] For instance image segmentation
-      \autocites{Bagon2011}{Kim2011}{VolumeSegmentation12}.
+   \item[Computer Vision]
+      The ubiquitous task of segmenting an image into homogeneous regions is prerequisite for many
+      further processing, and can be tackled with \pcc{}. For instance, to segment cell in
+      microscopy imagery, \textcite{CellSeg14} first use generic image features to classify pixel in
+      belonging to region boundaries or not. Then, they extract small scale regions called
+      superpixels. After building the adjacency graph of these superpixels, they assigned edge
+      weight by averaging the boundary probability over the pixels separating the adjacent
+      superpixels. They also add strong negative constraints between distant superpixels, and lastly
+      cluster these superpixels according to the \pcc{} objective to obtain the final segmentation.
+      A similar approach was used earlier in~\textcite{Kim2011}, which stressed the importance of
+      considering such higher order constraints between distant superpixels in order to achieve good
+      performance. This was also extended to 3D segmentation~\autocite{VolumeSegmentation12}, where
+      additional tunings allowed to segment a volume image of a mouse cortex with up to billions
+      voxels. \Textcite{Beier2015} segment 2D and 3D images with a energy based formulation of
+      \pcc{} and iteratively improve their solution by merging it with another clustering given by a
+      proposal generator. By developing another scalable energy based optimization procedure, and
+      with the help of few user provided cues, \textcite{Bagon2011} were able to apply \pcc{}
+      directly at the pixel level.
+      % one more? https://link.springer.com/chapter/10.1007/978-3-642-33783-3_41
 
-\Textcite{Shape3D17} develop a method to extract a network of descriptive curves from 3D shapes.
-After an initial stage of generating many such \emph{flowlines}, they describe in Section 6 a \pcc{}
-formulation to extract \emph{reliable} representative flowlines, using geometric constraints to give 
+      Beyond image segmentation, \textcite{Shape3D17} develop a method to extract a network of
+      descriptive curves from 3D shapes.  After an initial stage of generating many such
+      \emph{flowlines}, they describe in Section 6 a \pcc{} formulation to extract \emph{reliable}
+      representative flowlines, using geometric constraints to obtain positive or negative cues that
+      two flowlines are from the same reliable representative.
 
-\textsc{Learning to Divide and Conquer for Online Multi-Target Tracking}
-In order to track several targets across sequential video frames, \textcite{multiTracking15} propose
-a multistage framework. One step revolves around a cost matrix $A$ and zones
+      Finally, in order to track several targets across sequential video frames,
+      \textcite{multiTracking15} propose a multistage framework. One step revolves around a matrix
+      $A$ that defines the cost of assigning an object tracked in previous frames to an object
+      detected in the current frame. This matrix is turned into a symmetric affinity matrix
+      $\bar{A}_{sym}$ that can be seen as a signed graph. \pcc{} is then used to extract clusters
+      (called zones), in which local processing is performed, whose complexity can be adapted to the
+      difficulty of each zone.
 
-\item[Natural Language Processing] 
-   coreference resolution is solved by \textcite[Section 2.3]{graphicalCoreference04} using a
-undirected graphical model on which performing inference is equivalent to \pcc{}.
-	     \Textcite{Elsner2009} compared various heuristics with a bound of the optimal solution
-	     obtained through SDP relaxation and show that best performing ones are within few
-	     percents of it, provided they are followed by a local search step.
-Another application in NLP is clustering words based on distributional embedding while adding
-antonym constraints~\autocite{SignedWordRatings}.
-\item[Biology]
+   \item[Natural Language Processing] 
+      Coreference resolution is the task of finding all expressions that refer to the same entity in
+      a text. Like image segmentation, it is a preprocessing step that can later be used in document
+      summarization, question answering, and information extraction. \Textcite[Section
+      2.3]{graphicalCoreference04} tackle coreference resolution by using a undirected graphical
+      model on which performing inference is equivalent to \pcc{}. On small scale instances,
+      \textcite{Elsner2009} first obtain an upper bound of the optimal solution by solving a SDP
+      relaxation of the problem. They then compared various heuristics and show that best performing
+      ones are within few percents of the optimum, provided they are followed by a local search
+      step, such as the Best One Element Move~\autocite{Gionis2007}. Another possible task would be
+      to cluster words based on distributional embedding vector while adding antonym
+      constraints~\autocite{SignedWordRatings}, although the authors of that paper choose to use
+      signed spectral clustering.
 
-		\Textcite{Mason2009} analyze a signed co-expression networks of genes
-		involved in embryonic stem cells to find which genes are related to
-		pluripotency or self-renewal.  Also something about haplotype assembly
-		\autocite{Das2015}.
+   \item[Biology]
+      The input is a similarity matrix between gene expressions in various experimental conditions
+      and the goal is to cluster those genes into groups which react similarly. \Textcite[Section
+      4]{Ben-Dor99} gives three examples: 112 genes involved in the rat central nervous system, 1246
+      genes of the roundworm \emph{C. elegans} and 2000 human genes obtained from 40 tumor and 22
+      normal colon samples. \Textcite{Mason2009} analyze a signed co-expression networks of genes
+      involved in embryonic stem cells to find which genes are related to pluripotency (the ability
+      to differentiate into any type of cell in the body) or self-renewal (the ability to replicate
+      indefinitely). Another application is to study the variation of one individual
+      DNA~\autocite{Das2015}. In the human organism, chromosomes are organized in pair, and both
+      chromosomes of a pair have similar but not identical DNA sequences. This is mostly because of
+      single nucleotide polymorphisms (SNPs), where a single base differs between the two DNA
+      sequences, leading to different alleles of the corresponding gene. An haplotype is the list of
+      all alleles at a contiguous sites in a region of a single chromosome and this information is
+      used in several medical applications. The high-throughput sequencing of one individual genome
+      yields many short \emph{reads} that provides information about the order of nucleotides in a
+      fragment of one chromosome and that can be used to assemble haplotypes. Namely the authors
+      build a graph of reads and define a similarity function between reads to assign weight on the
+      edges. The clusters of that graph correspond to haplotypes, and are obtained by a SDP
+      relaxation of the \pcc{} objective. \Textcite{monotoneBiology07} also consider graphs whose
+      nodes are genes, but in a different context. In this case, positive edges represent an
+      activating connection, while negative edges represent inhibiting connection. They also define
+      a \emph{monotone system} as a balanced subgraph, that is a subgraph which does not contain a
+      cycle with an odd number of edges. Such monotone system are stable, in the sense that
+      modifying the concentration of one gene will have a predictable effect, even ignoring the
+      precise kinematics of the chemical reactions involved. Their goal is to find the minimum
+      number of edges to remove in order to decompose a dynamics system into a collection of
+      monotone system. This corresponds to the \pcc{} \eqref{eq:mind} objective and allows to study
+      the complete system more easily.
+      % \enquote{They examined dynamical systems, where a gene is modeled as a vertex and an
+      % activating connection is modeled as a positive edge and an inhibiting connection is modeled as
+      % a negative edge. The claim is that biological dynamical systems are close to being balanced,
+      % and that finding a minimum set of edges to delete to make the graph balanced can be used to
+      % decompose the graph into “monotone subsystems”, which exhibit stable behavior and thus allow a
+      % better understanding of the dynamics of a system.}\autocite{monotoneBiology07}
 
-\Textcite{Ben-Dor99} assume there exists a perfect clustering, and receive as
-input a complete similarity matrix, which is corrupted by measurement error.
-They give an $O(n^2(\log n)^c)$ algorithm that recover the planted disjoint
-cliques with high probability.
+   \item[Network science]
+      As mentioned in the first Chapter, one early use of signed graphs was to model social
+      interactions and given the large body of work on community
+      detection~\autocite{FortunatoSurvey10}, it is therefore not surprising that \pcc{} has been
+      used to study such networks. For instance, one can extract all the votes of the member of
+      political parliament and form a graph whose node are politicians and edge weight quantify how
+      much they agree or disagree on various issues they have been voting on. This can be used to
+      study various social science questions such as loyalty, leadership, coalitions, political
+      crisis and polarization. It has been applied to the European
+      parliament~\autocite{Mendonca2015}, Slovenian parliament~\autocite{Jiang2015} and the
+      Brazilian parliament~\autocites{BrazilCC17}. This can also be used at international level. For
+      instance, by considering a dataset of military alliances and disputes, \textcite{Traag2009}
+      cluster countries into blocks that resemble those identified by Huntington in his \emph{Clash
+      of Civilizations} book. Another source of data is the vote on resolutions during the United
+      Nations General Assembly~\autocite{CommunityUN12}. Finally, one can also study how to exploit
+      the information contained within the negative links to enhance the visualization of social
+      networks~\autocite{Luca10}. Note however that those three last papers not explicitly use a
+      \pcc{} formulation.
 
-	   \enquote{They examined dynamical systems, where a gene is modeled as a vertex and an
-	      activating connection is modeled as a positive edge and an inhibiting connection is
-	      modeled as a negative edge. The claim is that biological dynamical systems are close
-	      to being balanced, and that finding a minimum set of edges to delete to make the graph
-	      balanced can be used to decompose the graph into “monotone subsystems”, which exhibit
-	   stable behavior and thus allow a better understanding of the dynamics of a
-	system.}\autocite{monotoneBiology07}
-
-     \item[Network science]
-study political vote \autocites{BrazilCC17}{Jiang2015}{Mendonca2015}. Also in politics
-community structure \autocites{Traag2009}{CommunityUN12} (more in the variants part)
-
-Visualization of signed social graph \autocite{Luca10}
-
-
-\item[Others]
-   \begin{itemize}
-	\item duplicate detection, also called entity resolution \autocite{DeDup09}
-
-statistical physics (Barahona 1982), Barahona F (1982) On the computational complexity of Ising
-	   spin glass models. J Phys A: Math Gen 15(10):3241–3253 \autocite{Ising82}
-
-portfolio risk analysis
-	   \enquote{In this context, each security is represented by a vertex in the signed graph
-	      while the correlation between securities is represented by the set of signed edges. A
-	      balanced signed graph with only positive edges represents a speculative portfolio
-	      since all its securities tend to move in the same direction, either on the upside or
-	      on the downside. On the other hand, a balanced signed graph with at least one negative
-	      edge is associated with a limited risk portfolio. Such a portfolio is defined by two
-	      sets of securities, each set with a tendency to move in tandem, while some pair of
-	      assets (connected by negative edges) tend to move in opposite directions providing the
-	      investors with a hedging guarantee. According to Harary et al. (2003), an unbalanced
-	   signed graph represents an unpredictable portfolio.}\autocite{portfolio02}
-
-Given an electrical circuit layout, \textcite{circuitDesign07} extract a graph of its components
-(called shifter) that must be assigned one of two possible phases. Because two shifters next to some
-specific shape must be in opposite phase and two shifters separated by less than a specified
-distance must be of the same phase, the authors look for a two-clustering of the nodes that will
-minimize the number of disagreements.
-% [21] N. Gülpinar, G. Gutin, G. Mitra, and A. Zverovitch. Extracting pure network submatrices in linear programs using signed graphs. Discrete Applied Mathematics, 137:359–372, 2004
-% + Figueiredo2011
-   \end{itemize}
+   \item[Others]
+      \begin{itemize}[leftmargin=*]
+	 \item
+	    Deduplication, also called duplicate detection or entity resolution, is the process
+	    of identifying objects from a real-world, noisy database that refer to the same entity.
+	    On a high level, a solution to this problem is to build a graph of all the available
+	    objects, define a similarity between them and run a \pcc{} algorithm. The main challenge
+	    thus lies in devising an appropriate similarity measure, given that object can have very
+	    different features from one database to another. \Textcite{LargeScaleDeDup09} propose a
+	    declarative language, expressing both hard constraints (that have to be satisfied) and
+	    soft constraints (that can be seen as cues guiding the process). Because of these hard
+	    constraints that admissible clusterings have to respect, the authors have to modify in
+	    non trivial way an existing \pcc{} algorithm. \pcc{} was also evaluated among other
+	    solutions to that problem by \textcite{DeDup09}, who note that their non optimized
+	    implementation does not perform the best.
+	 \item 
+	    Given an electrical circuit layout, \textcite{circuitDesign07} extract a graph of its
+	    components (called shifter) that must be assigned one of two possible phases. Because
+	    two shifters next to some specific shape must be in opposite phase and two shifters
+	    separated by less than a specified distance must be of the same phase, the authors look
+	    for a two-clustering of the nodes that will minimize the number of disagreements.
+      \end{itemize}
 \end{description}
 
 \subsection{Relation with edge sign prediction}
