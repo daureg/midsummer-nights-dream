@@ -220,27 +220,7 @@ In addition to these general considerations, \pcc{} has also been used in severa
 \subsection{Relation with edge sign prediction}
 \label{sub:relation_with_edge_sign_prediction}
 
-\iffalse
-For the 2 clusters case ($k=2$), characterization proven already in 1936 by \textcite{Konig36}, as noted in
-\cite{Zaslavsky2012} (commenting on \cite{harary1953}: \enquote{Although Thm. 3 was anticipated by
-\textcite[Theorem X.11]{Konig36}  without the terminology of signs, here is the
-first recognition of the crucial fact that labelling edges by elements of a
-group—specifically, the sign group—can lead to a general theory.})
-and \cite{Huffner2010} (\enquote{\textcite{Konig36} proved the following characterization of
-	balanced graphs. For a graph $G = (V , E)$, the following are equivalent:\marginpars{There is a
-	proof in \autocite[p. 111]{BookKleinberg2010}, maybe I can rewrite it as well}
-	\begin{enumerate}
-		\item $V$ can be partitioned into two sets $V_1$ and $V_2$ called sides such that there is no
-			negative edge $\{v, w\} \in E$ with both $v, w \in V_1$ or both $v, w \in V_2$ and no negative
-			edge $\{v, w\}$ with $v \in V_1$ and $w \in V_2$ .
-		\item $V$ can be colored with two colors such that for all $\{v, w\} \in E^-$, the vertices $v$
-			and $w$ have different colors, and for all $\{v, w\} \in E^+$, the vertices $v$ and $w$ have
-			the same color. The color classes correspond to the sides.
-		\item $G$ does not contain cycles with an odd number of negative edges.
-	\end{enumerate}
-	Using the characterization by a coloring, it is easy to see that balance of a signed
-graph can be checked in linear time by depth-first search.})
-\fi
+\input{cc_sign_relation}
 
 \subsection{State of the art}
 \label{sub:state_of_the_art}
