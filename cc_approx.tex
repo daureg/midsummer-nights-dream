@@ -1,0 +1,154 @@
+\subsection{Hardness and approximation}
+
+Although the same problem was studied earlier~\autocites{Early96}{Ben-Dor99}, \textcite{Bansal2002}
+coined the term \pcc{} and were the first to study this problem complexity. Namely, for complete,
+unweighted signed graphs, they show that both \mind{} and \maxa{} are \NPc{}. Along the way, they
+give a 17429-approximation of \mind{} and a PTAS that, for any $\epsilon \in [0,1]$, runs in
+\marginpars{An algorithm $\mathcal{A}$ is a \emph{polynomial-time approximation scheme (PTAS)} for a
+minimization (respectively maximization) problem $\mathcal{P}$  in NP if given any $\epsilon>0$ and
+any instance $x$ of $\mathcal{P}$ of size $n$, $\mathcal{A}$ produces, in polynomial time in $n$, a
+solution that is within a factor $1+\epsilon$ (respectively $1-\epsilon$) of being optimal with
+respect to $x$. Note that the time is not necessarily polynomial in $\epsilon$, so that a running
+time of $O(n^{\frac{1}{\epsilon}})$ would qualify~\autocite[Definition 3.10]{CpxBook99}.}
+$O(n^2e^{O(\frac{1}{\epsilon^{10}}\log\frac{1}{\epsilon})})$ and returns with probability
+$1-\frac{\epsilon}{3}$ a solution with at most $\epsilon n^2$ fewer agreements than the optimal of
+\maxa{}.
+
+\begin{table}[htpb]
+   \centering
+   \small
+   \caption{Hardness results of \pcc{}} \label{tab:cc_cpx}
+   \begin{tabulary}{187mm}{lCCCC}
+      \toprule
+               & \multicolumn{2}{c}{\mind{}}   & \multicolumn{2}{c}{\maxa{}}                                   \\
+      \cmidrule(r){2-3}
+      \cmidrule(r){4-5}
+      graph    & weighted                      & unweighted                                                     & weighted                                                     & unweighted                   \\
+      \midrule
+      Complete & \APXh{}~\autocite{Charikar2003} & \NPc{}~\autocite{Bansal2002}, \APXh{}~\autocite{Charikar2003}  &                                                              & \NPc{}~\autocite{Bansal2002} \\
+      General  & \APXh{}~\autocites{Charikar2003}{Demaine2003} &  \APXh{}~\autocites{Charikar2003}{Emanuel2003}   & \multicolumn{2}{c}{\APXh{}~\autocite[Thm. 9]{Charikar2003}} \\
+      \bottomrule
+   \end{tabulary}
+\end{table}
+
+The next year, several authors independently strengthened these results and extended them to
+weighted and general graphs, as summarized in \autoref{tab:cc_cpx}. In the most complete paper,
+\textcite{Charikar2003} show that on complete graphs, minimizing disagreements is \APXh{},
+\enquote{that is, is NP-hard to approximate within some constant factor greater than one} (it would
+be nice to provide some intuition why it's more difficult to minimize disagreements but according to
+the authors themselves, their reduction is \enquote{somewhat intricate}). They prove the same result
+on general graphs, for \mind{} by using a reduction from the multicut problem \autocite[Theorem
+8]{Charikar2003} (see \autocite{Emanuel2003} for the other direction and \autocite{Demaine2006} for
+unified proof?) which ask for the minimum weight set of edges whose removal in $G$ disconnect the
+$k$ pairs $(s_i, t_i)$ and for \maxa{} by a reduction from MAX 3SAT~\autocite[Theorem
+9]{Charikar2003}. The multicut reduction yields a $O(\log n)$ approximation bound, which is achieved
+by rounding a Linear Program, that we now describe. Assign a binary variable $x_{uv}$ to each pair
+of nodes (so that $x_{uv}=x_{vu}$). For a given clustering \cluster{}, let $x_{uv} = 0$ if $u$ and
+$v$ are in the same cluster and $x_{uv}=1$ is $u$ and $v$ are in different clusters. Noting that
+$1-x_{uv}$ is $1$ if the edge $(u,v)$ is within a cluster and $0$ otherwise, the weighted
+number of disagreements is then $w(\cluster{}) = \sum_{(u,v)\in E^-} w_{uv}(1-x_{uv}) +
+\sum_{(u,v)\in E^+} w_{uv}x_{uv}$. By construction, if edges $(u,v)$ and $(v,w)$ are within the same
+cluster, then $(v, w)$ is also within that cluster. In terms of $x$ variable, we have that $x_{uv}=0
+\wedge x_{vw}=0 \implies x_{uw} = 0$. For $x$ to be a valid cluster assignment, we thus that all
+variable are either $0$ or $1$ and respect the triangle inequality. We can thus relax the problem into
+\begin{align}
+   \label{eq:mindLP}
+   \text{minimize } & \sum_{(u,v)\in E^-} w_{uv}(1-x_{uv}) + \sum_{(u,v)\in E^+} w_{uv}x_{uv} \\
+   \text{subject to}& \quad x_{uw} \leq x_{uv} + x_{vw} \nonumber\\
+   \phantom{subject to}& \quad 0 \leq x_{uv} \leq 1  \nonumber \\
+   \phantom{subject to}& \quad x_{uv} = x_{vu}  \nonumber
+\end{align}
+Once the LP \eqref{eq:mindLP} is solved, we interpret $x_{uv}$ as a distance: the larger it its and
+the more we want $u$ and $v$ to be in different cluster. We can then use the \emph{region growing}
+method~\autocite{RegionGrowing93}. Namely, we pick a node at random and grow a ball based on these
+distance until a threshold is met, at which point we create a cluster from this ball, remove the
+corresponding nodes from the graph and repeat until all nodes are clustered.
+
+However, \textcite[Theorem 2]{Charikar2003} note that the LP formulation has a poor integrality gap
+when it comes to \maxa{}, thus they turn to a Semi Definite Program. Say that each cluster is
+associated with a basis vector, then for each node $u$ in a cluster, we set $a_u$ to be the
+corresponding basis vector. If $u$ and $v$ are in the same cluster, we then have $a_u\cdot a_v = 1$
+while if they belong to different clusters, $a_u\cdot a_v = 0$. The weighted number of agreements
+can then be represented by
+\begin{align}
+   \label{eq:maxaSDP}
+   \text{maximize } & \sum_{(u,v)\in E^+} w_{uv}(a_u\cdot a_v) + \sum_{(u,v)\in E^-} w_{uv}(1-a_u\cdot a_v) \\
+   \text{subject to}& \quad a_u\cdot a_u=1 \nonumber\\
+   \phantom{subject to}& \quad a_u\cdot a_v\geq 0  \nonumber
+\end{align}
+After solving the SDP, a clustering can be obtained by a general rounding technique $H_t$: pick $t$
+random hyperplanes and divides the nodes in $2^t$ clusters. \Textcite[Theorem 3]{Charikar2003} prove
+that taking the best results of $H_2$ and $H_3$ gives in a $0.7664$ approximation on general graph.
+This was slightly improved to $0.7666$ by \textcite{Swamy2004} with a different rounding: pick $k$
+random unit vectors (called \emph{spokes}) and assign each $a_u$ to the closest spoke.
+
+Combining \mind{} and \maxa{}, \textcite[Section 4]{Charikar2004} give a $\Omega(\frac{1}{\log n})$
+approximation of the \textsc{MaxCorr} problem, which is maximizing \eqref{eq:maxa} - \eqref{eq:mind}
+and can be formulated as a quadratic programming problem solved in polynomial time.
+
+In complete graphs, \textcite[Section 3]{Charikar2003} also give an improved $4$-approximation to
+\mind{}, by rounding the same LP and using its solution in randomized algorithm. We will not
+describe it in detail since a similar idea was used by \textcite{CCPivotConf05} with a better
+approximation. To explain it, we first describe their randomized combinatorial algorithm \ccpivot{},
+which gives a $3$-approximation of \mind{} on complete unweighted graphs (it has later been
+derandomized while preserving its approximation guarantee~\autocite{derandomCCPivot08}). At each
+iteration, we pick a node $u$ \uar{} and we create a cluster containing $u$ and all its neighbors
+linked by a positive edges. On weighted complete graphs, they tweak this algorithm by using the
+solution of the  LP~\eqref{eq:mindLP} to obtain different approximation factor depending on the
+constraints imposed on the weight.\Todo{Comment on those constraints, especially the triangular ones
+in the context of consensus clustering.} Recall that in the general formulation of the problem, each
+edge carries two positive numbers: $w_{u,v}^+$ and $w_{u,v}^-$. If the weights respect the
+probability constraints stating that for all edge $(u,v)$ in $E$, $w_{u,v}^+ + w_{u,v}^- = 1$, they
+get a $2.5$-approximation. Note that unweighted graphs naturally fit into that case. If the weights
+additionally respect the triangular inequality constraints stating that $w_{u,v}^- \leq w_{u,w}^- +
+w_{w,v}^-$, this become a $2$-approximation. After solving the LP~\eqref{eq:mindLP} with additional
+probability constraints, when picking a node $u$, each of its neighbors $v$ is added to the cluster
+of $u$ with probability $x_{uv}$. \Textcite{Chawla2014} improve these two factors to respectively
+$2.06$ and $1.5$ by exploiting the same idea but setting the probability to include each neighbor
+$v$ of $u$ in the cluster of $u$ to be $1-f^+(x_{uv})$ if $(u,v)\in E^+$ and $1-f^-(x_{uv})$ if
+$(u,v)\in E^-$, with a careful choice of $f^+$ and $f^-$. They also give a derandomized version of
+their algorithm in the full version of the paper~\autocite[Theorem 23]{ChawlaArxiv14}.
+
+\begin{table}
+   \begin{tabulary}{187mm}{llcLL}
+      \toprule
+                                &            & $k$   & \mind{}                                                                & \maxa{}                                                     \\
+      \midrule
+      \multirow{2}{*}{Complete} & unweighted &       & $2.06$ \autocite{Chawla2014}                                           & PTAS from \textcite{Bansal2002}  \\
+      \cmidrule(r){4-4}
+                                & weighted   &       & $1.5$ (with triangular inequality) \autocite{Chawla2014}               &  and by setting $k=\Omega(1/\epsilon)$ \autocite{Giotis2006}  \\
+      \midrule
+   \multirow{3}{*}{General}     & unweighted &       & \multicolumn{2}{c}{No specific results for the unweighted case}                                                                       \\
+      \cmidrule(r){4-5}
+                                & weighted   & $k=2$ & $O(\sqrt{\log n})$ \autocite{Giotis2006}                               & $0.884$ \autocite{Mitra2009}                                  \\
+      \cmidrule(r){4-5}
+                                & weighted   &       & $O(\log n)$ \autocite{Charikar2003}, optimal under the UCG conjecture  & $0.7666$ \autocite{Swamy2004}                                 \\
+      \bottomrule
+   \end{tabulary}
+   \caption{Best results on various problem.\label{tab:cc_approx}}
+\end{table}
+
+This conclude the presentation of the known approximation results on \pcc{}, that we summarize in
+\autoref{tab:cc_approx}. As mentioned earlier, not having to set the number of clusters is an
+attractive feature of the \pcc{} problem, but in some cases we may want to use prior knowledge.
+The problem was studied by \textcite{Giotis2006} on general graph and we compiled their results in
+\autoref{tab:cc_fixed}. On general graph and with $k$ being the number of clusters, 
+they provide PTAS for \maxa{} running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and
+for \mind{} running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
+\textcite{LinearMinPTAS09}, with a PTAS running in $n^2 2^{O\left(\epsilon^{-3}k^6\log d\right)}$.
+
+\begin{table}[htpb]
+   \centering
+   \caption{Approximation results for \pcc{} on general graph with $k$ clusters} \label{tab:cc_fixed}
+   \begin{tabulary}{187mm}{lLL}
+      \toprule
+      $k$	 & 2 & $\geq 3$ \\
+      \midrule
+      \maxa{} & 0.878 (improved to 0.884 by \autocite{Mitra2009}) & 0.7666 \autocite{Swamy2004} \\
+      \mind{} & $O(\sqrt{\log n})$ as it reduces to Min 2CNF Deletion for which \textcite{min2CNF05}
+      give such an approximation &
+      this can be reduced from $k$-coloring, which for any $\epsilon > 0$ is \NPc{} to approximate
+      within $n^{1-\epsilon}$ \autocite{InnaproxChroma07} \\
+      \bottomrule
+   \end{tabulary}
+\end{table}
