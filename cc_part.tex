@@ -44,8 +44,9 @@ other clustering formulations, it does not require us to set the number of clust
 Instead, $k$ emerges as a natural property of the solution. Since clustering is an unsupervised
 problem, this is generally handy. However, in some situations, we may have prior knowledge on how
 many clusters are the data, or external constraints. This can be handled with parametrized version
-of \pcc{} \autocites{Giotis2006}{Fomin2014}\marginpars{According to many articles, \pcc{} and
-cluster editing are equivalent, but even on complete graphs or on $(V,E^+)$ I don't see why.}.
+of \pcc{}.
+% \autocites{Giotis2006}{Fomin2014}\marginpars{According to many articles, \pcc{} and
+% cluster editing are equivalent, but even on complete graphs or on $(V,E^+)$ I don't see why.}.
 % The cluster edit distance of a graph is the smallest number of edges to change for it to admit a
 % perfect clustering (i.e., a union of cliques).  Equivalently, it is the cost of the optimal
 % correlation clustering. [From KDDTuto14, slides 204]
@@ -225,11 +226,15 @@ In addition to these general considerations, \pcc{} has also been used in severa
 \subsection{State of the art}
 \label{sub:state_of_the_art}
 
+\input{cc_approx}
+
 % ICML paper this year that touch something very related multicut and give recent applications in
 % vision https://arxiv.org/abs/1503.03791
 
 \subsection{Variants and extensions}
 \label{sub:variants_and_extensions}
+
+\input{cc_variants}
 
 \subsubsection{\pcc{} under stability assumption}
 \label{ssub:cc_under_stability_assumption}
@@ -239,10 +244,10 @@ Haris Angelidakis, Konstantin Makarychev, and Yury Makarychev. 2017.
 Algorithms for Stable and Perturbation-Resilient Problems. STOC’17
 \href{http://ttic.uchicago.edu/~yury/papers/two-stable.pdf}{10.1145/3055399.3055487}
 improves over the one cited in the internship description
-\fi
 
 \subsubsection{Parallel \pcc{}}
 \label{ssub:parallel_cc}
 
 \subsection{Empirical evaluation?}
 \label{sub:cc_empiracal_evaluation}
+\fi
