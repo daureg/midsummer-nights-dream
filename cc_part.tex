@@ -84,6 +84,7 @@ According to \textcite[Section 5]{Demaine2006}, \pcc{} is well suited to several
 \end{itemize}
 
 In addition to these general considerations, \pcc{} has also been used in several domains:
+%TODO turn those items into paragraphs?
 \begin{description}
    \item[Computer Vision]
       The ubiquitous task of segmenting an image into homogeneous regions is prerequisite for many
@@ -195,14 +196,16 @@ In addition to these general considerations, \pcc{} has also been used in severa
 	    of identifying objects from a real-world, noisy database that refer to the same entity.
 	    On a high level, a solution to this problem is to build a graph of all the available
 	    objects, define a similarity between them and run a \pcc{} algorithm. This was indeed
-	    this of problems at Whizbang! Labs that partly motivated one of the early \pcc{}
+	    this kind of problems at Whizbang! Labs that partly motivated one of the early \pcc{}
 	    paper~\autocite{Bansal2002}. The main challenge
 	    thus lies in devising an appropriate similarity measure, given that object can have very
 	    different features from one database to another. \Textcite{LargeScaleDeDup09} propose a
 	    declarative language, expressing both hard constraints (that have to be satisfied) and
 	    soft constraints (that can be seen as cues guiding the process). Because of these hard
 	    constraints that admissible clusterings have to respect, the authors have to modify in
-	    non trivial way an existing \pcc{} algorithm. \pcc{} was also evaluated among other
+	    non trivial ways an existing \pcc{} algorithm. Another example is given by
+	    \textcite{Crosslingual07}, who cluster together news article in different language
+	    covering the same event. \pcc{} was also evaluated among other
 	    solutions to that problem by \textcite{DeDup09}, who note that their non optimized
 	    implementation does not perform the best.
 	 \item 
