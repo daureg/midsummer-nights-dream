@@ -130,12 +130,15 @@ their algorithm in the full version of the paper~\autocite[Theorem 23]{ChawlaArx
 
 This conclude the presentation of the known approximation results on \pcc{}, that we summarize in
 \autoref{tab:cc_approx}. As mentioned earlier, not having to set the number of clusters is an
-attractive feature of the \pcc{} problem, but in some cases we may want to use prior knowledge.
-The problem was studied by \textcite{Giotis2006} on general graph and we compiled their results in
-\autoref{tab:cc_fixed}. On general graph and with $k$ being the number of clusters, 
-they provide PTAS for \maxa{} running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and
-for \mind{} running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
-\textcite{LinearMinPTAS09}, with a PTAS running in $n^2 2^{O\left(\epsilon^{-3}k^6\log d\right)}$.
+attractive feature of the \pcc{} problem, but in some cases we may want to use prior knowledge.  The
+problem was studied by \textcite{Giotis2006} on general graph and we compiled their results in
+\autoref{tab:cc_fixed}. On complete unweighted graph and with $k$ being the number of clusters, they
+provide PTAS for \maxa{} running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and for
+\mind{} running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
+\textcite{LinearMinPTAS09}, with a PTAS running in $n^2 2^{O\left(\epsilon^{-3}k^6\log d\right)}$
+(also with weight). For complete weighted graph, \textcite{WeightedMaxAPTAS08} provide a PTAS for
+\maxa{} under the condition that the ratio between the largest and smallest weights is bounded by a
+constant.
 
 \begin{table}[htpb]
    \centering
