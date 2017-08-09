@@ -92,7 +92,7 @@ describe it in detail since a similar idea was used by \textcite{CCPivotConf05} 
 approximation. To explain it, we first describe their randomized combinatorial algorithm \ccpivot{},
 which gives a $3$-approximation of \mind{} on complete unweighted graphs (it has later been
 derandomized while preserving its approximation guarantee~\autocite{derandomCCPivot08}). At each
-iteration, we pick a node $u$ \uar{} and we create a cluster containing $u$ and all its neighbors
+iteration, we pick a node $u$ \uar{} (called the pivot) and we create a cluster containing $u$ and all its neighbors
 linked by a positive edges. On weighted complete graphs, they tweak this algorithm by using the
 solution of the  LP~\eqref{eq:mindLP} to obtain different approximation factor depending on the
 constraints imposed on the weight.\Todo{Comment on those constraints, especially the triangular ones
@@ -133,11 +133,13 @@ This conclude the presentation of the known approximation results on \pcc{}, tha
 attractive feature of the \pcc{} problem, but in some cases we may want to use prior knowledge.  The
 problem was studied by \textcite{Giotis2006} on general graph and we compiled their results in
 \autoref{tab:cc_fixed}. On complete unweighted graph and with $k$ being the number of clusters, they
-provide PTAS for \maxa{} running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and for
-\mind{} running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
+provide PTAS for \maxa{}$_k$ running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and for
+\mind{}$_k$ running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
 \textcite{LinearMinPTAS09}, with a PTAS running in $n^2 2^{O\left(\epsilon^{-3}k^6\log d\right)}$
-(also with weight). For complete weighted graph, \textcite{WeightedMaxAPTAS08} provide a PTAS for
-\maxa{} under the condition that the ratio between the largest and smallest weights is bounded by a
+and that can handle weighted graphs. For $k=2$, \mind$_2$ admits a faster local search method with a
+factor $2$ approximation~\autocite{Coleman2008}.
+For complete weighted graph, \textcite{WeightedMaxAPTAS08} provide a PTAS for
+\maxa{}$_k$ under the condition that the ratio between the largest and smallest weights is bounded by a
 constant.
 
 \begin{table}[htpb]
