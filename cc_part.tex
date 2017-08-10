@@ -45,11 +45,6 @@ Instead, $k$ emerges as a natural property of the solution. Since clustering is 
 problem, this is generally handy. However, in some situations, we may have prior knowledge on how
 many clusters are the data, or external constraints. This can be handled with parametrized version
 of \pcc{}.
-% \autocites{Giotis2006}{Fomin2014}\marginpars{According to many articles, \pcc{} and
-% cluster editing are equivalent, but even on complete graphs or on $(V,E^+)$ I don't see why.}.
-% The cluster edit distance of a graph is the smallest number of edges to change for it to admit a
-% perfect clustering (i.e., a union of cliques).  Equivalently, it is the cost of the optimal
-% correlation clustering. [From KDDTuto14, slides 204]
 
 In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of its optimal solution.
 \begin{figure}[hbt]
@@ -131,7 +126,8 @@ In addition to these general considerations, \pcc{} has also been used in severa
       \textcite{Elsner2009} first obtain an upper bound of the optimal solution by solving a SDP
       relaxation of the problem. They then compared various heuristics and show that best performing
       ones are within few percents of the optimum, provided they are followed by a local search
-      step, such as the Best One Element Move~\autocite{Gionis2007}. Another possible task would be
+      step, such as the Best One Element Move~\autocite{Gionis2007}. Further NLP tasks amenable to
+      \pcc{} formulation are referenced in their paper. Another possible task would be 
       to cluster words based on distributional embedding vector while adding antonym
       constraints~\autocite{SignedWordRatings}, although the authors of that paper choose to use
       signed spectral clustering.
@@ -164,7 +160,8 @@ In addition to these general considerations, \pcc{} has also been used in severa
       precise kinematics of the chemical reactions involved. Their goal is to find the minimum
       number of edges to remove in order to decompose a dynamics system into a collection of
       monotone system. This corresponds to the \pcc{} \eqref{eq:mind} objective and allows to study
-      the complete system more easily.
+      the complete system more easily. Many more applications of \mind{} on weighted complete graphs
+      are presented in~\autocite[Section 6]{clusterEditSurvey13}.
       % \enquote{They examined dynamical systems, where a gene is modeled as a vertex and an
       % activating connection is modeled as a positive edge and an inhibiting connection is modeled as
       % a negative edge. The claim is that biological dynamical systems are close to being balanced,
@@ -205,7 +202,8 @@ In addition to these general considerations, \pcc{} has also been used in severa
 	    declarative language, expressing both hard constraints (that have to be satisfied) and
 	    soft constraints (that can be seen as cues guiding the process). Because of these hard
 	    constraints that admissible clusterings have to respect, the authors have to modify in
-	    non trivial ways an existing \pcc{} algorithm. Another example is given by
+	    non trivial ways an existing \pcc{} algorithm. This was extended to weighted and partial
+	    constraints  by \url{https://doi.org/10.1007/978-3-319-10933-6_23}. Another example is given by
 	    \textcite{Crosslingual07}, who cluster together news article in different language
 	    covering the same event. \pcc{} was also evaluated among other
 	    solutions to that problem by \textcite{DeDup09}, who note that their non optimized
