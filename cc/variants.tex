@@ -58,3 +58,92 @@ with the linear program methods while the resulting objective value is essential
 however that LP methods can be applied in practice thanks to some tricks~\autocite{ConsensusLP10}.
 % On the parameterized complexity of consensus clustering, Theoretical Computer Science, 2014,
 % \url{http://dx.doi.org/10.1016/j.tcs.2014.05.002}
+
+
+\paragraph{Local \pcc{}}
+
+% that one is not really local, except for the node penalty
+\Textcite{Puleo2014} adapt the linear program of~\autocite{Charikar2003} (and its rounding by the
+region growing method. Namely after solving the LP, repeatedly pick a ball center $u$ \uar{} with
+radius \shalf{}: if the average distance of the nodes in the ball to $u$ is less than
+\nicefrac{1}{4}, the ball forms a cluster, otherwise $\{u\}$ forms a singleton cluster.) to the case
+where all clusters have to contain less than $K$ nodes, by assigning to each node $u$ a penalty
+$\mu_u$. If $u$ is placed in a cluster $C_i$, the original \mind{} objective is penalized by an
+extra $\mu_u\left(|C_i| - (K+1)\right)$. By varying $\mu_v$ between $0$ and $1$ and because the
+positive weights are assumed to smaller than $1$, this cluster size constraint can be made hard or
+soft. They also handle more general weights, since they allow $w^-_{uv}$ to be as large as $\tau$
+for $\tau\in [1,\infty)$ while still guaranteeing a $5-\nicefrac{1}{\tau}$-approximation on complete
+graphs, and adapt \ccpivot{} to unweighted graphs with the hard cluster size constraint, obtaining a
+randomized $7$-approximation.
+Those soft constraints are for instance used in biological application 
+\emph{A new correlation clustering method for cancer mutation analysis}
+\url{https://arxiv.org/abs/1601.06476}
+\autocite{Hou2016}
+
+\Textcite{pmlr-v48-puleo16} also modify the \mind{} objective to make it more general. Based on the
+classic \pcc{} linear program, they define a \enquote{\emph{fractional clustering} of $G$ as a
+vector $x$ indexed by $V$ such that $x_{uv} \in [0, 1]$ for all $uv \in \binom{V}{2}$ and such that
+$x_{vz} \leq x_{vw} + x_{wz}$ for all distinct $v, w, z \in V$}. They also define \enquote{The
+error vector $err(x)$ of $x$, as a real vector indexed by $V$ whose coordinates are}
+\begin{equation*}
+  \mathrm{err}(x)_u = \sum_{v\in\nei^+(u)} x_{uv} + \sum_{v\in\nei^-(u)} (1-x_{uv})
+\end{equation*}
+
+Given a function $f: \Rbb^n_{\leq 0} \rightarrow \Rbb$ verifying two elementary conditions, the
+problem is then to find a fractional clustering $x$ minimizing $f(err(x))$. The classical \pcc{}
+corresponds to setting $f(x) = \lhalf{}\ell^1(x)$ whereas the authors here are interested in Minimax
+\pcc{} that arises by setting $f(x) = \ell^\infty(x)$. Minimizing the maximum number of
+disagreements incurred by a single node is motivated by the example of recommendation systems: if
+errors corresponds to unsatisfying recommendations, we do not want a single user to suffer a large
+number of them. Minimax \pcc{} is \NPc{} on both complete graphs and complete bipartite graphs but
+by modifying the region growing method of \textcite{Charikar2003}, they give respectively a $48$ and
+$10$ approximation, the latter for the one-sided error (that consider the nodes in only one of the
+two clusters). The idea is to chose pivot not randomly but by maximizing a given criteria and
+to grow ball with a ratio $\alpha$ computed numerically to optimize the approximation factor.
+Interestingly, and in contrast with the classic \pcc{} situation, minimax \maxa{} is not easier than
+minimax \mind{} and seems not to have a constant factor approximation, even on complete graphs.
+Furthermore these algorithms are deterministic, as opposed to many \pcc{} approximation, since
+bounds on expected disagreements on a edge does not translate easily on their maximum.
+\Textcite{Charikar2017} improve these two factors to $7$, using a simpler version of the algorithm
+of \textcite{pmlr-v48-puleo16}. Namely, find the ball of radius $\nicefrac{1}{7}$ with the largest
+number node and create a cluster from its center with a radius of $\nicefrac{3}{7}$. They also show
+that on general weighted graphs, the LP has a large integrality gap of $\nicefrac{n}{2}$ yet they
+combine it with a combinatorial approach to reach a $O(\sqrt{n})$ approximation. Finally they
+consider the complementary problem of maximizing the minimum number of agreements reach at a single
+node, and provide a $\frac{1}{2+\epsilon}$ approximation.
+
+
+\paragraph{recovery under noise}
+
+As we have seen, assuming the Unique Games Conjecture, the minimum Multicut problem, and therefore
+the \pcc{} problem on a general graph, cannot be approximated to a constant factor in the worst
+case.  But maybe we can do better in the average case, which motivates the study of semi-random
+model, where real graphs are seen as being obtained from the controlled perturbation of a perfectly
+clusterable graph. In the simplest case, each edge sign is independently flipped with probability
+$p \in [0, \shalf)$. This situation on complete graphs was considered in \autocite[Section
+6]{Bansal2002}, showing a simple algorithm that with high probability makes
+$\tilde{O}(n^\frac{3}{2})$ mistakes, and in \autocite[Theorem 2.6]{Ben-Dor99}, with an algorithm
+recovering with high probability the planted partition of an unweighted graph in $O(n^2(\log n)^c)$,
+where $c$ depends on the size of the smallest cluster and the noise probability.
+
+\Textcite{Joachims2005} analyze a more refined weighted model where weights are generated by a
+probability distribution whose mean on true positive edges is larger than $\mu^+>0$ and whose mean
+on true negative edges is smaller than $\mu^-<0$. They give a finite-sample bounds on the number of
+node misclustered w.r.t the planted partition as a function on the probability distribution
+parameters. Indeed, as pointed out by \textcite{plantedAilon09}, independent and uniform noise is
+not a good model of real situations, where the input of \pcc{}, \ie{} the similarity between nodes,
+is often the result of a preprocessing, which may present strong correlations. Therefore, instead of
+measuring the quality of a solution against in the input (\ie{} the similarity information), they
+argue it is more sensible to measure it against the (unknown) true optimal clustering that gave rise
+to the output, and show that \ccpivot{} allows that thanks to a new analysis. \Textcite{Mathieu2010}
+also consider an adversarial model, where all edges are flipped with probability $p$ but the
+adversary then decide whether to show us the true sign or the flipped sign. On complete unweighted
+graphs, they find a solution of \mind{} at most $1 + O(n^{-\nicefrac{1}{6}})$ times the optimal
+whenever $p \leq \shalf - n^{-\nicefrac{1}{3}}$ by rounding the usual SDP solution. If in addition
+$p\leq\nicefrac{1}{3}$, there is no adversary and each planted cluster has at least
+$\Theta(\sqrt{n})$ nodes, then the planted partition can be recovered exactly.
+\Textcite{Makarychev2014} study the same adversarial model on general weighted graphs, giving a PTAS
+for \mind{} when $p\leq \nicefrac{1}{4}$. Under additional assumptions on the density of edges, they
+present another algorithm that finds the ground truth clustering with an arbitrarily small
+classification error.
+% http://www.jmlr.org/papers/v15/chen14a.html
