@@ -1,0 +1,60 @@
+\paragraph{non binary edge labelling}
+
+In the so called \textsc{Chromatic}-\pcc{} setting, \enquote{positive} edges are now associated with
+one of $L$ possible color and the goal is to form clusters mostly made up of edges with the one same
+color. Namely, a disagreement is now a negative edge between clusters or an within-cluster edge
+whose color differs from the majority color of that cluster. This is motivated by edge-labeled graph
+in social networks, biology and citation networks and will discuss such applications in
+\autoref{chap:vector}. As a generalisation of \pcc{}, it is \NPc{} but \textcite{Bonchi2012a}
+present a modification of the \ccpivot{} algorithm that pick edges instead of nodes as pivots, and
+grow clusters by adding monochromatic triangle. This gives an approximation factor of six times the
+maximum degree of the graph. They also present a method when the number $k$ of clusters is fixed
+beforehand, starting with an initial partition and then alternating between finding the majority
+color of clusters and finding better clusters. Unfortunately, the maximum degree of a graph can be
+as large as $n$. However, \textcite{Anava2015} present constant factor approximations. Namely, they
+show the problem can be reduce to classical \pcc{} by setting all edges incident to a node $u$ to
+negative if they are not of the majority color of $u$. They then apply the regular \ccpivot{} and
+show this gives a $11$-approximation to the original problem. Furthermore, they also write a linear
+program and round it using the region growing technique of \textcite{Charikar2003} to obtain
+approximation factor of $4$. \Textcite{multiChromatic15} extend their work to the case were a single
+edge can carry a \emph{set} of labels and adapt their randomized algorithm so that the approximation
+factor is multiplied by the size of the input label set.
+
+
+\paragraph{Overlapping \pcc{}}
+
+While in \pcc{}, each node is assigned to a single cluster, in other settings we may want to relax
+this constraint. Given a complete weighted graph, \textcite{Bonchi2012} want to output a clustering
+\cluster{} that minimizes the following cost: \[ \sum_{(u,v)\in E} \left| H(\cluster(u),
+\cluster(v)) - w_{uv}\right|\] where $H$ is a similarity function between two sets of labels, chosen
+here to be the Jaccard similarity or a $0/1$ indicator of non empty intersection. These problems are
+showed \NPc{} and approximated by a local search algorithm, iteratively optimizing the assignment of
+one node while all others are fixed. As one of the demonstration on their theoretical work,
+\textcite{WeightedTheta15} show a faster solution based on a weighted extension of the Lovász's
+theta function, the corresponding geometric embedding of graphs and a solver derived from one-class
+SVM, while \textcite{GeneticOCC14} propose a genetic algorithm to solve this problem. Finally,
+\Textcite{StochasticCC13} also deals with overlapping clustering by relaxing the problem to a
+stochastic setting and using \enquote{the Baum-Eagon inequality, which provides an effective
+iterative means for maximizing polynomial functions in probability domains}.
+
+\paragraph{\msc{}} 
+
+In \msc{}, the goal is to output a clustering which best summarizes (or agrees with) the several
+given input clusterings of the same set of objects.  Motivations includes robustness --by using an
+ensemble of clusterings from diverse methods-- and privacy --if the clusterings were computed by
+different parties each considering only a subset of the objects attributes. We can build the
+complete graph of these objects, with weights set to the fraction of clusterings that place two
+objects in different clusters, thus representing a kind of distance in the space of clusterings.  As
+first show by \textcite{Gionis2007}, finding the optimal clustering is therefore an instance of
+\pcc{} where the weights obey the triangular inequality. They give a deterministic $3$-approximation
+using the region growing method of \textcite{Charikar2003}. Later \textcite{Bonizzoni2008} show that
+the minimization version is \APXh{}, even when the input is made of three clusterings and give a
+combinatorial $\frac{4}{5}$-approximation for the maximization problem. Experimental evaluations are
+conducted by \textcite{Bertolacci07} and \textcite{Filkov08}. The former describe a scalable
+approach that first samples a small portion of the data, runs a (potentially computationally
+expensive) approximation algorithm and finally augment the resulting partition by adding to it the
+unsampled nodes one by one.  Experiments confirm that the running time is greatly improved compared
+with the linear program methods while the resulting objective value is essentially the same. Note
+however that LP methods can be applied in practice thanks to some tricks~\autocite{ConsensusLP10}.
+% On the parameterized complexity of consensus clustering, Theoretical Computer Science, 2014,
+% \url{http://dx.doi.org/10.1016/j.tcs.2014.05.002}
