@@ -199,3 +199,34 @@ bound.
 % \url{https://link.springer.com/chapter/10.1007/978-3-319-18173-8_7} show to cluster it in static
 % clique, so it sounds related to cluster editing, except their objective is to maximize the
 % fraction of edge in cliques (ie avoid small cluster)
+
+\paragraph{\textsc{Cluster editing}}
+
+% \url{http://www.sciencedirect.com/science?_ob=ArticleListURL&_method=list&_ArticleListID=-1231039636&_sort=r&_st=4&md5=018b782f17918959c0cc389c33ba2cd7&searchtype=a}
+
+In the cluster editing problem, one is given a general unsigned input graph $H=(V,E)$ and wants to
+find the smallest number of edges that have to be added or deleted to turn $H$ into node-disjoint
+union of cliques. This is equivalent to \pcc{} on complete graphs. To see why, let $G=(V,(E^+,E^-))$
+be a complete signed graph with nodeset $V$, $E^+$ be the set $E$ of edges of $H$ and $E^-$ be all
+the edges that are not in $H$. The optimal clusters of $G$ are the cliques of $H$, the negative
+disagreements within clusters are edges added to $H$ and the positive disagreements between clusters
+are deleted from $H$.  To the best of our knowledge, the problem was first introduced under this
+name by \textcite{Shamir02}.\marginpars{However, the same problem was studied before and we refer the
+reader to the comprehensive survey of \textcite{clusterEditSurvey13} for additional details,
+whereas we shall only give important and more recent pointers here.} They show the problem is
+\NPc{}, even if the number of clusters $k\geq2$ is set beforehand\footnote{The reduction is from
+3-exact 3 cover, see \autocite[Theorems 1, 2 and Corollary 1]{Shamir02}.} and provide a
+$0.878$-approximation in the weighted $k=2$ case using the standard Goemans-Williamson SDP
+relaxation. 
+
+If we parameterize the problem by the number $d$ of edges that need to be added or deleted (that is
+the number of disagreements), then it can be solved in polynomial time in the size of the input
+graph (but not in $d$). The best known approximation so far is
+$O(1.62^d+m+n)$~\autocite{GoldenCE12}, which search for conflict triple (\ie{} unbalanced triangle
+in the sign language) and branch by either deleting or merging one positive edge. If we additionally
+look for exactly $k$ clusters (\ie \mind$[k]$), there is a fixed parameters algorithm running in
+$O(2^{O(\sqrt{kd})}+n+m)$~\autocite{Fomin2014}. If at most $a$ edges can be added and at most $b$
+edges can be deleted at each node, and if the minimum size of a cluster is at least $2(a+b)$, then
+the problem can be solved in polynomial time~\autocite{Abu-Khzam2015}. Finally, On planar graph,
+there is a PTAS running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
+into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}
