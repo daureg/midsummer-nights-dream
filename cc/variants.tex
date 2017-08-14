@@ -230,3 +230,32 @@ edges can be deleted at each node, and if the minimum size of a cluster is at le
 the problem can be solved in polynomial time~\autocite{Abu-Khzam2015}. Finally, On planar graph,
 there is a PTAS running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
 into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}
+
+\paragraph{Communities detection}
+
+The clustering problem is often named communities detection in the context of social networks, and
+several methods developed by practitioners have been extended to signed graphs. While they do not
+necessarily considered the \pcc{} objective, and especially not its optimum, we still give a brief
+overview of them, as they tend to have been more tested experimentally. For instance, to find the
+cluster of node $u$, \textcite{Yang2007} use a random walk approach on the positive subgraph $G^+$
+to compute the probability of each node to reach $u$ in $k$ steps, sort the nodes accordingly and
+then find a threshold  based on number of disagreements.
+The one node moves local heuristic that we described in the Physics inspired paragraph
+\vpageref{par:cc_physics} can also be formulated as genetic algorithms that simultaneously try to
+minimize the number of disagreements and maximize a signed variant of the
+modularity~\autocites{Li2013}{Amelio2013}. \Textcite{Anchuri2012} also consider these two objectives
+by seeing them as eigenvalue problems and devise a iterative splitting procedure.
+The overlapping community detection variant is considered by \textcite{Chen14}, who used a signed
+probabilistic mixture model. Namely, an edge selects a pair of cluster $r,s$ with probability
+$\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and choose its endpoint
+$u$ and $v$ with probability $\theta_{ru}$ and $\theta_{sv}$. $\theta_{ru}$ is therefore the soft
+membership of node $u$ to cluster $r$, and those parameters are estimated using the
+expectation-maximization algorithm. The same model is extended to directed graph by
+\textcite{Jiang2015}, who strangely enough names it stochastic blockmodel, although the focus is
+still on edge and not nodes.
+In a similar spirit to \maxa{}, \textcite{SignedGang} focus on finding $k$ subgraphs dense in
+positive edges and densely connected by negative edges to each others. They dub such graph
+\emph{Oppositive Cohesive Groups}, or more vivedely \emph{Gangs in War} and after formulating the
+problem as a constrained quadratic optimization, they propose a faster iterative local search
+heuristic.
+% relaxed structural balance \autocite{Doreian2009} but used the same approach as \textcite{Early96}
