@@ -250,12 +250,12 @@ probabilistic mixture model. Namely, an edge selects a pair of cluster $r,s$ wit
 $\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and choose its endpoint
 $u$ and $v$ with probability $\theta_{ru}$ and $\theta_{sv}$. $\theta_{ru}$ is therefore the soft
 membership of node $u$ to cluster $r$, and those parameters are estimated using the
-expectation-maximization algorithm. The same model is extended to directed graph by
+expectation-maximization algorithm. The same model is extended to directed graphs by
 \textcite{Jiang2015}, who strangely enough names it stochastic blockmodel, although the focus is
 still on edge and not nodes.
-In a similar spirit to \maxa{}, \textcite{SignedGang} focus on finding $k$ subgraphs dense in
-positive edges and densely connected by negative edges to each others. They dub such graph
-\emph{Oppositive Cohesive Groups}, or more vivedely \emph{Gangs in War} and after formulating the
+In a similar spirit to \maxa{}$[k]$, \textcite{SignedGang} focus on finding $k$ subgraphs dense in
+positive edges and densely connected by negative edges to each others. They dub such subgraph
+\emph{Oppositive Cohesive Groups}, or more vividly \emph{Gangs in War}, and after formulating the
 problem as a constrained quadratic optimization, they propose a faster iterative local search
 heuristic.
 % relaxed structural balance \autocite{Doreian2009} but used the same approach as \textcite{Early96}
