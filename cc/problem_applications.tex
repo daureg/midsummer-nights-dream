@@ -2,25 +2,28 @@ Like other clustering frameworks, in \pcc{}, we are given a set of objects and w
 them into groups (called clusters) so that objects belonging to one cluster are similar to each
 other while being dissimilar to objects from all the other clusters.
 
-In \pcc{}, we formalize this problem by considering objects as the nodes of a graph $G$, whose edges
-weight encode similarity. Namely, in the most general case, for nodes $u$ and $v$, the edge between
+In \pcc{}, we formalize this problem by considering objects as the nodes of a graph $G$, whose edge
+weights encode similarity. Namely, in the most general case, for nodes $u$ and $v$, the edge between
 $u$ and $v$ is associated with two positive numbers:
-$w_{u,v}^+$ denotes the strength of the similarity between $u$ and $w$;
-$w_{u,v}^-$ denotes the strength of the dissimilarity between $u$ and $w$.
-Note however that in many applications, only one of these two numbers is non zero in which case we
-more conveniently set $w_{u,v} = \begin{cases}
+$w_{u,v}^+$ denotes the strength of the similarity between $u$ and $v$;
+$w_{u,v}^-$ denotes the strength of the dissimilarity between $u$ and $v$.
+Note, however, that in many applications, only one of these two numbers is non zero, in which case
+we more conveniently set $w_{u,v} = \begin{cases}
 	 w_{u,v}^+ & \quad \text{if } w_{u,v}^+ > 0 \text{ and } w_{u,v}^-=0 \\
 	-w_{u,v}^- & \quad \text{if } w_{u,v}^+ = 0 \text{ and } w_{u,v}^->0 \\
 \end{cases}$
 
 Now consider a clustering \cluster{} of $V$, that is a function from $V$ to $\Nbb{}^{|V|}_{>0}$
-that assigns to each node a cluster index. For instance, $\cluster(u) = 3$ means that $u$ belongs
+that assigns to each node a cluster index.\marginpars{We will also abuse the notation and let
+\cluster{} be a set of clusters $\cluster=\{C_1, C_2, \ldots, C_k\}$ that form a partition of $V$.
+That is, $\forall i\,C_i\subset V$, $\bigcup_{i=1}^k C_i = V$ and $\forall i\neq j,\, C_i\cup C_j =
+\emptyset$.} For instance, $\cluster(u) = 3$ means that $u$ belongs
 to the third cluster. We can evaluate how \cluster{} fits our clustering paradigm in two ways,
 either by the number of \emph{agreements}, that is the weighted number of positive edges inside
 clusters plus the weighted number of negative edges across clusters; or by the number of
 \emph{disagreements}, that is the weighted number of negative edges inside clusters plus the
 weighted number of positive edges across clusters. Given a cost function $c$, which is usually the
-identity, \pcc{} can then be seen as graph optimization problem, either of maximizing agreements
+identity, \pcc{} can then be seen as a graph optimization problem, either of maximizing agreements
 (\maxa{}):
 \begin{equation}
 	\max_{\cluster{}} \sum_{\cluster(u) = \cluster(v)} c(w_{uv}^+) +
@@ -41,7 +44,8 @@ other clustering formulations, it does not require us to set the number of clust
 Instead, $k$ emerges as a natural property of the solution. Since clustering is an unsupervised
 problem, this is generally handy. However, in some situations, we may have prior knowledge on how
 many clusters are the data, or external constraints. This can be handled with parametrized version
-of \pcc{}.
+of \pcc{}, namely \maxa$[k]$ and \mind$[k]$ where the optimization is over clustering with exactly
+$k$ clusters.
 
 In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of its optimal solution.
 \begin{figure}[hbt]
@@ -51,9 +55,9 @@ In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of i
 	represent positive edges and dashed edges represent negative edges. A clustering \cluster{}
 	is showed with 3 clusters: $\{1, 2, 4\}$, $\{3, 5, 6\}$ and $\{7, 8\}$. \cluster{} incurs two
 	disagreements: the negative edge between nodes $1$ and $2$ within the blue cluster, and the
-	positive edge $6,7$ between the orange and green clusters. Those disagreements are created
+	positive edge $(6,7)$ between the orange and green clusters. Those disagreements are created
 	by two cycles with one negative edge and thus cannot be avoided, meaning that \cluster{} is
-	optimal. However it is not the unique solution, for instance merging the orange and green
+	optimal. However it is not the unique solution: for instance, merging the orange and green
 	clusters would also yields two disagreements.}
 	\label{fig:cc_objectives}
 \end{figure}
@@ -80,25 +84,25 @@ In addition to these general considerations, \pcc{} has also been used in severa
 %TODO turn those items into paragraphs?
 \begin{description}
    \item[Computer Vision]
-      The ubiquitous task of segmenting an image into homogeneous regions is prerequisite for many
+      The ubiquitous task of segmenting an image into homogeneous regions is a prerequisite for many
       further processing, and can be tackled with \pcc{}. For instance, to segment cell in
       microscopy imagery, \textcite{CellSeg14} first use generic image features to classify pixel in
       belonging to region boundaries or not. Then, they extract small scale regions called
       superpixels. After building the adjacency graph of these superpixels, they assigned edge
-      weight by averaging the boundary probability over the pixels separating the adjacent
+      weights by averaging the boundary probabilities of the pixels separating adjacent
       superpixels. They also add strong negative constraints between distant superpixels, and lastly
       cluster these superpixels according to the \pcc{} objective to obtain the final segmentation.
-      A similar approach was used earlier in~\textcite{Kim2011}, which stressed the importance of
+      A similar approach was used earlier in~\textcite{Kim2011}, who stress the importance of
       considering such higher order constraints between distant superpixels in order to achieve good
       performance. This was also extended to 3D segmentation~\autocite{VolumeSegmentation12}, where
-      additional tunings allowed to segment a volume image of a mouse cortex with up to billions
+      additional tuning allows to segment a volume image of a mouse cortex with up to billions
       voxels. \Textcite{Beier2015} segment 2D and 3D images with a energy based formulation of
       \pcc{} and iteratively improve their solution by merging it with another clustering given by a
       proposal generator. By developing another scalable energy based optimization procedure, and
-      with the help of few user provided cues, \textcite{Bagon2011} were able to apply \pcc{}
+      with the help of few user provided cues, \textcite{Bagon2011} are able to apply \pcc{}
       directly at the pixel level.
       % one more? https://link.springer.com/chapter/10.1007/978-3-642-33783-3_41
-      % 3D mesh segement https://link.springer.com/article/10.1007/s41095-016-0071-3
+      % 3D mesh segment https://link.springer.com/article/10.1007/s41095-016-0071-3
 
       Beyond image segmentation, \textcite{Shape3D17} develop a method to extract a network of
       descriptive curves from 3D shapes.  After an initial stage of generating many such
@@ -110,9 +114,9 @@ In addition to these general considerations, \pcc{} has also been used in severa
       \textcite{multiTracking15} propose a multistage framework. One step revolves around a matrix
       $A$ that defines the cost of assigning an object tracked in previous frames to an object
       detected in the current frame. This matrix is turned into a symmetric affinity matrix
-      $\bar{A}_{sym}$ that can be seen as a signed graph. \pcc{} is then used to extract clusters
-      (called zones), in which local processing is performed, whose complexity can be adapted to the
-      difficulty of each zone.
+      $\bar{A}_{sym}$ that can be seen as a signed graph adjacency matrix. \pcc{} is then used to extract clusters
+      (called zones), in which local processing is performed. This is beneficial since the
+      complexity of these local methods can be adapted to the difficulty of each zone.
 
    \item[Natural Language Processing] 
       Coreference resolution is the task of finding all expressions that refer to the same entity in
@@ -121,7 +125,7 @@ In addition to these general considerations, \pcc{} has also been used in severa
       2.3]{graphicalCoreference04} tackle coreference resolution by using a undirected graphical
       model on which performing inference is equivalent to \pcc{}. On small scale instances,
       \textcite{Elsner2009} first obtain an upper bound of the optimal solution by solving a SDP
-      relaxation of the problem. They then compared various heuristics and show that best performing
+      relaxation of the problem. They then compare various heuristics and show that best performing
       ones are within few percents of the optimum, provided they are followed by a local search
       step, such as the Best One Element Move~\autocite{Gionis2007}. Further NLP tasks amenable to
       \pcc{} formulation are referenced in their paper. Another possible task would be 
@@ -130,11 +134,12 @@ In addition to these general considerations, \pcc{} has also been used in severa
       signed spectral clustering.
 
    \item[Biology]
-      The input is a similarity matrix between gene expressions in various experimental conditions
+      Clustering tasks also abounds in Biology.
+      A typical input is a similarity matrix between genes expression level in various experimental conditions
       and the goal is to cluster those genes into groups which react similarly. \Textcite[Section
       4]{Ben-Dor99} gives three examples: 112 genes involved in the rat central nervous system, 1246
       genes of the roundworm \emph{C. elegans} and 2000 human genes obtained from 40 tumor and 22
-      normal colon samples. \Textcite{Mason2009} analyze a signed co-expression networks of genes
+      normal colon samples. \Textcite{Mason2009} analyze a signed co-expression network of genes
       involved in embryonic stem cells to find which genes are related to pluripotency (the ability
       to differentiate into any type of cell in the body) or self-renewal (the ability to replicate
       indefinitely). Another application is to study the variation of one individual
@@ -142,11 +147,11 @@ In addition to these general considerations, \pcc{} has also been used in severa
       chromosomes of a pair have similar but not identical DNA sequences. This is mostly because of
       single nucleotide polymorphisms (SNPs), where a single base differs between the two DNA
       sequences, leading to different alleles of the corresponding gene. An haplotype is the list of
-      all alleles at a contiguous sites in a region of a single chromosome and this information is
+      all alleles at a contiguous region of a single chromosome, and this information is
       used in several medical applications. The high-throughput sequencing of one individual genome
       yields many short \emph{reads} that provides information about the order of nucleotides in a
-      fragment of one chromosome and that can be used to assemble haplotypes. Namely the authors
-      build a graph of reads and define a similarity function between reads to assign weight on the
+      fragment of one chromosome and that can be used to assemble haplotypes. To do so, the authors
+      build a graph of reads and define a similarity function between reads to assign weights on the
       edges. The clusters of that graph correspond to haplotypes, and are obtained by a SDP
       relaxation of the \pcc{} objective. \Textcite{monotoneBiology07} also consider graphs whose
       nodes are genes, but in a different context. In this case, positive edges represent an
@@ -156,7 +161,7 @@ In addition to these general considerations, \pcc{} has also been used in severa
       modifying the concentration of one gene will have a predictable effect, even ignoring the
       precise kinematics of the chemical reactions involved. Their goal is to find the minimum
       number of edges to remove in order to decompose a dynamics system into a collection of
-      monotone system. This corresponds to the \pcc{} \eqref{eq:mind} objective and allows to study
+      monotone system. This corresponds to the \mind{} problem and allows to study
       the complete system more easily. Many more applications of \mind{} on weighted complete graphs
       are presented in~\autocite[Section 6]{clusterEditSurvey13}.
       % \enquote{They examined dynamical systems, where a gene is modeled as a vertex and an
@@ -170,8 +175,8 @@ In addition to these general considerations, \pcc{} has also been used in severa
       As mentioned in the first Chapter, one early use of signed graphs was to model social
       interactions and given the large body of work on community
       detection~\autocite{FortunatoSurvey10}, it is therefore not surprising that \pcc{} has been
-      used to study such networks. For instance, one can extract all the votes of the member of
-      political parliament and form a graph whose node are politicians and edge weight quantify how
+      used to study such networks. For instance, one can extract all the votes of the members of a
+      political parliament and form a graph whose nodes are politicians and edge weights quantify how
       much they agree or disagree on various issues they have been voting on. This can be used to
       study various social science questions such as loyalty, leadership, coalitions, political
       crisis and polarization. It has been applied to the European
@@ -200,8 +205,8 @@ In addition to these general considerations, \pcc{} has also been used in severa
 	    soft constraints (that can be seen as cues guiding the process). Because of these hard
 	    constraints that admissible clusterings have to respect, the authors have to modify in
 	    non trivial ways an existing \pcc{} algorithm. This was extended to weighted and partial
-	    constraints  by \url{https://doi.org/10.1007/978-3-319-10933-6_23}. Another example is given by
-	    \textcite{Crosslingual07}, who cluster together news article in different language
+	    constraints  by \textcite{WeightedER14}. Another example is given by
+	    \textcite{Crosslingual07}, who cluster together news articles in different languages
 	    covering the same event. \pcc{} was also evaluated among other
 	    solutions to that problem by \textcite{DeDup09}, who note that their non optimized
 	    implementation does not perform the best.

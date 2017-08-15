@@ -1,13 +1,13 @@
 Now that we are familiar with the \pcc{} problem and its numerous applications, let us return to the
 original problem of this chapter, predicting the edge sign of a signed graph. In order to do so, we
-will first focus on the case where a signed graph has no disagreements (that is the minimum of
+will first focus on the case where a signed graph has no disagreement (that is the minimum of
 \eqref{eq:mind} is $0$) and is unweighted, as it highlights more clearly the connection with the
 balance theory.
 
 In his seminal work on interpersonal relations,
 \citeauthor*{Heider46}~\autocites{Heider46}{HeiderBook58} posits through
 psychological and sociological arguments that in order to reduce their cognitive dissonance, three
-people always interact in a way that preserve social balance. This social balance requirements can be
+people always interact in a way that preserve social balance. These social balance requirements can be
 succinctly summarized by four statements~\autocite{HeiderBook58}:
 
 \begin{enumerate}
@@ -69,7 +69,7 @@ We will use triangles as the building block of our definition of strongly balanc
 It is interesting to note that this local property of triangles gives raise to a global structure.
 Namely a strongly balanced complete graph can be split in two (possibly empty) clusters $L$ and $R$
 such that all edges within $L$ and $R$ are positive, while all edges between $L$ and $R$ are
-negative. Indeed let us pick an arbitrary node $u$ and let $L=\neip(u)$ and $R=V\setminus L$. Now
+negative. Indeed let us pick an arbitrary node $u$ and let $L=\neip(u)\setminus \{u\}$ and $R=V\setminus L$. Now
 let $v,w\in L\setminus \{u\}$ and $x,y\in R$. From \autoref{fig:cc_twostrongcc} and the fact that
 every triangle is balanced, we can see that $(v,w)$ and $(x,y)$ are positive edges, while $(w,y)$ is
 a negative edge.
@@ -81,13 +81,13 @@ a negative edge.
 \end{marginfigure}
 As we will see later, these two facts are actually equivalent.
 
-Those two clusters gives a natural partition with no disagreements in the sense of \pcc{}. However,
+Those two clusters represent a natural partition with no disagreements in the sense of \pcc{}. However,
 the existence of two such clusters is only a sufficient but not necessary condition for having no
 disagreement. As hinted in \autoref{sub:need_for_a_directed_graph}, when the nodes are partitioned
 into $k\geq 2$ clusters, letting edges within clusters to be positive and edges across clusters to
 be negative will by construction results in zero disagreement. Furthermore, it was noted by
 sociologists that among triangles with odd number of negative edges, one is more stable and common
-than that the other one. Therefore, \textcite{davis1967clustering} relax the strong balance into the
+than that the other. Therefore, \textcite{davis1967clustering} relax the strong balance into the
 weak balance by considering triangles with three negative edges to be balanced, as illustrated on
 \autoref{fig:cc_balance}. Formally, we can modify our two previous definitions to arrive at weak
 balance:
@@ -104,10 +104,10 @@ balance:
 	introduced in the main text} \label{fig:cc_balance}
 \end{figure}
 
-In that case as well, the local property of triangle has structural implication for the whole graph.
+In that case as well, the local property of triangles has structural implication for the whole graph.
 Namely, we can partition a complete weakly balanced graph into $k$ clusters of positively connected
-nodes that are negatively with the rest of the graph. Consider the same construction as in
-\autoref{fig:cc_twostrongcc}, putting the positive neighborhood of a node $u$ in one cluster $L$ and
+nodes that are negatively tied with the rest of the graph. Consider the same construction as in
+\autoref{fig:cc_twostrongcc}, putting a node $u$ and its positive neighborhood in one cluster $L$ and
 the rest of the nodes in $R$. For $v,w\in L\setminus \{u\}$ and $x,y\in R$, we can still conclude
 that $(v,w)$ is positive and $(v,y)$ is negative. On the other hand, this time weak balance allows
 $(x,y)$ to be either positive or negative. We can split $R$ further into the positive neighborhood of
@@ -115,9 +115,9 @@ $x$ and the rest, and keep doing so until we form the $k$ clusters. We will make
 formal in the following.
 
 We gave the definitions of balance in the context of complete graphs in order to build intuition
-about the partition consequence and because it easier to reason on triangles. Furthermore, if we are
+about the partition consequences and because it easier to reason on triangles. Furthermore, if we are
 given a set of objects and a similarity function, we can indeed build a complete graph. However,
-they are situations were it is no realistic to make the completeness assumption, especially for
+they are situations were it is not realistic to make the completeness assumption, especially for
 social networks that are typically very sparse. We therefore extend the concept of balance to
 general graphs in the following way:
 \begin{definition}[balanced general graphs]
@@ -159,9 +159,9 @@ The same results also hold for weak balance.
 \begin{proof}
   Let first assume that $G$ is weakly balanced. According to the definition, we can choose sign for
   the missing edges such that it becomes a complete graph with all its triangles weakly balanced. As
-  mentioned earlier, we can then pick a node $u_1$ and let $\cluster_1 = \neip(u) \cup \{u\}$. All
-  nodes in $\cluster_1$ are connected positively with each and negatively with $V\setminus
-  \cluster_1$. Note also that $|V\setminus \cluster_1| < |V|$ and therefore we can repeat this
+  mentioned earlier, we can then pick a node $u_1$ and let $C_1 = \neip(u) \cup \{u\}$. All
+  nodes in $C_1$ are connected positively with each other and negatively with nodes in $V\setminus
+  C_1$. Note also that $|V\setminus C_1| < |V|$ and therefore we can repeat this
   procedure until $V$ is exhausted, at which point we have obtained our $k$ clusters verifying the
   theorem's statement conditions.
 
@@ -179,8 +179,8 @@ The same results also hold for weak balance.
 In real data though, we do not expect neither strong nor weak balance to hold, for they are fairly
 demanding model. Indeed, three of the real networks considered in \autoref{chap:troll} have been
 repeatedly shown to be unbalanced, although the extent of this unbalance depends of the importance
-given to longer cycle compared with triads~\autocites{Facchetti2011isingmodel}{measureUnbalance14}%
-{measureUnbalance17} For the same reason, in virtually any real instance of the \pcc{} problem, the%
+given to longer cycles compared with triads~\autocites{Facchetti2011isingmodel}{measureUnbalance14}.%
+{measureUnbalance17} For the same reason, in virtually any real instances of the \pcc{} problem, the%
 % there are also \url{https://arxiv.org/abs/1509.04037} about measuring balance (or frustration
 % index) which they claimed has been peer reviewed?
 \marginpars{The proof makes essential use of the strong balance (which is ok since next section also
@@ -207,12 +207,12 @@ anymore.
 \end{theorem}
 
 We can conclude that balance theory helps characterize zero disagreement instances of \pcc{}.
-However, how is \pcc{} useful in predicting edge sign? At first sight, the two problems seem quite
-different for the former is an unsupervised/agnostic clustering problem while the latter is a
+However, how is \pcc{} useful in predicting edge sign? At first sight, the two problems seem to be quite
+different, for the former is an unsupervised/agnostic clustering problem, while the latter is a
 supervised classification problem. Yet, getting an optimal solution of \pcc{} on the training set
 would provide a principled heuristics for \esp{}. Unfortunately, as we shall see in
-\autoref{sub:state_of_the_art}, exact or fixed parameter solution are not scalable and one has to
-rely approximation. Under the Unique Games Conjecture, the approximation factor is lower bounded by
+\autoref{sub:state_of_the_art}, exact or fixed parameter solutions are not scalable and one has to
+rely on approximations. Under the Unique Games Conjecture, the approximation factor is lower bounded by
 $\Theta(\log n)$ in the worst case. However, this is still a viable option, as our bias is that we
 will operate on instances that are to some extent balanced. Therefore, we are not in the worst case
 and we can find some comfort in results about the noisy (\vpageref{sub:variants_and_extensions}) and
@@ -221,7 +221,7 @@ stable (\autoref{ssub:cc_under_stability_assumption}) settings.
 Another connection we will leverage in \autoref{sec:low_stretch_trees_and_spanners} is that the
 value of the \mind{} objective is a complexity measure of the \esp{} problem~\autocite[Section
 4.1]{Cesa-Bianchi2012b}. Before that, we will also present some variants and extensions of \pcc{},
-some of them bearing similarities with the Chapter 3's problem.
+in \autoref{sub:variants_and_extensions}, some of them bearing similarities with the Chapter 3's problem.
 
 
 \iffalse
