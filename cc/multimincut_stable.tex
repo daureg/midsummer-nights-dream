@@ -1,6 +1,6 @@
 We first give more details on the equivalence between \mmc{} and \pcc{},
 following~\autocite{Demaine2006} but omitting the full proofs to avoid redundancy. Recall that given
-an weighted graph $H=(V_H, E_H, w_H)$ and a collection of $k$ sources and sinks
+a weighted graph $H=(V_H, E_H, w_H)$ and a collection of $k$ sources and targets
 $S=\{(s_i,t_i)\}_{i=1}^k \in V_H^2$, in \mmc{} we want to find the lightest set of edges $T\in E_H$
 whose removal disconnects every pair $s_i$ from the corresponding $t_i$. Let us first describe a
 polynomial reduction from \mmc{} to \pcc{}. Namely given an instance $(H, S)$ of \mmc{}, we let
@@ -10,16 +10,16 @@ $W_H+1$. One can check (\autocite[Theorem 4.7]{Demaine2006}) that a multicut $T$
 $W$ induces a clustering in $G_H$ of weighted disagreement $W$ by the connected components of
 $G^+\setminus T$. Likewise a clustering of $G_H$ with weight $W$ induces a multicut on $H$ with
 weight as most $W$. In the unweighted case, the reduction is similar but the heavy negative edges
-are simulated in the following way: include every source and sink in a clique of $n$ nodes and
-connect that clique to the corresponding source or sink by $n$ negative edges.
+are simulated in the following way: include every source and target in a clique of $n$ nodes and
+connect that clique to the corresponding source or target by $n$ negative edges.
 
 We next present the polynomial reduction from \pcc{} to \mmc{}. Given $G=(V, (E^+, E^-), w)$ we let
 $H_G$ be the graph induced by $E^+$ with the same weight. Then for every negative edge $(u,v)$ of
 weight $w_{uv}^-$, we create a new vertex $v_{\widehat{uv}}$, connect $u$ to $v_{\widehat{uv}}$ with
-weight $w_{uv}^-$ and let $(v_{\widehat{uv}}, v)$ be a source-sink pair added to $S_G$. This
+weight $w_{uv}^-$ and let $(v_{\widehat{uv}}, v)$ be a source-target pair added to $S_G$. This
 construction is depicted in \autoref{fig:cc_mmc} and one can show (\autocite[Theorem
-4.4]{Demaine2006})\Todo{give the intuition of the proof} that it is easy to construct a multicut of
-weight $W$ in $H_G$ from a clustering of weight $W$ in $G$, and vice versa.
+4.4]{Demaine2006})\Todo{give the intuition of the proof} that it takes a linear time to construct a
+multicut of weight $W$ in $H_G$ from a clustering of weight $W$ in $G$, and vice versa.
 
 \begin{figure}[htpb]
    \centering

@@ -1,5 +1,4 @@
 % *TODO*
-% give a name to Charikar2003 method, and describe where it's introduced (maybe with a picture)
 % say more clearly there are 3 methods for approximation so far: LP & region growing; LP & distance
 % pivot; combinatorial pivot
 % say that in practice, general graphs are assumed to be complete with missing edges being negative
@@ -8,6 +7,17 @@
 %   or even assumed to exist.” another way to look at it is that we're trying to get a binary
 %   classifier of edges (+ or -) using an hypothesis class (nodes clustering) with limited
 %   expression power (as it has to respect transitivity constraints, whereas signs can be inconsistent)
+% - when the graph is weighted, there is no much point separating complete from
+%   general since weights can be 0
+
+In this section, we introduce the \pcc{} problem (\autoref{sub:problem_setting}) and motivate it
+both by general applications (\autoref{ssub:cc_applications}) and by its close connection with the
+\esp{} problem (\autoref{sub:relation_with_edge_sign_prediction}). After discussing its theoretical
+complexity and various approximation methods (\autoref{ssub:cc_harness_approx}) along other kinds of
+methods (\autoref{ssub:cc_methods}), we will review related problems stemming from the original
+formulation (\autoref{sub:variants_and_extensions}). In doing so, we present a thorough and updated
+counterpart to existing survey the same
+topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017}.
 
 \subsection{Problem setting and applications}
 \label{sub:problem_setting}
@@ -21,8 +31,10 @@
 \label{sub:state_of_the_art}
 
 \subsubsection{Hardness and approximation}
+\label{ssub:cc_harness_approx}
 \input{cc/approx}
 \subsubsection{Proposed approaches}
+\label{ssub:cc_methods}
 \input{cc/proposed}
 
 \subsection{Variants and extensions}

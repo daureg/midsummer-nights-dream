@@ -1,18 +1,19 @@
 Although the same problem was studied earlier~\autocites{Early96}{Ben-Dor99}, \textcite{Bansal2002}
 coined the term \pcc{} and were the first to study this problem complexity. Namely, for complete,
 unweighted signed graphs, they show that both \mind{} and \maxa{} are \NPc{}. Along the way, they
-give a 17429-approximation of \mind{} and a PTAS that, for any $\epsilon \in [0,1]$, runs in
-\marginpars{An algorithm $\mathcal{A}$ is a \emph{polynomial-time approximation scheme (PTAS)} for a
+give a $17429$-approximation of \mind{} and a PTAS%
+\footnote{An algorithm $\mathcal{A}$ is a \emph{polynomial-time approximation scheme (PTAS)} for a
 minimization (respectively maximization) problem $\mathcal{P}$  in NP if given any $\epsilon>0$ and
-any instance $x$ of $\mathcal{P}$ of size $n$, $\mathcal{A}$ produces, in polynomial time in $n$, a
+any instance $x$ of $\mathcal{P}$ of size $n$, $\mathcal{A}$ produces, in time polynomial in $n$, a
 solution that is within a factor $1+\epsilon$ (respectively $1-\epsilon$) of being optimal with
 respect to $x$. Note that the time is not necessarily polynomial in $\epsilon$, so that a running
 time of $O(n^{\frac{1}{\epsilon}})$ would qualify~\autocite[Definition 3.10]{CpxBook99}.}
+that, for any $\epsilon \in [0,1]$, runs in
 $O(n^2e^{O(\frac{1}{\epsilon^{10}}\log\frac{1}{\epsilon})})$ and returns with probability
 $1-\frac{\epsilon}{3}$ a solution with at most $\epsilon n^2$ fewer agreements than the optimal of
 \maxa{}.
 
-\begin{table}[htpb]
+\begin{table}[bt]
    \centering
    \small
    \caption{Hardness results of \pcc{}} \label{tab:cc_cpx}
@@ -36,8 +37,9 @@ weighted and general graphs, as summarized in \autoref{tab:cc_cpx}. In the most 
 be nice to provide some intuition why it's more difficult to minimize disagreements but according to
 the authors themselves, their reduction is \enquote{somewhat intricate}). They prove the same result
 on general graphs, for \mind{} by using a reduction from the multicut problem \autocite[Theorem
-8]{Charikar2003} (see \autocite{Emanuel2003} for the other direction and \autocite{Demaine2006} for
-unified proof?) which ask for the minimum weight set of edges whose removal in $G$ disconnect the
+8]{Charikar2003}\footnote{This reduction was actually turned into an equivalence, as we describe
+in more details in \autoref{ssub:cc_under_stability_assumption}.}
+which asks for the minimum weight set of edges whose removal in $G$ disconnect the
 $k$ pairs $(s_i, t_i)$ and for \maxa{} by a reduction from MAX 3SAT~\autocite[Theorem
 9]{Charikar2003}. The multicut reduction yields a $O(\log n)$ approximation bound, which is achieved
 by rounding a Linear Program, that we now describe. Assign a binary variable $x_{uv}$ to each pair
@@ -47,8 +49,8 @@ $1-x_{uv}$ is $1$ if the edge $(u,v)$ is within a cluster and $0$ otherwise, the
 number of disagreements is then $w(\cluster{}) = \sum_{(u,v)\in E^-} w_{uv}(1-x_{uv}) +
 \sum_{(u,v)\in E^+} w_{uv}x_{uv}$. By construction, if edges $(u,v)$ and $(v,w)$ are within the same
 cluster, then $(v, w)$ is also within that cluster. In terms of $x$ variable, we have that $x_{uv}=0
-\wedge x_{vw}=0 \implies x_{uw} = 0$. For $x$ to be a valid cluster assignment, we thus that all
-variable are either $0$ or $1$ and respect the triangle inequality. We can thus relax the problem into
+\wedge x_{vw}=0 \implies x_{uw} = 0$. For $x$ to be a valid cluster assignment, we thus require that all
+variables are either $0$ or $1$ and respect the triangle inequality. We can thus relax the problem into
 \begin{align}
    \label{eq:mindLP}
    \text{minimize } & \sum_{(u,v)\in E^-} w_{uv}(1-x_{uv}) + \sum_{(u,v)\in E^+} w_{uv}x_{uv} \\
@@ -56,11 +58,13 @@ variable are either $0$ or $1$ and respect the triangle inequality. We can thus 
    \phantom{subject to}& \quad 0 \leq x_{uv} \leq 1  \nonumber \\
    \phantom{subject to}& \quad x_{uv} = x_{vu}  \nonumber
 \end{align}
-Once the LP \eqref{eq:mindLP} is solved, we interpret $x_{uv}$ as a distance: the larger it its and
-the more we want $u$ and $v$ to be in different cluster. We can then use the \emph{region growing}
-method~\autocite{RegionGrowing93}. Namely, we pick a node at random and grow a ball based on these
-distance until a threshold is met, at which point we create a cluster from this ball, remove the
-corresponding nodes from the graph and repeat until all nodes are clustered.
+Once the LP \eqref{eq:mindLP} is solved, we interpret $x_{uv}$ as a distance: the larger it is and
+the more we want $u$ and $v$ to be in different clusters. We can then use the \regionGrow{}
+method~\autocite{RegionGrowing93}. Namely, we pick a ball center $u$ \uar{} with radius \shalf{}: if
+the average distance of the nodes in the ball to $u$ is less than $\nicefrac{1}{4}$, the ball forms a
+cluster, otherwise $\{u\}$ forms a singleton cluster. We then remove the corresponding nodes from
+the graph and repeat until all nodes are clustered. As we shall see, this method has been re used
+with variations on the LP or on the two thresholds \shalf{} and $\nicefrac{1}{4}$.
 
 However, \textcite[Theorem 2]{Charikar2003} note that the LP formulation has a poor integrality gap
 when it comes to \maxa{}, thus they turn to a Semi Definite Program. Say that each cluster is
@@ -96,8 +100,9 @@ solution of the  LP~\eqref{eq:mindLP} to obtain different approximation factor d
 constraints imposed on the weight.\Todo{Comment on those constraints, especially the triangular ones
 in the context of consensus clustering.} Recall that in the general formulation of the problem, each
 edge carries two positive numbers: $w_{u,v}^+$ and $w_{u,v}^-$. If the weights respect the
-probability constraints stating that for all edge $(u,v)$ in $E$, $w_{u,v}^+ + w_{u,v}^- = 1$, they
-get a $2.5$-approximation. Note that unweighted graphs naturally fit into that case. If the weights
+probability constraints stating that for all edge $(u,v)$ in $E$, $w_{u,v}^+ + w_{u,v}^- = 1$, this
+tweaking provide a $2.5$-approximation. Note that unweighted graphs naturally fit into that case, as
+each edge is either labeled $+$ or $-$. If the weights
 additionally respect the triangular inequality constraints stating that $w_{u,v}^- \leq w_{u,w}^- +
 w_{w,v}^-$, this become a $2$-approximation. After solving the LP~\eqref{eq:mindLP} with additional
 probability constraints, when picking a node $u$, each of its neighbors $v$ is added to the cluster
@@ -126,18 +131,18 @@ their algorithm in the full version of the paper~\autocite[Theorem 23]{ChawlaArx
    \caption{Best results on various problem.\label{tab:cc_approx}}
 \end{table}
 
-This conclude the presentation of the known approximation results on \pcc{}, that we summarize in
+This concludes the presentation of the known approximation results on \pcc{}, that we summarize in
 \autoref{tab:cc_approx}. As mentioned earlier, not having to set the number of clusters is an
 attractive feature of the \pcc{} problem, but in some cases we may want to use prior knowledge.  The
-problem was studied by \textcite{Giotis2006} on general graph and we compiled their results in
-\autoref{tab:cc_fixed}. On complete unweighted graph and with $k$ being the number of clusters, they
-provide PTAS for \maxa{}$_k$ running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and for
-\mind{}$_k$ running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
+problem was studied by \textcite{Giotis2006} on general graphs and we compile their results in
+\autoref{tab:cc_fixed}. On complete unweighted graphs and with $k$ being the number of clusters, they
+provide PTASs for \maxa{}$[k]$ running in $nk^{O(\epsilon^{-3}\log(\frac{k}{\epsilon}))}$ time and for
+\mind{}$[k]$ running in $n^{O\left(\epsilon^{-2} 9^k\right)}\log(n)$ time. The latter was improved by
 \textcite{LinearMinPTAS09}, with a PTAS running in $n^2 2^{O\left(\epsilon^{-3}k^6\log d\right)}$
-and that can handle weighted graphs. For $k=2$, \mind$_2$ admits a faster local search method with a
+and that can handle weighted graphs. For $k=2$, \mind$[2]$ admits a faster local search method with a
 factor $2$ approximation~\autocite{Coleman2008}.
 For complete weighted graph, \textcite{WeightedMaxAPTAS08} provide a PTAS for
-\maxa{}$_k$ under the condition that the ratio between the largest and smallest weights is bounded by a
+\maxa{}$[k]$ under the condition that the ratio between the largest and smallest weights is bounded by a
 constant.
 
 \begin{table}[htpb]

@@ -1,13 +1,65 @@
-\paragraph{non binary edge labelling}
+% leftover:
+% - something about fuzzy edges, ie we're not sure they are in the graph or not (not super
+%   interesting in my opinion) Clustering with partial information, Theoretical Computer Science,
+%   Volume 411, Issue 7, 2010, Pages 1202-1211, ISSN 0304-3975,
+%   \url{http://dx.doi.org/10.1016/j.tcs.2009.12.016}
+% - \paragraph{Hypergraphs} \Textcite{Kim2011} show a LP relaxation on hypergraph and
+%   \textcite{Ricatte13} describe a class of hypergraphs that can be reduced to signed graph.  Jörg
+%   Hendrik Kappes, Markus Speth, Gerhard Reinelt, Christoph Schnörr, Higher-order segmentation via
+%   multicuts, Computer Vision and Image Understanding, Volume 143, 2016, Pages 104-119, ISSN
+%   1077-3142, \url{http://dx.doi.org/10.1016/j.cviu.2015.11.005}
+% - Interactive \pcc{}?~\autocite{interactiveCC16}, could it go into active?  Geerts, F. & Ndindi,
+%   R. Bounded correlation clustering. Int. J. Data Sci. Anal. 1, 17–35 (2016)
+%   \url{https://doi.org/10.1007/s41060-016-0005-2}
+
+So far we focused on \pcc{} in its rawest form, that is solving the \mind{} and \maxa{} objectives
+in the case where the general binary-labeled graph is known in advance. We will now see first some
+special cases, namely when the weights obey the triangle inequality (to solve \msc{}) or when the
+graph is bipartite and then move to variants. We will consider more general objectives, when the
+edges are labeled categorically instead of binary, when nodes can belong simultaneously to several
+cluster or when we optimize local objectives per nodes instead of global ones. We will also look at
+clustering in signed graphs in general, using spectral methods or heuristics from the community
+detection literature. Finally we will shift perspective and review methods beyond the batch case and
+the worst-case analysis.
+
+% \paragraph{\msc{}}                                | special weights
+% \paragraph{Bipartite \pcc{}}                      | special graphs
+% \paragraph{Categorical edge labelling}            | more general objective
+% \paragraph{Overlapping \pcc{}}                    | more general objective
+% \paragraph{Local \pcc{}}                          | more general objective or at least different
+% \paragraph{Spectral clustering}                   | related objective
+% \paragraph{Communities detection}                 | related objective
+% \paragraph{Online \& active setting}              | different setting
+% \paragraph{recovery under noise}                  | non worst case analysis
+% \subsubsection{\pcc{} under stability assumption} | non worst case analysis
+
+
+\paragraph{Bipartite \pcc{}}
+
+Bipartite graphs are an interesting special case for \pcc{}, as they often appear in the context of
+recommendation systems, where users rate products positively or negatively, although in this setting
+we cannot expect to have complete bipartite graphs in practice. The first results was given by
+\textcite{Amit04}, who obtains a $11$-approximation for \mind{} by adapting the \regionGrow{} method.
+The \ccpivot{} is adapted to the bipartite case by
+\textcite{Bipartite12}, who prove it results in a randomized $4$-approximation (and provide a matching
+deterministic approximation by rounding a LP). By using their idea of rounding the results of the LP
+differently for positive, negative and in that case same-side absent edges, \textcite{Chawla2014}
+bring down this approximation factor to $3$, even for $K\geq 2$-partite graphs. By formulating the
+\maxa{}$[k]$ problem as a bilinear maximization problem and computing a low-rank approximation of
+the graph biadjacency matrix, \textcite{Asteris2016} obtain a efficient PTAS, that is a $(1-\delta)$
+approximation running in time exponential in $k$ and $\delta^{-1}$ but linear in $n$. By an
+appropriate choice of $k$, it is possible to use this PTAS to solve the general \maxa{} problem.
+
+\paragraph{Categorical edge labelling}
 
 In the so called \textsc{Chromatic}-\pcc{} setting, \enquote{positive} edges are now associated with
-one of $L$ possible color and the goal is to form clusters mostly made up of edges with the one same
-color. Namely, a disagreement is now a negative edge between clusters or an within-cluster edge
+one of $L$ possible colors and the goal is to form clusters mostly made up of edges with the one same
+color. Namely, a disagreement is now a negative edge between clusters or a within-cluster edge
 whose color differs from the majority color of that cluster. This is motivated by edge-labeled graph
 in social networks, biology and citation networks and will discuss such applications in
 \autoref{chap:vector}. As a generalisation of \pcc{}, it is \NPc{} but \textcite{Bonchi2012a}
 present a modification of the \ccpivot{} algorithm that pick edges instead of nodes as pivots, and
-grow clusters by adding monochromatic triangle. This gives an approximation factor of six times the
+grow clusters by adding monochromatic triangles. This gives an approximation factor of six times the
 maximum degree of the graph. They also present a method when the number $k$ of clusters is fixed
 beforehand, starting with an initial partition and then alternating between finding the majority
 color of clusters and finding better clusters. Unfortunately, the maximum degree of a graph can be
@@ -15,10 +67,10 @@ as large as $n$. However, \textcite{Anava2015} present constant factor approxima
 show the problem can be reduce to classical \pcc{} by setting all edges incident to a node $u$ to
 negative if they are not of the majority color of $u$. They then apply the regular \ccpivot{} and
 show this gives a $11$-approximation to the original problem. Furthermore, they also write a linear
-program and round it using the region growing technique of \textcite{Charikar2003} to obtain
-approximation factor of $4$. \Textcite{multiChromatic15} extend their work to the case were a single
-edge can carry a \emph{set} of labels and adapt their randomized algorithm so that the approximation
-factor is multiplied by the size of the input label set.
+program and round it using the \regionGrow{} method to obtain an
+approximation factor of $4$. \Textcite{multiChromatic15} extend this line of work to the case were a
+single edge can carry a \emph{set} of labels and adapt their randomized algorithm so that the
+approximation factor is multiplied by the size of the input label set.
 
 
 \paragraph{Overlapping \pcc{}}
@@ -40,33 +92,38 @@ iterative means for maximizing polynomial functions in probability domains}.
 \paragraph{\msc{}} 
 
 In \msc{}, the goal is to output a clustering which best summarizes (or agrees with) the several
-given input clusterings of the same set of objects.  Motivations includes robustness --by using an
-ensemble of clusterings from diverse methods-- and privacy --if the clusterings were computed by
+given input clusterings of the same set of objects.  Motivations include robustness ---by using an
+ensemble of clusterings from diverse methods--- and privacy ---if the clusterings were computed by
 different parties each considering only a subset of the objects attributes. We can build the
 complete graph of these objects, with weights set to the fraction of clusterings that place two
 objects in different clusters, thus representing a kind of distance in the space of clusterings.  As
 first show by \textcite{Gionis2007}, finding the optimal clustering is therefore an instance of
 \pcc{} where the weights obey the triangular inequality. They give a deterministic $3$-approximation
-using the region growing method of \textcite{Charikar2003}. Later \textcite{Bonizzoni2008} show that
+using the \regionGrow{} method. Later \textcite{Bonizzoni2008} show that
 the minimization version is \APXh{}, even when the input is made of three clusterings and give a
-combinatorial $\frac{4}{5}$-approximation for the maximization problem. Experimental evaluations are
+combinatorial $\nicefrac{4}{5}$-approximation for the maximization problem. Experimental evaluations are
 conducted by \textcite{Bertolacci07} and \textcite{Filkov08}. The former describe a scalable
 approach that first samples a small portion of the data, runs a (potentially computationally
 expensive) approximation algorithm and finally augment the resulting partition by adding to it the
 unsampled nodes one by one.  Experiments confirm that the running time is greatly improved compared
-with the linear program methods while the resulting objective value is essentially the same. Note
-however that LP methods can be applied in practice thanks to some tricks~\autocite{ConsensusLP10}.
-% On the parameterized complexity of consensus clustering, Theoretical Computer Science, 2014,
-% \url{http://dx.doi.org/10.1016/j.tcs.2014.05.002}
-
+with the linear program methods while the resulting objective value is essentially the same. Note,
+however, that LP methods can be applied in practice thanks to some tricks~\autocite{ConsensusLP10}.
+If we have $k$ input clusterings $\cluster^1,\ldots,\cluster^k$ and we parameterized the problem by
+$t$, which is the sum over the input clusterings of the number of pairs of objects that are clustered
+differently by a solution $\cluster^\star$ and $\cluster^i$, then there is a polynomial algorithm
+running in $O(4.24^{\nicefrac{t}{k}}\cdot \nicefrac{t}{k}^3 +
+kn^2)$~\autocite{parameterizedConsensus14}.
 
 \paragraph{Local \pcc{}}
 
+In classical \pcc{}, all nodes have an identical role, in the sense that they contribute equally to
+the final objective in terms of (dis)agreements. Here we instead look at approaches where we either
+add a local penalty to each in order to better control their behavior or where we altogether modify
+the objective to focus on (dis)agreements at specific nodes.
+
 % that one is not really local, except for the node penalty
-\Textcite{Puleo2014} adapt the linear program of~\autocite{Charikar2003} (and its rounding by the
-region growing method. Namely after solving the LP, repeatedly pick a ball center $u$ \uar{} with
-radius \shalf{}: if the average distance of the nodes in the ball to $u$ is less than
-\nicefrac{1}{4}, the ball forms a cluster, otherwise $\{u\}$ forms a singleton cluster.) to the case
+\Textcite{Puleo2014} adapt the linear program of~\autocite{Charikar2003} and its \regionGrow{}
+method to the case
 where all clusters have to contain less than $K$ nodes, by assigning to each node $u$ a penalty
 $\mu_u$. If $u$ is placed in a cluster $C_i$, the original \mind{} objective is penalized by an
 extra $\mu_u\left(|C_i| - (K+1)\right)$. By varying $\mu_v$ between $0$ and $1$ and because the
@@ -75,10 +132,8 @@ soft. They also handle more general weights, since they allow $w^-_{uv}$ to be a
 for $\tau\in [1,\infty)$ while still guaranteeing a $5-\nicefrac{1}{\tau}$-approximation on complete
 graphs, and adapt \ccpivot{} to unweighted graphs with the hard cluster size constraint, obtaining a
 randomized $7$-approximation.
-Those soft constraints are for instance used in biological application 
-\emph{A new correlation clustering method for cancer mutation analysis}
-\url{https://arxiv.org/abs/1601.06476}
-\autocite{Hou2016}
+These soft constraints are for instance used in a biological application where nodes are genes and
+where singleton and giant clusters are uninformative~\autocite{Hou2016}
 
 \Textcite{pmlr-v48-puleo16} also modify the \mind{} objective to make it more general. Based on the
 classic \pcc{} linear program, they define a \enquote{\emph{fractional clustering} of $G$ as a
@@ -89,21 +144,22 @@ error vector $err(x)$ of $x$, as a real vector indexed by $V$ whose coordinates 
   \mathrm{err}(x)_u = \sum_{v\in\nei^+(u)} x_{uv} + \sum_{v\in\nei^-(u)} (1-x_{uv})
 \end{equation*}
 
-Given a function $f: \Rbb^n_{\leq 0} \rightarrow \Rbb$ verifying two elementary conditions, the
+Given a function $f: \Rbb^n_{\geq 0} \rightarrow \Rbb$ verifying two elementary conditions, the
 problem is then to find a fractional clustering $x$ minimizing $f(err(x))$. The classical \pcc{}
 corresponds to setting $f(x) = \lhalf{}\ell^1(x)$ whereas the authors here are interested in Minimax
 \pcc{} that arises by setting $f(x) = \ell^\infty(x)$. Minimizing the maximum number of
 disagreements incurred by a single node is motivated by the example of recommendation systems: if
-errors corresponds to unsatisfying recommendations, we do not want a single user to suffer a large
+errors correspond to unsatisfying recommendations, we do not want a single user to suffer a large
 number of them. Minimax \pcc{} is \NPc{} on both complete graphs and complete bipartite graphs but
-by modifying the region growing method of \textcite{Charikar2003}, they give respectively a $48$ and
-$10$ approximation, the latter for the one-sided error (that consider the nodes in only one of the
-two clusters). The idea is to chose pivot not randomly but by maximizing a given criteria and
-to grow ball with a ratio $\alpha$ computed numerically to optimize the approximation factor.
+by modifying the \regionGrow{} method, the authors respectively a $48$ and
+$10$ approximation, the latter for the one-sided error (that only counts disagreements for the nodes
+in one of the two clusters).
+The idea is to chose pivot not randomly but by maximizing a given criteria and
+to grow balls with a radius $\alpha$ computed numerically to optimize the approximation factor.
 Interestingly, and in contrast with the classic \pcc{} situation, minimax \maxa{} is not easier than
 minimax \mind{} and seems not to have a constant factor approximation, even on complete graphs.
-Furthermore these algorithms are deterministic, as opposed to many \pcc{} approximation, since
-bounds on expected disagreements on a edge does not translate easily on their maximum.
+Furthermore, these algorithms are deterministic, as opposed to many \pcc{} approximation, since
+bounds on expected disagreements of an edge does not translate easily on their maximum.
 \Textcite{Charikar2017} improve these two factors to $7$, using a simpler version of the algorithm
 of \textcite{pmlr-v48-puleo16}. Namely, find the ball of radius $\nicefrac{1}{7}$ with the largest
 number node and create a cluster from its center with a radius of $\nicefrac{3}{7}$. They also show
@@ -112,11 +168,10 @@ combine it with a combinatorial approach to reach a $O(\sqrt{n})$ approximation.
 consider the complementary problem of maximizing the minimum number of agreements reach at a single
 node, and provide a $\frac{1}{2+\epsilon}$ approximation.
 
+\paragraph{\pcc{} under noise}
 
-\paragraph{recovery under noise}
-
-As we have seen, assuming the Unique Games Conjecture, the minimum Multicut problem, and therefore
-the \pcc{} problem on a general graph, cannot be approximated to a constant factor in the worst
+As we have seen, assuming the Unique Games Conjecture, the \mmc{} problem, and therefore
+the \pcc{} problem on a general graph, cannot be approximated to within a constant factor in the worst
 case.  But maybe we can do better in the average case, which motivates the study of semi-random
 model, where real graphs are seen as being obtained from the controlled perturbation of a perfectly
 clusterable graph. In the simplest case, each edge sign is independently flipped with probability
@@ -126,27 +181,27 @@ $\tilde{O}(n^\frac{3}{2})$ mistakes, and in \autocite[Theorem 2.6]{Ben-Dor99}, w
 recovering with high probability the planted partition of an unweighted graph in $O(n^2(\log n)^c)$,
 where $c$ depends on the size of the smallest cluster and the noise probability.
 
-\Textcite{Joachims2005} analyze a more refined weighted model where weights are generated by a
+\Textcite{Joachims2005} analyze a more refined weighted model, where weights are generated by a
 probability distribution whose mean on true positive edges is larger than $\mu^+>0$ and whose mean
-on true negative edges is smaller than $\mu^-<0$. They give a finite-sample bounds on the number of
+on true negative edges is smaller than $\mu^-<0$. They give a finite-sample bound on the number of
 node misclustered w.r.t the planted partition as a function on the probability distribution
 parameters. Indeed, as pointed out by \textcite{plantedAilon09}, independent and uniform noise is
 not a good model of real situations, where the input of \pcc{}, \ie{} the similarity between nodes,
 is often the result of a preprocessing, which may present strong correlations. Therefore, instead of
 measuring the quality of a solution against in the input (\ie{} the similarity information), they
 argue it is more sensible to measure it against the (unknown) true optimal clustering that gave rise
-to the output, and show that \ccpivot{} allows that thanks to a new analysis. \Textcite{Mathieu2010}
+to the input, and show that \ccpivot{} allows that thanks to a new analysis. \Textcite{Mathieu2010}
 also consider an adversarial model, where all edges are flipped with probability $p$ but the
 adversary then decide whether to show us the true sign or the flipped sign. On complete unweighted
 graphs, they find a solution of \mind{} at most $1 + O(n^{-\nicefrac{1}{6}})$ times the optimal
 whenever $p \leq \shalf - n^{-\nicefrac{1}{3}}$ by rounding the usual SDP solution. If in addition
 $p\leq\nicefrac{1}{3}$, there is no adversary and each planted cluster has at least
 $\Theta(\sqrt{n})$ nodes, then the planted partition can be recovered exactly.
-\Textcite{Makarychev2014} study the same adversarial model on general weighted graphs, giving a PTAS
+\Textcite{Makarychev2014} study the same adversarial model but on general weighted graphs, giving a PTAS
 for \mind{} when $p\leq \nicefrac{1}{4}$. Under additional assumptions on the density of edges, they
 present another algorithm that finds the ground truth clustering with an arbitrarily small
-classification error.
-% http://www.jmlr.org/papers/v15/chen14a.html
+classification error.\footnote{They also mention a potentially interesting related
+work~\autocite{unobservedCC14}.} % http://www.jmlr.org/papers/v15/chen14a.html
 
 
 \paragraph{Online \& active setting}
@@ -167,10 +222,11 @@ if the edge labels are given by an expensive external procedure.
 % correlation clustering objective as their learning bias, and they show that the risk of the
 % empirical risk minimizer is controlled by the correlation clustering objective.}
 
-Case in point, in the context of entities resolution, \textcite{activeCoref07} consider the \pcc{}
+Case in point, in the context of entity resolution, \textcite{activeCoref07} consider the \pcc{}
 problem where by querying an oracle, one can either reduce the uncertainty about one edge weight or
-add an extra node with edges connecting it to existing nodes. However, this requires web queries are
-resource bounded and thus yields an active problem, where one has to choose the most informative
+add an extra node with edges connecting it to existing nodes. However, this requires web queries
+that are resource bounded and thus yields an active setting learning problem, where one has to
+choose the most informative
 queries given a budget. A formal definition is given in~\autocite{queryMoreEdgeCC07} and in
 practice, after finding an initially good partition, they select in each cluster a node to be its
 centroid, and query the edges connecting the centroid as ordered by an entropy-based criterion.
@@ -178,8 +234,9 @@ centroid, and query the edges connecting the centroid as ordered by an entropy-b
 linear number of queries but an exponential running time in $n$.  In a noisy setting,
 \textcite{Mitzenmacher2016} assume there is a planted $k$-partition and that we have access to an
 oracle that for $u,v\in V^2$ returns $\cluster(u) - \cluster(v) \mod k$ with probability $1-p$ and a
-noisy $\cluster(u) - \cluster(v) \pm 1 \mod k$ otherwise. For $k=2$, this is exactly $2$-\pcc{}, for
-$k>2$, the oracle gives more information than simply the sign of the path from $u$ to $v$. Whenever
+noisy $\cluster(u) - \cluster(v) \pm 1 \mod k$ otherwise. For $k=2$, this is exactly $2$-\pcc{},
+whereas for $k>2$, the oracle gives more information than simply the sign of the path from $u$ to
+$v$. Whenever
 $p < \shalf$, they show that $O(n^{1+\frac{1}{\log\log n}}\log n)$ queries are enough are to recover
 the planted partition in polynomial time and with high probability. Those queries are actually
 random (\ie{} non-adaptive), and the clusters are found by looking at almost edge-disjoint path
@@ -188,12 +245,12 @@ between all pairs of nodes.
 In the online setting, \textcite{greedyOnline10} give a greedy algorithm that upon node arrival creates a
 singleton cluster and then merge all pairs of clusters for which it increases the total number of
 agreements. For \mind{}, this is $O(n)$-competitive algorithm and they show such ratio is optimal by
-exhibiting an instance\footnote{two positive cliques $A$ and $B$ joined by positive edges except
-between $a\in A$ and $\{b_1,\ldots, b_k\}\in B$. Those nodes are given first and thus form a cluster
-which yield at least one disagreement every time one the $n-(k+1)$ remaining nodes is added.} on
+exhibiting an instance\footnote{Namely two positive cliques $A$ and $B$ joined by positive edges except
+between $a\in A$ and $\{b_1,\ldots, b_k\}\in B$. Those nodes are given first and thus form a cluster,
+which yields at least one disagreement every time one the $n-(k+1)$ remaining nodes is added.} on
 which any strategy ends up with $n - k$ disagreements whereas optimal cost is $k$. On the \maxa{}
-side, this greedy strategy result in a $0.5$-competitive algorithm. If it is randomly mixed with a
-\textsc{Dense} variation, it increases to $0.5+\eta$, still far from the demonstrated $0.834$ upper
+side, this greedy strategy result in a $\shalf$-competitive algorithm. If it is randomly mixed with a
+\textsc{Dense} variation, it increases to $\shalf+\eta$, still far from the demonstrated $0.834$ upper
 bound.
 % when the graph is given node by node,
 % \url{https://link.springer.com/chapter/10.1007/978-3-319-18173-8_7} show to cluster it in static
@@ -201,6 +258,7 @@ bound.
 % fraction of edge in cliques (ie avoid small cluster)
 
 \paragraph{\textsc{Cluster editing}}
+\label{par:cc_editing}
 
 % \url{http://www.sciencedirect.com/science?_ob=ArticleListURL&_method=list&_ArticleListID=-1231039636&_sort=r&_st=4&md5=018b782f17918959c0cc389c33ba2cd7&searchtype=a}
 
@@ -219,35 +277,35 @@ whereas we shall only give important and more recent pointers here.} They show t
 $0.878$-approximation in the weighted $k=2$ case using the standard Goemans-Williamson SDP
 relaxation. 
 
-If we parameterize the problem by the number $d$ of edges that need to be added or deleted (that is
+If we parameterize the problem by the number $d$ of edges that need to be added or deleted (that is,
 the number of disagreements), then it can be solved in polynomial time in the size of the input
 graph (but not in $d$). The best known approximation so far is
-$O(1.62^d+m+n)$~\autocite{GoldenCE12}, which search for conflict triple (\ie{} unbalanced triangle
+$O(1.62^d+m+n)$~\autocite{GoldenCE12}, which search for conflict triples (\ie unbalanced triangles
 in the sign language) and branch by either deleting or merging one positive edge. If we additionally
 look for exactly $k$ clusters (\ie \mind$[k]$), there is a fixed parameters algorithm running in
 $O(2^{O(\sqrt{kd})}+n+m)$~\autocite{Fomin2014}. If at most $a$ edges can be added and at most $b$
 edges can be deleted at each node, and if the minimum size of a cluster is at least $2(a+b)$, then
-the problem can be solved in polynomial time~\autocite{Abu-Khzam2015}. Finally, On planar graph,
+the problem can be solved in polynomial time~\autocite{Abu-Khzam2015}. Finally, for planar graph,
 there is a PTAS running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
-into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}
+into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}.
 
-\paragraph{Communities detection}
+\paragraph{Community detection}
 
-The clustering problem is often named communities detection in the context of social networks, and
+The clustering problem is often named community detection in the context of social networks, and
 several methods developed by practitioners have been extended to signed graphs. While they do not
 necessarily considered the \pcc{} objective, and especially not its optimum, we still give a brief
 overview of them, as they tend to have been more tested experimentally. For instance, to find the
 cluster of node $u$, \textcite{Yang2007} use a random walk approach on the positive subgraph $G^+$
-to compute the probability of each node to reach $u$ in $k$ steps, sort the nodes accordingly and
-then find a threshold  based on number of disagreements.
-The one node moves local heuristic that we described in the Physics inspired paragraph
+to compute the probability of each node to reach $u$ in $T$ steps, sort the nodes accordingly and
+then find a threshold  based on the number of disagreements.
+The one node moves local heuristic that we described in the Physics-inspired paragraph
 \vpageref{par:cc_physics} can also be formulated as genetic algorithms that simultaneously try to
 minimize the number of disagreements and maximize a signed variant of the
 modularity~\autocites{Li2013}{Amelio2013}. \Textcite{Anchuri2012} also consider these two objectives
 by seeing them as eigenvalue problems and devise a iterative splitting procedure.
 The overlapping community detection variant is considered by \textcite{Chen14}, who used a signed
 probabilistic mixture model. Namely, an edge selects a pair of cluster $r,s$ with probability
-$\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and choose its endpoint
+$\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and chooses its endpoints
 $u$ and $v$ with probability $\theta_{ru}$ and $\theta_{sv}$. $\theta_{ru}$ is therefore the soft
 membership of node $u$ to cluster $r$, and those parameters are estimated using the
 expectation-maximization algorithm. The same model is extended to directed graphs by

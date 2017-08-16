@@ -1,5 +1,5 @@
 We already described methods based on LP and SDP, as they have proved to be the best way to obtain
-tight approximation in the worst case. Here we survey other kind of approaches with different aims.
+tight approximations in the worst case. Here we survey other kind of approaches with different aims.
 
 \paragraph{Exact methods} Because of the complexity of the \pcc{} we presented earlier, one has to
 rely on approximations to solve large instances of the problem. However, we can imagine offline
@@ -9,11 +9,11 @@ heuristic methods, albeit in non asymptotic setting. The most straightforward id
 formulation of the LP \eqref{eq:mindLP} with the additional constraints that all variable are
 binary. \Textcite{ExactMIP13} solve this binary integer program on random instances and show that
 depending of the negative edge density, the FICO Xpress solver starts to be unable to finish within
-one hour time limit when $n \geq 40$.
+a one hour time limit when $n \geq 40$.
 \Textcite{Aref2016} describe four linear and quadratic  binary integer problems
 to model \pcc{} with two clusters along with some preprocessing optimizations. With the Gurobi
 software, they solve instances with up to $3200$ edges in less than a second. They also sketch
-extensions to weighted graph and more than two clusters.
+extensions to weighted graphs and more than two clusters.
 In a different direction, \textcite{Berg2015}, encode the linear and quadratic integer formulations
 into weighted MaxSAT instances and use the state of the art solver
 MaxHS\footnote{\href{http://www.maxhs.org/}{http://maxhs.org}}~\autocite{SATSolver13} to get the
@@ -30,10 +30,14 @@ where $e_i$ are the canonical vectors of $\Rbb{}^n$. They show that when the mat
 semidefinite of rank $k$, the \pcc{} problem can be solved exactly in $O(n^{k^2})$ time. More
 practically, they also give an algorithm that closely approximate the objective of
 \eqref{eq:cc_lowrank} in $O(nk)$ time.
+On complete graphs, we may also turn on fixed-parameter tractable algorithms, where the parameter
+can be the number of disagreements, the number of clusters or the maximum number of disagreements
+per nodes: see \vpageref{par:cc_editing}.
 
 \paragraph{Physics inspired energy methods}
 \label{par:cc_physics}
 
+Here we describe a physics particle model that can readily be adapted to model \pcc{}.
 The Potts model~\autocite{PottsSurvey82} describes a general model of \emph{spins} organized in a
 lattice and being in one of $k$ possible states. A spin $u$ interacts with each of its neighbors $v$
 through a coupling $J_{uv}$. The energy of this system, called the Hamiltonian, is defined by
@@ -44,7 +48,9 @@ principle of physics that isolated systems tend to minimize their energy, which 
 to finding a spin configuration minimizing the Hamiltonian. Viewing the spins as nodes of a graph,
 the couplings as the graph weighted edges and the $k$ possible states as clusters, it is quite
 natural to formulate the clustering problem as a Hamiltonian minimization
-problem~\autocite{CommunityPhysics06}. Letting $A$ be the matrix such that $A_{uv} = w_{uv}^+ -
+problem~\autocite{CommunityPhysics06}.
+
+Letting $A$ be the matrix such that $A_{uv} = w_{uv}^+ -
 w_{uv}^-$ on a general directed graph, \textcite{Traag2009} reward positive and absent negative
 links within cluster and penalize negative and absent positive links across clusters to come up with
 the following Hamiltonian: $\mathcal{H}(\bm{\sigma}) = -\sum_{u,v} \left(A_{uv}-(\gamma^+p^+_{uv} -
@@ -76,7 +82,6 @@ in advance, and (iii) there is no unary term}. Doing so, the are able to handle 
 more than 100K nodes.  Also adopting an energy minimization approach, \textcite{Kappes2016} assign a
 probability to each cut of a signed graph proportional to the exponential of the number of
 disagreements of that cut. They also develop efficient cut sampling methods.
-
 
 % something about local minima when defining another energy function, and how it is achieved by a
 % dynamic model but to be honest it has little to do with clustering {Marvel2009landscape}
@@ -121,18 +126,18 @@ efficient manner.
 
 \Textcite{Bonchi2013} suggest a different paradigm to solve \pcc{}, that can be applied in a
 distributed setting to obtain a scalable approach. Namely, given a node $u$, they want to output a
-globally consistent cluster index $\cluster(u)$ while making at most $t$ queries to an sign oracle.
+globally consistent cluster index $\cluster(u)$ while making at most $t$ queries to a sign oracle.
 Here $t$ is a parameter that depends on the quality of clustering produced but not on the size of
 the graph. And because this procedure is local to each node, it can be run in parallel. Finally, one
 can get a full clustering by computing $\cluster(u)$ for all the nodes in the graph. Despite the
 problem being apparently more challenging, they obtain approximation factors that are close to the
 best known (which in this model would make $\Omega(n^2)$ total queries). More precisely, they use
 two techniques.
-The first one is inspired by \ccpivot{} and first find a good set of pivots by seeing the problem as
-independent set on a sampled part of the positive graph, then for a given node, find the closest
-such pivot or create a singleton. Given a quality parameter $\epsilon\in(0,1)$, it yields a $4\cdot
-OPT + \epsilon n^2$ approximation of \mind{} requiring $O(\frac{n}{\epsilon})$ time and
-queries~\autocite[Theorem 3.3]{Bonchi2013}
+The first one is inspired by \ccpivot{}. It starts by finding a good set of pivots, seeing the
+problem as finding a maximal independent set on a sampled part of the positive graph. Then, for a
+given node, it finds the closest such pivot or creates a singleton. Given a quality parameter
+$\epsilon\in(0,1)$, it yields a $4\cdot OPT + \epsilon n^2$ approximation of \mind{} requiring
+$O(\frac{n}{\epsilon})$ time and queries~\autocite[Theorem 3.3]{Bonchi2013}.
 Roughly stated, the second one relies on an existing low-rank approximation of the adjacency matrix,
 that partition the graph into similar sized classes such that edges between those classes behave as
 in a random graph. This initial partition is \enquote{coarsened} into a good clustering by
@@ -150,7 +155,7 @@ the connectivity of $G$. For instance, $0$ is always the smallest eigenvalue and
 equal to number of connected components of $G$, while ---if $G$ is connected--- the second
 eigenvalue is the algebraic connectivity of $G$, whose magnitude is an indication of how well
 connected is the graph. This matrix is typically used for clustering by computing its first $k$
-eigenvectors, which embeds the $n$ nodes of $G$ in $\Rbb^k$, where there are then clustered with the
+eigenvectors, which embed the $n$ nodes of $G$ in $\Rbb^k$, where there are then clustered with the
 $k$-means algorithm. This can be seen as a relaxation of the discrete \rcut{} objective, which asks
 for the partition $\{C_1, \ldots, C_k\}$ minimizing $\frac{1}{2}\sum_{i=1}^k \frac{\mathrm{cut}(C_i,
 \bar{C_i})}{|C_i|}$, where $\bar{C_i}$ is the complement of $C_i$ in $V$ and $\mathrm{cut}(B, C) =
@@ -162,8 +167,8 @@ normalized cut objective (\ncut{}), where $|C_i|$ is replaced by $vol(C_i) = \su
 first that they require to fix the number of clusters beforehand and are looking for clusters
 balanced in size, which makes the problem related but not equivalent to \pcc{}.
 
-The first line of research consider only \mind{}$_2$. For instance, \textcite{NcutAnd2CC08} show
-that both normalized cut and \mind{}$_2$ objectives can be written as a SDP (or equivalently as
+The first line of research consider only \mind{}$[2]$. For instance, \textcite{NcutAnd2CC08} show
+that both normalized cut and \mind{}$[2]$ objectives can be written as a SDP (or equivalently as
 eigenvalue problems) and thus combined, the intuition being that we look for \ncut{} solutions whose
 number of disagreements is not too much more than the approximate optimal.
 
@@ -180,13 +185,13 @@ ratio of a difference of convex function and a convex function.
 On the other hand, one can also adapt these two cut objectives to directly include negative edges.
 \Textcite{Luca10} define the signed Laplacian as $\bar{L} = \bar{D} - A$, where $\bar{D}$ is the
 signed degree matrix such that $\bar{D}_{uu} = \sum_{v\in \nei(u)} |A_{uv}|$, as well as a signed
-variant of the symmetric normalized Laplacian $\bar{L}_{sym}  = \bar{D}^{\nicefrac{1}{2}} L
+variant of the symmetric normalized Laplacian $\bar{L}_{sym}  = \bar{D}^{\nicefrac{1}{2}} \bar{L}
 \bar{D}^{\nicefrac{1}{2}}$. They show that the signed Laplacian is positive semidefinite, and
-even positive-definite as soon as the graph is unbalanced (that is contains a cycle with a odd
+even positive-definite as soon as the graph is unbalanced (that is contains a cycle with an odd
 number of negative edges). From positive and negative cuts defined as $\mathrm{cut}^+(B, C) =
 \sum_{u\in B, v\in C} w^+_{uv}$ and $\mathrm{cut}^-(B, C) = \sum_{u\in B, v\in C} w^-_{uv}$, a
 natural signed cut is $\mathrm{scut}(B, C) = 2\mathrm{cut}^+(B, C) + \mathrm{cut}^-(B, B) +
-\mathrm{cut}^-(C, C)$ which then be used to defined signed \rcut{} and \ncut{}. Arguing that those
+\mathrm{cut}^-(C, C)$ which can then be used to defined signed \rcut{} and \ncut{}. Arguing that those
 definitions force negatively linked nodes to be symmetric around the origin, do not take into
 account the balance of negative edges in each cluster and are difficult to extend to more than two
 clusters, \textcite{SignedEmbedding15} instead propose two new normalized cuts:
@@ -205,10 +210,7 @@ C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)$,
   sNcut(C_1, \ldots, C_k) = \sum_{i=1}^k
   \frac{2\mathrm{cut}^-(C_i, C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)}{vol(C_i)}
 \end{equation*}
-
-% Kai-Yang Chiang, Joyce Jiyoung Whang, and Inderjit S. Dhillon. 2012. Scalable clustering of signed
-% networks using balance normalized cut. In CIKM '12. 615-624.
-% DOI=http://dx.doi.org/10.1145/2396761.2396841
+Additional cut formulations for $k$-clusters are also presented in~\autocite{moreSignedCut12}.
 
 Finally, \textcite{mGeometricMean16} show that the Laplacians defined so far can be seen as
 arithmetic means of the Laplacian $L^+$ of the positive subgraph $G^+=(V, E^+)$ and the signless
@@ -224,7 +226,7 @@ clusters in $G^-$), while this is note the case for the arithmetic mean of Lapla
 
 \paragraph{Heuristic methods}
 
-While all\marginpars{or most? not physic ones so move them afterwards} the methods we discuss so far
+While all the methods we discuss so far
 are either exact or come with some approximation guarantees, practitioners have also develop
 approaches that are designed to efficiently reach a solution that is satisfying enough for the
 application at hand. For instance, while studying small scale signed social networks,
@@ -233,13 +235,15 @@ the graphs and for $T$ steps, sample randomly $P$ neighboring partitions, comput
 disagreements and move the one with the least disagreements. Neighboring partitions are obtained
 either by moving one node from cluster to another or by exchanging a pair of nodes between two
 clusters. The overall complexity is $O(nTP)$. This is quite similar to the \emph{Best One Element
-Move} described in~\autocite{Gionis2007}, except that the exchange operation is replaced by moving
+Move} described in~\autocite{Gionis2007}, except that there the exchange operation is replaced by moving
 one node to its own singleton cluster. The \emph{Cluster Affinity Search Technique}
-algorithm~\textcite{Ben-Dor99} instead grows clusters one by one by maintaining for the current
-cluster the affinity of all nodes, which is the sum of the weight between that node and the nodes in
+algorithm~\autocite{Ben-Dor99} instead grows clusters one by one by maintaining for the current
+cluster the affinity of all nodes, which is the sum of the weights between that node and the nodes in
 the cluster. Nodes above a certain threshold are added to the current cluster and nodes below the
 threshold are removed, with the affinity to the current cluster being recomputed after each addition
-or deletion. After defining the net weight of an edge to be $w^\pm_{uv} = w^+_{uv} - w^-_{uv}$,
+or deletion.
+
+After defining the net weight of an edge to be $w^\pm_{uv} = w^+_{uv} - w^-_{uv}$,
 \textcite{Elsner2009} describe three folklore heuristics that start with empty clusters and add node
 one by one: \enquote{The \textsc{Best} algorithm adds each node $u$ to the cluster with the
 strongest $w^\pm$ connecting to $u$, or to a new singleton if none of the $w^\pm$ are positive.
@@ -250,8 +254,8 @@ or to a singleton if no total is positive.} Empirically, \textsc{Vote} turns out
 Among other related heuristics, \textcite{mergingHeuristics14} describe the random maximum merging
 algorithm, that starts with singleton clusters and keep merging two clusters chosen at random among
 those whose merge would result in the maximum improvement of the score function.  This runs in
-$O(n^2\log n)$, provides a $2$-approximation of \maxa{}, a $O(n\times \text{size of the largest
-cluster})$-approximation of \mind and empirically results in less disagreements than \ccpivot{}.
+$O(n^2\log n)$, provides a $2$-approximation of \maxa{}, a $O(n\cdot \text{size of the largest
+cluster})$-approximation of \mind{}, and empirically results in less disagreements than \ccpivot{}.
 Building upon their previous GRASP work~\autocite{GRASP13}, an iterated local search heuristic is
 presented in~\autocites{Levorato2015}{Levorato2017}. Each iteration of this algorithm starts by
 greedily build a clustering in fashion similar to \textsc{Vote}, albeit with more randomness in the
@@ -263,11 +267,11 @@ before the perturbation. The authors note that both the outer loop and the neigh
 be run in parallel, which allow them to process a \np{10000} nodes graph on 10 cores in around 700
 seconds.
 This local search followed by random perturbation is reminiscent of genetic algorithms, and such an
-approach is sketched in~\autocite{GeneticCC08}.\marginpars{but that's a terrible paper!} Instead of
+approach is sketched in~\autocite{GeneticCC08}.\footnote{but that's a terrible paper!} Instead of
 moving nodes, \textcite{restoreNeighborhood13} starts from the observation that in a balanced
-graphs, $G^+$ is a disjoint union of cliques in which all node a given cluster share the shame
+graph, $G^+$ is a disjoint union of cliques in which all the nodes of a given cluster share the shame
 neighbors. Their algorithm is initialized with the set $E_s^+$ of edges where $w^+_{uv} > w^-_{uv}$,
-and repeatedly sample an edge $(u,v)$ from $E_s^+$ before trying to make the neighborhoods of $u$
+and repeatedly samples an edge $(u,v)$ from $E_s^+$ before trying to make the neighborhoods of $u$
 and $v$ coincide by adding or removing edges in $E_s^+$.  Yet another idea is modify the LP
 \eqref{eq:mindLP} to replace the binary variable $x_{uv}$ by a $k$ clusters indicator matrix
 $L\in\Rbb^{k\times n}$ where $L_{iu}$ is $1$ is $u\in C_i$ and $-1$
