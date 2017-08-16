@@ -32,63 +32,39 @@ practically, they also give an algorithm that closely approximate the objective 
 \eqref{eq:cc_lowrank} in $O(nk)$ time.
 On complete graphs, we may also turn on fixed-parameter tractable algorithms, where the parameter
 can be the number of disagreements, the number of clusters or the maximum number of disagreements
-per nodes: see \vpageref{par:cc_editing}.
+per nodes, as we will now see.
 
-\paragraph{Physics inspired energy methods}
-\label{par:cc_physics}
+\paragraph{\textsc{Cluster editing}}
+\label{par:cc_editing}
 
-Here we describe a physics particle model that can readily be adapted to model \pcc{}.
-The Potts model~\autocite{PottsSurvey82} describes a general model of \emph{spins} organized in a
-lattice and being in one of $k$ possible states. A spin $u$ interacts with each of its neighbors $v$
-through a coupling $J_{uv}$. The energy of this system, called the Hamiltonian, is defined by
-$\mathcal{H}(\bm{\sigma}) = -\sum_{u,v} J_{uv} \delta(\sigma_u, \sigma_v)$ where $\bm{\sigma}$ is
-the spin configuration (that is, $\sigma_u \in \{1,\ldots,k\}\,\forall u$) and $\delta(\sigma_u,
-\sigma_v)$ is equal to one if $u$ and $v$ are in the same state and zero otherwise. It is a general
-principle of physics that isolated systems tend to minimize their energy, which in this case amounts
-to finding a spin configuration minimizing the Hamiltonian. Viewing the spins as nodes of a graph,
-the couplings as the graph weighted edges and the $k$ possible states as clusters, it is quite
-natural to formulate the clustering problem as a Hamiltonian minimization
-problem~\autocite{CommunityPhysics06}.
+% \url{http://www.sciencedirect.com/science?_ob=ArticleListURL&_method=list&_ArticleListID=-1231039636&_sort=r&_st=4&md5=018b782f17918959c0cc389c33ba2cd7&searchtype=a}
 
-Letting $A$ be the matrix such that $A_{uv} = w_{uv}^+ -
-w_{uv}^-$ on a general directed graph, \textcite{Traag2009} reward positive and absent negative
-links within cluster and penalize negative and absent positive links across clusters to come up with
-the following Hamiltonian: $\mathcal{H}(\bm{\sigma}) = -\sum_{u,v} \left(A_{uv}-(\gamma^+p^+_{uv} -
-\gamma^-p^-_{uv})\right) \delta(\sigma_u, \sigma_v)$ where $\gamma^+$ and $\gamma^-$ are user
-parameters and $p^\pm_{uv}$ are null model probabilities, which are equal to $p^\pm_{uv} =
-\frac{|E^\pm|}{|V|(|V|-1)}$, or $p^\pm_{uv}=\frac{\dout^\pm(u) \din^\pm(v)}{|E^\pm|}$ in the degree
-corrected model. They note that setting $\gamma^+ = 0 = \gamma^-$ make minimizing the Hamiltonian
-equivalent to the \mind{} problem, which they do by simulated
-annealing~\autocite{SimulatedAnnealing83}. The idea is to start from a random partition, and jump to
-another partition by moving a single node from one cluster to another. Such moves are made with a
-probability proportional to how each move reduces the Hamiltonian and as the procedure goes on, large
-jumps are made less and less probable by reducing a parameter called the temperature.
-One advantage of this energy formulation is that it requires only one variable per node instead of
-one variable per edge as in the case of the linear program.
+In the cluster editing problem, one is given a general unsigned input graph $H=(V,E)$ and wants to
+find the smallest number of edges that have to be added or deleted to turn $H$ into node-disjoint
+union of cliques. This is equivalent to \pcc{} on complete graphs. To see why, let $G=(V,(E^+,E^-))$
+be a complete signed graph with nodeset $V$, $E^+$ be the set $E$ of edges of $H$ and $E^-$ be all
+the edges that are not in $H$. The optimal clusters of $G$ are the cliques of $H$, the negative
+disagreements within clusters are edges added to $H$ and the positive disagreements between clusters
+are deleted from $H$.  To the best of our knowledge, the problem was first introduced under this
+name by \textcite{Shamir02}.\marginpars{However, the same problem was studied before and we refer the
+reader to the comprehensive survey of \textcite{clusterEditSurvey13} for additional details,
+whereas we shall only give important and more recent pointers here.} They show the problem is
+\NPc{}, even if the number of clusters $k\geq2$ is set beforehand\footnote{The reduction is from
+3-exact 3 cover, see \autocite[Theorems 1, 2 and Corollary 1]{Shamir02}.} and provide a
+$0.878$-approximation in the weighted $k=2$ case using the standard Goemans-Williamson SDP
+relaxation. 
 
-In the case of $2$-\pcc{}, \textcite{Facchetti2011isingmodel} rewrite the Hamiltonian as
-$\mathcal{H}(\bm{\sigma}) = -\frac{1}{2}\bm{\sigma}^T A \bm{\sigma} = -\frac{1}{2}\bm{1}^TT_\sigma A
-T_\sigma\bm{1}$. There $T_\sigma = diag(\bm{\sigma})$ (where $\bm{\sigma} \in \{0,1\}^n$) is the
-outcome of a local search algorithm such that $A_\sigma = T_\sigma A T_\sigma$ has the same number
-of disagreements as $A$ but the least number of negative edges. This is called a gauge
-transformation in the spin glass literature and the benefit of that heuristic is that it scales
-gracefully to large graphs.
-\Textcite{Bagon2011} also write the \maxa{} objective as a Potts model, and show that it can be
-interpreted as the log posterior of a partition matrix under a simple generative model and as a
-pair-wise conditional random field energy without unary terms. This allows them to adapt existing
-discrete energy optimization algorithms in order to cope with the following three challenges of the
-\pcc{} energy: \enquote{(i) the energy is non sub-modular, (ii) the number of clusters is not known
-in advance, and (iii) there is no unary term}. Doing so, the are able to handle large problems with
-more than 100K nodes.  Also adopting an energy minimization approach, \textcite{Kappes2016} assign a
-probability to each cut of a signed graph proportional to the exponential of the number of
-disagreements of that cut. They also develop efficient cut sampling methods.
-
-% something about local minima when defining another energy function, and how it is achieved by a
-% dynamic model but to be honest it has little to do with clustering {Marvel2009landscape}
-% Kappes2016 \enquote{Furthermore, due to the lack of an external field (unary terms), any permutation of an
-% optimal assignment results in another optimal labeling.}
-% like an ICML'17 paper that touches something very related (multicut) and gives recent applications in
-% vision https://arxiv.org/abs/1503.03791 represents a cut by the set of interclusters edges
+If we parameterize the problem by the number $d$ of edges that need to be added or deleted (that is,
+the number of disagreements), then it can be solved in polynomial time in the size of the input
+graph (but not in $d$). The best known approximation so far is
+$O(1.62^d+m+n)$~\autocite{GoldenCE12}, which search for conflict triples (\ie unbalanced triangles
+in the sign language) and branch by either deleting or merging one positive edge. If we additionally
+look for exactly $k$ clusters (\ie \mind$[k]$), there is a fixed parameters algorithm running in
+$O(2^{O(\sqrt{kd})}+n+m)$~\autocite{Fomin2014}. If at most $a$ edges can be added and at most $b$
+edges can be deleted at each node, and if the minimum size of a cluster is at least $2(a+b)$, then
+the problem can be solved in polynomial time~\autocite{Abu-Khzam2015}. Finally, for planar graph,
+there is a PTAS running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
+into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}.
 
 \paragraph{Distributed setting}
 
@@ -145,85 +121,6 @@ considering all possible ways of assigning classes to clusters. It gives an $OPT
 additive approximation  for \mind{} that runs in time $n \cdot poly(\nicefrac{1}{\epsilon}) +
 2^{poly(\nicefrac{1}{\epsilon})}$ \autocite[Corollary 3.7]{Bonchi2013}.
 
-\paragraph{Spectral Clustering}
-
-A classic method for clustering graphs is to leverage their spectral properties. Namely, if $A$ is
-the adjacency matrix of $G$ and $D$ its degree diagonal matrix (that is $D_{u,u} = \degr(u)$), the
-\emph{Laplacian} of $G$, defined by $L_G = D - A$, is a symmetric positive semidefinite matrix. As
-such, it has $n$ real non-negative eigenvalues, and its spectrum provides additional information on
-the connectivity of $G$. For instance, $0$ is always the smallest eigenvalue and its multiplicity is
-equal to number of connected components of $G$, while ---if $G$ is connected--- the second
-eigenvalue is the algebraic connectivity of $G$, whose magnitude is an indication of how well
-connected is the graph. This matrix is typically used for clustering by computing its first $k$
-eigenvectors, which embed the $n$ nodes of $G$ in $\Rbb^k$, where there are then clustered with the
-$k$-means algorithm. This can be seen as a relaxation of the discrete \rcut{} objective, which asks
-for the partition $\{C_1, \ldots, C_k\}$ minimizing $\frac{1}{2}\sum_{i=1}^k \frac{\mathrm{cut}(C_i,
-\bar{C_i})}{|C_i|}$, where $\bar{C_i}$ is the complement of $C_i$ in $V$ and $\mathrm{cut}(B, C) =
-\sum_{u\in B, v\in C} w_{uv}$ is the total weight of the edges between $B$ and
-$C$~\autocite{tutoSpectralClustering07}. By considering the symmetric normalized Laplacian
-$L_{sym}  = D^{\nicefrac{1}{2}}LD^{\nicefrac{1}{2}}$, it is also possible to approximate the
-normalized cut objective (\ncut{}), where $|C_i|$ is replaced by $vol(C_i) = \sum_{u\in C_i}
-\degr(u)$. We will now see how these kinds of approaches can be extended to signed graphs, noting
-first that they require to fix the number of clusters beforehand and are looking for clusters
-balanced in size, which makes the problem related but not equivalent to \pcc{}.
-
-The first line of research consider only \mind{}$[2]$. For instance, \textcite{NcutAnd2CC08} show
-that both normalized cut and \mind{}$[2]$ objectives can be written as a SDP (or equivalently as
-eigenvalue problems) and thus combined, the intuition being that we look for \ncut{} solutions whose
-number of disagreements is not too much more than the approximate optimal.
-
-Letting \ncut{}$(C, \bar{C}) = \frac{\mathrm{cut}(C, \bar{C})}{\mathrm{bal}(C)}$ with
-$\mathrm{bal}(C) = 2\frac{vol(C)vol(\bar{C})}{vol(V)}$, \textcite{mOneCC12} define a new objective:
-\begin{equation*}
-  \hat{F}_\gamma(C) = \frac{\mathrm{cut}(C, \bar{C}) + \gamma\left(\hat{M}(C)+\hat{N}(C)\right)}{\mathrm{bal}(C)}
-\end{equation*}
-where $\gamma \in \Rbb{}_+$ is a parameter, while $\hat{M}(C)$ and $\hat{N}(C)$ are respectively the
-number of positive and negative disagreements of the $(C, \bar{C})$ clustering.
-They show how to optimize a tight continuous relaxation of $\hat{F}_\gamma$ as the non negative
-ratio of a difference of convex function and a convex function.
-
-On the other hand, one can also adapt these two cut objectives to directly include negative edges.
-\Textcite{Luca10} define the signed Laplacian as $\bar{L} = \bar{D} - A$, where $\bar{D}$ is the
-signed degree matrix such that $\bar{D}_{uu} = \sum_{v\in \nei(u)} |A_{uv}|$, as well as a signed
-variant of the symmetric normalized Laplacian $\bar{L}_{sym}  = \bar{D}^{\nicefrac{1}{2}} \bar{L}
-\bar{D}^{\nicefrac{1}{2}}$. They show that the signed Laplacian is positive semidefinite, and
-even positive-definite as soon as the graph is unbalanced (that is contains a cycle with an odd
-number of negative edges). From positive and negative cuts defined as $\mathrm{cut}^+(B, C) =
-\sum_{u\in B, v\in C} w^+_{uv}$ and $\mathrm{cut}^-(B, C) = \sum_{u\in B, v\in C} w^-_{uv}$, a
-natural signed cut is $\mathrm{scut}(B, C) = 2\mathrm{cut}^+(B, C) + \mathrm{cut}^-(B, B) +
-\mathrm{cut}^-(C, C)$ which can then be used to defined signed \rcut{} and \ncut{}. Arguing that those
-definitions force negatively linked nodes to be symmetric around the origin, do not take into
-account the balance of negative edges in each cluster and are difficult to extend to more than two
-clusters, \textcite{SignedEmbedding15} instead propose two new normalized cuts:
-\begin{align*}
-  SNScut(C_1, \ldots, C_k) &= \sum_{i=1}^k
-  \frac{\mathrm{cut}^+(C_i, \bar{C_i})-\mathrm{cut}^-(C_i, \bar{C_i})}{vol(C_i)}  \\
-  BNScut(C_1, \ldots, C_k) &= \sum_{i=1}^k
-  \frac{\mathrm{cut}^+(C_i, \bar{C_i})-\mathrm{cut}^-(C_i, \bar{C_i})+vol^-(C_i)}{vol(C_i)}
-\end{align*}
-
-Noting that if $x_i\in\Rbb^n$ is the vector indicator of cluster $C_i$ (that is the \uth{} entry of
-$x_i$ is $1$ is $u$ belongs to $C_i$ and $0$ otherwise), $x_i^T\bar{L}x_i = 2\mathrm{cut}^-(C_i,
-C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)$,
-\textcite{mSemanticWordCC17} introduce the following cut objective:
-\begin{equation*}
-  sNcut(C_1, \ldots, C_k) = \sum_{i=1}^k
-  \frac{2\mathrm{cut}^-(C_i, C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)}{vol(C_i)}
-\end{equation*}
-Additional cut formulations for $k$-clusters are also presented in~\autocite{moreSignedCut12}.
-
-Finally, \textcite{mGeometricMean16} show that the Laplacians defined so far can be seen as
-arithmetic means of the Laplacian $L^+$ of the positive subgraph $G^+=(V, E^+)$ and the signless
-Laplacian $Q^-$ of the negative subgraph $G^-=(V, E^-)$, where $Q^- = D^- + A^-$. They suggest
-instead to use a geometric mean defined for two positive matrices $A$ and $B$ as $A\#B =
-A^{\shalf{}} \left(A^{-\shalf{}} BA^{-\shalf{}} \right)^{\shalf{}} A^{\shalf{}}$. This suggestion is
-based on the fact that if $u$ is a common eigenvector of both $A$ and $B$ with eigenvalue $\lambda$
-and $\mu$ respectively, then $u$ is an eigenvector of $A+B$ with eigenvalue $\lambda+\mu$ and an
-eigenvector of $A\#B$ with eigenvalue $\sqrt{\lambda\mu}$. Therefore, the $k$ smallest eigenvalues
-of the geometric mean Laplacian will be influenced by both smallest eigenvalues of $L^+$
-(corresponding to assortative clusters in $G^+$) and of $Q^-$ (corresponding to disassortative
-clusters in $G^-$), while this is note the case for the arithmetic mean of Laplacians.
-
 \paragraph{Heuristic methods}
 
 While all the methods we discuss so far
@@ -278,3 +175,60 @@ $L\in\Rbb^{k\times n}$ where $L_{iu}$ is $1$ is $u\in C_i$ and $-1$
 otherwise~\autocite{AltOptimLP13}. Indeed $x_{u\cdot} \equiv L_{\cluster(u)\cdot}$, where $\cluster$
 is the cluster assignment. By relaxing the integer constraints on $L$, it is possible to do
 alternate optimization on $L$ and $\cluster$.
+
+\paragraph{Physics inspired energy methods}
+\label{par:cc_physics}
+
+Here we describe a physics particle model that can readily be adapted to model \pcc{} and provide
+additional heuristic methods.
+The Potts model~\autocite{PottsSurvey82} describes a general model of \emph{spins} organized in a
+lattice and being in one of $k$ possible states. A spin $u$ interacts with each of its neighbors $v$
+through a coupling $J_{uv}$. The energy of this system, called the Hamiltonian, is defined by
+$\mathcal{H}(\bm{\sigma}) = -\sum_{u,v} J_{uv} \delta(\sigma_u, \sigma_v)$ where $\bm{\sigma}$ is
+the spin configuration (that is, $\sigma_u \in \{1,\ldots,k\}\,\forall u$) and $\delta(\sigma_u,
+\sigma_v)$ is equal to one if $u$ and $v$ are in the same state and zero otherwise. It is a general
+principle of physics that isolated systems tend to minimize their energy, which in this case amounts
+to finding a spin configuration minimizing the Hamiltonian. Viewing the spins as nodes of a graph,
+the couplings as the graph weighted edges and the $k$ possible states as clusters, it is quite
+natural to formulate the clustering problem as a Hamiltonian minimization
+problem~\autocite{CommunityPhysics06}.
+
+Letting $A$ be the matrix such that $A_{uv} = w_{uv}^+ -
+w_{uv}^-$ on a general directed graph, \textcite{Traag2009} reward positive and absent negative
+links within cluster and penalize negative and absent positive links across clusters to come up with
+the following Hamiltonian: $\mathcal{H}(\bm{\sigma}) = -\sum_{u,v} \left(A_{uv}-(\gamma^+p^+_{uv} -
+\gamma^-p^-_{uv})\right) \delta(\sigma_u, \sigma_v)$ where $\gamma^+$ and $\gamma^-$ are user
+parameters and $p^\pm_{uv}$ are null model probabilities, which are equal to $p^\pm_{uv} =
+\frac{|E^\pm|}{|V|(|V|-1)}$, or $p^\pm_{uv}=\frac{\dout^\pm(u) \din^\pm(v)}{|E^\pm|}$ in the degree
+corrected model. They note that setting $\gamma^+ = 0 = \gamma^-$ make minimizing the Hamiltonian
+equivalent to the \mind{} problem, which they do by simulated
+annealing~\autocite{SimulatedAnnealing83}. The idea is to start from a random partition, and jump to
+another partition by moving a single node from one cluster to another. Such moves are made with a
+probability proportional to how each move reduces the Hamiltonian and as the procedure goes on, large
+jumps are made less and less probable by reducing a parameter called the temperature.
+One advantage of this energy formulation is that it requires only one variable per node instead of
+one variable per edge as in the case of the linear program.
+
+In the case of $2$-\pcc{}, \textcite{Facchetti2011isingmodel} rewrite the Hamiltonian as
+$\mathcal{H}(\bm{\sigma}) = -\frac{1}{2}\bm{\sigma}^T A \bm{\sigma} = -\frac{1}{2}\bm{1}^TT_\sigma A
+T_\sigma\bm{1}$. There $T_\sigma = diag(\bm{\sigma})$ (where $\bm{\sigma} \in \{0,1\}^n$) is the
+outcome of a local search algorithm such that $A_\sigma = T_\sigma A T_\sigma$ has the same number
+of disagreements as $A$ but the least number of negative edges. This is called a gauge
+transformation in the spin glass literature and the benefit of that heuristic is that it scales
+gracefully to large graphs.
+\Textcite{Bagon2011} also write the \maxa{} objective as a Potts model, and show that it can be
+interpreted as the log posterior of a partition matrix under a simple generative model and as a
+pair-wise conditional random field energy without unary terms. This allows them to adapt existing
+discrete energy optimization algorithms in order to cope with the following three challenges of the
+\pcc{} energy: \enquote{(i) the energy is non sub-modular, (ii) the number of clusters is not known
+in advance, and (iii) there is no unary term}. Doing so, the are able to handle large problems with
+more than 100K nodes.  Also adopting an energy minimization approach, \textcite{Kappes2016} assign a
+probability to each cut of a signed graph proportional to the exponential of the number of
+disagreements of that cut. They also develop efficient cut sampling methods.
+
+% something about local minima when defining another energy function, and how it is achieved by a
+% dynamic model but to be honest it has little to do with clustering {Marvel2009landscape}
+% Kappes2016 \enquote{Furthermore, due to the lack of an external field (unary terms), any permutation of an
+% optimal assignment results in another optimal labeling.}
+% like an ICML'17 paper that touches something very related (multicut) and gives recent applications in
+% vision https://arxiv.org/abs/1503.03791 represents a cut by the set of interclusters edges

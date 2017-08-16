@@ -33,6 +33,30 @@ the worst-case analysis.
 % \paragraph{recovery under noise}                  | non worst case analysis
 % \subsubsection{\pcc{} under stability assumption} | non worst case analysis
 
+\paragraph{\msc{}} 
+
+In \msc{}, the goal is to output a clustering which best summarizes (or agrees with) the several
+given input clusterings of the same set of objects.  Motivations include robustness ---by using an
+ensemble of clusterings from diverse methods--- and privacy ---if the clusterings were computed by
+different parties each considering only a subset of the objects attributes. We can build the
+complete graph of these objects, with weights set to the fraction of clusterings that place two
+objects in different clusters, thus representing a kind of distance in the space of clusterings.  As
+first show by \textcite{Gionis2007}, finding the optimal clustering is therefore an instance of
+\pcc{} where the weights obey the triangular inequality. They give a deterministic $3$-approximation
+using the \regionGrow{} method. Later \textcite{Bonizzoni2008} show that
+the minimization version is \APXh{}, even when the input is made of three clusterings and give a
+combinatorial $\nicefrac{4}{5}$-approximation for the maximization problem. Experimental evaluations are
+conducted by \textcite{Bertolacci07} and \textcite{Filkov08}. The former describe a scalable
+approach that first samples a small portion of the data, runs a (potentially computationally
+expensive) approximation algorithm and finally augment the resulting partition by adding to it the
+unsampled nodes one by one.  Experiments confirm that the running time is greatly improved compared
+with the linear program methods while the resulting objective value is essentially the same. Note,
+however, that LP methods can be applied in practice thanks to some tricks~\autocite{ConsensusLP10}.
+If we have $k$ input clusterings $\cluster^1,\ldots,\cluster^k$ and we parameterized the problem by
+$t$, which is the sum over the input clusterings of the number of pairs of objects that are clustered
+differently by a solution $\cluster^\star$ and $\cluster^i$, then there is a polynomial algorithm
+running in $O(4.24^{\nicefrac{t}{k}}\cdot \nicefrac{t}{k}^3 +
+kn^2)$~\autocite{parameterizedConsensus14}.
 
 \paragraph{Bipartite \pcc{}}
 
@@ -72,7 +96,6 @@ approximation factor of $4$. \Textcite{multiChromatic15} extend this line of wor
 single edge can carry a \emph{set} of labels and adapt their randomized algorithm so that the
 approximation factor is multiplied by the size of the input label set.
 
-
 \paragraph{Overlapping \pcc{}}
 
 While in \pcc{}, each node is assigned to a single cluster, in other settings we may want to relax
@@ -88,31 +111,6 @@ SVM, while \textcite{GeneticOCC14} propose a genetic algorithm to solve this pro
 \Textcite{StochasticCC13} also deals with overlapping clustering by relaxing the problem to a
 stochastic setting and using \enquote{the Baum-Eagon inequality, which provides an effective
 iterative means for maximizing polynomial functions in probability domains}.
-
-\paragraph{\msc{}} 
-
-In \msc{}, the goal is to output a clustering which best summarizes (or agrees with) the several
-given input clusterings of the same set of objects.  Motivations include robustness ---by using an
-ensemble of clusterings from diverse methods--- and privacy ---if the clusterings were computed by
-different parties each considering only a subset of the objects attributes. We can build the
-complete graph of these objects, with weights set to the fraction of clusterings that place two
-objects in different clusters, thus representing a kind of distance in the space of clusterings.  As
-first show by \textcite{Gionis2007}, finding the optimal clustering is therefore an instance of
-\pcc{} where the weights obey the triangular inequality. They give a deterministic $3$-approximation
-using the \regionGrow{} method. Later \textcite{Bonizzoni2008} show that
-the minimization version is \APXh{}, even when the input is made of three clusterings and give a
-combinatorial $\nicefrac{4}{5}$-approximation for the maximization problem. Experimental evaluations are
-conducted by \textcite{Bertolacci07} and \textcite{Filkov08}. The former describe a scalable
-approach that first samples a small portion of the data, runs a (potentially computationally
-expensive) approximation algorithm and finally augment the resulting partition by adding to it the
-unsampled nodes one by one.  Experiments confirm that the running time is greatly improved compared
-with the linear program methods while the resulting objective value is essentially the same. Note,
-however, that LP methods can be applied in practice thanks to some tricks~\autocite{ConsensusLP10}.
-If we have $k$ input clusterings $\cluster^1,\ldots,\cluster^k$ and we parameterized the problem by
-$t$, which is the sum over the input clusterings of the number of pairs of objects that are clustered
-differently by a solution $\cluster^\star$ and $\cluster^i$, then there is a polynomial algorithm
-running in $O(4.24^{\nicefrac{t}{k}}\cdot \nicefrac{t}{k}^3 +
-kn^2)$~\autocite{parameterizedConsensus14}.
 
 \paragraph{Local \pcc{}}
 
@@ -168,41 +166,113 @@ combine it with a combinatorial approach to reach a $O(\sqrt{n})$ approximation.
 consider the complementary problem of maximizing the minimum number of agreements reach at a single
 node, and provide a $\frac{1}{2+\epsilon}$ approximation.
 
-\paragraph{\pcc{} under noise}
+\paragraph{Spectral Clustering}
 
-As we have seen, assuming the Unique Games Conjecture, the \mmc{} problem, and therefore
-the \pcc{} problem on a general graph, cannot be approximated to within a constant factor in the worst
-case.  But maybe we can do better in the average case, which motivates the study of semi-random
-model, where real graphs are seen as being obtained from the controlled perturbation of a perfectly
-clusterable graph. In the simplest case, each edge sign is independently flipped with probability
-$p \in [0, \shalf)$. This situation on complete graphs was considered in \autocite[Section
-6]{Bansal2002}, showing a simple algorithm that with high probability makes
-$\tilde{O}(n^\frac{3}{2})$ mistakes, and in \autocite[Theorem 2.6]{Ben-Dor99}, with an algorithm
-recovering with high probability the planted partition of an unweighted graph in $O(n^2(\log n)^c)$,
-where $c$ depends on the size of the smallest cluster and the noise probability.
+A classic method for clustering graphs is to leverage their spectral properties. Namely, if $A$ is
+the adjacency matrix of $G$ and $D$ its degree diagonal matrix (that is $D_{u,u} = \degr(u)$), the
+\emph{Laplacian} of $G$, defined by $L_G = D - A$, is a symmetric positive semidefinite matrix. As
+such, it has $n$ real non-negative eigenvalues, and its spectrum provides additional information on
+the connectivity of $G$. For instance, $0$ is always the smallest eigenvalue and its multiplicity is
+equal to number of connected components of $G$, while ---if $G$ is connected--- the second
+eigenvalue is the algebraic connectivity of $G$, whose magnitude is an indication of how well
+connected is the graph. This matrix is typically used for clustering by computing its first $k$
+eigenvectors, which embed the $n$ nodes of $G$ in $\Rbb^k$, where there are then clustered with the
+$k$-means algorithm. This can be seen as a relaxation of the discrete \rcut{} objective, which asks
+for the partition $\{C_1, \ldots, C_k\}$ minimizing $\frac{1}{2}\sum_{i=1}^k \frac{\mathrm{cut}(C_i,
+\bar{C_i})}{|C_i|}$, where $\bar{C_i}$ is the complement of $C_i$ in $V$ and $\mathrm{cut}(B, C) =
+\sum_{u\in B, v\in C} w_{uv}$ is the total weight of the edges between $B$ and
+$C$~\autocite{tutoSpectralClustering07}. By considering the symmetric normalized Laplacian
+$L_{sym}  = D^{\nicefrac{1}{2}}LD^{\nicefrac{1}{2}}$, it is also possible to approximate the
+normalized cut objective (\ncut{}), where $|C_i|$ is replaced by $vol(C_i) = \sum_{u\in C_i}
+\degr(u)$. We will now see how these kinds of approaches can be extended to signed graphs, noting
+first that they require to fix the number of clusters beforehand and are looking for clusters
+balanced in size, which makes the problem related but not equivalent to \pcc{}.
 
-\Textcite{Joachims2005} analyze a more refined weighted model, where weights are generated by a
-probability distribution whose mean on true positive edges is larger than $\mu^+>0$ and whose mean
-on true negative edges is smaller than $\mu^-<0$. They give a finite-sample bound on the number of
-node misclustered w.r.t the planted partition as a function on the probability distribution
-parameters. Indeed, as pointed out by \textcite{plantedAilon09}, independent and uniform noise is
-not a good model of real situations, where the input of \pcc{}, \ie{} the similarity between nodes,
-is often the result of a preprocessing, which may present strong correlations. Therefore, instead of
-measuring the quality of a solution against in the input (\ie{} the similarity information), they
-argue it is more sensible to measure it against the (unknown) true optimal clustering that gave rise
-to the input, and show that \ccpivot{} allows that thanks to a new analysis. \Textcite{Mathieu2010}
-also consider an adversarial model, where all edges are flipped with probability $p$ but the
-adversary then decide whether to show us the true sign or the flipped sign. On complete unweighted
-graphs, they find a solution of \mind{} at most $1 + O(n^{-\nicefrac{1}{6}})$ times the optimal
-whenever $p \leq \shalf - n^{-\nicefrac{1}{3}}$ by rounding the usual SDP solution. If in addition
-$p\leq\nicefrac{1}{3}$, there is no adversary and each planted cluster has at least
-$\Theta(\sqrt{n})$ nodes, then the planted partition can be recovered exactly.
-\Textcite{Makarychev2014} study the same adversarial model but on general weighted graphs, giving a PTAS
-for \mind{} when $p\leq \nicefrac{1}{4}$. Under additional assumptions on the density of edges, they
-present another algorithm that finds the ground truth clustering with an arbitrarily small
-classification error.\footnote{They also mention a potentially interesting related
-work~\autocite{unobservedCC14}.} % http://www.jmlr.org/papers/v15/chen14a.html
+The first line of research consider only \mind{}$[2]$. For instance, \textcite{NcutAnd2CC08} show
+that both normalized cut and \mind{}$[2]$ objectives can be written as a SDP (or equivalently as
+eigenvalue problems) and thus combined, the intuition being that we look for \ncut{} solutions whose
+number of disagreements is not too much more than the approximate optimal.
 
+Letting \ncut{}$(C, \bar{C}) = \frac{\mathrm{cut}(C, \bar{C})}{\mathrm{bal}(C)}$ with
+$\mathrm{bal}(C) = 2\frac{vol(C)vol(\bar{C})}{vol(V)}$, \textcite{mOneCC12} define a new objective:
+\begin{equation*}
+  \hat{F}_\gamma(C) = \frac{\mathrm{cut}(C, \bar{C}) + \gamma\left(\hat{M}(C)+\hat{N}(C)\right)}{\mathrm{bal}(C)}
+\end{equation*}
+where $\gamma \in \Rbb{}_+$ is a parameter, while $\hat{M}(C)$ and $\hat{N}(C)$ are respectively the
+number of positive and negative disagreements of the $(C, \bar{C})$ clustering.
+They show how to optimize a tight continuous relaxation of $\hat{F}_\gamma$ as the non negative
+ratio of a difference of convex function and a convex function.
+
+On the other hand, one can also adapt these two cut objectives to directly include negative edges.
+\Textcite{Luca10} define the signed Laplacian as $\bar{L} = \bar{D} - A$, where $\bar{D}$ is the
+signed degree matrix such that $\bar{D}_{uu} = \sum_{v\in \nei(u)} |A_{uv}|$, as well as a signed
+variant of the symmetric normalized Laplacian $\bar{L}_{sym}  = \bar{D}^{\nicefrac{1}{2}} \bar{L}
+\bar{D}^{\nicefrac{1}{2}}$. They show that the signed Laplacian is positive semidefinite, and
+even positive-definite as soon as the graph is unbalanced (that is contains a cycle with an odd
+number of negative edges). From positive and negative cuts defined as $\mathrm{cut}^+(B, C) =
+\sum_{u\in B, v\in C} w^+_{uv}$ and $\mathrm{cut}^-(B, C) = \sum_{u\in B, v\in C} w^-_{uv}$, a
+natural signed cut is $\mathrm{scut}(B, C) = 2\mathrm{cut}^+(B, C) + \mathrm{cut}^-(B, B) +
+\mathrm{cut}^-(C, C)$ which can then be used to defined signed \rcut{} and \ncut{}. Arguing that those
+definitions force negatively linked nodes to be symmetric around the origin, do not take into
+account the balance of negative edges in each cluster and are difficult to extend to more than two
+clusters, \textcite{SignedEmbedding15} instead propose two new normalized cuts:
+\begin{align*}
+  SNScut(C_1, \ldots, C_k) &= \sum_{i=1}^k
+  \frac{\mathrm{cut}^+(C_i, \bar{C_i})-\mathrm{cut}^-(C_i, \bar{C_i})}{vol(C_i)}  \\
+  BNScut(C_1, \ldots, C_k) &= \sum_{i=1}^k
+  \frac{\mathrm{cut}^+(C_i, \bar{C_i})-\mathrm{cut}^-(C_i, \bar{C_i})+vol^-(C_i)}{vol(C_i)}
+\end{align*}
+
+Noting that if $x_i\in\Rbb^n$ is the vector indicator of cluster $C_i$ (that is the \uth{} entry of
+$x_i$ is $1$ is $u$ belongs to $C_i$ and $0$ otherwise), $x_i^T\bar{L}x_i = 2\mathrm{cut}^-(C_i,
+C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)$,
+\textcite{mSemanticWordCC17} introduce the following cut objective:
+\begin{equation*}
+  sNcut(C_1, \ldots, C_k) = \sum_{i=1}^k
+  \frac{2\mathrm{cut}^-(C_i, C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)}{vol(C_i)}
+\end{equation*}
+Additional cut formulations for $k$-clusters are also presented in~\autocite{moreSignedCut12}.
+
+Finally, \textcite{mGeometricMean16} show that the Laplacians defined so far can be seen as
+arithmetic means of the Laplacian $L^+$ of the positive subgraph $G^+=(V, E^+)$ and the signless
+Laplacian $Q^-$ of the negative subgraph $G^-=(V, E^-)$, where $Q^- = D^- + A^-$. They suggest
+instead to use a geometric mean defined for two positive matrices $A$ and $B$ as $A\#B =
+A^{\shalf{}} \left(A^{-\shalf{}} BA^{-\shalf{}} \right)^{\shalf{}} A^{\shalf{}}$. This suggestion is
+based on the fact that if $u$ is a common eigenvector of both $A$ and $B$ with eigenvalue $\lambda$
+and $\mu$ respectively, then $u$ is an eigenvector of $A+B$ with eigenvalue $\lambda+\mu$ and an
+eigenvector of $A\#B$ with eigenvalue $\sqrt{\lambda\mu}$. Therefore, the $k$ smallest eigenvalues
+of the geometric mean Laplacian will be influenced by both smallest eigenvalues of $L^+$
+(corresponding to assortative clusters in $G^+$) and of $Q^-$ (corresponding to disassortative
+clusters in $G^-$), while this is note the case for the arithmetic mean of Laplacians.
+
+\paragraph{Community detection}
+
+The clustering problem is often named community detection in the context of social networks, and
+several methods developed by practitioners have been extended to signed graphs. While they do not
+necessarily considered the \pcc{} objective, and especially not its optimum, we still give a brief
+overview of them, as they tend to have been more tested experimentally. For instance, to find the
+cluster of node $u$, \textcite{Yang2007} use a random walk approach on the positive subgraph $G^+$
+to compute the probability of each node to reach $u$ in $T$ steps, sort the nodes accordingly and
+then find a threshold  based on the number of disagreements.
+The one node moves local heuristic that we described in the Physics-inspired paragraph
+\vpageref{par:cc_physics} can also be formulated as genetic algorithms that simultaneously try to
+minimize the number of disagreements and maximize a signed variant of the
+modularity~\autocites{Li2013}{Amelio2013}. \Textcite{Anchuri2012} also consider these two objectives
+by seeing them as eigenvalue problems and devise a iterative splitting procedure.
+The overlapping community detection variant is considered by \textcite{Chen14}, who used a signed
+probabilistic mixture model. Namely, an edge selects a pair of cluster $r,s$ with probability
+$\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and chooses its endpoints
+$u$ and $v$ with probability $\theta_{ru}$ and $\theta_{sv}$. $\theta_{ru}$ is therefore the soft
+membership of node $u$ to cluster $r$, and those parameters are estimated using the
+expectation-maximization algorithm. The same model is extended to directed graphs by
+\textcite{Jiang2015}, who strangely enough names it stochastic blockmodel, although the focus is
+still on edge and not nodes.
+In a similar spirit to \maxa{}$[k]$, \textcite{SignedGang} focus on finding $k$ subgraphs dense in
+positive edges and densely connected by negative edges to each others. They dub such subgraph
+\emph{Oppositive Cohesive Groups}, or more vividly \emph{Gangs in War}, and after formulating the
+problem as a constrained quadratic optimization, they propose a faster iterative local search
+heuristic.
+% relaxed structural balance \autocite{Doreian2009} but used the same approach as \textcite{Early96}
 
 \paragraph{Online \& active setting}
 
@@ -257,63 +327,37 @@ bound.
 % clique, so it sounds related to cluster editing, except their objective is to maximize the
 % fraction of edge in cliques (ie avoid small cluster)
 
-\paragraph{\textsc{Cluster editing}}
-\label{par:cc_editing}
+\paragraph{\pcc{} under noise}
 
-% \url{http://www.sciencedirect.com/science?_ob=ArticleListURL&_method=list&_ArticleListID=-1231039636&_sort=r&_st=4&md5=018b782f17918959c0cc389c33ba2cd7&searchtype=a}
+As we have seen, assuming the Unique Games Conjecture, the \mmc{} problem, and therefore
+the \pcc{} problem on a general graph, cannot be approximated to within a constant factor in the worst
+case.  But maybe we can do better in the average case, which motivates the study of semi-random
+model, where real graphs are seen as being obtained from the controlled perturbation of a perfectly
+clusterable graph. In the simplest case, each edge sign is independently flipped with probability
+$p \in [0, \shalf)$. This situation on complete graphs was considered in \autocite[Section
+6]{Bansal2002}, showing a simple algorithm that with high probability makes
+$\tilde{O}(n^\frac{3}{2})$ mistakes, and in \autocite[Theorem 2.6]{Ben-Dor99}, with an algorithm
+recovering with high probability the planted partition of an unweighted graph in $O(n^2(\log n)^c)$,
+where $c$ depends on the size of the smallest cluster and the noise probability.
 
-In the cluster editing problem, one is given a general unsigned input graph $H=(V,E)$ and wants to
-find the smallest number of edges that have to be added or deleted to turn $H$ into node-disjoint
-union of cliques. This is equivalent to \pcc{} on complete graphs. To see why, let $G=(V,(E^+,E^-))$
-be a complete signed graph with nodeset $V$, $E^+$ be the set $E$ of edges of $H$ and $E^-$ be all
-the edges that are not in $H$. The optimal clusters of $G$ are the cliques of $H$, the negative
-disagreements within clusters are edges added to $H$ and the positive disagreements between clusters
-are deleted from $H$.  To the best of our knowledge, the problem was first introduced under this
-name by \textcite{Shamir02}.\marginpars{However, the same problem was studied before and we refer the
-reader to the comprehensive survey of \textcite{clusterEditSurvey13} for additional details,
-whereas we shall only give important and more recent pointers here.} They show the problem is
-\NPc{}, even if the number of clusters $k\geq2$ is set beforehand\footnote{The reduction is from
-3-exact 3 cover, see \autocite[Theorems 1, 2 and Corollary 1]{Shamir02}.} and provide a
-$0.878$-approximation in the weighted $k=2$ case using the standard Goemans-Williamson SDP
-relaxation. 
-
-If we parameterize the problem by the number $d$ of edges that need to be added or deleted (that is,
-the number of disagreements), then it can be solved in polynomial time in the size of the input
-graph (but not in $d$). The best known approximation so far is
-$O(1.62^d+m+n)$~\autocite{GoldenCE12}, which search for conflict triples (\ie unbalanced triangles
-in the sign language) and branch by either deleting or merging one positive edge. If we additionally
-look for exactly $k$ clusters (\ie \mind$[k]$), there is a fixed parameters algorithm running in
-$O(2^{O(\sqrt{kd})}+n+m)$~\autocite{Fomin2014}. If at most $a$ edges can be added and at most $b$
-edges can be deleted at each node, and if the minimum size of a cluster is at least $2(a+b)$, then
-the problem can be solved in polynomial time~\autocite{Abu-Khzam2015}. Finally, for planar graph,
-there is a PTAS running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
-into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}.
-
-\paragraph{Community detection}
-
-The clustering problem is often named community detection in the context of social networks, and
-several methods developed by practitioners have been extended to signed graphs. While they do not
-necessarily considered the \pcc{} objective, and especially not its optimum, we still give a brief
-overview of them, as they tend to have been more tested experimentally. For instance, to find the
-cluster of node $u$, \textcite{Yang2007} use a random walk approach on the positive subgraph $G^+$
-to compute the probability of each node to reach $u$ in $T$ steps, sort the nodes accordingly and
-then find a threshold  based on the number of disagreements.
-The one node moves local heuristic that we described in the Physics-inspired paragraph
-\vpageref{par:cc_physics} can also be formulated as genetic algorithms that simultaneously try to
-minimize the number of disagreements and maximize a signed variant of the
-modularity~\autocites{Li2013}{Amelio2013}. \Textcite{Anchuri2012} also consider these two objectives
-by seeing them as eigenvalue problems and devise a iterative splitting procedure.
-The overlapping community detection variant is considered by \textcite{Chen14}, who used a signed
-probabilistic mixture model. Namely, an edge selects a pair of cluster $r,s$ with probability
-$\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and chooses its endpoints
-$u$ and $v$ with probability $\theta_{ru}$ and $\theta_{sv}$. $\theta_{ru}$ is therefore the soft
-membership of node $u$ to cluster $r$, and those parameters are estimated using the
-expectation-maximization algorithm. The same model is extended to directed graphs by
-\textcite{Jiang2015}, who strangely enough names it stochastic blockmodel, although the focus is
-still on edge and not nodes.
-In a similar spirit to \maxa{}$[k]$, \textcite{SignedGang} focus on finding $k$ subgraphs dense in
-positive edges and densely connected by negative edges to each others. They dub such subgraph
-\emph{Oppositive Cohesive Groups}, or more vividly \emph{Gangs in War}, and after formulating the
-problem as a constrained quadratic optimization, they propose a faster iterative local search
-heuristic.
-% relaxed structural balance \autocite{Doreian2009} but used the same approach as \textcite{Early96}
+\Textcite{Joachims2005} analyze a more refined weighted model, where weights are generated by a
+probability distribution whose mean on true positive edges is larger than $\mu^+>0$ and whose mean
+on true negative edges is smaller than $\mu^-<0$. They give a finite-sample bound on the number of
+node misclustered w.r.t the planted partition as a function on the probability distribution
+parameters. Indeed, as pointed out by \textcite{plantedAilon09}, independent and uniform noise is
+not a good model of real situations, where the input of \pcc{}, \ie{} the similarity between nodes,
+is often the result of a preprocessing, which may present strong correlations. Therefore, instead of
+measuring the quality of a solution against in the input (\ie{} the similarity information), they
+argue it is more sensible to measure it against the (unknown) true optimal clustering that gave rise
+to the input, and show that \ccpivot{} allows that thanks to a new analysis. \Textcite{Mathieu2010}
+also consider an adversarial model, where all edges are flipped with probability $p$ but the
+adversary then decide whether to show us the true sign or the flipped sign. On complete unweighted
+graphs, they find a solution of \mind{} at most $1 + O(n^{-\nicefrac{1}{6}})$ times the optimal
+whenever $p \leq \shalf - n^{-\nicefrac{1}{3}}$ by rounding the usual SDP solution. If in addition
+$p\leq\nicefrac{1}{3}$, there is no adversary and each planted cluster has at least
+$\Theta(\sqrt{n})$ nodes, then the planted partition can be recovered exactly.
+\Textcite{Makarychev2014} study the same adversarial model but on general weighted graphs, giving a PTAS
+for \mind{} when $p\leq \nicefrac{1}{4}$. Under additional assumptions on the density of edges, they
+present another algorithm that finds the ground truth clustering with an arbitrarily small
+classification error.\footnote{They also mention a potentially interesting related
+work~\autocite{unobservedCC14}.} % http://www.jmlr.org/papers/v15/chen14a.html
