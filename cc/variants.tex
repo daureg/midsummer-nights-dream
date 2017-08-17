@@ -232,7 +232,7 @@ C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)$,
   \frac{2\mathrm{cut}^-(C_i, C_i) + \mathrm{cut}^-(C_i, \bar{C}_i) + \mathrm{cut}^+(C_i, \bar{C}_i)}{vol(C_i)}
 \end{equation*}
 Additional cut formulations for $k$-clusters are also presented in~\autocite{moreSignedCut12},
-although \textcite{Knyazev2017} argue that using the non signed Laplacian and considering negative
+although \textcite{Knyazev2017l} argue that using the non signed Laplacian and considering negative
 eigenvalues might be just as effective, citing for instance numerical instability of signed
 Laplacian.
 
@@ -303,6 +303,9 @@ choose the most informative
 queries given a budget. A formal definition is given in~\autocite{queryMoreEdgeCC07} and in
 practice, after finding an initially good partition, they select in each cluster a node to be its
 centroid, and query the edges connecting the centroid as ordered by an entropy-based criterion.
+In the case the oracle answering the queries is consistent, then they exists an information
+theoretic bound on the number of queries needed to recover the clusters, and an algorithm matching
+that bound up to a $O(\log n)$ factor~\autocite{perfectActiveLong17}.
 \textcite[Section 5]{Ailon2014} present another active algorithm that solves \mind$[k]$ with a
 linear number of queries but an exponential running time in $n$.  In a noisy setting,
 \textcite{Mitzenmacher2016} assume there is a planted $k$-partition and that we have access to an
@@ -364,3 +367,7 @@ for \mind{} when $p\leq \nicefrac{1}{4}$. Under additional assumptions on the de
 present another algorithm that finds the ground truth clustering with an arbitrarily small
 classification error.\footnote{They also mention a potentially interesting related
 work~\autocite{unobservedCC14}.} % http://www.jmlr.org/papers/v15/chen14a.html
+% \textcite{Noisy2CCLocality16} study the recovery of an arbitrary planted 2-partition under noisy
+% measurement in special kind of graphs where each node is connected with a local neighborhood and
+% show computationally efficient algorithms that only query an information theoretically optimal
+% number of pair. I think it was extended in \url{https://doi.org/10.1109/TIT.2016.2600566}
