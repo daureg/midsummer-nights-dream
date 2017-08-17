@@ -153,7 +153,7 @@ algorithm, that starts with singleton clusters and keep merging two clusters cho
 those whose merge would result in the maximum improvement of the score function.  This runs in
 $O(n^2\log n)$, provides a $2$-approximation of \maxa{}, a $O(n\cdot \text{size of the largest
 cluster})$-approximation of \mind{}, and empirically results in less disagreements than \ccpivot{}.
-Building upon their previous GRASP work~\autocite{GRASP13}, an iterated local search heuristic is
+Building upon their previous GRASP work~\autocite{GRASP13}, an iterated local search (ILS) heuristic is
 presented in~\autocites{Levorato2015}{Levorato2017}. Each iteration of this algorithm starts by
 greedily build a clustering in fashion similar to \textsc{Vote}, albeit with more randomness in the
 node ordering. This clustering is locally improved by moving blocks of $r\in\{1,2\}$ nodes from one
@@ -162,7 +162,8 @@ descent. The algorithm then enters an inner loop where the current clustering is
 random one-node-moves and updated if a subsequent neighborhood descent can improve it compared with
 before the perturbation. The authors note that both the outer loop and the neighborhood descent can
 be run in parallel, which allow them to process a \np{10000} nodes graph on 10 cores in around 700
-seconds.
+seconds. \Textcite{heuristicCE16} show how to use ILS to generate initial solutions of the Cluster
+Editing problem that are then fed to an integer program.
 This local search followed by random perturbation is reminiscent of genetic algorithms, and such an
 approach is sketched in~\autocite{GeneticCC08}.\footnote{but that's a terrible paper!} Instead of
 moving nodes, \textcite{restoreNeighborhood13} starts from the observation that in a balanced

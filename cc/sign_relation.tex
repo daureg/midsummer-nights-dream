@@ -2,7 +2,13 @@ Now that we are familiar with the \pcc{} problem and its numerous applications, 
 original problem of this chapter, predicting the edge sign of a signed graph. In order to do so, we
 will first focus on the case where a signed graph has no disagreement (that is the minimum of
 \eqref{eq:mind} is $0$) and is unweighted, as it highlights more clearly the connection with the
-balance theory.
+balance theory. We focus here on balance theory, for it is both compelling and well established.
+Indeed, as illustrated by the account of \textcite{CSBalanceSurvey15}, it has been used extensively
+in the last half century to study signed networks\marginpars{It was even used to study fairy
+tales~\autocite{fairyTales80}.} and their dynamics.
+However, it has shortcomings, the main one being its inability to deal with directed graphs.
+Therefore alternative theories governing signs formation have been proposed, as surveyed
+in~\autocite{Yap2015}.
 
 In his seminal work on interpersonal relations,
 \citeauthor*{Heider46}~\autocites{Heider46}{HeiderBook58} posits through
@@ -179,8 +185,8 @@ The same results also hold for weak balance.
 In real data though, we do not expect neither strong nor weak balance to hold, for they are fairly
 demanding model. Indeed, three of the real networks considered in \autoref{chap:troll} have been
 repeatedly shown to be unbalanced, although the extent of this unbalance depends of the importance
-given to longer cycles compared with triads~\autocites{Facchetti2011isingmodel}{measureUnbalance14}.%
-{measureUnbalance17} For the same reason, in virtually any real instances of the \pcc{} problem, the%
+given to longer cycles compared with triads~\autocites{Facchetti2011isingmodel}{measureUnbalance14}%
+{measureUnbalance17}. For the same reason, in virtually any real instances of the \pcc{} problem, the%
 % there are also \url{https://arxiv.org/abs/1509.04037} about measuring balance (or frustration
 % index) which they claimed has been peer reviewed?
 \marginpars{The proof makes essential use of the strong balance (which is ok since next section also
