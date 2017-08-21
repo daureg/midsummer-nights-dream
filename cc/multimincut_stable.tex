@@ -3,12 +3,12 @@ following~\autocite{Demaine2006} but omitting the full proofs to avoid redundanc
 a weighted graph $H=(V_H, E_H, w_H)$ and a collection of $k$ sources and targets
 $S=\{(s_i,t_i)\}_{i=1}^k \in V_H^2$, in \mmc{} we want to find the lightest set of edges $T\in E_H$
 whose removal disconnects every pair $s_i$ from the corresponding $t_i$. Let us first describe a
-polynomial reduction from \mmc{} to \pcc{}. Namely given an instance $(H, S)$ of \mmc{}, we let
+polynomial reduction from \mmc{} to \pcc{}. Namely, given an instance $(H, S)$ of \mmc{}, we let
 $W_H=\sum_{e\in E_H} w_H(e)$ be the total weight of $H$ and $G_H$ be the same graph as $H$ with all
 its edges labeled positively. We then connect every pair $(s_i, t_i)$ by a negative edge of weight
 $W_H+1$. One can check (\autocite[Theorem 4.7]{Demaine2006}) that a multicut $T$ in $H$ with weight
 $W$ induces a clustering in $G_H$ of weighted disagreement $W$ by the connected components of
-$G^+\setminus T$. Likewise a clustering of $G_H$ with weight $W$ induces a multicut on $H$ with
+$G^+\setminus T$. Likewise, a clustering of $G_H$ with weight $W$ induces a multicut on $H$ with
 weight as most $W$. In the unweighted case, the reduction is similar but the heavy negative edges
 are simulated in the following way: include every source and target in a clique of $n$ nodes and
 connect that clique to the corresponding source or target by $n$ negative edges.

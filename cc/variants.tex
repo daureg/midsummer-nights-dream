@@ -17,9 +17,9 @@ in the case where the general binary-labeled graph is known in advance. We will 
 special cases, namely when the weights obey the triangle inequality (to solve \msc{}) or when the
 graph is bipartite and then move to variants. We will consider more general objectives, when the
 edges are labeled categorically instead of binary, when nodes can belong simultaneously to several
-cluster or when we optimize local objectives per nodes instead of global ones. We will also look at
+clusters or when we optimize local objectives per nodes instead of global ones. We will also look at
 clustering in signed graphs in general, using spectral methods or heuristics from the community
-detection literature. Finally we will shift perspective and review methods beyond the batch case and
+detection literature. Finally, we will shift perspective and review methods beyond the batch case and
 the worst-case analysis.
 
 % \paragraph{\msc{}}                                | special weights
@@ -63,12 +63,12 @@ kn^2)$~\autocite{parameterizedConsensus14}.
 Bipartite graphs are an interesting special case for \pcc{}, as they often appear in the context of
 recommendation systems, where users rate products positively or negatively, although in this setting
 we cannot expect to have complete bipartite graphs in practice. The first results was given by
-\textcite{Amit04}, who obtains a $11$-approximation for \mind{} by adapting the \regionGrow{} method.
+\textcite{Amit04}, who obtains an $11$-approximation for \mind{} by adapting the \regionGrow{} method.
 The \ccpivot{} is adapted to the bipartite case by
 \textcite{Bipartite12}, who prove it results in a randomized $4$-approximation (and provide a matching
 deterministic approximation by rounding a LP). By using their idea of rounding the results of the LP
 differently for positive, negative and in that case same-side absent edges, \textcite{Chawla2014}
-bring down this approximation factor to $3$, even for $K\geq 2$-partite graphs. By formulating the
+bring down this approximation factor to $3$, even for $K\geq 2$-partite graphs. Through formulating the
 \maxa{}$[k]$ problem as a bilinear maximization problem and computing a low-rank approximation of
 the graph biadjacency matrix, \textcite{Asteris2016} obtain a efficient PTAS, that is a $(1-\delta)$
 approximation running in time exponential in $k$ and $\delta^{-1}$ but linear in $n$. By an
@@ -88,9 +88,9 @@ maximum degree of the graph. They also present a method when the number $k$ of c
 beforehand, starting with an initial partition and then alternating between finding the majority
 color of clusters and finding better clusters. Unfortunately, the maximum degree of a graph can be
 as large as $n$. However, \textcite{Anava2015} present constant factor approximations. Namely, they
-show the problem can be reduce to classical \pcc{} by setting all edges incident to a node $u$ to
+show the problem can be reduced to classical \pcc{} by setting all edges incident to a node $u$ to
 negative if they are not of the majority color of $u$. They then apply the regular \ccpivot{} and
-show this gives a $11$-approximation to the original problem. Furthermore, they also write a linear
+show this gives an $11$-approximation to the original problem. Furthermore, they also write a linear
 program and round it using the \regionGrow{} method to obtain an
 approximation factor of $4$. \Textcite{multiChromatic15} extend this line of work to the case were a
 single edge can carry a \emph{set} of labels and adapt their randomized algorithm so that the
@@ -102,7 +102,7 @@ While in \pcc{}, each node is assigned to a single cluster, in other settings we
 this constraint. Given a complete weighted graph, \textcite{Bonchi2012} want to output a clustering
 \cluster{} that minimizes the following cost: \[ \sum_{(u,v)\in E} \left| H(\cluster(u),
 \cluster(v)) - w_{uv}\right|\] where $H$ is a similarity function between two sets of labels, chosen
-here to be the Jaccard similarity or a $0/1$ indicator of non empty intersection. These problems are
+here to be the Jaccard similarity or a $0/1$ indicator of nonempty intersection. These problems are
 showed \NPc{} and approximated by a local search algorithm, iteratively optimizing the assignment of
 one node while all others are fixed. As one of the demonstration on their theoretical work,
 \textcite{WeightedTheta15} show a faster solution based on a weighted extension of the Lovász's
@@ -110,7 +110,7 @@ theta function, the corresponding geometric embedding of graphs and a solver der
 SVM, while \textcite{GeneticOCC14} propose a genetic algorithm to solve this problem. Finally,
 \Textcite{StochasticCC13} also deals with overlapping clustering by relaxing the problem to a
 stochastic setting and using \enquote{the Baum-Eagon inequality, which provides an effective
-iterative means for maximizing polynomial functions in probability domains}.
+iterative scheme for maximizing polynomial functions in probability domains}.
 
 \paragraph{Local \pcc{}}
 
@@ -147,22 +147,22 @@ problem is then to find a fractional clustering $x$ minimizing $f(err(x))$. The 
 corresponds to setting $f(x) = \lhalf{}\ell^1(x)$ whereas the authors here are interested in Minimax
 \pcc{} that arises by setting $f(x) = \ell^\infty(x)$. Minimizing the maximum number of
 disagreements incurred by a single node is motivated by the example of recommendation systems: if
-errors correspond to unsatisfying recommendations, we do not want a single user to suffer a large
-number of them. Minimax \pcc{} is \NPc{} on both complete graphs and complete bipartite graphs but
+errors correspond to unsatisfying recommendations, we do not want a single user to suffer many
+of them. Minimax \pcc{} is \NPc{} on both complete graphs and complete bipartite graphs but
 by modifying the \regionGrow{} method, the authors respectively a $48$ and
 $10$ approximation, the latter for the one-sided error (that only counts disagreements for the nodes
 in one of the two clusters).
-The idea is to chose pivot not randomly but by maximizing a given criteria and
+The idea is to chose pivots not randomly but by maximizing a given criteria and
 to grow balls with a radius $\alpha$ computed numerically to optimize the approximation factor.
 Interestingly, and in contrast with the classic \pcc{} situation, minimax \maxa{} is not easier than
 minimax \mind{} and seems not to have a constant factor approximation, even on complete graphs.
-Furthermore, these algorithms are deterministic, as opposed to many \pcc{} approximation, since
+Furthermore, these algorithms are deterministic, as opposed to many \pcc{} approximations, since
 bounds on expected disagreements of an edge does not translate easily on their maximum.
 \Textcite{Charikar2017} improve these two factors to $7$, using a simpler version of the algorithm
 of \textcite{pmlr-v48-puleo16}. Namely, find the ball of radius $\nicefrac{1}{7}$ with the largest
 number node and create a cluster from its center with a radius of $\nicefrac{3}{7}$. They also show
 that on general weighted graphs, the LP has a large integrality gap of $\nicefrac{n}{2}$ yet they
-combine it with a combinatorial approach to reach a $O(\sqrt{n})$ approximation. Finally they
+combine it with a combinatorial approach to reach a $O(\sqrt{n})$ approximation. Finally, they
 consider the complementary problem of maximizing the minimum number of agreements reach at a single
 node, and provide a $\frac{1}{2+\epsilon}$ approximation.
 
@@ -200,7 +200,7 @@ $\mathrm{bal}(C) = 2\frac{vol(C)vol(\bar{C})}{vol(V)}$, \textcite{mOneCC12} defi
 \end{equation*}
 where $\gamma \in \Rbb{}_+$ is a parameter, while $\hat{M}(C)$ and $\hat{N}(C)$ are respectively the
 number of positive and negative disagreements of the $(C, \bar{C})$ clustering.
-They show how to optimize a tight continuous relaxation of $\hat{F}_\gamma$ as the non negative
+They show how to optimize a tight continuous relaxation of $\hat{F}_\gamma$ as the non-negative
 ratio of a difference of convex function and a convex function.
 
 On the other hand, one can also adapt these two cut objectives to directly include negative edges.
@@ -271,7 +271,7 @@ expectation-maximization algorithm. The same model is extended to directed graph
 \textcite{Jiang2015}, who strangely enough names it stochastic blockmodel, although the focus is
 still on edge and not nodes.
 In a similar spirit to \maxa{}$[k]$, \textcite{SignedGang} focus on finding $k$ subgraphs dense in
-positive edges and densely connected by negative edges to each others. They dub such subgraph
+positive edges and densely connected by negative edges to each other. Thee dub such subgraph
 \emph{Oppositive Cohesive Groups}, or more vividly \emph{Gangs in War}, and after formulating the
 problem as a constrained quadratic optimization, they propose a faster iterative local search
 heuristic.
@@ -296,14 +296,14 @@ if the edge labels are given by an expensive external procedure.
 % empirical risk minimizer is controlled by the correlation clustering objective.}
 
 Case in point, in the context of entity resolution, \textcite{activeCoref07} consider the \pcc{}
-problem where by querying an oracle, one can either reduce the uncertainty about one edge weight or
+problem where, by querying an oracle, one can either reduce the uncertainty about one edge weight or
 add an extra node with edges connecting it to existing nodes. However, this requires web queries
 that are resource bounded and thus yields an active setting learning problem, where one has to
 choose the most informative
 queries given a budget. A formal definition is given in~\autocite{queryMoreEdgeCC07} and in
 practice, after finding an initially good partition, they select in each cluster a node to be its
 centroid, and query the edges connecting the centroid as ordered by an entropy-based criterion.
-In the case the oracle answering the queries is consistent, then they exists an information
+In the case the oracle answering the queries is consistent, then there exists an information
 theoretic bound on the number of queries needed to recover the clusters, and an algorithm matching
 that bound up to a $O(\log n)$ factor~\autocite{perfectActiveLong17}.
 \textcite[Section 5]{Ailon2014} present another active algorithm that solves \mind$[k]$ with a
@@ -321,7 +321,7 @@ between all pairs of nodes.
 In the online setting, \textcite{greedyOnline10} give a greedy algorithm that upon node arrival creates a
 singleton cluster and then merge all pairs of clusters for which it increases the total number of
 agreements. For \mind{}, this is $O(n)$-competitive algorithm and they show such ratio is optimal by
-exhibiting an instance\footnote{Namely two positive cliques $A$ and $B$ joined by positive edges except
+exhibiting an instance\footnote{Namely, two positive cliques $A$ and $B$ joined by positive edges except
 between $a\in A$ and $\{b_1,\ldots, b_k\}\in B$. Those nodes are given first and thus form a cluster,
 which yields at least one disagreement every time one the $n-(k+1)$ remaining nodes is added.} on
 which any strategy ends up with $n - k$ disagreements whereas optimal cost is $k$. On the \maxa{}

@@ -7,7 +7,7 @@ weights encode similarity. Namely, in the most general case, for nodes $u$ and $
 $u$ and $v$ is associated with two positive numbers:
 $w_{u,v}^+$ denotes the strength of the similarity between $u$ and $v$;
 $w_{u,v}^-$ denotes the strength of the dissimilarity between $u$ and $v$.
-Note, however, that in many applications, only one of these two numbers is non zero, in which case
+Note, however, that in many applications, only one of these two numbers is nonzero, in which case
 we more conveniently set $w_{u,v} = \begin{cases}
 	 w_{u,v}^+ & \quad \text{if } w_{u,v}^+ > 0 \text{ and } w_{u,v}^-=0 \\
 	-w_{u,v}^- & \quad \text{if } w_{u,v}^+ = 0 \text{ and } w_{u,v}^->0 \\
@@ -57,8 +57,8 @@ In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of i
 	disagreements: the negative edge between nodes $1$ and $2$ within the blue cluster, and the
 	positive edge $(6,7)$ between the orange and green clusters. Those disagreements are created
 	by two cycles with one negative edge and thus cannot be avoided, meaning that \cluster{} is
-	optimal. However it is not the unique solution: for instance, merging the orange and green
-	clusters would also yields two disagreements.}
+	optimal. However, it is not the unique solution: for instance, merging the orange and green
+	clusters would also yield two disagreements.}
 	\label{fig:cc_objectives}
 \end{figure}
 
@@ -96,10 +96,10 @@ In addition to these general considerations, \pcc{} has also been used in severa
       considering such higher order constraints between distant superpixels in order to achieve good
       performance. This was also extended to 3D segmentation~\autocite{VolumeSegmentation12}, where
       additional tuning allows to segment a volume image of a mouse cortex with up to billions
-      voxels. \Textcite{Beier2015} segment 2D and 3D images with a energy based formulation of
+      voxels. \Textcite{Beier2015} segment 2D and 3D images with an energy based formulation of
       \pcc{} and iteratively improve their solution by merging it with another clustering given by a
       proposal generator. By developing another scalable energy based optimization procedure, and
-      with the help of few user provided cues, \textcite{Bagon2011} are able to apply \pcc{}
+      with the help of few user-provided cues, \textcite{Bagon2011} are able to apply \pcc{}
       directly at the pixel level.
       % one more? https://link.springer.com/chapter/10.1007/978-3-642-33783-3_41
       % 3D mesh segment https://link.springer.com/article/10.1007/s41095-016-0071-3
@@ -122,7 +122,7 @@ In addition to these general considerations, \pcc{} has also been used in severa
       Coreference resolution is the task of finding all expressions that refer to the same entity in
       a text. Like image segmentation, it is a preprocessing step that can later be used in document
       summarization, question answering, and information extraction. \Textcite[Section
-      2.3]{graphicalCoreference04} tackle coreference resolution by using a undirected graphical
+      2.3]{graphicalCoreference04} tackle coreference resolution by using an undirected graphical
       model on which performing inference is equivalent to \pcc{}. On small scale instances,
       \textcite{Elsner2009} first obtain an upper bound of the optimal solution by solving a SDP
       relaxation of the problem. They then compare various heuristics and show that best performing
@@ -204,7 +204,7 @@ In addition to these general considerations, \pcc{} has also been used in severa
 	    declarative language, expressing both hard constraints (that have to be satisfied) and
 	    soft constraints (that can be seen as cues guiding the process). Because of these hard
 	    constraints that admissible clusterings have to respect, the authors have to modify in
-	    non trivial ways an existing \pcc{} algorithm. This was extended to weighted and partial
+	    nontrivial ways an existing \pcc{} algorithm. This was extended to weighted and partial
 	    constraints  by \textcite{WeightedER14}. Another example is given by
 	    \textcite{Crosslingual07}, who cluster together news articles in different languages
 	    covering the same event. \pcc{} was also evaluated among other

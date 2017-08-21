@@ -2,12 +2,12 @@ Now that we are familiar with the \pcc{} problem and its numerous applications, 
 original problem of this chapter, predicting the edge sign of a signed graph. In order to do so, we
 will first focus on the case where a signed graph has no disagreement (that is the minimum of
 \eqref{eq:mind} is $0$) and is unweighted, as it highlights more clearly the connection with the
-balance theory. We focus here on balance theory, for it is both compelling and well established.
+balance theory. We focus here on balance theory, for it is both compelling and well-established.
 Indeed, as illustrated by the account of \textcite{CSBalanceSurvey15}, it has been used extensively
 in the last half century to study signed networks\marginpars{It was even used to study fairy
 tales~\autocite{fairyTales80}.} and their dynamics.
 However, it has shortcomings, the main one being its inability to deal with directed graphs.
-Therefore alternative theories governing signs formation have been proposed, as surveyed
+Therefore, alternative theories governing signs formation have been proposed, as surveyed
 in~\autocite{Yap2015}.
 
 In his seminal work on interpersonal relations,
@@ -73,9 +73,9 @@ We will use triangles as the building block of our definition of strongly balanc
 \end{definition}
 
 It is interesting to note that this local property of triangles gives raise to a global structure.
-Namely a strongly balanced complete graph can be split in two (possibly empty) clusters $L$ and $R$
+Namely, a strongly balanced complete graph can be split in two (possibly empty) clusters $L$ and $R$
 such that all edges within $L$ and $R$ are positive, while all edges between $L$ and $R$ are
-negative. Indeed let us pick an arbitrary node $u$ and let $L=\neip(u)\setminus \{u\}$ and $R=V\setminus L$. Now
+negative. Indeed, let us pick an arbitrary node $u$ and let $L=\neip(u)\setminus \{u\}$ and $R=V\setminus L$. Now
 let $v,w\in L\setminus \{u\}$ and $x,y\in R$. From \autoref{fig:cc_twostrongcc} and the fact that
 every triangle is balanced, we can see that $(v,w)$ and $(x,y)$ are positive edges, while $(w,y)$ is
 a negative edge.
@@ -117,8 +117,8 @@ nodes that are negatively tied with the rest of the graph. Consider the same con
 the rest of the nodes in $R$. For $v,w\in L\setminus \{u\}$ and $x,y\in R$, we can still conclude
 that $(v,w)$ is positive and $(v,y)$ is negative. On the other hand, this time weak balance allows
 $(x,y)$ to be either positive or negative. We can split $R$ further into the positive neighborhood of
-$x$ and the rest, and keep doing so until we form the $k$ clusters. We will make this argument more
-formal in the following.
+$x$ and the rest, and keep doing so until we form the $k$ clusters. In the following we will make
+this argument more formal.
 
 We gave the definitions of balance in the context of complete graphs in order to build intuition
 about the partition consequences and because it easier to reason on triangles. Furthermore, if we are
@@ -182,9 +182,9 @@ Similar results also hold for weak balance.
   A graph $G=(V,E)$ is weakly balanced if and only if all its cycles are weakly balanced.
 \end{theorem}
 
-In real data though, we do not expect neither strong nor weak balance to hold, for they are fairly
+In real data though, we do not expect either strong or weak balance to hold, for they are fairly
 demanding model. Indeed, three of the real networks considered in \autoref{chap:troll} have been
-repeatedly shown to be unbalanced, although the extent of this unbalance depends of the importance
+repeatedly shown to be unbalanced, although the extent of this unbalance depends on the importance
 given to longer cycles compared with triads~\autocites{Facchetti2011isingmodel}{measureUnbalance14}%
 {measureUnbalance17}. For the same reason, in virtually any real instances of the \pcc{} problem, the%
 % there are also \url{https://arxiv.org/abs/1509.04037} about measuring balance (or frustration
@@ -195,7 +195,7 @@ it would be interesting to see if it can be extended.}
 optimal solution will incur some disagreements. \Textcite[Section 5.5]{BookKleinberg2010}
 nonetheless prove that even when only a fraction of the triangle are strongly balanced in a complete
 graph, the two clusters structure is still present, although it does not cover the whole graph
-anymore.
+any more.
 
 \begin{theorem}
   Let $\epsilon < \nicefrac{1}{8}$ and $\delta = \sqrt[3]\epsilon$. If at least $1-\epsilon$ of all
@@ -216,7 +216,7 @@ We can conclude that balance theory helps characterize zero disagreement instanc
 However, how is \pcc{} useful in predicting edge sign? At first sight, the two problems seem to be quite
 different, for the former is an unsupervised/agnostic clustering problem, while the latter is a
 supervised classification problem. Yet, getting an optimal solution of \pcc{} on the training set
-would provide a principled heuristics for \esp{}. Unfortunately, as we shall see in
+would provide a principled heuristic for \esp{}. Unfortunately, as we shall see in
 \autoref{sub:state_of_the_art}, exact or fixed parameter solutions are not scalable and one has to
 rely on approximations. Under the Unique Games Conjecture, the approximation factor is lower bounded by
 $\Theta(\log n)$ in the worst case. However, this is still a viable option, as our bias is that we

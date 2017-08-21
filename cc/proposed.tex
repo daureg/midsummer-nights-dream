@@ -8,8 +8,8 @@ optimal clustering. Furthermore, this can also be useful to evaluate in practice
 heuristic methods, albeit in non asymptotic setting. The most straightforward idea is to use the
 formulation of the LP \eqref{eq:mindLP} with the additional constraints that all variable are
 binary. \Textcite{ExactMIP13} solve this binary integer program on random instances and show that
-depending of the negative edge density, the FICO Xpress solver starts to be unable to finish within
-a one hour time limit when $n \geq 40$.
+depending on the negative edge density, the FICO Xpress solver starts to be unable to finish within
+a one-hour time limit when $n \geq 40$.
 \Textcite{Aref2016} describe four linear and quadratic  binary integer problems
 to model \pcc{} with two clusters along with some preprocessing optimizations. With the Gurobi
 software, they solve instances with up to $3200$ edges in less than a second. They also sketch
@@ -125,7 +125,7 @@ additive approximation  for \mind{} that runs in time $n \cdot poly(\nicefrac{1}
 
 While all the methods we discuss so far
 are either exact or come with some approximation guarantees, practitioners have also develop
-approaches that are designed to efficiently reach a solution that is satisfying enough for the
+approaches that are designed to efficiently reach a solution that is satisfactory enough for the
 application at hand. For instance, while studying small scale signed social networks,
 \textcite{Early96} describe the following procedure. Start with a random initial $k$ clustering of
 the graphs and for $T$ steps, sample randomly $P$ neighboring partitions, compute their number of
@@ -146,13 +146,13 @@ one by one: \enquote{The \textsc{Best} algorithm adds each node $u$ to the clust
 strongest $w^\pm$ connecting to $u$, or to a new singleton if none of the $w^\pm$ are positive.
 The \textsc{First} algorithm adds each node $u$ to the cluster containing the most recently
 considered node $v$ with $w^\pm_{uv} > 0$. The \textsc{Vote} algorithm adds each node to the cluster
-that minimizes the \pcc{} clustering objective, \ie{} to the cluster maximizing the total net weight
+that minimizes the \pcc{} objective, \ie{} to the cluster maximizing the total net weight
 or to a singleton if no total is positive.} Empirically, \textsc{Vote} turns out to be the best.
 Among other related heuristics, \textcite{mergingHeuristics14} describe the random maximum merging
 algorithm, that starts with singleton clusters and keep merging two clusters chosen at random among
 those whose merge would result in the maximum improvement of the score function.  This runs in
 $O(n^2\log n)$, provides a $2$-approximation of \maxa{}, a $O(n\cdot \text{size of the largest
-cluster})$-approximation of \mind{}, and empirically results in less disagreements than \ccpivot{}.
+cluster})$-approximation of \mind{}, and empirically results in fewer disagreements than \ccpivot{}.
 Building upon their previous GRASP work~\autocite{GRASP13}, an iterated local search (ILS) heuristic is
 presented in~\autocites{Levorato2015}{Levorato2017}. Each iteration of this algorithm starts by
 greedily build a clustering in fashion similar to \textsc{Vote}, albeit with more randomness in the
@@ -170,10 +170,10 @@ moving nodes, \textcite{restoreNeighborhood13} starts from the observation that 
 graph, $G^+$ is a disjoint union of cliques in which all the nodes of a given cluster share the shame
 neighbors. Their algorithm is initialized with the set $E_s^+$ of edges where $w^+_{uv} > w^-_{uv}$,
 and repeatedly samples an edge $(u,v)$ from $E_s^+$ before trying to make the neighborhoods of $u$
-and $v$ coincide by adding or removing edges in $E_s^+$.  Yet another idea is modify the LP
+and $v$ coincide by adding or removing edges in $E_s^+$.  Yet another idea is to modify the LP
 \eqref{eq:mindLP} to replace the binary variable $x_{uv}$ by a $k$ clusters indicator matrix
 $L\in\Rbb^{k\times n}$ where $L_{iu}$ is $1$ is $u\in C_i$ and $-1$
-otherwise~\autocite{AltOptimLP13}. Indeed $x_{u\cdot} \equiv L_{\cluster(u)\cdot}$, where $\cluster$
+otherwise~\autocite{AltOptimLP13}. Indeed, $x_{u\cdot} \equiv L_{\cluster(u)\cdot}$, where $\cluster$
 is the cluster assignment. By relaxing the integer constraints on $L$, it is possible to do
 alternate optimization on $L$ and $\cluster$.
 
@@ -214,7 +214,7 @@ In the case of $2$-\pcc{}, \textcite{Facchetti2011isingmodel} rewrite the Hamilt
 $\mathcal{H}(\bm{\sigma}) = -\frac{1}{2}\bm{\sigma}^T A \bm{\sigma} = -\frac{1}{2}\bm{1}^TT_\sigma A
 T_\sigma\bm{1}$. There $T_\sigma = diag(\bm{\sigma})$ (where $\bm{\sigma} \in \{0,1\}^n$) is the
 outcome of a local search algorithm such that $A_\sigma = T_\sigma A T_\sigma$ has the same number
-of disagreements as $A$ but the least number of negative edges. This is called a gauge
+of disagreements as $A$ but the smallest number of negative edges. This is called a gauge
 transformation in the spin glass literature and the benefit of that heuristic is that it scales
 gracefully to large graphs.
 \Textcite{Bagon2011} also write the \maxa{} objective as a Potts model, and show that it can be
@@ -222,7 +222,7 @@ interpreted as the log posterior of a partition matrix under a simple generative
 pair-wise conditional random field energy without unary terms. This allows them to adapt existing
 discrete energy optimization algorithms in order to cope with the following three challenges of the
 \pcc{} energy: \enquote{(i) the energy is non sub-modular, (ii) the number of clusters is not known
-in advance, and (iii) there is no unary term}. Doing so, the are able to handle large problems with
+in advance, and (iii) there is no unary term}. Doing so, they are able to handle large problems with
 more than 100K nodes.  Also adopting an energy minimization approach, \textcite{Kappes2016} assign a
 probability to each cut of a signed graph proportional to the exponential of the number of
 disagreements of that cut. They also develop efficient cut sampling methods.
