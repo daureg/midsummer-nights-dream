@@ -30,7 +30,10 @@ identity, \pcc{} can then be seen as a graph optimization problem, either of max
 	\sum_{\cluster(u) \neq \cluster(v)} c(w_{uv}^-)
 	\label{eq:maxa}
 \end{equation}
-or minimizing disagreements (\mind{}):
+or minimizing disagreements (\mind{})\footnote{Note that in the data mining literature, \pcc{} may
+refer to another problem. Namely, it is a special case of high-dimensional data clustering, where
+features are locally correlated in various ways across different clusters that reside in arbitrarily
+oriented subspaces~\autocite{otherCCproblem09}.}:
 \begin{equation}
 	\min_{\cluster{}} \sum_{\cluster(u) = \cluster(v)} c(w_{uv}^-) +
 	\sum_{\cluster(u) \neq \cluster(v)} c(w_{uv}^+)
