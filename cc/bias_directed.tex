@@ -1,4 +1,19 @@
-A more serious limitation is that our sign model only applies to directed graphs. Consider
-another model, where each node $i$ is endowed with an integer $c_i \in \{1, \ldots, k\}$ that
-specifies its cluster and let the sign of the undirected edge $i,j$ be $+$ if $c_i = c_j$ and $-$
-otherwise.  This corresponds naturally to the situation modeled by the \pcc{} problem.
+Having two parameters per node, one for outgoing edges and another one for incoming edges clearly
+targets directed graphs. Many online interactions are inherently directed, for instance friendship,
+trust or communication. On the other hand, predicting edge signs in undirected graphs is an equally
+relevant objective. A prime example of such a situation is when we are given $n$ objects, some
+pairwise similarities them, and the similarity function itself, which unfortunately takes an
+exorbitant time to be evaluated. There is an underlying graph and being able to predict the sign of
+its undirected edges would save us expensive evaluations of the symmetric similarity function.
+
+A trivial way to turn an undirected graph $G$ into a directed graph $G'$ is to let $V'=V$ and, for
+every edge $(u,v)$ in $E$, to add both \euv{} and \evu{} to $E'$ with the same sign as $(u,v)$. In
+terms of our generative model, this corresponds to putting all the probability mass of $\mu$ on the
+$p=q$ diagonal. This is clearly not a very satisfactory solution, for it removes one degree of
+freedom from the model. To illustrate this point, we conduct the following experiment. We use our
+previous \dssn{} datasets and remove the edge direction. As mentioned earlier, for few pairs of
+nodes there are reciprocal edges of different signs, in which case we pick a sign arbitrarily. Given
+those undirected graphs, we orient them using the approach described above and compare our method
+with the \complowrank{} approach ran directly on the undirected graphs. This is a fair comparison,
+for \complowrank{} is designed to works solely on undirected graphs.\Todo{run the undirected
+experiments.}
