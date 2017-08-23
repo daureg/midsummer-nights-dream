@@ -1,17 +1,21 @@
-Now that we are familiar with the \pcc{} problem and its numerous applications, let us return to the
-original problem of this chapter, predicting the edge sign of a signed graph. In order to do so, we
-will first focus on the case where a signed graph has no disagreement (that is the minimum of
-\eqref{eq:mind} is $0$) and is unweighted, as it highlights more clearly the connection with the
-balance theory. We focus here on balance theory, for it is both compelling and well-established.
+From a narrow practical point of view, balance theories specify which sign assignments of a triangle
+are possible. By forbidding triangles with a single negative edge, weak balance gives rise to a
+$K$-\emph{consistent} clusters structure on complete graphs. After making these notions more precise
+in the rest of this section, we conclude by precisely exposing our learning bias.
+
+\begin{aside}
+We focus here on balance theory, for it is both compelling and well-established.
 Indeed, as illustrated by the account of \textcite{CSBalanceSurvey15}, it has been used extensively
-in the last half century to study signed networks\marginpars{It was even used to study fairy
-tales~\autocite{fairyTales80}.} and their dynamics.
+in the last half century to study signed networks and their dynamics (an example of this far
+reaching influence is the analysis of the relation between characters in fairy
+tales~\autocite{fairyTales80}).
 However, it has shortcomings, the main one being its inability to deal with directed graphs.
 Therefore, alternative theories governing signs formation have been proposed, as surveyed
 in~\autocite{Yap2015}.
+\end{aside}
 
 In his seminal work on interpersonal relations,
-\citeauthor*{Heider46}~\autocites{Heider46}{HeiderBook58} posits through
+\textcite{Heider46} posits through
 psychological and sociological arguments that in order to reduce their cognitive dissonance, three
 people always interact in a way that preserve social balance. These social balance requirements can be
 succinctly summarized by four statements~\autocite{HeiderBook58}:
@@ -67,7 +71,7 @@ should close the triangle to respect the social balance. Such triangles are call
 	A triangle is strongly balanced if it has zero or two negative signs. Otherwise it is unbalanced.
 \end{definition}
 
-We will use triangles as the building block of our definition of strongly balanced graphs.
+We use triangles as the building block of our definition of strongly balanced graphs.
 \begin{definition}[strongly balanced complete graphs]
 	A complete signed graph is strongly balanced if all its triangles are strongly balanced.
 \end{definition}
@@ -82,21 +86,28 @@ a negative edge.
 \begin{marginfigure}
   \centering
   \includegraphics[width=28mm]{assets/raw/2cc.pdf}
-  \caption{A two-clustering a complete strongly balanced graph}
+  \caption{A two-clustering of a complete strongly balanced graph}
   \label{fig:cc_twostrongcc}
 \end{marginfigure}
-As we will see later, these two facts are actually equivalent.
+We say that $L$ and $R$ are $2$-consistent clusters and more generally, we define
+\begin{definition}[$K$-consistent clustering]
+  Given a graph $G=(V, E)$, a clustering $\cluster=\{C_1, \ldots, C_K\}$ of $V$ is \emph{consistent}
+  with the signs of $E$ if for every edge $(u,v)$ in $E$:
+  \begin{enumerate}[(i),nosep]
+    \item $(u,v)$ is positive if $\cluster(u)=\cluster(v)$, and
+    \item $(u,v)$ is negative if $\cluster(u)\neq\cluster(v)$.
+  \end{enumerate}
+\end{definition}
 
-Those two clusters represent a natural partition with no disagreements in the sense of \pcc{}. However,
-the existence of two such clusters is only a sufficient but not necessary condition for having no
-disagreement. As hinted in \autoref{sub:need_for_a_directed_graph}, when the nodes are partitioned
-into $k\geq 2$ clusters, letting edges within clusters to be positive and edges across clusters to
-be negative will by construction results in zero disagreement. Furthermore, it was noted by
+We just saw that if a complete graphs is strongly balanced, then it admits a $2$-consistent
+clustering (\autoref{thm:structural} proves the converse is true). It is natural to ask under which
+conditions a complete signed graph admits a $K>2$ consistent clustering. This is where the notion of
+weak balance comes handy. It was noted by
 sociologists that among triangles with odd number of negative edges, one is more stable and common
 than that the other. Therefore, \textcite{davis1967clustering} relax the strong balance into the
 weak balance by considering triangles with three negative edges to be balanced, as illustrated on
-\autoref{fig:cc_balance}. Formally, we can modify our two previous definitions to arrive at weak
-balance:
+\autoref{fig:cc_balance}. Formally, we can modify our two previous definitions of balance to arrive
+at weak balance:
 \begin{definition}[Weak balance]
 	A triangle is weakly balanced if it has zero, two or three negative signs. Otherwise it is
 	unbalanced. \\
@@ -111,8 +122,8 @@ balance:
 \end{figure}
 
 In that case as well, the local property of triangles has structural implication for the whole graph.
-Namely, we can partition a complete weakly balanced graph into $k$ clusters of positively connected
-nodes that are negatively tied with the rest of the graph. Consider the same construction as in
+Namely, we can partition a complete weakly balanced graph into $K$ consistent clusters. 
+Consider the same construction as in
 \autoref{fig:cc_twostrongcc}, putting a node $u$ and its positive neighborhood in one cluster $L$ and
 the rest of the nodes in $R$. For $v,w\in L\setminus \{u\}$ and $x,y\in R$, we can still conclude
 that $(v,w)$ is positive and $(v,y)$ is negative. On the other hand, this time weak balance allows
@@ -127,29 +138,30 @@ they are situations were it is not realistic to make the completeness assumption
 social networks that are typically very sparse. We therefore extend the concept of balance to
 general graphs in the following way:
 \begin{definition}[balanced general graphs]
-	A general graph is strongly (respectively weakly) balanced if there is a sign assignment of all its
-	missing edges such that the resulting complete signed graph is strongly (respectively weakly)
-	balanced.
+  A general graph is strongly (respectively weakly) balanced if there is a sign assignment of all its
+  missing edges such that the resulting complete signed graph is strongly (respectively weakly)
+  balanced.
 \end{definition}
-To similarly extend the characterization of signed graphs by consistent clustering, we need to
+To recover the characterization of signed graphs by consistent clustering, we need to
 consider longer cycles than triangles.
 \begin{definition}[balanced cycles]
-	A cycle is strongly (respectively weakly) unbalanced if it has an odd number of negative edges
-	(respectively exactly one negative edge). Otherwise it is strongly (respectively weakly) balanced.
+  A cycle is strongly (respectively weakly) unbalanced if it has an odd number of negative edges
+  (respectively exactly one negative edge). Otherwise it is strongly (respectively weakly) balanced.
 \end{definition}
 
-Being strongly balanced is equivalent to having two consistent clusters, as proved in the seminal
+Being strongly balanced is equivalent to having a $2$-consistent clustering, as proved in the landmark
 theorem of \textcite[Theorem 3]{harary1953}:
-\begin{theorem}[Structural Theorem]
-  A graph $G=(V,E)$ is strongly balanced if and only if $V$ can be divided in two disjoint clusters
-  such that all edges within clusters are positive and all edges between clusters are negative.
+\begin{theorem}[Structural Theorem]\label{thm:structural}
+  A graph $G=(V,E)$ is strongly balanced if and only if $V$ admits a $2$-consistent clustering.
 \end{theorem}
 
+\begin{aside}
 According to \textcite{Huffner2010}, a similar theorem was proved earlier by \textcite[Theorem
 X.11]{Konig36}, although \textcite{Zaslavsky2012} notes that it was stated \enquote{without the
 terminology of signs, while \autocite{harary1953} has the first recognition of the crucial fact that
 labelling edges by elements of a group---specifically, the sign group---can lead to a general
 theory.}
+\end{aside}
 
 A useful characterization, whose proof can be found in~\autocite[page 122]{BookKleinberg2010}, is the
 following:
@@ -159,8 +171,7 @@ following:
 
 Similar results also hold for weak balance.
 \begin{theorem}
-  A graph $G=(V,E)$ is weakly balanced if and only if $V$ can be divided in $k$ disjoint clusters
-  such that all edges within clusters are positive and all edges between clusters are negative.
+  A graph $G=(V,E)$ is weakly balanced if and only if $V$ admits a $K$-consistent clustering.
 \end{theorem}
 \begin{proof}
   Let first assume that $G$ is weakly balanced. According to the definition, we can choose sign for
@@ -168,10 +179,9 @@ Similar results also hold for weak balance.
   mentioned earlier, we can then pick a node $u_1$ and let $C_1 = \neip(u) \cup \{u\}$. All
   nodes in $C_1$ are connected positively with each other and negatively with nodes in $V\setminus
   C_1$. Note also that $|V\setminus C_1| < |V|$ and therefore we can repeat this
-  procedure until $V$ is exhausted, at which point we have obtained our $k$ clusters verifying the
-  theorem's statement conditions.
+  procedure until $V$ is exhausted, at which point we have obtained our $K$ consistent clusters.
 
-  Conversely, assume we have such $k$ clusters. We can complete the graph $G$ by letting the edge
+  Conversely, assume we have $K$ consistent clusters. We can complete the graph $G$ by letting the edge
   $(u,v)$ be positive if $u$ and $v$ are in the same cluster and negative otherwise. Let us the pick
   three arbitrary nodes $u,v,w\in V$. There are three cases: they are either all in the same
   cluster, all in different clusters or two of them are in a first cluster and the third node is in
@@ -186,13 +196,15 @@ In real data though, we do not expect either strong or weak balance to hold, for
 demanding model. Indeed, three of the real networks considered in \autoref{chap:troll} have been
 repeatedly shown to be unbalanced, although the extent of this unbalance depends on the importance
 given to longer cycles compared with triads~\autocites{Facchetti2011isingmodel}{measureUnbalance14}%
-{measureUnbalance17}. For the same reason, in virtually any real instances of the \pcc{} problem, the%
+{measureUnbalance17}.
 % there are also \url{https://arxiv.org/abs/1509.04037} about measuring balance (or frustration
 % index) which they claimed has been peer reviewed?
+% For the same reason, in virtually any real instances of the \pcc{} problem, the optimal solution
+% will incur some disagreements. 
 \marginpars{The proof makes essential use of the strong balance (which is ok since next section also
 deal with 2-CC) and the completeness of the graph (which is a far less realistic assumption) yet
 it would be interesting to see if it can be extended.}
-optimal solution will incur some disagreements. \Textcite[Section 5.5]{BookKleinberg2010}
+\Textcite[Section 5.5]{BookKleinberg2010}
 nonetheless prove that even when only a fraction of the triangle are strongly balanced in a complete
 graph, the two clusters structure is still present, although it does not cover the whole graph
 any more.
@@ -212,6 +224,19 @@ any more.
   \end{enumerate}
 \end{theorem}
 
+Using these results on weak balance, we can now make our new bias explicit. Drawing parallel with
+the previous generative model, we assume that each node $u$ is endowed with an integer $\cluster(u)
+\in \{1, \ldots, K\}$ that specifies its cluster and we let the undirected edge $u,v$ be positive if
+$\cluster(u) = \cluster(v)$ and negative otherwise. In other words, this corresponds to picking an
+arbitrary partition of $V$ and setting the signs of $E$ in such a way that the partition becomes a
+consistent clustering. This can still be seen as a generative process because of the initial integer
+drawn \uar{},\Todo{Although I'm not sure how I would write this likelihood to be fair} but one that
+avoids the two pitfalls discussed before. Indeed, there is no decision to be made by nodes, since
+the previous probability has been replaced by a binary function (either both nodes are in the same
+cluster or not). Furthermore, since the clustering function is symmetric, the model is inherently
+suited to undirected graphs.
+
+\iffalse
 We can conclude that balance theory helps characterize zero disagreement instances of \pcc{}.
 However, how is \pcc{} useful in predicting edge sign? At first sight, the two problems seem to be quite
 different, for the former is an unsupervised/agnostic clustering problem, while the latter is a
@@ -229,8 +254,6 @@ value of the \mind{} objective is a complexity measure of the \esp{} problem~\au
 4.1]{Cesa-Bianchi2012b}. Before that, we will also present some variants and extensions of \pcc{},
 in \autoref{sub:variants_and_extensions}, some of them bearing similarities with the Chapter 3's problem.
 
-
-\iffalse
 strong balance random graph model \url{https://www.lri.fr/~yannis/randsigned.pdf}, line index is basically
 the objective value of CC and if I'm reading their bound correctly,  basically you need to flip half
 the edges of a random graph to make it balanced (also most of their results hold when the

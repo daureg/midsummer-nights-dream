@@ -58,6 +58,13 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
 \newcommand*\Let[2]{\State #1 $\gets$ #2}
 \def\algorithmautorefname{Algorithm}
 
+\usepackage{mdframed}
+\newenvironment{aside}%
+{\begin{mdframed}[hidealllines=true, leftline=true, innertopmargin=0.1ex, innerbottommargin=0.1ex,
+      innermargin=2.3em, leftmargin=2.3em, outermargin=0em, innerleftmargin=0.7em, innerrightmargin=0pt,
+      linewidth=2.0pt, skipabove=\baselineskip, skipbelow=\baselineskip, linecolor=Gray]\small}%
+{\end{mdframed}}
+
 \usepackage{varioref}
 \usepackage{hyperref}
 \hypersetup{%
