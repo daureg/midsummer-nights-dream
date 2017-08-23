@@ -1,0 +1,20 @@
+Let us recall first the sign model we used for \dssn{}. Each node $u$ is endowed with two parameters
+$p$ and $q$ drawn from an arbitrary joint distribution $\mu$ over $[0,1]\times [0,1]$. $p$ can be
+interpreted as the tendency of $u$ to send positive edges to other nodes (\ie{} the
+\enquote{niceness} of $u$), while $q$ can be interpreted as the tendency of $u$ to receive positive
+edges from other nodes (\ie{} the \enquote{popularity} of $u$). This suggests that nodes in the
+graph have a form of agency, and this imposes that edges are directed. We show experimentally that
+failing to meet these two assumptions harms the performance of our previous method. This is not
+surprising, for our bias is no more justified in that case. Therefore, we suggest a different bias,
+drawing heavily on social balance theories, although we shall see later this holds for many
+nonsocial graphs as well.
+
+\subsection{Reliance on the sign generative model}
+\label{sub:reliance_on_the_sign_generative_model}
+
+\input{bias_model}
+
+\subsection{Need for a directed graph}
+\label{sub:need_for_a_directed_graph}
+
+\input{bias_directed}

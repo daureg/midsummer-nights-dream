@@ -154,6 +154,14 @@ MST.}\footnote{FOCS'17 \href{https://arxiv.org/abs/1611.00052}{arxiv.org/abs/161
 \paragraph{Spanners}
 \label{par:spanners}
 
+\url{http://www.siam.org/meetings/da17/schedule.html} SODA 13B \url{http://dl.acm.org/citation.cfm?id=3039686}
+for instance the Elkin paper \enquote{Our centralized randomized algorithm computes (with
+probability close to 1), a $(2k - 1)$-spanner with $n \cdot (1 + O(\frac{\log k}{n}))$ edges in
+$O(|E|)$ time, whenever $k = \Omega(\log n)$. Note that when $k = \omega(\log n)$, the number of
+edges is $n(1+o(1))$, i.e., in this range the algorithm computes an ultra-sparse spanner in $O(|E|)$
+time.} For instance, if $k=5\log n$, we get a $10\log n$-spanner with $n\left(1+O\left(\frac{\log\log
+n}{n}\right)\right)$ edges in $O(|E|)$ time.
+
 the subgraph $H$ is said to be an $(\alpha, \beta)$-spanner of $G$ if, for a pair of parameters
 $\alpha \geq 1$, $\beta \geq 0$, and for every pair $u, v \in V$ of vertices, it holds that $d_H(u,
 v) \leq \alpha\cdot d_G(u, v)+\beta$.
@@ -240,3 +248,15 @@ $\Omega(\nicefrac{n^2}{t^2})$ edges.
 % http://onlinelibrary.wiley.com/doi/10.1002/net.3230130309/full
 % later solution?
 % http://ieeexplore.ieee.org/document/81738
+
+
+While they have many applications [see first paragraph of \url{https://arxiv.org/pdf/1401.2454.pdf},
+which was later merged in a STOC'14 paper] (a major one being solving linear systems), in some
+practical situations their advantages are less clear [from
+\url{https://link.springer.com/chapter/10.1007/978-3-319-20086-6_16}\enquote{for reasonable inputs
+the constant factors make the solver much slower than methods with higher asymptotic complexity.
+One other aspect predicted by theory is confirmed by our findings: Spanning trees with lower
+stretch indeed reduce the solver's running time. Yet, simple spanning tree algorithms perform
+better in practice than those with a guaranteed low stretch.} this is improved by
+\url{https://link.springer.com/chapter/10.1007%2F978-3-319-20086-6_17} although they seem to work
+	mostly with the Laplacian of the tree ]

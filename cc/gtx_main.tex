@@ -1,0 +1,37 @@
+Given a graph $G$, and following the social balance theory roughly summarized as \enquote{the enemy
+of my enemy is my friend}, assume that the labelling of $E$ is consistent with a two-clustering of
+$V$. Namely, assume that $V$ can be partitioned in two clusters such that edges within each cluster
+are positive and edges across clusters are negative. In that case, the following
+\emph{multiplicative rule} holds: for any nodes $u$, $v$ in $V$, and any path $p$ between $u$ and
+$v$ in $G$, the sign $\yuv$ is equal to the product of the signs along $p$ (we call this product the
+parity of $p$ and denote it $\pi(p)$). While it is a simple and convenient model, this is too strong
+of a requirement to be satisfied in practice. Therefore, we relax it by assuming that we start with
+a consistent labeling $Y$ but can only observe a randomly perturbed version $Y'$ of $Y$.
+Specifically, given a constant $q\in [0, \nicefrac{1}{2})$, each sign of $Y$ is flipped with a
+probability smaller than $q$.
+
+In this section, we are interested in active learning algorithms, that first query a subset
+$\etrain$ of the edges, observe the signs in $\etrain$ and use them to predict the remaining signs.
+More precisely, we focus on an algorithm that queries spanning tree $T$ of $G$ and predicts the sign
+of an edge $(u,v) \in \etest = E \setminus E_T$ as the parity of $\pathtuv$. While this
+can\Todo{state it formally then ;)} be stated more formally~\autocite[Section
+4.1]{Cesa-Bianchi2012b}, it makes sense intuitively that since each sign has been potentially
+flipped, the longer the path in $T$, the more likely its parity will be not be equal to the true
+sign $\yuv{}$. Therefore we would like each such path to be as short as possible. In the following,
+we describe a way to build spanning trees tailored for this situation.
+
+\subsection{\gtx{}: a spanning tree designed for sign prediction}
+\label{sub:gtx_a_simple_low_stretch_tree_construction}
+
+\input{gtx_algorithm}
+
+\subsection{Related works}
+\label{sub:gtx_related_works}
+
+\input{gtx_related}
+
+\subsection{Empirical evaluation}
+\label{sub:gtx_empirical_evaluation}
+
+\input{gtx_experiments}
+

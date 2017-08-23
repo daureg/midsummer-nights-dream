@@ -1,0 +1,38 @@
+In the previous chapter, we presented a learning bias for the \esp{} problem, namely our sign
+generative model. By leveraging its rigorous theoretical guarantees, we have demonstrated
+empirically its good performance on real \dssn{}. However, in this chapter, we consider other kinds
+of signed networks and show they require another bias and different, more combinatorial algorithms.
+More precisely, we start by pointing in \autoref{sec:new_bias} that our previous bias may not apply
+to directed graphs from domains other than social science, or to undirected graphs. Motivated by
+balance theories, we then introduce a new bias, assuming that ideally, nodes are grouped in $K$
+clusters such that all edges within clusters are positive and all edges between cluster are
+negative. Recovering such clusters from a given signed graph has been studied extensively in the
+last decades under the \pcc{} name. In \autoref{sec:correlation_clustering}, we show how this
+difficult combinatorial clustering problem is connected to our learning bias. We survey a wide range
+of methods to solve it exactly, approximately or heuristically, paying special attention to settings
+where such recovery is easier, such as noisy or stable instances.  Finally, focusing on the
+important and convenient special case $K=2$, we develop in \autoref{sec:gtx} an algorithm that,
+given an undirected general graph, produce a spanning tree designed to support fast and accurate
+edge sign prediction.
+
+\input{../notations}
+
+\section{A bias for general graphs}
+\label{sec:new_bias}
+
+\input{bias_main}
+
+\section{\pcc{}}
+\label{sec:correlation_clustering}
+
+\input{cc_main}
+
+\section{Low stretch trees and spanners}
+\label{sec:gtx}
+
+\input{gtx_main}
+
+\section{Conclusions}
+\label{sec:cc_conclusions}
+
+\input{conclusions}
