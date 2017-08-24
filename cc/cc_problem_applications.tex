@@ -13,12 +13,14 @@ we more conveniently set $w_{u,v} = \begin{cases}
 	-w_{u,v}^- & \quad \text{if } w_{u,v}^+ = 0 \text{ and } w_{u,v}^->0 \\
 \end{cases}$
 
-Now consider a clustering \cluster{} of $V$, that is a function from $V$ to $\Nbb{}^{|V|}_{>0}$
-that assigns to each node a cluster index.\marginpars{We will also abuse the notation and let
-\cluster{} be a set of clusters $\cluster=\{C_1, C_2, \ldots, C_k\}$ that form a partition of $V$.
-That is, $\forall i\,C_i\subset V$, $\bigcup_{i=1}^k C_i = V$ and $\forall i\neq j,\, C_i\cup C_j =
-\emptyset$.} For instance, $\cluster(u) = 3$ means that $u$ belongs
-to the third cluster. We can evaluate how \cluster{} fits our clustering paradigm in two ways,
+%TODO replace N by [|K|] (and define that notation in the table)
+
+Now consider a clustering \cluster{} of $V$, that is a function from $V$ to $\Nbb{}^{|V|}_{>0}$ that
+assigns to each node a cluster index. For instance, $\cluster(u) = 3$ means that $u$ belongs to the
+third cluster. We will also abuse the notation and let \cluster{} be a set of clusters $\{C_1, C_2,
+\ldots, C_K\}$ that form a partition of $V$.\footnote{That is, $\forall i\,C_i\subset V$,
+$\bigcup_{i=1}^K C_i = V$ and $\forall i\neq j,\, C_i\cap C_j = \emptyset$.}
+We can evaluate how \cluster{} fits our clustering paradigm in two ways,
 either by the number of \emph{agreements}, that is the weighted number of positive edges inside
 clusters plus the weighted number of negative edges across clusters; or by the number of
 \emph{disagreements}, that is the weighted number of negative edges inside clusters plus the
@@ -43,12 +45,12 @@ oriented subspaces~\autocite{otherCCproblem09}.}:
 Although an optimal clustering $\cluster^\star$ achieves the same value on both \eqref{eq:maxa}
 and \eqref{eq:mind}, we will see in \autoref{sub:state_of_the_art} that the latter objective is in
 some sense \enquote{easier}. Another interesting feature of the \pcc{} problem is that contrary to
-other clustering formulations, it does not require us to set the number of clusters $k$ beforehand.
-Instead, $k$ emerges as a natural property of the solution. Since clustering is an unsupervised
+other clustering formulations, it does not require us to set the number of clusters $K$ beforehand.
+Instead, $K$ emerges as a natural property of the solution. Since clustering is an unsupervised
 problem, this is generally handy. However, in some situations, we may have prior knowledge on how
 many clusters are the data, or external constraints. This can be handled with parametrized version
-of \pcc{}, namely \maxa$[k]$ and \mind$[k]$ where the optimization is over clustering with exactly
-$k$ clusters.
+of \pcc{}, namely \maxa$[K]$ and \mind$[K]$ where the optimization is over clustering with exactly
+$K$ clusters.
 
 In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of its optimal solution.
 \begin{figure}[hbt]
@@ -65,7 +67,7 @@ In \autoref{fig:cc_objectives}, we show a simple instance of \pcc{} and one of i
 	\label{fig:cc_objectives}
 \end{figure}
 
-\subsubsection{Applications}
+\subsubsection{Connection with \esp{} and other applications}
 \label{ssub:cc_applications}
 
 According to \textcite[Section 5]{Demaine2006}, \pcc{} is well suited to several situations:

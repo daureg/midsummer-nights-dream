@@ -9,14 +9,19 @@
 % - when the graph is weighted, there is no much point separating complete from
 %   general since weights can be 0
 
-In this section, we introduce the \pcc{} problem (\autoref{sub:problem_setting}) and motivate it
-both by general applications (\autoref{ssub:cc_applications}) and by its close connection with the
-\esp{} problem (\autoref{sub:relation_with_edge_sign_prediction}). After discussing its theoretical
-complexity and various approximation methods (\autoref{ssub:cc_harness_approx}) along other kinds of
-methods (\autoref{ssub:cc_methods}), we will review related problems stemming from the original
-formulation (\autoref{sub:variants_and_extensions}). In doing so, we present a thorough and updated
-counterpart to existing surveys the same
-topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017}.
+As mentioned earlier, most real signed graphs are not fully balanced and thus do not have a
+perfectly consistent clustering. The problem of quantifying how much a given graph departs from this
+ideal situation is called \pcc{}. After defining it formally in \autoref{sub:problem_setting}, we
+show that \pcc{} is a learning problem on its own, and discuss how it relates to the binary
+classification problem of predicting edge signs, among many others applications. We then present
+numerous methods to solve \pcc{} in \autoref{sub:state_of_the_art}, ranging from exact methods (that
+implicitly leverage our bias) to heuristics (whose greedy and energy minimization frameworks are
+classic in unsupervised graph cut problems). We also devote a large section to approximation
+methods, in order to get a sense of why the problem is \NPc{}. This allows us to finish in
+\autoref{sub:cc_non_worst_case} by describing situations related to our bias where is possible to
+solve the problem efficiently and optimally. By doing so, we update existing surveys on the same
+topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017}, highlighting the importance of
+\pcc{} to solve our binary learning problem.
 
 % surveyCC16 is about mind on complete graph (ie cluster editing). They give a Russian article from
 % 1971 that says it cluster editing on triangle-free graph can be solved in polynomial time, which
@@ -26,13 +31,9 @@ topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017}.
 % clusters??! Actually it means consensus clustering can be solved in polynomial time when there are
 % only 2 clustering as input
 
-\subsection{Problem setting and applications}
+\subsection{Problem setting and connection to \esp{}}
 \label{sub:problem_setting}
 \input{cc_problem_applications}
-
-\subsection{Relation with edge sign prediction}
-\label{sub:relation_with_edge_sign_prediction}
-\input{cc_sign_relation}
 
 \subsection{State of the art}
 \label{sub:state_of_the_art}
