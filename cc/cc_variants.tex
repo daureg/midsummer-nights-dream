@@ -277,62 +277,6 @@ problem as a constrained quadratic optimization, they propose a faster iterative
 heuristic.
 % relaxed structural balance \autocite{Doreian2009} but used the same approach as \textcite{Early96}
 
-\paragraph{Online \& active setting}
-
-Except for the local algorithms of \textcite{Bonchi2013}, all works presented so far considered the
-batch case of \pcc{}, where the whole graph and all the signs are available at all time and with no
-cost. This might not always be the case, for instance if the graph is too large to fit in memory or
-if the edge labels are given by an expensive external procedure.
-
-% \emph{Still have to write this part. Is there a link between mistake bound and approximation
-% ratio?} say I have a binary classifier that perfectly predict sign wrt to the optimal clustering
-% C* those below are more concerned with sign prediction than clustering per se Beside batch
-% setting, one can also consider active \autocites{Cesa-Bianchi2012b}{Cesa-Bianchi2012a} and online
-% \autocite{Gentile2013} framework.
-% \enquote{the work of Cesa-Bianchi et al. [CBGV+12] that take a learning-theoretic perspective on the
-% problem of predicting signs. They consider three types of models: batch, online, and active
-% learning, and provide theoretical bounds for prediction mistakes for each setting. They use the
-% correlation clustering objective as their learning bias, and they show that the risk of the
-% empirical risk minimizer is controlled by the correlation clustering objective.}
-
-Case in point, in the context of entity resolution, \textcite{activeCoref07} consider the \pcc{}
-problem where, by querying an oracle, one can either reduce the uncertainty about one edge weight or
-add an extra node with edges connecting it to existing nodes. However, this requires web queries
-that are resource bounded and thus yields an active setting learning problem, where one has to
-choose the most informative
-queries given a budget. A formal definition is given in~\autocite{queryMoreEdgeCC07} and in
-practice, after finding an initially good partition, they select in each cluster a node to be its
-centroid, and query the edges connecting the centroid as ordered by an entropy-based criterion.
-In the case the oracle answering the queries is consistent, then there exists an information
-theoretic bound on the number of queries needed to recover the clusters, and an algorithm matching
-that bound up to a $O(\log n)$ factor~\autocite{perfectActiveLong17}.
-\textcite[Section 5]{Ailon2014} present another active algorithm that solves \mind$[k]$ with a
-linear number of queries but an exponential running time in $n$.  In a noisy setting,
-\textcite{Mitzenmacher2016} assume there is a planted $k$-partition and that we have access to an
-oracle that for $u,v\in V^2$ returns $\cluster(u) - \cluster(v) \mod k$ with probability $1-p$ and a
-noisy $\cluster(u) - \cluster(v) \pm 1 \mod k$ otherwise. For $k=2$, this is exactly $2$-\pcc{},
-whereas for $k>2$, the oracle gives more information than simply the sign of the path from $u$ to
-$v$. Whenever
-$p < \shalf$, they show that $O(n^{1+\frac{1}{\log\log n}}\log n)$ queries are enough are to recover
-the planted partition in polynomial time and with high probability. Those queries are actually
-random (\ie{} non-adaptive), and the clusters are found by looking at almost edge-disjoint path
-between all pairs of nodes.
-
-In the online setting, \textcite{greedyOnline10} give a greedy algorithm that upon node arrival creates a
-singleton cluster and then merge all pairs of clusters for which it increases the total number of
-agreements. For \mind{}, this is $O(n)$-competitive algorithm and they show such ratio is optimal by
-exhibiting an instance\footnote{Namely, two positive cliques $A$ and $B$ joined by positive edges except
-between $a\in A$ and $\{b_1,\ldots, b_k\}\in B$. Those nodes are given first and thus form a cluster,
-which yields at least one disagreement every time one the $n-(k+1)$ remaining nodes is added.} on
-which any strategy ends up with $n - k$ disagreements whereas optimal cost is $k$. On the \maxa{}
-side, this greedy strategy result in a $\shalf$-competitive algorithm. If it is randomly mixed with a
-\textsc{Dense} variation, it increases to $\shalf+\eta$, still far from the demonstrated $0.834$ upper
-bound.
-% when the graph is given node by node,
-% \url{https://link.springer.com/chapter/10.1007/978-3-319-18173-8_7} show to cluster it in static
-% clique, so it sounds related to cluster editing, except their objective is to maximize the
-% fraction of edge in cliques (ie avoid small cluster)
-
 \paragraph{\pcc{} under noise}
 
 As we have seen, assuming the Unique Games Conjecture, the \mmc{} problem, and therefore
