@@ -1,3 +1,9 @@
+In this thesis we will sometimes write remarks in a smaller font and with a light blue edging.
+\begin{aside}
+  Such remarks provide additional information to the topic discussed above, but can be skipped
+  without harming the comprehension of the main material.
+\end{aside}
+
 \begin{table*}[thpb]
   \centering
   \caption{List of notations used in this thesis}\label{tab:notations}%
@@ -6,12 +12,13 @@
     \toprule
     Symbol & Meaning \\
     \midrule
-    $G$ & An unweighted graph, that can be either directed or undirected \\
+    \rangek{} & The natural integers from $1$ to $K$, \ie{} $\{1, 2, \ldots, K \}$ \\
+    $G$ & An arbitrary graph. It should be clear from the context whether it is weighted or not, and directed or not \\
     $V$ & The set of all the nodes of a graph, with $|V|=n$. Unless noted otherwise, nodes are indexed from $1$ to $n$ \\
-    $E$ & The set of all the edges of a graph, with $|E|=m$ \\
     $u$ & A generic node of $G$. When referring to several nodes, we naturally use $u$, $v$, $w$ and so on. \\
+    $E$ & The set of all the edges of a graph, with $|E|=m$ \\
     $(u,v)$ & An undirected edge between nodes $u$ and $v$ \\
-    % \euv{} & A directed edge from node $u$ to node $v$ \\
+    \euv{} & A directed edge from node $u$ to node $v$ \\
     $\yuv{}$ & The sign of the edge $(u,v)$, which can be either $+1$ or $-1$ \\
     $Y(E)$ & The labeling of $E$, that is the set of all signs of $E$: $Y(E) = \{\yuv : (u,v)\in E\}$ \\
     $\etrain$ & A subset of $E$, given or chosen, of which we observe the signs \\

@@ -1,14 +1,3 @@
-% *TODO*
-% say more clearly there are 3 methods for approximation so far: LP & region growing; LP & distance
-% pivot; combinatorial pivot
-% say that in practice, general graphs are assumed to be complete with missing edges being negative
-% - “The problem is agnostic in the sense that the clustering of the data is not taken into account
-%   or even assumed to exist.” another way to look at it is that we're trying to get a binary
-%   classifier of edges (+ or -) using an hypothesis class (nodes clustering) with limited
-%   expression power (as it has to respect transitivity constraints, whereas signs can be inconsistent)
-% - when the graph is weighted, there is no much point separating complete from
-%   general since weights can be 0
-
 As mentioned earlier, most real signed graphs are not fully balanced and thus do not have a
 perfectly consistent clustering. The problem of quantifying how much a given graph departs from this
 ideal situation is called \pcc{}. After defining it formally in \autoref{sub:problem_setting}, we
@@ -17,10 +6,11 @@ classification problem of predicting edge signs, among many others applications.
 numerous methods to solve \pcc{} in \autoref{sub:state_of_the_art}, ranging from exact methods (that
 implicitly leverage our bias) to heuristics (whose greedy and energy minimization frameworks are
 classic in unsupervised graph cut problems). We also devote a large section to approximation
-methods, in order to get a sense of why the problem is \NPc{}. This allows us to finish in
+methods, in order to get a sense of why the problem is \NPc{} and even hard to approximate. This
+allows us to finish in
 \autoref{sub:cc_non_worst_case} by describing situations related to our bias where is possible to
-solve the problem efficiently and optimally. By doing so, we update existing surveys on the same
-topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017}, highlighting the importance of
+solve the problem efficiently and optimally. In this section, we thus update existing surveys on the same
+topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017} and highlight the importance of
 \pcc{} to solve our binary learning problem.
 
 % surveyCC16 is about mind on complete graph (ie cluster editing). They give a Russian article from

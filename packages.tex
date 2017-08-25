@@ -14,7 +14,7 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
    % \clearfield{booktitle}
    % \clearfield{doi}
    % \clearfield{eprint}
-   \clearfield{eventdate}
+   % \clearfield{eventdate}
    \clearfield{isbn}
    \clearfield{issn}
    % \clearfield{journaltitle}
@@ -26,7 +26,7 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
    \clearfield{urldate}
    \clearfield{venue}
    % \clearfield{volume}
-   \clearlist{location} % alias to field 'address'
+   % \clearlist{location} % alias to field 'address'
    \clearlist{publisher}
    \clearname{editor}
 }
@@ -60,10 +60,12 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
 
 \usepackage{mdframed}
 \newenvironment{aside}%
-{\begin{mdframed}[hidealllines=true, leftline=true, innertopmargin=0.1ex, innerbottommargin=0.1ex,
+{\begin{mdframed}[hidealllines=true, leftline=true, innertopmargin=0.5ex, innerbottommargin=0.5ex,
       innermargin=2.3em, leftmargin=2.3em, outermargin=0em, innerleftmargin=0.7em, innerrightmargin=0pt,
-      linewidth=2.0pt, skipabove=\baselineskip, skipbelow=\baselineskip, linecolor=Gray]\small}%
+      linewidth=1.5pt, skipabove=\baselineskip, skipbelow=\baselineskip,
+   linecolor=DodgerBlue!30!White]\small}%
 {\end{mdframed}}
+\usepackage{stmaryrd}
 
 \usepackage{varioref}
 \usepackage{hyperref}
