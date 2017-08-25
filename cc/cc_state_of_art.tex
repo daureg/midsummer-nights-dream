@@ -50,8 +50,14 @@ look for exactly $K$ clusters (\ie \mind$[K]$), there is a fixed parameters algo
 $O(2^{O(\sqrt{kd})}+n+m)$~\autocite{Fomin2014}. If at most $a$ edges can be added and at most $b$
 edges can be deleted at each node, and if the minimum size of a cluster is at least $2(a+b)$, then
 the problem can be solved in polynomial time~\autocite{Abu-Khzam2015} by using various reduction
-rules. Finally, for planar graph,
-there is a PTAS running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
+rules. Finally, for planar graph, there is a PTAS%
+\bottomfootnote{An algorithm $\mathcal{A}$ is a \emph{polynomial-time approximation scheme (PTAS)} for a
+minimization (respectively maximization) problem $\mathcal{P}$  in NP if given any $\epsilon>0$ and
+any instance $x$ of $\mathcal{P}$ of size $n$, $\mathcal{A}$ produces, in time polynomial in $n$, a
+solution that is within a factor $1+\epsilon$ (respectively $1-\epsilon$) of being optimal with
+respect to $x$. Note that the time is not necessarily polynomial in $\epsilon$, so that a running
+time of $O(n^{\frac{1}{\epsilon}})$ would qualify~\autocite[Definition 3.10]{CpxBook99}.}
+running in $O(n2^{\epsilon^{-1}\log(\epsilon^{-1})})$ obtained by dividing the graph
 into independent components of bounded treewidth~\autocite{PlanarCEPTAS17}. In other words, if we
 are given a complete signed graph whose positive subgraph is planar, then we can minimize the number
 of disagreements arbitrarily close to the optimal, provided we have enough time to do so.
@@ -129,12 +135,6 @@ Although the same problem was considered earlier~\autocites{Early96}{Ben-Dor99},
 coin the term \pcc{} and are the first to study this problem complexity. Namely, for complete,
 unweighted signed graphs, they show that both \mind{} and \maxa{} are \NPc{}. Along the way, they
 give a $17429$-approximation of \mind{} and a PTAS%
-\marginpars{An algorithm $\mathcal{A}$ is a \emph{polynomial-time approximation scheme (PTAS)} for a
-minimization (respectively maximization) problem $\mathcal{P}$  in NP if given any $\epsilon>0$ and
-any instance $x$ of $\mathcal{P}$ of size $n$, $\mathcal{A}$ produces, in time polynomial in $n$, a
-solution that is within a factor $1+\epsilon$ (respectively $1-\epsilon$) of being optimal with
-respect to $x$. Note that the time is not necessarily polynomial in $\epsilon$, so that a running
-time of $O(n^{\frac{1}{\epsilon}})$ would qualify~\autocite[Definition 3.10]{CpxBook99}.}
 that, for any $\epsilon \in [0,1]$, runs in
 $O(n^2e^{O(\epsilon^{-10}\log \epsilon^{-1})})$ and returns with probability
 $1-\nicefrac{\epsilon}{3}$ a solution with at most $\epsilon n^2$ fewer agreements than the optimal
