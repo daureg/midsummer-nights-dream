@@ -540,6 +540,37 @@ singleton stars at the next iteration. This actually what happens on \autoref{fi
 an example where $|V_{t+2}| \sim |V_t| \sim k^3$. This could even be worse if proper stars are
 connected in such a hierarchical way that singleton stars can survive for many iterations.
 
+
+Here is another proof that does not work, where we study the diameter of the graph. Indeed, it is
+initially bounded by the number of nodes $n$, and by the correctness of \gtx{}, it will be zero upon
+termination. If we show that the diameter shrinks by a constant factor at each iteration, then we
+can claim that \gtx{} terminates after a number of iterations logarithmic in $n$. For ease of
+exposition, we instead prove equivalently that when going backward in time, the diameter expands at
+least by a constant factor at each iteration. Let us denote by $\Delta_t$ the diameter of $G_t$ and
+take any path of length $\ell \leq \Delta_t$ in $G_t$. Let $[s_1, s_2, \ldots, s_{\ell+1}]$ be the
+nodes along this path, where the notation $s_i$ reflects the fact that these nodes were stars of
+nodes in $G_{t-1}$. If we choose any $u,v \in V_{t-1}^2$ such that $u$ is in the star $s_1$ and $v$
+is in the star $s_{\ell+1}$, then we can see on \autoref{fig:gtx_expand_path} that there exists a
+path of length $2\ell -1$ between $u$ and $v$ in $G_{t-1}$.
+{\color{blue}{\large The figure actually shows this is not always true.}
+More generally, for any path of length
+$\ell$ in $G_t$, there is a path of length $2\ell-1$ in $G_{t-1}$. In particular, for
+$\ell=\Delta_t$, there is a path of length $2\Delta_t-1$ in $G_{t-1}$, from which we conclude that
+$2\Delta_t-1\leq\Delta_{t-1}$, or equivalently $\Delta_t \leq
+\frac{1}{2}\left(\Delta_{t-1}+1\right)$. One can then check by recurrence that $\Delta_t \leq
+\frac{1}{2^t} \left(\Delta_0+2^t-1\right) \leq \frac{n}{2^t} + 1$.}
+
+\begin{figure*}[htpb]
+   \centering
+   \includegraphics[width=\linewidth]{raw/expand_path.pdf}
+   \caption[Star expansion of a path]{A path within $G_t$ in black, and the underlying graph
+     $G_{t-1}$ in blue. In the worst case, the endpoints of the path in $G_{t-1}$ are at the
+     periphery of the endpoint stars.  The intermediary nodes in $G_t$ could be proper or singleton
+     star, but there cannot be two adjacent singleton stars.}
+   \label{fig:gtx_expand_path}
+\end{figure*}
+
+\iffalse
 We would like to prove a similar result on the edges so that the overall complexity of the
 \gtx{} algorithm would be $O(|V_0|\log |V_0|+|E_0|)$. However, this does not follow directly from the
 reduction of number of nodes. Indeed, we can have a situation where most of the edges of $E_t$ are
@@ -547,7 +578,6 @@ between the stars of $G_t$ and thus will remain in the next iteration. Still, we
 similarly to the previous proof, this high density of outer edges will lead to strong collapse in
 the next iteration.
 
-\iffalse
 In the case no singleton are formed during one execution of \extractStar{}, the number of nodes is
 reduced by at least a factor $2$ (because each star is made of at least two nodes). On the other hand, we can
 construct a graph with singletons where the factor of reduction in number of nodes and edges can be
