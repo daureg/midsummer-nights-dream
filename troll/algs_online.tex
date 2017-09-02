@@ -1,0 +1,34 @@
+\section{Algorithms in the Online Setting}\label{s:algonline}
+
+For the online scenario, we have the following result.
+%
+\begin{theorem}\label{t:online}
+There exists a randomized online prediction algorithm $A$ whose expected number of mistakes satisfies
+$
+\E M_A(Y) = \Psi_G(Y) + O\left(\sqrt{|V|\Psi_G(Y)} + |V| \right)
+$
+on any edge-labeled graph $G(Y) = (V,E(Y))$.
+\end{theorem}
+%
+The algorithm used in Theorem~\ref{t:online} is a combination of randomized Weighted Majority instances. Details are reported in the supplementary material. We complement the above result by providing a mistake lower bound. Like Theorem~\ref{t:online}, the following result holds for all graphs, and for all label irregularity levels $\Psi_G(Y)$.
+%
+\begin{theorem}
+\label{t:mistake_bound}
+Given any edge-labeled graph $G(Y) = (V,E(Y))$ and any integer $K \le \big\lfloor \tfrac{|E|}{2}\big\rfloor$, a randomized labeling $Y\in\spin^{|E|}$ exists such that $\Psi_G(Y) \leq K$, and the expected number of mistakes that any online algorithm $A$ can be forced to make satisfies
+\(
+\E M_A(Y) \ge \frac{K}{2}\,.
+\)
+Moreover, as $\frac{K}{|E|} \rightarrow 0$ then
+\(
+\E M_A(Y) = K
+\).
+\end{theorem}
+%
+
+%\footnote
+%{
+%In fact, we can refine the above statement by proving that, as $\frac{K}{|E|} \rightarrow 0$, the lower bound gets arbitrarily close to $K$ for any $G(Y)$, hence asymptotically matching the upper bound of Theorem~\ref{t:online} (\textit{proof in the supplementary material}).
+%}
+
+
+

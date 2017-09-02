@@ -1,0 +1,25 @@
+
+\section{Conclusions and Ongoing Research}
+%
+%FV
+We have studied the edge sign prediction problem in directed graphs in both batch and online learning settings. In both cases, the underlying modeling assumption hinges on the trollness and (un)trustworthiness predictive features. We have introduced a simple generative model for the edge labels 
+%FV that serves both as a theoretical justification for many successful heuristic methods to edge sign prediction and 
+%FV as a way 
+to craft this problem as a node sign prediction problem to be efficiently tackled by standard Label Propagation algorithms. 
+%FV We then observed that the two features used
+%FV notion of trollness and trustworthiness
+%FV naturally lend themselves to define a notion of edge sign regularity that can also be analyzed in an (adversarial) online setting. In this setting, 
+%FV 
+Furthermore, we have studied the problem in an (adversarial) online setting providing 
+upper and (almost matching) lower bounds on the expected number of prediction mistakes.
+
+%FV Finally, we complemented the above with experiments on five real-world datasets in the small training set regime. 
+
+%FV 
+Finally, we validated our theoretical results by experimentally assessing our methods on five real-world datasets in the small training set regime. 
+Two interesting conclusions from our experiments are: i. Our generative model is robust, for it produces Bayes optimal predictors which tend to be empirically best also within the larger set of models that includes all logistic regressors based on trollness and trustworthiness alone; ii. 
+%We showed that 
+our methods are in practice either strictly better than their competitors in terms of prediction quality or, when they are not, they are faster.
+We are currently engaged in 
+%FV gathering more experimental evidence, as well as in 
+extending our approach so as to incorporate further predictive features (e.g., side information, when available).

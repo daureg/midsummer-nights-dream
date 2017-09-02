@@ -1,0 +1,651 @@
+\section{Proofs from Section~\ref{s:algbatch}}
+\subsection{Proof of Theorem~\ref{t:active}}
+The following ancillary results will be useful.
+%
+\begin{lemma}[Hoeffding's inequality for sampling without replacement]
+\label{l:hoeff-wr}
+Let $\scX = \{x_1,\dots,x_N\}$ be a finite subset of $[0,1]$ and let
+\[
+	\mu = \frac{1}{N}\sum_{i=1}^N x_i~.
+\]
+If $X_1,\dots,X_n$ is a random sample drawn at random from $\scX$ without replacement, then, for every $\ve > 0$,
+\[
+	\Pr\left( \left|\frac{1}{n}\sum_{t=1}^n X_t - \mu \right| \ge \ve \right) \le 2e^{-2n\ve^2}~.
+\]
+\end{lemma}
+%
+\begin{lemma}\label{l:bins}
+% Given a function $f\,:\, \Nat \rightarrow \R$ such that $f(n) \rightarrow \infty$ as $n \rightarrow \infty$, 
+Let $\NN_1, \ldots, \NN_n$ be subsets of a finite set $E$.
+% with $|E| \geq n\,f(n)$
+% Let $\theta = \frac{|E|}{n\,f(n)}$, 
+% and $k = k(\theta)$ be the number of subsets $\NN_i$ such that $|\NN_i| \geq \theta$. Let 
+Let $E_0 \subseteq E$ be sampled uniformly at random {\em without} replacement from $E$, with $|E_0| = m$. Then, for $\delta \in (0,1)$, $Q > 0$, and $\theta \geq 2\times\max\left\{Q,4\ln \frac{n}{\delta}\right\}$, we have
+\[
+\Pr\Bigl( \exists i \,:\, |\NN_i| \geq \theta, |\NN_i \cap E_0| < Q\Bigl) \leq \delta
+\]
+provided $|E| \geq m \geq \frac{2|E|}{\theta}\times\max\left\{Q,4\ln \frac{n}{\delta}\right\}$.
+\end{lemma}
+%
+\begin{proof}[Proof of Lemma \ref{l:bins}]
+Set for brevity $p_i = |\NN_i|/|E|$. Then, due to the sampling without replacement, each random variable $|\NN_i \cap E_0|$ is the sum of $m$ dependent Bernoulli random variables $X_{i,1}, \ldots, X_{i,m}$ such that $\Pr(X_{i,t} = 1) = p_i$, for $t = 1, \ldots, m$. Let $i$ be such that $|\NN_i| \geq \theta$. Then the condition $m \geq \frac{2|E|Q}{\theta}$ implies
+\[
+Q \leq \frac{m\theta}{2|E|} \leq \frac{m\,p_i}{2} = \frac{\E\big[|\NN_i \cap E_0|\big]}{2}~.
+\]
+Since the variables $X_{i,j}$ are negatively associated, we may apply a (multiplicative) Chernoff bound~\cite[Section~3.1]{dpbook}.
+This gives
+\[
+\Pr\big(|\NN_i \cap E_0| < Q\big) \leq e^{-\frac{m\,p_i}{8}} \leq e^{-\frac{m\,\theta}{8|E|}}
+\]
+so that
+$
+\Pr\bigl( \exists i\,:\, |\NN_i| \geq \theta, |\NN_i \cap E_0| < Q\bigr) \leq n\,e^{-\frac{m\,\theta}{8|E|}}
+$,
+which is in turn upper bounded by $\delta$ whenever 
+$m \geq \frac{8|E|}{\theta}\ln \frac{n}{\delta}$. % = 8\,n\,f(n)\,\ln \frac{n}{\delta}$.
+\end{proof}
+
+Let now $E_{\theta} = \theset{(i,j) \in E}{\din(j) \ge \theta,\, \dout(i) \ge \theta} \setminus E_0$, where $E_0 \ss E$ is the set of edges sampled by the learning algorithm of Section~\ref{s:algbatch}. Then Theorem~\ref{t:active} in the main paper is an immediate consequence of the following lemma. 
+%
+\begin{lemma}\label{l:active}
+Let $G(Y) = (V,E(Y))$ be a directed graph with labels on the edges generated according to the model in Section~\ref{s:gen}.
+For all $0 < \alpha,\delta < 1$ and $0 < \ve < \tfrac{1}{16}$, if the learning algorithm of Section~\ref{s:algbatch} is run with parameters $Q = \tfrac{1}{2\ve^2}\ln\frac{4|V|}{\delta}$ and $\alpha$, then with probability at least $1-11\delta$ the predictions $\yhat(i,j)$ satisfy $\yhat(i,j) = y^*(i,j)$ for all $(i,j) \in E_{\theta}$ such that $\big|\eta(i,j) - \tfrac{1}{2}\big| > 8\ve$.
+\end{lemma}
+%
+\begin{proof}[Proof of Lemma \ref{l:active}]
+We apply Lemma~\ref{l:bins} with $\theta = \tfrac{2Q}{\alpha} \ge 2\times\max\big\{Q,4\ln \frac{2|V|+1}{\delta}\big\}$ to the $2|V|+1$ subsets of $E$ consisting of $E_L$ and $\Nin(i),\Nout(i)$, for $i \in V$. We have that, with probability at least $1-\delta$, at least $Q$ edges of $E_L$ are sampled, at least $Q$ edges of $\Nin(i)$ are sampled for each $i$ such that $\NNin(i) \ge \theta$, and at least $Q$ edges of $\Nout(j)$ are sampled for each $j$ such that $\NNout(j) \ge \theta$.
+For all $(i,j) \in E_{\theta}$ let
+\[
+	\pbar_j = \frac{1}{\din(j)}\sum_{i\in\NNin(j)} p_i \quad\text{and}\quad \qbar_i = \frac{1}{\dout(i)}\sum_{j\in\NNout(i)} q_j
+\]
+and set for brevity $\hdeltain(j) = 1-\hun(j)$ and $\hdeltaout(i) = 1-\htr(i)$.
+We now prove that $\hdeltain(j)$ and $\hdeltaout(i)$ are concentrated around their expectations for all $(i,j) \in E_{\theta}$. Consider $\hdeltaout(i)$ (the same argument works for $\hdeltain(j)$). Let $J_1,\dots,J_Q$ be the first $Q$ draws in $E_0 \cap \NNout(i)$ and define
+\[
+	\muhat_p(i) = \frac{1}{Q} \sum_{t=1}^Q \frac{p_i+q_{J_t}}{2}~.
+\]
+Applying Lemma~\ref{l:hoeff-wr} to the set $\theset{\tfrac{p_i+q_j}{2}}{j \in \NNout(i)}$, and using our choice of $Q$, we get that $\big|\muhat_p(i) - \mu_p(i)\big| \le \ve$ holds with probability at least $1-\delta/(2|V|)$, where
+\[
+	\mu_p(i) = \frac{1}{\dout(i)}\sum_{j \in \NNout(i)} \frac{p_i + q_j}{2} = \frac{p_i + \qbar_i}{2}~.
+\]
+Now consider the random variables $Z_t = \Ind{y_{i,J_t}=1}$, for $t=1,\dots,Q$. Conditioned on $J_1,\dots,J_Q$, these are independent Bernoulli random variables with $\E[Z_t \mid J_t] = \tfrac{p_i+q_{J_t}}{2}$. Hence, applying a standard Hoeffding bound for independent variables and using our choice of $Q$, we get that
+\[
+	\left|\frac{1}{Q}\sum_{t=1}^Q Z_t - \muhat_p(i) \right| \le \ve 
+\]
+with probability at least $1-\delta/(2|V|)$ for every realization of $J_1,\dots,J_Q$. 
+%
+Since $\hdeltaout(i) = (Z_1+\cdots+Z_Q)/Q$, we get that $\big|\hdeltaout(i) - \mu_p(i)\big| \le 2\ve$ with probability at least $1-2\delta/(2|V|)$. Applying the same argument to $\hdeltain(j)$, and the union bound\footnote
+{
+The sample spaces for the ingoing and outgoing edges of the vertices occurring as endpoints in $E_{\theta}$ overlap. Hence, in order to prove a uniform concentration result, we need to apply the union bound over the random variables defined over these sample spaces, which motivates the presence of the factor $\ln(2|V|)$ in the definition of $Q$. 
+}
+on the set $\theset{\hdeltain(j),\hdeltaout(i)}{(i,j) \in E_{\theta}}$, we get that
+\begin{equation}
+\label{eq:first}
+	\left| \hdeltaout(i) + \hdeltain(j) - \frac{p_i + q_j}{2} - \frac{\pbar_j + \qbar_i}{2} \right| \le 4\ve
+\end{equation}
+simultaneously holds for all $(i,j) \in E_{\theta}$ with probability at least $1 - 4\delta$. Now notice that $\pbar_j$ is a sample mean of $Q$ i.i.d.\ $[0,1]$-valued random variables drawn from the prior marginal $\int_0^1 \mu\big(\cdot,q\bigr) dq$ with expectation $\mu_p$. Similarly, $\qbar_i$ is a sample mean of $Q$ i.i.d.\ $[0,1]$-valued random variables independently drawn from the prior marginal $\int_0^1 \mu\big(p,\cdot\big) dp$ with expectation $\mu_q$. By applying Hoeffding bound for independent variables, together with the union bound to the set of pairs of random variables whose sample means are $\pbar_j$ and $\qbar_i$ for each $(i,j) \in E_{\theta}$ (there are at most $2|V|$ of them) we obtain that
+\begin{align*}
+	\big|\pbar_j - \mu_p\big| \le \ve
+\qquad\text{and}\qquad
+	\big|\qbar_i - \mu_q\big| \le \ve
+\end{align*}
+hold simultaneously for all $(i,j) \in E_{\theta}$ with probability at least $1-2\delta$. Combining with~(\ref{eq:first}) we obtain that
+\begin{equation}
+\label{eq:this}
+	\left| \hdeltaout(i) + \hdeltain(j) - \frac{p_i + q_j}{2} - \frac{\mu_p + \mu_q}{2} \right| \le 5\ve
+\end{equation}
+simultaneously holds for each $(i,j) \in E_{\theta}$ with probability at least $1 - 6\delta$. Next, let $E_L'$ be the set of the first $Q$ edges drawn in $E_L \cap E_0$. Then
+\[
+	\E\big[\tauhat\big] = \frac{1}{Q}\sum_{(i,j) \in E_L'} \Pr\big(y_{i,j} = 1\big) = \frac{1}{Q}\sum_{(i,j) \in E_L'} \frac{p_i+q_j}{2}~,
+\]
+where the expectation is w.r.t.\ the independent draws of the labels $y_{i,j}$ for $(i,j) \in E_L'$. Hence, by applying again Hoeffding bound (this time without the union bound) to the $Q = \tfrac{1}{2\ve^2}\ln\tfrac{2}{\delta}$ independent Bernoulli random variables $\Ind{y_{i,j} = 1}$, $(i,j) \in E_L'$, the event
+$
+	\big| \tauhat - \E\big[\tauhat\big] \big| \le \ve
+$
+holds with probability at least $1-\delta$. Now, introduce the function
+\[
+	F(\bp,\bq) = \E\big[\tauhat\big] = \frac{1}{Q}\sum_{(i,j) \in E_L'} \frac{p_i+q_j}{2}~.
+\]
+For any realization $\bq_0$ of $\bq$, the function $F_1(\bp) = F(\bp,\bq_0)$ is a sample mean of $Q = \tfrac{1}{2\ve^2}\ln\tfrac{4|V|}{\delta}$ i.i.d.\ $[0,1]$-valued random variables $\theset{p_i}{(i,j) \in E_L'}$ (recall that if $i \in V$ is the origin of an edge $(i,j) \in E_L'$, then it is not the origin of any other edge $(i,j') \in E_L'$). Using again the standard Hoeffding bound, we obtain that
+\[
+	\left| F(\bp,\bq) - E_{\bp}\big[F(\bp,\bq)\big] \right| \le \ve
+\]
+holds with probability at least $1 -\delta$ for each $\bq\in [0,1]^{|V|}$. With a similar argument, we obtain that
+\[
+	\left| E_{\bp}\big[F(\bp,\bq)\big] - E_{\bp,\bq}\big[F(\bp,\bq)\big] \right| \le \ve
+\]
+also holds with probability at least $1 -\delta$. Since
+\[
+	E_{\bp,\bq}\big[F(\bp,\bq)\big] = \frac{\mu_p+\mu_q}{2}
+\]
+we obtain that
+\begin{equation}
+\label{eq:that}
+	\Big| \tauhat - \frac{\mu_p+\mu_q}{2} \Big| \le 3\ve
+\end{equation}
+with probability at least $1-3\delta$. Combining~(\ref{eq:this}) with~(\ref{eq:that}) we obtain
+\[
+	\left| \hdeltaout(i) + \hdeltain(j) - \tauhat - \frac{p(i) + q(j)}{2} \right| \le 8\ve
+\]
+simultaneously holds for each $(i,j) \in E_{\theta}$ with probability at least $1 - 10\delta$. Putting together concludes the proof.
+\end{proof}
+%
+
+\iffalse
+****************************************************
+\begin{lemma}[Hoeffding's inequality]
+\label{l:hoeff}
+Let $X_1,\dots,X_n$ be independent random variables such that $X_i \in [0,1]$ and let
+\[
+	s_n = \frac{1}{n}\sum_{t=1}^n \big(X_t - \E[X_t]\big)~.
+\]
+Then, for every $\ve > 0$,
+$
+	\Pr\big(|s_n| \ge \ve\big) \le 2e^{-2n\ve^2}~.
+$
+\end{lemma}
+%
+****************************************************
+\fi
+
+
+\subsection{Derivation of the maximum likelihood equations}
+%
+Recall that the training set
+$
+	E_0 = \theset{\big(i_t,j_t),y_{i_t,j_t}\big)}{t=1,\dots,m}
+$
+is drawn uniformly at random from $E$ without replacement. 
+%Set for brevity $m = |E_0|$. 
+We can write
+%
+\begin{align*}
+	\Pr&\left(E_0\,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)\\ 
+&= 
+	\frac{1}{\binom{|E|}{m}\,m!}\prod_{k=1}^m \left(\frac{p_{i_k}+q_{j_k}}{2} \right)^{\Ind{y_{i_k,j_k}=+1}}\,\\
+&\quad\times\,\prod_{k=1}^m\left(1-\frac{p_{i_k}+q_{j_k}}{2} \right)^{\Ind{y_{i_k,j_k}=-1}}\\
+&=
+\frac{1}{\binom{|E|}{m}\,m!}
+\prod_{\ell=1}^{|V|}\Biggl(\prod_{k=1}^m\,
+\left(\frac{p_{\ell}+q_{j_k}}{2} \right)^{\Ind{i_k = \ell,\,y_{\ell,j_k}=+1}}\,\\
+&\quad\times\,
+\prod_{k=1}^m\left(1-\frac{p_{\ell}+q_{j_k}}{2} \right)^{\Ind{i_k = \ell,\,y_{\ell,j_k}=-1}}\Biggl)
+\end{align*}
+%
+so that $\log \Pr\left(E_0\,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)$ is proportional to
+%
+\begin{align*}
+&\sum_{\ell=1}^{|V|}\sum_{k=1}^m \Ind{i_k = \ell,y_{\ell,j_k}=+1}\,
+\log\left(\frac{p_{\ell}+q_{j_k}}{2} \right)\,\\
+&+\,
+\sum_{\ell=1}^{|V|}\sum_{k=1}^m \Ind{i_k = \ell,y_{\ell,j_k}=+1}\, 
+\log\left(1-\frac{p_{\ell}+q_{j_k}}{2} \right)
+\end{align*}
+%
+and
+%
+\begin{align*}
+\frac{\partial \log \Pr\left(E_0\,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)}{\partial p_{\ell}}
+&= 
+\sum_{k=1}^m 
+\frac{\Ind{i_k = \ell,y_{\ell,j_k}=+1}}{p_{\ell}+q_{j_k}}\,\\
+& - \,
+\sum_{k=1}^m \frac{\Ind{i_k = \ell,y_{\ell,j_k}=-1}}{2-p_{\ell}-q_{j_k}}\,.
+\end{align*}
+%
+By a similar argument,
+%
+\begin{align*}
+\Pr&\left(E_0\,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right) 
+\\ &=
+\frac{1}{\binom{|E|}{m}\,m!}
+\prod_{\ell=1}^{|V|}\Biggl(\prod_{k=1}^m\,
+\left(\frac{p_{i_k}+q_{\ell}}{2} \right)^{\Ind{j_k = \ell,\,y_{i_k,\ell}=+1}}\,\\
+&\quad\times\,
+\prod_{k=1}^m\left(1-\frac{p_{i_k}+q_{\ell}}{2} \right)^{\Ind{j_k = \ell,\,y_{i_k,\ell}=-1}}\Biggl)
+\end{align*}
+%
+so that
+%
+\begin{align*}
+\frac{\partial \log \Pr\left(E_0\,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)}{\partial q_{\ell}}
+&= 
+\sum_{k=1}^m 
+\frac{\Ind{j_k = \ell,y_{i_k,\ell}=+1}}{p_{i_k}+q_{\ell}}\,\\ 
+&- \,
+\sum_{k=1}^m 
+\frac{\Ind{j_k = \ell,y_{i_k,\ell}=-1}}{2-p_{i_k}-q_{\ell}}\,.
+\end{align*}
+%
+We then derive the approximation presented in the main paper. Namely, equating to zero the
+gradient of the log likelihood w.r.t $p_\ell$ gives
+\begin{align*}
+\sum_{k=1}^m 
+\frac{\Ind{i_k = \ell,y_{\ell,j_k}=+1}}{p_{\ell}+q_{j_k}}\,
+ - \,
+\frac{\Ind{i_k = \ell,y_{\ell,j_k}=-1}}{2-p_{\ell}-q_{j_k}} &= 0
+\end{align*}
+To simplify the notation, let $a_k = \Ind{i_k = \ell,y_{\ell,j_k}=+1}$, $b_k=\Ind{i_k =
+\ell,y_{\ell,j_k}=+1}$ and $c_k = p_{\ell} + q_{j_k}$, we can rewrite the previous equation as 
+\begin{align*}
+\sum_{k=1}^m \frac{a_k}{c_k} - \frac{b_k}{2-c_k} &= 0 \\
+\sum_{k=1}^m  \frac{a_k(2-c_k) - b_k c_k }{ c_k(2-c_k) } &=0
+% \prod_{k=1}^m c_k\prod_{k=1}^m b_k\sum_{k=1}^m \frac{a_k}{b_k} &=\prod_{k=1}^m c_k\prod_{k=1}^m b_k \sum_{k=1}^m\frac{d_k}{c_k}
+\end{align*}
+
+The approximation consists in assuming that the denominator $c_k(2-c_k)$ is a
+constant for all $k$, and can therefore be disregarded.
+Moving $b_kc_k$ to the right hand side and returning to the original variables,
+it yields the approximate equation presented in the main paper, namely
+\begin{align*}
+\sum_{k=1}^m &\Ind{i_k = \ell,y_{\ell,j_k}=+1} \left(2-p_{\ell}-q_{j_k}\right)\\
+=
+&\sum_{k=1}^m \Ind{i_k = \ell,y_{\ell,j_k}=-1}
+(p_{\ell}+q_{j_k})%, \quad \ell = 1, \ldots, |V|
+\end{align*}
+
+\iffalse
+By applying a similar process to the gradient w.r.t. $q_\ell$, we obtain the
+following approximate equation
+\begin{align*}
+\sum_{k=1}^m &\Ind{j_k = \ell,y_{i_k,\ell}=+1} \left(2-p_{i_k}-q_{\ell}\right)\\
+=
+&\sum_{k=1}^m  \Ind{j_k = \ell,y_{i_k,\ell}=-1}
+\left(p_{i_k}+q_{\ell}\right)
+\end{align*}
+\fi
+
+\subsection{Label propagation on $G''$}
+%
+Here we provide more details on the choice of weight for the edges of $G''$, as
+well as an explanation on why we temporarily use symmetrized variables lying in
+$[-1, 1]$ (which we will denote with primes, so that for instance $p'_i =
+2p_i-1$). Since only the ratio between the negative and positive weights
+matters, we fix the negative weight of the edges in $E''\setminus E'$ to be
+$-1$ and we denote by $\eps$ the weight of edges in $E'$.  With these notations,
+Label Propagation on $G''$ seeks the harmonic minimizer of the following
+expression 
+\begin{equation*}
+  \frac{1}{16} \sum_{i,j \in E} \Bigl[ \eps\left(y_{i,j} - p_i'\right)^2 + \eps\left(y_{i,j} - q_j'\right)^2 + (p'_i+q_j')^2 \Bigr] \\
+  % \label{eq:lprop_tmp}
+\end{equation*}
+which can be successively rewritten as
+\begin{align*}
+  \frac{1}{16} \sum_{i,j \in E} & \Bigl[ \eps\left(y_{i,j}+1 - 2p_i\right)^2 + \eps\left(y_{i,j}+1 - 2q_j\right)^2
+\\&
+	+ (2p_i +2q_j -2)^2 \Bigr]
+\\=
+%  \frac{1}{16} \sum_{i,j \in E} &\! 4\eps\!\left(\frac{y_{i,j}+1}{2} - p_i\right)^2\!\! +  4\eps\!\left(\frac{y_{i,j}+1}{2} - q_j\right)^2\!\! + 16\left(\frac{p_i +q_j -1}{2}\right)^2 \\
+	\frac{1}{8} \sum_{i,j \in E} & \Biggl[ 2\eps\!\left(\frac{y_{i,j}+1}{2} - p_i\right)^2\!\! +  2\eps\!\left(\frac{y_{i,j}+1}{2} - q_j\right)^2
+\\&
+	+ 8\left(\frac{p_i +q_j -1}{2}\right)^2 \Biggr]
+\\=
+  \frac{1}{8}\sum_{i,j \in E} & \Biggl[ 2\eps\left(\left(\frac{y_{i,j}+1}{2}\right)^2 - p_i(1+y_{i,j}) + p_i^2\right) + \\
+                              & 2\eps\left(\left(\frac{y_{i,j}+1}{2}\right)^2 - q_j(1+y_{i,j}) + q_j^2\right) +  \\
+                              & 8\left(\left(\frac{p_i +q_j}{2}\right)^2 - \frac{p_i+q_j}{2} + \frac{1}{4} \right) \Biggr]
+\\=
+  \frac{1}{8}\sum_{i,j \in E} & 4\Biggl(\eps\!\left(\frac{y_{i,j}+1}{2}\right)^2\!\! -
+  2\eps\!\left(\frac{y_{i,j}+1}{2}\right)\left(\frac{p_i+q_j}{2}\right)
+\\&
+  + 2\!\left(\frac{p_i +q_j}{2}\right)^2\Biggr)
+\\&+
+  \sum_{i,j \in E} \Bigl[ \left(2\eps p_i^2 - 4p_i + 1\right) + \left(2\eps q_j^2 - 4q_j + 1\right) \Bigr]
+\end{align*}
+%
+By setting $\eps=2$, we can factor this expression into 
+\begin{align*}
+  \sum_{i,j \in E} &\left(\frac{y_{i,j}+1}{2} - \frac{p_i+q_j}{2}\right)^2
+\\&
+  + \frac{1}{2}\sum_{i,j \in E} \left(\left(p_i - \frac{1}{2}\right )^2 + \left(q_j - \frac{1}{2}\right)^2 \right)~.
+\end{align*}
+
+\section{Proofs from Section~\ref{s:algonline}}
+%
+
+
+\begin{proof}[Proof of Theorem~\ref{t:online}]
+Let each node $i \in V$ host two instances of the randomized Weighted Majority (RWM) algorithm~\cite{LittlestoneWa94} with an online tuning of their learning rate~\cite{cb+97,acg02}: one instance for predicting the sign of outgoing edges $(i,j)$, and one instance for predicting the sign of incoming edges $(j,i)$. Both instances simply compete against the two constant experts, predicting always $+1$ or always $-1$. Denote by $M(i,j)$ the indicator function (zero-one loss) of a mistake on edge $(i,j)$. Then the expected number of mistakes of each RWM instance satisfy~\cite{cb+97,acg02}:
+\[
+    \sum_{j \in \NNout(i)} \E\,M(i,j) = \Psiout(i,Y) + O\left(\sqrt{\Psiout(i,Y)}+ 1\right)
+\]
+and
+\[
+    \sum_{i \in \NNin(j)} \E\,M(i,j) = \Psiin(j,Y) + O\left(\sqrt{\Psiin(j,Y)} + 1\right)~.
+\]
+We then define two meta-experts: an ingoing expert, which predicts $y_{i,j}$ using the prediction of the ingoing RWM instance for node $j$, and the outgoing expert, which predicts $y_{i,j}$ using the prediction of the outgoing RWM instance for node $i$.
+The number of mistakes of these two experts satisfy
+\begin{align*}
+\sum_{i \in V}\sum_{j \in \NNout(i)} &\E\,M(i,j)\\ 
+&= \Psiout(Y) + O\left(\sqrt{|V|\Psiout(Y)} + |V|\right)\\
+\sum_{j \in V}\sum_{i \in \NNin(j)} &\E\,M(i,j)\\ 
+&= \Psiin(Y)  + O\left(\sqrt{|V|\Psiin(Y)}  + |V|\right)~,
+\end{align*}
+where we used $\sum_{j \in V} \sqrt{\Psiin(j,Y)} \leq \sqrt{|V|\Psiin(Y)}$, and similarly for $\Psiout(Y)$.
+Finally, let the overall prediction of our algorithm be a RWM instance run on top of the ingoing and the outgoing experts. Then the expected number of mistakes of this predictor satisfies
+%
+\begin{align*}
+    \sum_{(i,j) \in E} \E\,M(i,j) 
+&= \Psi_G(Y) + O\Biggl(\sqrt{|V|\Psi_G(Y)} + |V|\\ 
+&\,\,+ \sqrt{\left(\Psi_G(Y) + |V| + \sqrt{|V|\Psi_G(Y)}\right)} \Biggl)\\
+&= \Psi_G(Y) + O\left(\sqrt{|V|\Psi_G(Y)} + |V|\right)~,
+\end{align*}
+%
+as claimed.
+\end{proof}
+
+\begin{proof}[Proof sketch of Theorem~\ref{t:mistake_bound}]
+Let $\mathcal{Y}_K$ be the set of all labelings $Y$ such that the total number of negative and positive edges are $K$ and $|E|-K$, respectively (without loss of generality we will focus on negative edges). Consider the randomized strategy that draws a labeling 
+$Y \in \spin^{|E|}$
+% for the edges of the input graph 
+uniformly at random from $\mathcal{Y}_K$. For each node $i \in V$, we have $\Psiin(i,Y) \le \din^-(i)$, which implies $\Psiin(Y) \le K$. A very similar argument applies to the outgoing edges, leading to $\Psiout(Y) \le K$. The constraint $\Psi_G(Y) \le K$ is therefore always satisfied.
+
+The adversary will force on average $1/2$ mistakes in each one of the first $K$ rounds of the online protocol by repeating $K$ times the following: (i) A label value $\ell\in\{-1,+1\}$ is selected uniformly at random. (ii) An edge $(i,j)$ is sampled uniformly at random from the set of all edges that were not previously revealed and whose labels are equal to $\ell$. 
+
+The learner is required to predict $y_{i,j}$ and, in doing so, $1/2$ mistakes will be clearly made on average because of the randomized labeling procedure. Observe that this holds even when $A$ knows the value of $K$ and $\Psi_G(Y)$. Hence, we can conclude that the expected number of mistakes that $A$ can be forced to make is always at least $K/2$, as claimed.
+
+
+We now show that, as $\frac{K}{|E|} \rightarrow 0$, the lower bound gets arbitrarily close to $K$ for any $G(Y)$ and any constant $K$.
+%
+Let $\mathcal{E}$ be the following event: There is at least one unrevealed negative label.
+The randomized iterative strategy used to achieve this result is identical to the one described above, except for the stopping criterion. Instead of repeating step (i) and (ii) only for the first $K$ rounds, these steps are repeated until $\mathcal{E}$ is true.
+%
+Let $m_{r,c}$ be defined as follows: For $c=1$ it is equal to the expected number of mistakes forced in round $r$ when $K=1$. For $c > 1$ it is equal to the difference between the expected number of mistakes forced in round $r$ when $K=c$ and $K=c-1$. One can see that $m_{r,c}$ is 
+%either 
+null when $r<c$. 
+%and, for any given $|E|$ and $K$, when $r>c+|E|-K-1$.
+%at least one of the following  conditions is met: , . 
+%$c>K$, 
+%
+When $K=1$, the probability that $\mathcal{E}$ is true in round $r$ is clearly equal to $\frac{1}{2^{r-1}}$.
+Hence, the expected number of mistakes made by $A$ when $K=1$ in any round $r$ is equal to 
+\(
+\frac{1}{2}\,\frac{1}{2^{r-1}} = \frac{1}{2^{r}}.
+\)
+We can therefore conclude that $m_{r,1}=\frac{1}{2^{r}}$ for all $r$.
+
+%When $r> 1$, 
+A simple calculation shows that if $r=c$ then $m_{r,c}=\frac{1}{2^r}$. Furthermore, when $r>1$ and $c>1$, 
+%for all $r$ and $c$ values such that $1 < c \le K$ and $c < r \le c+|E|-K-1$, 
+we have the following recurrence:
+%(holding even when $\frac{K}{|E|}$ does not converge to 0)
+\[
+m_{r,c}=\frac{m_{r-1,c}+m_{r-1,c-1}}{2}~.
+\]  
+In order to calculate $m_{r,c}$ for all $r$ and $c$, we will rest on the ancillary quantity $s_j(i)$, recursively defined as specified next.
+
+Given any integer variable $i$, we have
+%we define the following recurrence relation identity $s_j(i)$:
+$
+s_0(i)=1
+$
+and, for any positive integer $j$, 
+\[
+s_j(i)=\sum_{k=1}^i s_{j-1}(k)~.
+\]
+%(see Table~\ref{tab:sij}) for examples)
+
+
+
+
+\iffalse
+\begin{center}
+  \begin{tabular}{|c |M{.45cm}|M{.45cm}|M{.45cm}|M{.45cm}|N}
+    \hline
+    \diaghead{j\ i}{\ \ \ 	{\footnotesize \textit{\textbf{j}}}\ }{\ \ {\footnotesize \textit{\textbf{i}}}\ \ \ } & \textbf{0}& \textbf{1} & \textbf{2} & \textbf{3}    &\\[13pt] \hline
+    \textbf{1} & 1 & 1 & 1 & 1  &\\[13pt] \hline
+    \textbf{2} & 1 & 2 & 3 & 4 &\\[13pt] \hline
+    \textbf{3} & 1 & 3 & 6 & 10 &\\[13pt] \hline
+    \textbf{4} & 1 & 4 & 10 & 20 &\\[13pt] \hline
+    \textbf{5} & 1 & 5 & 15 & 35 &\\[13pt] \hline
+    \textbf{6} & 1 & 6 & 21 & 56 &\\[13pt] \hline
+    \textbf{7} & 1 & 7 & 28 & 84 &\\[13pt] \hline
+  \end{tabular}
+  \captionof{table}{\ \ Values of $s_j(i)$ for $i \le 7$  and $j \le 3$.} \label{tab:sij} 
+\end{center}
+\fi
+
+It is not difficult to verify that 
+\[
+m_{r,c}=\frac{s_{c-1}(r-c+1)}{2^{r}}. 
+\]
+Since $s_j(i)=\frac{\langle i\rangle_j}{j!}$, where $\langle i\rangle_j$ is the rising factorial $i(i+1)(i+2)\ldots(i+j-1)$, we have 
+\[
+m_{r,c}=\frac{\langle r-c+1\rangle_{c-1}}{(c-1)!2^{r}}.
+\] 
+%(see Table~\ref{tab:mrc}) for examples)
+
+
+\iffalse
+\begin{center}
+  \begin{tabular}{|c |M{.77cm}|M{.77cm}|M{.77cm}|M{.77cm}|N}
+    \hline
+    \diaghead{c\ r}{\ \ \ 	{\footnotesize \textit{\textbf{c}}}\ }{\ \
+    {\footnotesize \textit{\textbf{r}}}\ \ \ } & \textbf{1}& \textbf{2} &
+      \textbf{3} & \textbf{4}                            &\\[13pt] \hline
+    \textbf{1} & $1/2^1$ & 0       & 0        & 0        &\\[13pt] \hline
+    \textbf{2} & $1/2^2$ & $1/2^2$ & 0        & 0        &\\[13pt] \hline
+    \textbf{3} & $1/2^3$ & $2/2^3$ & $1/2^3$  & 0        &\\[13pt] \hline
+    \textbf{4} & $1/2^4$ & $3/2^4$ & $3/2^4$  & $1/2^4$  &\\[13pt] \hline
+    \textbf{5} & $1/2^5$ & $4/2^5$ & $6/2^5$  & $4/2^5$  &\\[13pt] \hline
+    \textbf{6} & $1/2^6$ & $5/2^6$ & $10/2^6$ & $10/2^6$ &\\[13pt] \hline
+    \textbf{7} & $1/2^7$ & $6/2^7$ & $15/2^7$ & $20/2^7$ &\\[13pt] \hline
+  \end{tabular}
+  \captionof{table}{\ \ Values of $m_{r,c}$ for $r \le 7$, $c \le 4$ and $|E| \rightarrow \infty$.} \label{tab:mrc} 
+\end{center}
+\fi
+\bigskip
+%Given any $K'>1$, the difference between the expected number of mistakes %forced when $K=K'$ and $K=K'-1$ is equal to 
+%\[
+%\sum_{r=K'}^{|E|-1} m_{r,K'}=
+%\sum_{r=K'}^{|E|-1} \frac{\langle r-K'+1\rangle_{K'-1}}{(K'-1)!2^{r}}.
+%\] 
+
+When $\frac{K}{|E|} \rightarrow 0$, given any integer $K'>1$, the difference between the expected number of mistakes forced when $K=K'$ and $K=K'-1$ is equal to
+%
+\begin{align*}
+\sum_{r=K'}^{\infty} m_{r,K'}
+&=
+\frac{1}{(K'-1)!}\sum_{r=K'}^{\infty} \frac{\langle r-K'+1\rangle_{K'-1}}{2^{r}}\\
+&=
+\frac{1}{(K'-1)!2^{K'-1}}\sum_{r'=1}^{\infty} \frac{\langle r'\rangle_{K'-1}}{2^{r'}}~,
+\end{align*}
+% 
+where we set $r'=r-K'+1$.
+%Taking into account the following recurrence relation sequence 
+Setting $i'=i-1$ and recalling that
+\[
+\langle i\rangle_j=j!{{i+j-1}\choose{i-1}}~,
+\]
+we have
+\[
+\frac{1}{j!}\sum_{i=1}^{\infty}\frac{\langle i\rangle_j}{2^i}=
+\sum_{i=1}^{\infty}\frac{{{i+j-1}\choose{i-1}}}{2^i}=
+\sum_{i'=0}^{\infty}\frac{{{i'+j}\choose{i'}}}{2^{i'+1}}~.
+\]
+Now, using the identity
+\[
+{i'+j+1 \choose i'} = {i'+j \choose i'} + {i'+j \choose i'-1}~,
+\]
+we can easily prove by induction on $j$ that
+\[
+\sum_{i'=0}^{\infty}\frac{{{i'+j}\choose{i'}}}{2^{i'+1}}=2^j~.
+\]
+Hence, we have
+%\[
+%\frac{1}{j!}\sum_{i=1}^{\infty}\frac{\langle i\rangle_j}%{2^i}=2^j~,
+%\]
+\[
+\sum_{r=K'}^{\infty} m_{r,K'}=1.
+\]
+Moreover, as shown earlier, $m_{r,1}=\frac{1}{2^{r}}$ for all $r$. Hence we can conclude that when $\frac{K}{|E|} \rightarrow 0$ 
+\[
+\E M_A(Y) \ge
+\sum_{r=1}^{\infty} \frac{1}{2^{r}} +
+\sum_{K'=2}^{K} \sum_{r=K'}^{\infty} m_{r,K'}=K
+\]
+for any edge-labeled graph $G(Y)$ and any constant $K$, as claimed.
+\end{proof}
+
+
+\iffalse %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In the special case when the bias is
+\[
+    \Psi(Y) = \min\big\{\Psiin(Y),\Psiout(Y)\big\}
+\]
+where
+\[
+    \Psiin(Y) = \sum_{j \in V} \min\big\{\din^-(j),\din^+(j)\big\}
+\]
+and
+\[
+    \Psiout(Y) = \sum_{i \in V} \min\big\{\dout^-(i),\dout^+(i)\big\}
+\]
+then using Randomized Weighted Majority on the two experts
+\[
+    \Yhat^{(1)}_{i,j} = \sgn\left(\frac{1}{2}-\frac{\hdout^-(i)}{\hdout(i)}\right)
+\qquad\text{and}\qquad
+    \Yhat^{(2)}_{i,j} = \sgn\left(\frac{1}{2}-\frac{\hdin^-(j)}{\hdin(j)}\right)
+\]
+we get an expected mistake bound of
+\[
+    2\Psi(Y) + \sqrt{(4\ln 2) \Psi(Y)}~.
+\]
+\fi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Further Experimental Results}
+%
+This section contains more evidence related to the experiments in Section~\ref{s:exp}.
+In particular, we experimentally demonstrate the alignment between \usrule{} and \uslogregp{}.
+
+
+
+\iffalse
+*************************************
+\subsection{Accuracy Results}
+%
+Table~\ref{tab:all_acc} contains the accuracy results on training sets of increasing size. Figures are averaged over 12 random draws of the training set.
+
+\setlength{\tabcolsep}{3pt}
+{\scriptsize
+\begin{longtable}{lrccc|cccc}
+\caption{Like in the main paper, we tabulate Accuracy $\pm$ one standard deviation with increasing training set size, averaged over 12 random draws of the training set. The best accuracy performance is highlighted in \textbf{\textcolor{brown}{bold brown}} and the second one in \textit{\textcolor{red}{italic red}}. If the difference is statistically significant (as defined by a paired Student's $t$-test $p$-value less than $0.005$), the best score is underlined. The "time" rows contain the time taken to train on a $15\%$ training set. \label{tab:all_acc}}\\
+\toprule
+                                                  & $\frac{|\trainset{}|}{|E|}$ &       \uslogregp{} &          \usrule{} &     \uslpropGsec{} &                \compranknodes{} &                \compbayesian{} &     \complowrank{} &                \comptriads{} \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\aut{}}} & $3\%$  &  $57.14 \pm 0.78$  &  $57.15 \pm 1.31$  &  $60.76 \pm 2.76$  &               $68.99 \pm 0.89$  &    $\vsecond{72.02} \pm 0.26$  &  $70.18 \pm 0.33$  &   $\vfirst{72.44} \pm 0.13$  \\
+                                                  %& $5\%$  &  $62.07 \pm 0.79$  &  $61.97 \pm 1.17$  &  $66.80 \pm 1.53$  &               $69.44 \pm 0.69$  &     $\vfirst{71.90} \pm 0.33$  &  $70.49 \pm 0.27$  &  $\vsecond{71.87} \pm 0.65$  \\
+                                                  %& $7\%$  &  $65.01 \pm 0.50$  &  $65.98 \pm 0.72$  &  $68.76 \pm 1.63$  &  $\vsecondSig{71.21} \pm 0.69$  &  $\vfirstSig{72.89} \pm 0.54$  &  $71.03 \pm 0.27$  &            $70.69 \pm 0.54$  \\
+                                                  & $9\%$  &  $67.07 \pm 0.56$  &  $68.29 \pm 0.79$  &  $70.65 \pm 1.04$  &  $\vsecondSig{71.75} \pm 0.65$  &  $\vfirstSig{73.37} \pm 0.78$  &  $71.41 \pm 0.42$  &            $70.48 \pm 0.77$  \\
+                                                  & $15\%$ &  $71.07 \pm 0.36$  &  $72.79 \pm 0.38$  &  $74.10 \pm 1.07$  &  $\vsecondSig{74.47} \pm 0.56$  &  $\vfirstSig{75.29} \pm 0.61$  &  $72.72 \pm 0.34$  &            $70.46 \pm 0.59$  \\
+                                                  & $20\%$ &  $73.10 \pm 0.21$  &  $74.63 \pm 0.64$  &  $75.17 \pm 1.09$  &  $\vsecondSig{75.71} \pm 0.49$  &  $\vfirstSig{76.44} \pm 0.43$  &  $73.48 \pm 0.23$  &            $71.30 \pm 0.49$  \\
+                                                  & $25\%$ &  $74.79 \pm 0.26$  &  $76.32 \pm 0.28$  &  $76.74 \pm 0.78$  &     $\vsecond{77.06} \pm 0.59$  &     $\vfirst{77.46} \pm 0.40$  &  $74.49 \pm 0.35$  &            $71.66 \pm 0.35$  \\
+                                                  & time (ms)   &                           1.9 &                           0.4 &                          16.1 &              128 &                            5398 &               1894 &              4.6 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\wik{}}} & $3\%$  &  $74.84 \pm 0.38$  &           $75.12 \pm 0.63$  &            $76.45 \pm 1.50$  &           $77.94 \pm 0.24$  &  $\vsecondSig{78.06} \pm 0.35$  &  $77.97 \pm 0.17$  &  $\vfirstSig{78.76} \pm 0.17$  \\
+                                                  %& $5\%$  &  $78.32 \pm 0.34$  &           $78.86 \pm 0.37$  &            $79.33 \pm 0.79$  &  $\vfirst{79.67} \pm 0.48$  &     $\vsecond{79.42} \pm 0.60$  &  $78.78 \pm 0.25$  &              $78.83 \pm 0.17$  \\
+                                                  %& $7\%$  &  $80.22 \pm 0.28$  &           $80.55 \pm 0.45$  &   $\vfirst{80.86} \pm 0.78$  &           $80.44 \pm 0.90$  &     $\vsecond{80.68} \pm 0.30$  &  $79.60 \pm 0.22$  &              $79.29 \pm 0.31$  \\
+                                                  & $9\%$  &  $81.32 \pm 0.18$  &  $\vfirst{81.98} \pm 0.38$  &  $\vsecond{81.62} \pm 0.84$  &           $81.17 \pm 0.31$  &               $81.61 \pm 0.39$  &  $80.15 \pm 0.14$  &              $79.74 \pm 0.22$  \\
+                                                  & $15\%$ &  $83.27 \pm 0.14$  &  $\vfirst{83.78} \pm 0.14$  &            $83.30 \pm 0.44$  &           $82.91 \pm 0.41$  &     $\vsecond{83.47} \pm 0.34$  &  $81.09 \pm 0.21$  &              $80.66 \pm 0.30$  \\
+                                                  & $20\%$ &  $84.13 \pm 0.19$  &  $\vfirst{84.60} \pm 0.17$  &            $84.36 \pm 0.22$  &           $83.84 \pm 0.38$  &     $\vsecond{84.39} \pm 0.25$  &  $81.73 \pm 0.16$  &              $81.35 \pm 0.18$  \\
+                                                  & $25\%$ &  $84.63 \pm 0.13$  &  $\vfirst{85.09} \pm 0.18$  &            $84.63 \pm 0.28$  &           $84.44 \pm 0.28$  &     $\vsecond{84.96} \pm 0.21$  &  $82.08 \pm 0.16$  &              $81.92 \pm 0.13$  \\
+                                                  & time (ms)   &                           4.2 &              1.1 &                           35.3 &              210 &              14089 &              4858 &                                                   10.6\\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\sla{}}} & $3\%$  &  $69.06 \pm 0.19$  &  $69.39 \pm 0.37$  &               $74.01 \pm 0.84$  &  $\vfirstSig{80.74} \pm 0.21$  &               $78.33 \pm 0.14$  &  $\vsecondSig{79.90} \pm 0.17$  &  $74.59 \pm 0.58$  \\
+                                                  %& $5\%$  &  $72.92 \pm 0.16$  &  $73.34 \pm 0.32$  &               $76.68 \pm 0.76$  &  $\vfirstSig{81.82} \pm 0.29$  &               $79.41 \pm 0.10$  &  $\vsecondSig{80.38} \pm 0.11$  &  $76.57 \pm 0.54$  \\
+                                                  %& $7\%$  &  $75.11 \pm 0.10$  &  $75.58 \pm 0.19$  &               $78.95 \pm 0.36$  &  $\vfirstSig{82.34} \pm 0.30$  &               $79.99 \pm 0.10$  &  $\vsecondSig{80.59} \pm 0.07$  &  $78.03 \pm 0.55$  \\
+                                                  & $9\%$  &  $76.58 \pm 0.04$  &  $77.06 \pm 0.21$  &               $79.91 \pm 0.40$  &  $\vfirstSig{82.65} \pm 0.20$  &               $80.64 \pm 0.11$  &  $\vsecondSig{80.82} \pm 0.04$  &  $79.58 \pm 0.60$  \\
+                                                  & $15\%$ &  $79.16 \pm 0.08$  &  $79.68 \pm 0.16$  &               $81.95 \pm 0.23$  &  $\vfirstSig{83.12} \pm 0.20$  &  $\vsecondSig{82.02} \pm 0.09$  &               $81.16 \pm 0.09$  &  $81.71 \pm 0.40$  \\
+                                                  & $20\%$ &  $80.29 \pm 0.12$  &  $80.99 \pm 0.11$  &  $\vsecondSig{82.89} \pm 0.14$  &  $\vfirstSig{83.26} \pm 0.09$  &               $82.82 \pm 0.09$  &               $81.64 \pm 0.14$  &  $82.73 \pm 0.35$  \\
+                                                  & $25\%$ &  $81.08 \pm 0.08$  &  $81.86 \pm 0.05$  &  $\vsecondSig{83.45} \pm 0.10$  &  $\vfirstSig{83.66} \pm 0.14$  &               $83.39 \pm 0.08$  &               $81.94 \pm 0.15$  &  $83.42 \pm 0.16$  \\
+& time (ms)   &              21.2 &              5.7 &                           655 &                            1918 &              77042 &              56252 &              78 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\epi{}}} & $3\%$  &  $80.23 \pm 0.19$  &  $80.44 \pm 0.17$  &               $86.56 \pm 0.30$  &  $\vfirstSig{89.44} \pm 0.10$  &               $86.73 \pm 0.13$  &  $\vsecondSig{86.98} \pm 0.08$  &  $86.37 \pm 0.65$  \\
+                                                  %& $5\%$  &  $83.60 \pm 0.14$  &  $83.96 \pm 0.10$  &  $\vsecondSig{88.09} \pm 0.25$  &  $\vfirstSig{90.28} \pm 0.08$  &               $87.59 \pm 0.10$  &               $87.35 \pm 0.06$  &  $86.64 \pm 0.66$  \\
+                                                  %& $7\%$  &  $85.24 \pm 0.10$  &  $85.69 \pm 0.12$  &  $\vsecondSig{88.96} \pm 0.16$  &  $\vfirstSig{90.70} \pm 0.08$  &               $88.45 \pm 0.07$  &               $87.63 \pm 0.04$  &  $86.55 \pm 0.37$  \\
+                                                  & $9\%$  &  $86.43 \pm 0.07$  &  $86.83 \pm 0.06$  &  $\vsecondSig{89.47} \pm 0.10$  &  $\vfirstSig{91.07} \pm 0.09$  &               $89.10 \pm 0.07$  &               $87.92 \pm 0.10$  &  $87.20 \pm 0.65$  \\
+                                                  & $15\%$ &  $88.33 \pm 0.06$  &  $88.76 \pm 0.06$  &               $90.49 \pm 0.06$  &  $\vfirstSig{91.56} \pm 0.05$  &  $\vsecondSig{90.53} \pm 0.10$  &               $88.58 \pm 0.15$  &  $88.10 \pm 0.56$  \\
+                                                  & $20\%$ &  $89.19 \pm 0.06$  &  $89.65 \pm 0.06$  &               $90.93 \pm 0.05$  &  $\vfirstSig{91.86} \pm 0.04$  &  $\vsecondSig{91.38} \pm 0.05$  &               $88.96 \pm 0.15$  &  $88.80 \pm 0.58$  \\
+                                                  & $25\%$ &  $89.76 \pm 0.06$  &  $90.21 \pm 0.05$  &               $91.75 \pm 0.05$  &  $\vfirstSig{92.07} \pm 0.08$  &  $\vsecondSig{91.95} \pm 0.07$  &               $89.42 \pm 0.20$  &  $89.37 \pm 0.63$  \\
+                                                  & time (ms)   &              32 &              7.1 &                            1226 &                           2341 &             116838 &             121530 &              129 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\kiw{}}} & $3\%$  &  $73.91 \pm 0.37$  &  $73.93 \pm 0.58$  &  $80.44 \pm 1.05$  &  $86.95 \pm 0.19$  &  $\vsecondSig{87.72} \pm 0.32$  &               $87.02 \pm 0.05$  &   $\vfirstSig{87.88} \pm 0.01$  \\
+                                                  %& $5\%$  &  $77.89 \pm 0.21$  &  $78.22 \pm 0.20$  &  $82.32 \pm 0.46$  &  $87.65 \pm 0.08$  &   $\vfirstSig{88.40} \pm 0.22$  &               $87.24 \pm 0.05$  &  $\vsecondSig{87.90} \pm 0.01$  \\
+                                                  %& $7\%$  &  $79.65 \pm 0.20$  &  $80.34 \pm 0.15$  &  $83.43 \pm 0.23$  &  $86.72 \pm 0.73$  &   $\vfirstSig{88.71} \pm 0.13$  &               $87.37 \pm 0.05$  &  $\vsecondSig{87.53} \pm 0.35$  \\
+                                                  & $9\%$  &  $80.87 \pm 0.09$  &  $81.61 \pm 0.09$  &  $83.97 \pm 0.27$  &  $86.53 \pm 0.20$  &   $\vfirstSig{89.02} \pm 0.07$  &  $\vsecondSig{87.49} \pm 0.07$  &               $87.23 \pm 0.38$  \\
+                                                  & $15\%$ &  $82.57 \pm 0.07$  &  $83.38 \pm 0.06$  &  $85.03 \pm 0.11$  &  $86.97 \pm 0.29$  &   $\vfirstSig{89.67} \pm 0.05$  &  $\vsecondSig{87.76} \pm 0.04$  &               $87.12 \pm 0.33$  \\
+                                                  & $20\%$ &  $83.34 \pm 0.06$  &  $84.11 \pm 0.09$  &  $85.48 \pm 0.13$  &  $87.02 \pm 0.24$  &   $\vfirstSig{90.00} \pm 0.07$  &  $\vsecondSig{87.92} \pm 0.07$  &               $87.12 \pm 0.21$  \\
+                                                  & $25\%$ &  $83.82 \pm 0.08$  &  $84.56 \pm 0.06$  &  $85.81 \pm 0.11$  &  $87.02 \pm 0.16$  &   $\vfirstSig{90.29} \pm 0.04$  &  $\vsecondSig{88.15} \pm 0.07$  &               $87.24 \pm 0.20$  \\
+                                                  & time (ms)   &                           28 &                           6.6 &                           824 &               2938 &                         103264 &             130036 &              104 \\
+\bottomrule
+\end{longtable}}
+********************************************************
+\fi
+
+
+
+After training on the two features $1-\htr(i)$ and $1-\hun(j)$, \uslogregp{} has learned three weights
+$w_0$, $w_1$ and $w_2$, which allow to predict $y_{i,j}$ according to 
+\[ 
+  \sgn\Big(\big(w_1(1-\htr(i)\big) + w_2 \big(1-\hun(j)\big) + w_0\Big)~.
+\]
+This can be rewritten as 
+\[
+\sgn\Big(\big(1-\htr(i)\big) + w_2'\big(1-\hun(j)\big) - \tfrac{1}{2} -\tau'\Big)~,
+\]
+with $w_2' = \frac{w_2}{w_1}$ and $\tau' = - \left(\frac{1}{2} + \frac{w_0}{w_1}\right)$~.
+	
+As shown in Table~\ref{tab:coeff}, and in accordance with the predictor built out of Equation~\eqref{eq:predictor},
+% from the main paper,
+$w_2'$ is almost $1$ on {\em all datasets}, while $\tau'$ tends to be always close the fraction of positive edges in the dataset.
+
+
+\begin{table}[bt]
+  \centering
+  \caption{Normalized logistic regression coefficients averaged over 12 runs (with one standard deviation) \label{tab:coeff}}
+  \small
+\begin{tabular}{lrccc}
+\toprule
+                        & $\frac{|\trainset{}|}{|E|}$ &              $w_2'$ & $\tau'$ \\
+% \multirow{5}{*}{\aut{}} & $3\%$  &  $0.909 \pm 0.07$  &  $0.592 \pm 0.04$  \\
+%                         & $9\%$  &  $0.985 \pm 0.04$  &  $0.707 \pm 0.03$  \\
+\multirow{5}{*}{\aut{}} & $5\%$  &  $0.965 \pm 0.04$  &  $0.662 \pm 0.03$  \\
+                        & $10\%$ &  $0.983 \pm 0.03$  &  $0.705 \pm 0.02$  \\
+                        & $15\%$ &  $1.001 \pm 0.03$  &  $0.729 \pm 0.03$  \\
+                        & $20\%$ &  $1.013 \pm 0.02$  &  $0.747 \pm 0.02$  \\
+                        & $25\%$ &  $1.011 \pm 0.02$  &  $0.746 \pm 0.01$  \\
+\midrule
+% \multirow{5}{*}{\wik{}} & $3\%$  &  $0.919 \pm 0.04$  &  $0.666 \pm 0.02$  \\
+%                         & $9\%$  &  $0.940 \pm 0.03$  &  $0.726 \pm 0.01$  \\
+\multirow{5}{*}{\wik{}} & $5\%$  &  $0.920 \pm 0.02$  &  $0.691 \pm 0.02$  \\
+                        & $10\%$ &  $0.940 \pm 0.01$  &  $0.730 \pm 0.01$  \\
+                        & $15\%$ &  $0.947 \pm 0.01$  &  $0.741 \pm 0.01$  \\
+                        & $20\%$ &  $0.963 \pm 0.01$  &  $0.760 \pm 0.01$  \\
+                        & $25\%$ &  $0.962 \pm 0.02$  &  $0.764 \pm 0.01$  \\
+\midrule
+% \multirow{5}{*}{\sla{}} & $3\%$  &  $1.012 \pm 0.02$  &  $0.669 \pm 0.01$  \\
+%                         & $9\%$  &  $1.014 \pm 0.01$  &  $0.703 \pm 0.01$  \\
+\multirow{5}{*}{\sla{}} & $5\%$  &  $1.024 \pm 0.02$  &  $0.693 \pm 0.01$  \\
+                        & $10\%$ &  $1.017 \pm 0.01$  &  $0.705 \pm 0.01$  \\
+                        & $15\%$ &  $1.007 \pm 0.01$  &  $0.707 \pm 0.01$  \\
+                        & $20\%$ &  $1.002 \pm 0.00$  &  $0.710 \pm 0.00$  \\
+                        & $25\%$ &  $0.995 \pm 0.01$  &  $0.712 \pm 0.00$  \\
+\midrule
+% \multirow{5}{*}{\epi{}} & $3\%$  &  $1.124 \pm 0.02$  &  $0.786 \pm 0.02$  \\
+%                         & $9\%$  &  $1.066 \pm 0.01$  &  $0.783 \pm 0.01$  \\
+\multirow{5}{*}{\epi{}} & $5\%$  &  $1.099 \pm 0.02$  &  $0.791 \pm 0.02$  \\
+                        & $10\%$ &  $1.059 \pm 0.01$  &  $0.782 \pm 0.01$  \\
+                        & $15\%$ &  $1.037 \pm 0.01$  &  $0.774 \pm 0.01$  \\
+                        & $20\%$ &  $1.018 \pm 0.01$  &  $0.765 \pm 0.01$  \\
+                        & $25\%$ &  $1.010 \pm 0.01$  &  $0.763 \pm 0.01$  \\
+\midrule
+% \multirow{5}{*}{\kiw{}} & $3\%$  &  $1.075 \pm 0.02$  &  $0.851 \pm 0.02$  \\
+%                         & $9\%$  &  $1.041 \pm 0.01$  &  $0.872 \pm 0.01$  \\
+\multirow{5}{*}{\kiw{}} & $5\%$  &  $1.047 \pm 0.02$  &  $0.853 \pm 0.01$  \\
+                        & $10\%$ &  $1.038 \pm 0.01$  &  $0.872 \pm 0.01$  \\
+                        & $15\%$ &  $1.025 \pm 0.01$  &  $0.876 \pm 0.01$  \\
+                        & $20\%$ &  $1.012 \pm 0.01$  &  $0.874 \pm 0.01$  \\
+                        & $25\%$ &  $1.007 \pm 0.01$  &  $0.874 \pm 0.01$  \\
+\bottomrule
+  \end{tabular}
+\end{table}

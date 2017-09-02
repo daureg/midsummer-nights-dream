@@ -1,0 +1,460 @@
+\section{Experimental Analysis}\label{s:exp}
+We now evaluate our edge sign classification methods on representative real-world datasets of varying density and label regularity,
+% within the batch settings,
+showing that our methods compete well against existing approaches in terms of both predictive and computational performance. We are especially interested in small training set regimes, and have restricted our comparison to the batch learning scenario since all competing methods we are aware of have been developed in that setting only.
+
+{\bf Datasets.} We considered five real-world classification datasets. The first three are directed \ssn{} widely used as benchmarks for this task~(e.g.,\cite{Leskovec2010,shahriari2014ranking,wu2016troll}): In \wik{}, there is an edge from user $i$ to user $j$ if $j$ applies for an admin position and $i$ votes for or against that promotion. In \sla{}, a news sharing and commenting website, member $i$ can tag other members $j$ as friends or foes. Finally, in \epi{}, an online shopping website, user $j$ reviews products and, based on these reviews, another user $i$ can display whether he considers $j$ to be reliable or not. In addition to these three datasets, we considered two other \ssn{} where the signs are inferred automatically.
+%rather than given explicitly by the users.
+In \kiw{}~\cite{wikiedits11}, an edge from Wikipedia user $i$ to user $j$ indicates whether they edited the same article in a constructive manner or not.\footnote
+{
+This is the \href{http://konect.uni-koblenz.de/networks/wikisigned-k2}{KONECT version of
+the \enquote{Wikisigned} dataset}, from which we removed self-loops.
+}
+Finally, in the \aut{}~\cite{kumar2016structure} network, an author $i$ cites another author $j$ by either endorsing or criticizing $j$'s work. The edge sign is derived by classifying the citation sentiment with a simple, yet powerful, keyword-based technique using a list of positive and negative words. See \cite{kumar2016structure} for more details.\footnote{
+We again removed self-loops and merged multi-edges which are all of the same sign.
+}
+
+\begin{table*}[bt]
+  \centering
+  \small
+  \caption{Dataset properties. The 5th column gives the fraction of positive labels. The last two columns provide two different measures of label regularity ---see main text.\label{tab:dataset}}
+  \begin{tabular}{lrrrrrrrr}
+    \toprule
+    Dataset &       $|V|$ &       $|E|$ &$\frac{|E|}{|V|}$ & $\frac{|E^+|}{|E|}$ & $\frac{\Psi^2_{G''}(Y)}{|E|}$ & $\frac{\Psi_G(Y)}{|E|}$ \\ % & twin edges & twin disagreement \\
+    \midrule
+    \aut{} &   \np{4831} &  \np{39452} & 8.1  &              72.33\% &                    .076 &                       .191 \\ %&      5.07\% &            27.10\% \\
+    \wik{} &   \np{7114} & \np{103108} & 14.5 &              78.79\% &                    .063 &                       .142 \\ %&      5.56\% &            10.04\% \\
+    \sla{} &  \np{82140} & \np{549202} & 6.7  &              77.40\% &                    .059 &                       .143 \\ %&     17.74\% &             4.00\% \\
+    \kiw{} & \np{138587} & \np{740106} & 5.3  &              87.89\% &                    .034 &                       .086 \\ %&      6.55\% &             2.09\% \\
+    \epi{} & \np{131580} & \np{840799} & 6.4  &              85.29\% &                    .031 &                       .074 \\ %&     30.83\% &            14.64\% \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+
+\autoref{tab:dataset} summarizes statistics for these datasets. We note that most edge labels are positive. Hence, test set accuracy is not an appropriate measure of prediction performance. We instead evaluated our performance using the so-called Matthews Correlation Coefficient (MCC)~(e.g., \cite{MCC00}), defined as
+%\footnote
+%{
+%For completeness, we also report accuracy results in the supplementary material.
+%}  
+\[
+	\mathrm{MCC} = \frac{tp\times tn-fp\times fn} {\sqrt{ (tp + fp) ( tp + fn ) ( tn + fp ) ( tn + fn ) } }\,.
+			% = \pm \sqrt{\frac{\chi^2}{n}}
+\]
+MCC combines all the four quantities found in a binary confusion matrix ($t$rue $p$ositive, $t$rue $n$egative, $f$alse $p$ositive and $f$alse $n$egative) into a single metric which ranges from $-1$ (when all predictions are incorrect) to $+1$ (when all predictions are correct).% through $0$ (when predictions are made uniformly at random).
+
+Although the semantics of the edge signs is not the same across these networks, we can see from \autoref{tab:dataset} that our generative model essentially fits all of them. Specifically, the last two columns of the table report the rate of label (ir)regularity, as measured by $\Psi^2_{G''}(Y)/|E|$ (second-last column) and $\Psi_{G}(Y)/|E|$ (last column), where 
+\[
+\Psi^2_{G''}(Y) = \min_{(\bp,\bq)} \left(f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)\right)\,,
+\]
+%$\Psi^2_{G''}(Y) = \min_{(\bp,\bq)} f_{E}(\bp,\bq)$, 
+%
+$f_{E_0}$ and $f_{E\setminus E_0}$ being the quadratic criterions of Section~\ref{ss:passive}, viewed as functions of both $(\bp,\bq)$, and $y_{i,j}$,
+% when all labels are known,
+\iffalse
+*****************
+\[
+\Psi_{G''}(Y) = \min_{\bp,\bq\in[0,1]^{|V|}}
+\sum_{(i,j) \in E} \left(\frac{1+y_{i,j}}{2} - \frac{p_i+q_j}{2}\right)^2\,,
+\]
+i.e., the quadratic criterion $f_{E}(\bp,\bq)$ of Section~\ref{ss:passive} when all labels are known,
+*****************
+\fi
+%essentially hinges upon, 
+and $\Psi_{G}(Y)$ is the label regularity measure adopted in the online setting, as defined in Section~\ref{s:prel}. 
+%The two measures have been crafted here so as to be on the same scale, hence they can be contrasted to each other on the same dataset. 
+It is reasonable to expect that higher label irregularity corresponds to lower prediction performance. This trend is in fact confirmed by our experimental findings: whereas \epi{} tends to be easy, \aut{} tends to be hard, and this holds for all algorithms we tested, even if they do not explicitly comply with our inductive bias principles. Moreover, $\Psi^2_{G''}(Y)/|E|$ tends to be proportional to $\Psi_{G}(Y)/|E|$ across datasets, hence confirming the anticipated connection between the two regularity measures.
+
+
+
+
+
+
+%
+%Another notable feature of our datasets is the relative regularity of their
+%labeling with respect to our two complexity measures defined in
+%\autoref{s:analysis}
+%(here  where the minimum
+%is found using the L-BFGS-B algorithm)
+%(especially in \epi{} case, which is confirmed by higher performance).
+%
+
+
+\iffalse
+***********************************************************************
+Finally, there is a low fraction of reciprocal (or \emph{twin}) edges (i.e.\
+$\eij \in E$ and $\eji \in E$, which is a common mechanism of link formation in
+directed networks~\cite{DirectedReciprocity04}), and in most cases they do not
+disagree, meaning they have the same sign. In practice, we use that fact to
+improve our accuracy at no additional computational cost: when predicting $\eij
+\in E_{\mathrm{test}}$, if the reciprocal edge \eji{} is part of the training set, we
+set $\sgn(\eij) = \sgn(\eji)$.
+
+from http://www.nature.com/articles/srep02729
+
+The study of link reciprocity in binary directed networks1,2, or the tendency
+of vertex pairs to form mutual connections, has received an increasing
+attention in recent years3,4,5,6,7,8,9,10,11,12,13,14. Among other things,
+reciprocity has been shown to be crucial in order to classify3 and model4
+directed networks, understand the effects of network structure on dynamical
+processes (e.g. diffusion or percolation processes5,6,7), explain patterns of
+growth in out-of-equilibrium networks (as in the case of the Wikipedia8 or the
+World Trade Web9,10), and study the onset of higher-order structures such as
+correlations11,12 and triadic motifs13,14,15,16
+************************************************************************
+\fi
+
+{\bf Algorithms and parameter tuning.} 
+We compared the following algorithms:
+%
+%\begin{itemize}%[nosep,leftmargin=2em]
+%
+%\item 
+
+{\bf 1.} The label propagation algorithm of Section~\ref{ss:passive} (referred to as \uslpropGsec{}). The actual binarizing threshold was set by cross-validation on the training set.
+%
+%\item 
+
+{\bf 2.} The algorithm analyzed at the beginning of Section~\ref{s:algbatch}, which we call \usrule{} (Bayes Learning Classifier based on {\em tr}ollness and {\em un}trustworthiness). After computing $\htr(i)$ and $\hun(i)$ on training set $E_0$ for all $i \in V$ (or setting those values to $\frac{1}{2}$ in case there is no outgoing or incoming edges for some node), we use Eq.~\eqref{eq:predictor} and estimate $\tau$ on $E_0$.
+%
+%\item 
+
+{\bf 3.} A logistic regression model where each edge $(i,j)$ is associated with the features $[1-\htr(i), 1-\hun(j)]$ computed again on $E_0$ (we call this method \uslogregp{}). Best binary thresholding is again computed on $E_0$. Experimenting with this logistic model serves to support the claim we made in the introduction that our generative model in Section~\ref{s:gen} is a good fit for the data.
+
+%
+%\item 
+{\bf 4.} The solution obtained by directly solving the unregularized problem (\ref{e:quadratic}) through a fast constrained minimization algorithm (referred to as \qoptim{}). Again, the actual binarizing threshold was set by cross-validation on the training set.\footnote
+{
+We have also tried to minimize (\ref{e:quadratic}) by removing the $[-1,+1]$ constraints, but got similar MCC results
+as the ones we report for \qoptim{}
+}
+%
+
+{\bf 5.} The matrix completion method from~\cite{LowRankCompletion14} based on \complowrank{} matrix factorization. Since the authors showed their method to be robust to the choice of the rank parameter $k$, we picked $k=7$ in our experiments.
+%
+%\item 
+
+{\bf 6.} A logistic regression model built on \comptriads{} features derived from status theory~\cite{Leskovec2010}.
+%
+%\item 
+
+{\bf 7.} The PageRank-inspired algorithm from \cite{wu2016troll}, where a recursive notion of trollness is computed by solving a suitable set of nonlinear equations through an iterative method, and then used to assign ranking scores to nodes, from which (un)trustworthiness features are finally extracted for each edge. We call this method \compranknodes{}. As for hyperparameter tuning ($\beta$ and $\lambda_1$ in~\cite{wu2016troll}), we closely followed the authors' suggestion of doing cross validation.
+%
+%\item 
+
+{\bf 8.} The last competitor is the logistic regression model whose features have been build according to \cite{Bayesian15}. We call this method \compbayesian{}.
+%\end{itemize}
+
+The above methods can be roughly divided into {\em local} and {\em global} methods. A local method hinges on building local predictive features, based on neighborhoods: \usrule{}, \uslogregp{}, \comptriads{}, and \compbayesian{} essentially fall into this category. The remaining methods 
+%(\uslpropGsec{}, \complowrank{}, and \compranknodes{}) 
+are global in that their features are designed to depend on global properties of the graph topology.
+
+\iffalse
+***************************************************
+%Given a training set \trainset{}, we exploit the revealed signs in two ways.
+First, with label propagation (referred to as \uslprop{} in the following). We
+initialize the labels vector $f_0$ to $|V'|$ random values drawn uniformly in
+$[0, 1]$ and set the label of the training edges equal to their observed value.
+% TODO: starting with zeros gives lower MCC and accuracy after a fixed number
+% of iterations
+Let the adjacency matrix of $G'$ be $A$, its diagonal degree matrix
+be $D$, its diameter be $\diam{G'}$ and $P$ be the following sparse matrix $P=D^{-1}A$. This allow performing
+one round of label propagation as $f_{t+1} = Pf_t$, followed by clamping the
+training labels. Each round thus involves $2|E|$ multiplications and we do
+$\diam{G'}$ of them\footnote{$\diam{G'}$ is a small constant, ranging from $16$
+for \aut{} to $38$ for \epi{}}. With the computed labels, we can associate each
+edge $\eij$ with $a_{i,j} = \nicefrac{1}{2}\left(f_{\diam{G'}}(\iout) +
+f_{\diam{G'}}(\jin)\right)$.
+% This is what I do in the code but now I realize this is just an extra
+% propagation round only on the square node so maybe simplify the description
+% (actually no, it's needed for ERM)
+By sorting the $a$ values of the training edges, we can find the threshold $t$
+that minimizes the number of mistakes on the training set while predicting
+$\yij = \sgn\left(a_{i,j} - t\right)$ in $O(|\trainset{}|\log |\trainset{}|)$
+time.
+
+Then we again associate each
+edge $\eij$ with $a_{i,j} = \left(1-\htr(i)\right) + \left(1-\hun(j)\right)$
+and find the $\tau$ of \eqref{eq:predictor} that minimizes the empirical risk.
+Another way to exploit those quantities is to
+train a Logistic Regression model where each edge is associated with two
+features: $[1-\htr(i), 1-\hun(j)]$ (we call this method \uslogregp{}).
+
+We compare these methods with four competitors, each exploiting the sign
+information and network topology in a different way:
+
+Looking at undirected graphs with a global perspective,
+\citet{LowRankCompletion14} consider the observed adjacency matrix $A$, made of
+the edges in \trainset{}, as a noisy sampling of the adjacency matrix
+$A^\star$ of an underlying complete graph satisfying the weakly balance
+condition (that is with no triangle containing only one negative edge).
+%TODO the previous sentence is too long
+This condition implies the existence of a small number $k$ of node clusters
+with positive links within clusters and negative links across clusters, which
+in turn implies $\rank A^\star=k$.
+By recovering a complete matrix $\tilde{A}$ which matches the non-zeros entries
+of $A$, it is possible to predict the sign of $\eij \notin \trainset$
+as $\yhat_{i,j} = \sgn(\tilde{A}_{i,j})$. Although the exact version of this
+problem is NP-hard, authors assume that $k$ is an hyperparameter known
+beforehand\footnote{The method is showed to be robust to the choice of its
+value, thus we pick $k=7$.} and look for two matrices $W,H\in
+\mathbb{R}^{k\times|V|}$ which minimise a sigmoidal reconstruction loss with
+$A$, subject to a regularization term. We refer to this method as
+\emph{\complowrank{}}.
+
+The status theory heuristic posits that a positive link from $i$ to $j$ denotes
+that user $i$ considers user $j$ as having a higher status or skill than
+himself~\cite{Leskovec2010}. It implies that among the 16 possible triads of
+three nodes with two directed signed edges among them, some must be more
+represented than others. The \emph{\comptriads{}} method exploits this fact by
+counting for each edge in the training set how frequently it is involved in
+each of the 16 triad types. Based on these edge features and 7 degree features
+of each edge endpoints, a Logistic Regression model is trained and used to
+predict the sign of the test edges.
+
+Inspired by the PageRank algorithm, \citet{wu2016troll} propose a recursive
+definition of trollness based on the opinion of one node's neighbors weighted
+by their own trollness, which allow to assign a trustworthiness $\pi(i)$ to
+each node $i$ through a set of non linear equations solved by an iterative
+method. This $\pi$ values are used to rank the nodes by computing their
+Reputation and Optimism scores, thus providing four features for each edge,
+which are in turn used to train a Logistic Regression model for the
+classification task. We refer to this method as \emph{\compranknodes{}}.
+Computing $\pi$ requires to choose two hyperparameters of the model, $\beta$
+and $\lambda_1$ and the authors suggest to do it by holding out some training
+data to perform cross validation but in practice we found little difference in
+performance in our implementation while it consumes a lot of time.
+
+The last competitors is also local. \citet{Bayesian15} note that  a node can
+belong to one of the 16 types based of whether is number of its positive (resp.
+negative) outgoing (resp. incoming) edges is zero or not.  The number of
+unobserved incoming and outgoing edges of each node $i$ let us define its
+16-dimensional vector $V_i$ containing the probability of transitioning to any
+other state.  Then for each edge \eij we compute the outer product of $V_i$
+with $V_j$ and also include additional features such as triads count and degree
+information before training a Logistic Regression model. We refer to this
+method as \emph{\compbayesian{}}.
+
+***************************************************
+\fi
+
+
+
+
+
+
+
+
+\iffalse
+****************************************************
+\begin{table*}[t]
+  \centering
+\setlength{\tabcolsep}{3pt}
+\scriptsize
+% \begin{longtable}{lrccc|cccc}
+\caption{MCC with increasing training set size, with one standard deviation over 12 random sampling of $\trainset$. The last four columns refer to the methods we took from the literature. For the sake of readability, we multiplied all MCC values by 100. The best number in each row is highlighted in \textbf{\textcolor{brown}{bold brown}} and the second one in \textit{\textcolor{red}{italic red}}. If the difference is statistically significant ($p$-value of a paired Student's $t$-test less than $0.005$), the best score is underlined. The ``time" rows contain the time taken to train on a $15\%$ training set.\label{tab:all_mcc}}
+\begin{tabular}{lrccc|cccc}
+\toprule
+                                                  & $\frac{|\trainset{}|}{|E|}$ &                    \uslogregp{} &                       \usrule{} &                 \uslpropGsec{} &   \compranknodes{} &                 \compbayesian{} &     \complowrank{} &      \comptriads{} \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\aut{}}}
+                                                  & $3\%$  &  $\vsecondSig{15.19} \pm 0.93$  &               $15.09 \pm 0.92$  &  $\vfirstSig{19.00} \pm 1.16$  &  $12.28 \pm 1.70$  &               $10.91 \pm 1.31$  &   $8.85 \pm 1.07$  &   $8.62 \pm 0.97$  \\
+                                                  %& $5\%$  &  $\vsecondSig{19.54} \pm 0.48$  &               $19.53 \pm 0.43$  &  $\vfirstSig{24.11} \pm 0.68$  &  $16.65 \pm 0.59$  &               $14.53 \pm 0.85$  &  $12.07 \pm 0.88$  &  $11.47 \pm 1.23$  \\
+                                                  %& $7\%$  &  $\vsecondSig{23.58} \pm 0.55$  &               $23.55 \pm 0.43$  &  $\vfirstSig{27.64} \pm 1.08$  &  $21.38 \pm 0.86$  &               $19.75 \pm 1.02$  &  $15.15 \pm 0.54$  &  $14.58 \pm 1.15$  \\
+                                                  & $9\%$  &  $\vsecondSig{26.46} \pm 0.96$  &               $26.40 \pm 0.96$  &  $\vfirstSig{30.25} \pm 1.16$  &  $24.44 \pm 1.07$  &               $23.75 \pm 1.37$  &  $17.08 \pm 1.15$  &  $16.42 \pm 1.13$  \\
+                                                  & $15\%$ &  $\vsecondSig{32.98} \pm 0.61$  &               $32.98 \pm 0.65$  &  $\vfirstSig{35.73} \pm 0.70$  &  $31.03 \pm 0.97$  &               $32.25 \pm 0.89$  &  $22.57 \pm 0.99$  &  $22.01 \pm 0.62$  \\
+                                                  & $20\%$ &               $36.57 \pm 0.49$  &  $\vsecondSig{36.72} \pm 0.44$  &  $\vfirstSig{38.53} \pm 0.55$  &  $34.57 \pm 0.79$  &               $36.52 \pm 0.78$  &  $25.57 \pm 0.71$  &  $24.77 \pm 0.64$  \\
+                                                  & $25\%$ &               $39.90 \pm 0.65$  &               $40.16 \pm 0.63$  &  $\vfirstSig{41.32} \pm 0.67$  &  $38.26 \pm 0.77$  &  $\vsecondSig{40.32} \pm 0.70$  &  $29.24 \pm 1.10$  &  $27.13 \pm 0.38$  \\
+                                                  & time (ms)   &                           1.9 &                           0.4 &                          16.1 &              128 &                         5398 &               1894 &              4.6 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\wik{}}} 
+                                                  & $3\%$  &  $\vsecondSig{32.32} \pm 0.60$  &  $31.83 \pm 0.63$  &   $\vfirstSig{33.92} \pm 0.54$  &  $26.90 \pm 1.00$  &  $19.94 \pm 1.19$  &  $19.45 \pm 0.64$  &   $4.29 \pm 0.80$  \\
+                                                  %& $5\%$  &  $\vsecondSig{38.62} \pm 0.63$  &  $37.82 \pm 0.66$  &   $\vfirstSig{39.44} \pm 0.44$  &  $33.47 \pm 1.12$  &  $26.68 \pm 0.72$  &  $24.18 \pm 1.04$  &  $11.36 \pm 1.32$  \\
+                                                  %& $7\%$  &     $\vsecond{42.81} \pm 0.80$  &  $42.15 \pm 0.76$  &      $\vfirst{43.28} \pm 0.61$  &  $38.13 \pm 0.80$  &  $33.18 \pm 1.27$  &  $27.89 \pm 0.64$  &  $18.57 \pm 1.38$  \\
+                                                  & $9\%$  &     $\vsecond{45.57} \pm 0.48$  &  $44.74 \pm 0.58$  &      $\vfirst{45.75} \pm 0.46$  &  $41.60 \pm 0.73$  &  $38.25 \pm 1.02$  &  $30.75 \pm 0.68$  &  $24.04 \pm 1.27$  \\
+                                                  & $15\%$ &      $\vfirst{50.70} \pm 0.28$  &  $49.64 \pm 0.57$  &     $\vsecond{50.44} \pm 0.38$  &  $48.02 \pm 0.38$  &  $46.82 \pm 0.40$  &  $35.31 \pm 0.75$  &  $34.42 \pm 1.00$  \\
+                                                  & $20\%$ &   $\vfirstSig{52.98} \pm 0.50$  &  $52.00 \pm 0.47$  &  $\vsecondSig{52.58} \pm 0.40$  &  $51.42 \pm 0.33$  &  $50.45 \pm 0.40$  &  $38.16 \pm 0.53$  &  $38.55 \pm 0.72$  \\
+                                                  & $25\%$ &      $\vfirst{54.49} \pm 0.30$  &  $53.52 \pm 0.41$  &     $\vsecond{54.22} \pm 0.44$  &  $53.42 \pm 0.36$  &  $52.78 \pm 0.61$  &  $39.94 \pm 0.48$  &  $41.51 \pm 0.46$  \\
+                                                  & time (ms)   &                           4.2 &              1.1 &                           35.3 &              210 &              14089 &               4858 &              10.6 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\sla{}}} 
+                                                  & $3\%$  &  $32.34 \pm 0.27$  &  $31.78 \pm 0.81$  &  $\vsecondSig{36.62} \pm 0.42$  &   $\vfirstSig{42.90} \pm 0.54$  &  $25.11 \pm 0.66$  &  $34.32 \pm 0.64$  &  $20.95 \pm 0.86$  \\
+                                                  %& $5\%$  &  $36.93 \pm 0.32$  &  $36.25 \pm 0.63$  &  $\vsecondSig{40.72} \pm 0.24$  &   $\vfirstSig{45.47} \pm 0.37$  &  $29.50 \pm 0.17$  &  $36.95 \pm 0.44$  &  $28.26 \pm 1.06$  \\
+                                                  %& $7\%$  &  $39.96 \pm 0.27$  &  $39.26 \pm 0.39$  &  $\vsecondSig{43.62} \pm 0.21$  &   $\vfirstSig{46.80} \pm 0.64$  &  $33.57 \pm 0.27$  &  $38.25 \pm 0.31$  &  $33.89 \pm 1.41$  \\
+                                                  & $9\%$  &  $42.16 \pm 0.16$  &  $41.19 \pm 0.30$  &  $\vsecondSig{45.70} \pm 0.26$  &   $\vfirstSig{47.46} \pm 0.27$  &  $37.00 \pm 0.17$  &  $39.42 \pm 0.20$  &  $39.14 \pm 1.43$  \\
+                                                  & $15\%$ &  $46.44 \pm 0.11$  &  $45.23 \pm 0.32$  &   $\vfirstSig{49.65} \pm 0.23$  &  $\vsecondSig{48.59} \pm 0.72$  &  $43.28 \pm 0.21$  &  $41.09 \pm 0.29$  &  $46.27 \pm 1.00$  \\
+                                                  & $20\%$ &  $48.71 \pm 0.22$  &  $47.79 \pm 0.29$  &     $\vsecond{51.88} \pm 0.28$  &      $\vfirst{52.09} \pm 0.28$  &  $47.03 \pm 0.24$  &  $43.10 \pm 0.42$  &  $49.44 \pm 0.76$  \\
+                                                  & $25\%$ &  $50.23 \pm 0.16$  &  $49.43 \pm 0.22$  &     $\vsecond{53.30} \pm 0.15$  &      $\vfirst{53.46} \pm 0.23$  &  $49.46 \pm 0.24$  &  $44.37 \pm 0.50$  &  $51.51 \pm 0.48$  \\
+                                                  & time (ms)   &              21.2 &              5.7 &                           655 &                            1918 &              77042 &              56252 &              78 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\epi{}}} 
+                                                  & $3\%$  &  $43.51 \pm 0.35$  &  $41.39 \pm 1.11$  &     $\vsecond{51.47} \pm 0.28$  &     $\vfirst{52.04} \pm 0.52$  &  $31.00 \pm 0.66$  &  $36.84 \pm 0.43$  &  $34.42 \pm 3.59$  \\
+                                                  %& $5\%$  &  $49.16 \pm 0.30$  &  $46.65 \pm 0.83$  &  $\vsecondSig{54.69} \pm 0.33$  &  $\vfirstSig{56.29} \pm 0.42$  &  $38.00 \pm 0.37$  &  $39.73 \pm 0.37$  &  $43.24 \pm 1.81$  \\
+                                                  %& $7\%$  &  $52.35 \pm 0.21$  &  $50.27 \pm 0.55$  &  $\vsecondSig{56.77} \pm 0.33$  &  $\vfirstSig{58.40} \pm 0.46$  &  $43.91 \pm 0.43$  &  $41.93 \pm 0.28$  &  $46.05 \pm 1.17$  \\
+                                                  & $9\%$  &  $54.85 \pm 0.21$  &  $53.23 \pm 0.62$  &  $\vsecondSig{58.43} \pm 0.34$  &  $\vfirstSig{60.21} \pm 0.48$  &  $48.24 \pm 0.38$  &  $43.95 \pm 0.54$  &  $49.94 \pm 1.50$  \\
+                                                  & $15\%$ &  $59.29 \pm 0.15$  &  $57.76 \pm 0.42$  &  $\vsecondSig{61.41} \pm 0.19$  &  $\vfirstSig{62.69} \pm 0.34$  &  $56.88 \pm 0.56$  &  $48.61 \pm 0.88$  &  $54.56 \pm 1.27$  \\
+                                                  & $20\%$ &  $61.45 \pm 0.13$  &  $60.06 \pm 0.31$  &  $\vsecondSig{63.14} \pm 0.18$  &  $\vfirstSig{64.13} \pm 0.19$  &  $61.49 \pm 0.29$  &  $51.43 \pm 0.75$  &  $56.96 \pm 1.49$  \\
+                                                  & $25\%$ &  $62.95 \pm 0.18$  &  $61.93 \pm 0.29$  &  $\vsecondSig{64.47} \pm 0.29$  &  $\vfirstSig{65.22} \pm 0.61$  &  $64.45 \pm 0.39$  &  $54.51 \pm 0.99$  &  $58.73 \pm 1.65$  \\
+                                                  & time (ms)   &              32 &              7.1 &                            1226 &                           2341 &             116838 &             121530 &              129 \\
+\midrule
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\kiw{}}} 
+                                                  & $3\%$  &               $26.02 \pm 0.27$  &  $\vsecondSig{26.23} \pm 0.46$  &   $\vfirstSig{33.92} \pm 0.50$  &  $23.59 \pm 0.43$  &              $20.02 \pm 0.68$  &  $20.13 \pm 0.56$  &   $1.11 \pm 0.26$  \\
+                                                  %& $5\%$  &               $30.76 \pm 0.18$  &  $\vsecondSig{30.95} \pm 0.29$  &   $\vfirstSig{36.46} \pm 0.53$  &  $26.60 \pm 0.53$  &              $26.33 \pm 0.77$  &  $23.09 \pm 0.47$  &   $3.35 \pm 0.58$  \\
+                                                  %& $7\%$  &               $33.44 \pm 0.26$  &  $\vsecondSig{33.45} \pm 0.26$  &   $\vfirstSig{37.57} \pm 0.47$  &  $30.79 \pm 1.43$  &              $30.53 \pm 0.50$  &  $25.00 \pm 0.39$  &   $6.54 \pm 1.42$  \\
+                                                  & $9\%$  &  $\vsecondSig{35.27} \pm 0.19$  &               $35.13 \pm 0.23$  &   $\vfirstSig{38.33} \pm 0.94$  &  $33.38 \pm 0.47$  &              $33.87 \pm 0.28$  &  $26.68 \pm 0.36$  &  $11.07 \pm 0.67$  \\
+                                                  & $15\%$ &               $38.21 \pm 0.10$  &               $37.72 \pm 0.15$  &  $\vsecondSig{38.63} \pm 0.59$  &  $36.81 \pm 0.31$  &  $\vfirstSig{40.14} \pm 0.19$  &  $29.97 \pm 0.37$  &  $18.12 \pm 1.04$  \\
+                                                  & $20\%$ &  $\vsecondSig{39.58} \pm 0.17$  &               $38.74 \pm 0.18$  &               $39.16 \pm 0.80$  &  $38.56 \pm 0.21$  &  $\vfirstSig{43.37} \pm 0.26$  &  $31.89 \pm 0.46$  &  $21.53 \pm 0.65$  \\
+                                                  & $25\%$ &  $\vsecondSig{40.48} \pm 0.11$  &               $39.48 \pm 0.14$  &               $39.14 \pm 0.78$  &  $39.80 \pm 0.26$  &  $\vfirstSig{45.76} \pm 0.15$  &  $34.23 \pm 0.42$  &  $23.89 \pm 0.54$  \\
+                                                  & time (ms)   &                           28 &                           6.6 &                           824 &               2938 &                         103264 &             130036 &              104 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+***********************************************
+\fi
+
+
+
+\begin{table*}[t]
+  \centering
+\setlength{\tabcolsep}{3pt}
+\scriptsize
+% \begin{longtable}{lrccc|cccc}
+\caption{MCC with increasing training set size, with one standard deviation over 12 random sampling of $\trainset$. The last four columns refer to the methods we took from the literature. For the sake of readability, we multiplied all MCC values by 100. The best number in each row is highlighted in \textbf{\textcolor{brown}{bold brown}} and the second one in \textit{\textcolor{red}{italic red}}. If the difference is statistically significant ($p$-value of a paired Student's $t$-test less than $0.005$), the best score is underlined. The ``time" rows contain the time taken to train on a $15\%$ training set.\label{tab:all_mcc}}
+\begin{tabular}{lrcccc|cccc}
+\toprule
+                                                  & $\frac{|\trainset{}|}{|E|}$ &                 \uslpropGsec{} &                       \usrule{} &                    \uslogregp{} &         \qoptim{} &     \complowrank{} &      \comptriads{} &   \compranknodes{} &              \compbayesian{} \\
+\midrule
+% \multirow{7}{*}{\rotatebox[origin=c]{90}{\aut{}}} & $3\%$  &  $\vfirstSig{19.07} \pm 1.38$  &               $14.97 \pm 0.72$  &  $\vsecondSig{15.05} \pm 0.73$  &  $10.88 \pm 0.83$  &   $8.89 \pm 1.44$  &   $7.54 \pm 1.42$  &  $12.48 \pm 1.18$  &            $11.06 \pm 1.64$  \\
+%                                                   & $9\%$  &  $\vfirstSig{29.64} \pm 0.74$  &  $\vsecondSig{25.96} \pm 0.61$  &               $25.90 \pm 0.67$  &  $23.51 \pm 0.72$  &  $17.05 \pm 0.70$  &  $16.13 \pm 0.64$  &  $23.84 \pm 0.91$  &            $23.44 \pm 0.81$  \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\aut{}}} & $5\%$                       & $\vfirstSig{24.54} \pm 0.69$  & $\vsecondSig{20.21} \pm 0.66$ & $20.19 \pm 0.71$              & $15.86 \pm 0.81$ & $12.76 \pm 0.65$ & $11.04 \pm 0.81$ & $17.18 \pm 1.11$             & $15.28 \pm 1.31$ \\
+                                                  & $10\%$                      & $\vfirstSig{31.20} \pm 0.58$  & $\vsecondSig{27.54} \pm 0.56$ & $27.49 \pm 0.62$              & $25.36 \pm 0.78$ & $17.81 \pm 0.76$ & $16.99 \pm 0.63$ & $25.36 \pm 0.85$             & $24.74 \pm 0.59$ \\
+                                                  & $15\%$ &  $\vfirstSig{35.66} \pm 0.68$  &  $\vsecondSig{32.87} \pm 0.58$  &               $32.79 \pm 0.60$  &  $31.39 \pm 0.75$  &  $22.58 \pm 0.53$  &  $21.55 \pm 0.91$  &  $30.60 \pm 0.87$  &            $31.71 \pm 0.99$  \\
+                                                  & $20\%$ &  $\vfirstSig{38.67} \pm 0.48$  &  $\vsecondSig{36.94} \pm 0.51$  &               $36.86 \pm 0.48$  &  $35.47 \pm 0.41$  &  $25.80 \pm 0.94$  &  $24.27 \pm 0.56$  &  $35.01 \pm 0.83$  &            $36.13 \pm 0.75$  \\
+                                                  & $25\%$ &     $\vfirst{41.05} \pm 0.73$  &               $39.83 \pm 0.58$  &               $39.76 \pm 0.59$  &  $38.48 \pm 0.55$  &  $29.67 \pm 0.78$  &  $26.85 \pm 0.87$  &  $38.06 \pm 0.86$  &  $\vsecond{40.34} \pm 0.94$  \\
+                                                  & time   &                           19.6 &                             0.6 &                             2.6 &               2835 &               3279 &                6.2 &                155 &                         4813 \\
+\midrule
+% \multirow{7}{*}{\rotatebox[origin=c]{90}{\wik{}}} & $3\%$  &   $\vfirstSig{34.08} \pm 1.03$  &  $31.65 \pm 0.99$  &  $\vsecondSig{32.08} \pm 0.94$  &  $28.50 \pm 0.92$  &  $19.73 \pm 0.99$  &   $3.98 \pm 0.84$  &  $27.43 \pm 0.99$  &  $20.11 \pm 1.14$  \\
+%                                                   & $9\%$  &      $\vfirst{45.80} \pm 0.43$  &  $44.92 \pm 0.48$  &     $\vsecond{45.72} \pm 0.42$  &  $43.02 \pm 0.52$  &  $30.24 \pm 0.54$  &  $23.50 \pm 1.66$  &  $41.36 \pm 0.66$  &  $38.05 \pm 0.93$  \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\wik{}}} & $5\%$                       & $\vfirstSig{39.46} \pm 0.79$  & $38.03 \pm 0.97$              & $\vsecondSig{38.50} \pm 0.87$ & $35.72 \pm 0.70$ & $24.58 \pm 1.18$ & $9.59 \pm 1.10$  & $33.60 \pm 0.64$             & $26.45 \pm 0.57$ \\
+                                                  & $10\%$                      & $\vsecond{47.17} \pm 0.35$    & $46.03 \pm 0.49$              & $\vfirst{47.22} \pm 0.40$     & $44.53 \pm 0.48$ & $31.72 \pm 0.61$ & $26.36 \pm 0.83$ & $43.21 \pm 0.81$             & $40.28 \pm 0.69$ \\
+                                                  & $15\%$ &     $\vsecond{50.49} \pm 0.33$  &  $49.89 \pm 0.40$  &      $\vfirst{50.87} \pm 0.36$  &  $49.08 \pm 0.33$  &  $35.77 \pm 0.58$  &  $33.64 \pm 0.83$  &  $48.50 \pm 0.47$  &  $47.07 \pm 0.38$  \\
+                                                  & $20\%$ &  $\vsecondSig{52.74} \pm 0.31$  &  $52.24 \pm 0.49$  &   $\vfirstSig{53.13} \pm 0.27$  &  $51.79 \pm 0.35$  &  $37.90 \pm 0.27$  &  $38.41 \pm 0.53$  &  $51.49 \pm 0.43$  &  $50.54 \pm 0.39$  \\
+                                                  & $25\%$ &     $\vsecond{54.00} \pm 0.63$  &  $53.42 \pm 0.59$  &      $\vfirst{54.26} \pm 0.37$  &  $53.31 \pm 0.37$  &  $40.16 \pm 0.57$  &  $41.34 \pm 1.07$  &  $53.30 \pm 0.37$  &  $52.92 \pm 0.48$  \\
+                                                  & time   &                            41.9 &                1.6 &                             6.0 &              10629 &               8523 &               14.8 &                249 &              12507 \\
+\midrule
+% \multirow{7}{*}{\rotatebox[origin=c]{90}{\sla{}}} & $3\%$  &  $\vsecondSig{36.58} \pm 0.43$  &  $31.71 \pm 0.59$  &  $32.29 \pm 0.47$  &  $29.14 \pm 0.56$  &  $34.39 \pm 0.56$  &  $20.57 \pm 0.93$  &   $\vfirstSig{42.98} \pm 0.56$  &  $24.96 \pm 0.43$  \\
+%                                                   & $9\%$  &  $\vsecondSig{45.71} \pm 0.28$  &  $41.06 \pm 0.38$  &  $42.19 \pm 0.18$  &  $39.60 \pm 0.25$  &  $39.39 \pm 0.34$  &  $37.92 \pm 1.57$  &   $\vfirstSig{47.40} \pm 0.42$  &  $36.83 \pm 0.36$  \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\sla{}}} & $5\%$                       & $\vsecondSig{40.77} \pm 0.20$ & $36.13 \pm 0.57$              & $37.00 \pm 0.29$              & $33.49 \pm 0.32$ & $36.83 \pm 0.47$ & $27.10 \pm 0.75$ & $\vfirstSig{45.16} \pm 0.59$ & $29.25 \pm 0.23$ \\
+                                                  & $10\%$                      & $\vsecondSig{46.61} \pm 0.29$ & $41.89 \pm 0.39$              & $43.15 \pm 0.21$              & $40.92 \pm 0.23$ & $39.57 \pm 0.27$ & $40.38 \pm 1.47$ & $\vfirstSig{47.84} \pm 0.50$ & $38.25 \pm 0.21$ \\
+                                                  & $15\%$ &   $\vfirstSig{49.62} \pm 0.22$  &  $45.42 \pm 0.36$  &  $46.42 \pm 0.16$  &  $45.56 \pm 0.19$  &  $41.21 \pm 0.19$  &  $45.88 \pm 1.01$  &  $\vsecondSig{48.75} \pm 0.71$  &  $43.47 \pm 0.16$  \\
+                                                  & $20\%$ &     $\vsecond{51.88} \pm 0.24$  &  $47.78 \pm 0.25$  &  $48.66 \pm 0.10$  &  $48.10 \pm 0.30$  &  $42.74 \pm 0.44$  &  $48.79 \pm 0.57$  &      $\vfirst{52.10} \pm 0.33$  &  $46.89 \pm 0.27$  \\
+                                                  & $25\%$ &     $\vsecond{53.12} \pm 0.20$  &  $49.39 \pm 0.24$  &  $50.22 \pm 0.12$  &  $50.11 \pm 0.20$  &  $44.24 \pm 0.44$  &  $50.62 \pm 0.53$  &      $\vfirst{53.29} \pm 0.22$  &  $49.42 \pm 0.22$  \\
+                                                  & time   &                             677 &                8.3 &               32.8 &              78537 &              69988 &                131 &                            2441 &              68085 \\
+\midrule
+% \multirow{7}{*}{\rotatebox[origin=c]{90}{\epi{}}} & $3\%$  &  $\vsecondSig{51.43} \pm 0.29$  &  $41.42 \pm 0.84$  &  $43.41 \pm 0.34$  &  $36.56 \pm 0.49$  &  $37.01 \pm 0.57$  &  $31.71 \pm 6.20$  &  $\vfirstSig{52.33} \pm 0.42$  &            $31.25 \pm 0.80$  \\
+%                                                   & $9\%$  &  $\vsecondSig{58.48} \pm 0.26$  &  $53.20 \pm 0.62$  &  $54.80 \pm 0.12$  &  $51.58 \pm 0.36$  &  $43.81 \pm 0.50$  &  $50.43 \pm 2.07$  &  $\vfirstSig{60.06} \pm 0.46$  &            $48.06 \pm 0.41$  \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\epi{}}} & $5\%$                       & $\vsecondSig{54.83} \pm 0.16$ & $46.94 \pm 0.80$              & $49.16 \pm 0.32$              & $42.79 \pm 0.34$ & $39.96 \pm 0.60$ & $42.94 \pm 2.06$ & $\vfirstSig{56.04} \pm 0.76$ & $37.99 \pm 0.49$ \\
+                                                  & $10\%$                      & $\vsecondSig{58.94} \pm 0.27$ & $54.03 \pm 0.46$              & $55.90 \pm 0.13$              & $53.43 \pm 0.39$ & $44.50 \pm 0.52$ & $50.29 \pm 1.07$ & $\vfirstSig{60.60} \pm 0.32$ & $49.90 \pm 0.36$ \\
+                                                  & $15\%$ &  $\vsecondSig{61.47} \pm 0.21$  &  $57.63 \pm 0.45$  &  $59.25 \pm 0.17$  &  $58.80 \pm 0.32$  &  $48.24 \pm 0.58$  &  $54.64 \pm 1.62$  &  $\vfirstSig{62.69} \pm 0.21$  &            $56.94 \pm 0.65$  \\
+                                                  & $20\%$ &  $\vsecondSig{63.17} \pm 0.13$  &  $60.15 \pm 0.40$  &  $61.45 \pm 0.17$  &  $61.86 \pm 0.13$  &  $52.21 \pm 0.37$  &  $57.27 \pm 1.42$  &  $\vfirstSig{64.10} \pm 0.12$  &            $61.18 \pm 0.45$  \\
+                                                  & $25\%$ &               $64.05 \pm 0.20$  &  $61.88 \pm 0.38$  &  $62.89 \pm 0.12$  &  $63.42 \pm 0.14$  &  $54.68 \pm 0.62$  &  $58.42 \pm 1.59$  &     $\vfirst{65.40} \pm 0.85$  &  $\vsecond{64.59} \pm 0.30$  \\
+                                                  & time   &                            1329 &               10.1 &               54.0 &             143881 &             127654 &                209 &                           3174 &                       104305 \\
+\midrule
+% \multirow{7}{*}{\rotatebox[origin=c]{90}{\kiw{}}} & $3\%$  &   $\vfirstSig{33.88} \pm 0.54$  &  $\vsecondSig{26.02} \pm 0.80$  &               $26.02 \pm 0.42$  &  $15.13 \pm 0.40$  &  $19.93 \pm 0.56$  &   $0.86 \pm 0.11$  &  $23.50 \pm 0.54$  &              $20.10 \pm 0.60$  \\
+%                                                   & $9\%$  &   $\vfirstSig{38.62} \pm 0.52$  &               $35.10 \pm 0.17$  &  $\vsecondSig{35.29} \pm 0.11$  &  $28.23 \pm 0.33$  &  $26.61 \pm 0.37$  &   $9.99 \pm 0.93$  &  $33.22 \pm 0.29$  &              $33.86 \pm 0.24$  \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\kiw{}}} & $5\%$                       & $\vfirstSig{36.36} \pm 0.53$  & $\vsecondSig{30.89} \pm 0.28$ & $30.81 \pm 0.20$              & $21.69 \pm 0.25$ & $23.15 \pm 0.26$ & $3.04 \pm 0.46$  & $26.63 \pm 0.44$             & $26.68 \pm 0.34$ \\
+                                                  & $10\%$                      & $\vfirstSig{38.58} \pm 0.74$  & $35.68 \pm 0.22$              & $\vsecondSig{35.93} \pm 0.16$ & $29.75 \pm 0.21$ & $27.07 \pm 0.44$ & $12.34 \pm 0.79$ & $33.85 \pm 0.33$             & $35.00 \pm 0.34$ \\
+                                                  & $15\%$ &  $\vsecondSig{39.08} \pm 0.55$  &               $37.77 \pm 0.22$  &               $38.27 \pm 0.19$  &  $33.61 \pm 0.11$  &  $30.05 \pm 0.29$  &  $17.95 \pm 0.92$  &  $36.88 \pm 0.32$  &  $\vfirstSig{40.00} \pm 0.26$  \\
+                                                  & $20\%$ &               $39.04 \pm 0.69$  &               $38.88 \pm 0.36$  &  $\vsecondSig{39.55} \pm 0.11$  &  $35.04 \pm 0.17$  &  $32.17 \pm 0.31$  &  $21.44 \pm 0.67$  &  $38.60 \pm 0.31$  &  $\vfirstSig{43.32} \pm 0.22$  \\
+                                                  & $25\%$ &               $38.90 \pm 0.45$  &               $39.41 \pm 0.16$  &  $\vsecondSig{40.44} \pm 0.14$  &  $36.18 \pm 0.20$  &  $33.94 \pm 0.74$  &  $23.41 \pm 0.41$  &  $39.75 \pm 0.32$  &  $\vfirstSig{45.76} \pm 0.29$  \\
+                                                  & time   &                             927 &                             9.6 &                            46.8 &             219109 &             129460 &                177 &               3890 &                          92719 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+
+{\bf Results.} Our main results are summarized in Table~\ref{tab:all_mcc}, reporting MCC test set performance after training on sets of varying size (from 5\% to 25\%). Results have been averaged over 12 repetitions. Because scalability is a major concern 
+%when training 
+on sizeable datasets, we also give an idea of relative training times (in milliseconds) by reporting the time it took to train a single run of each algorithm on a training set of size\footnote
+{
+Comparison of training time performances is fair since all algorithms have been carefully implemented using the same stack of Python libraries, and run on the same machine (16 Xeon cores and 192Gb Ram).
+} 
+15\% of $|E|$, and then predict on the test set. Though our experiments are not conclusive, some trends can be 
+%readily 
+spotted:
+%
+%\begin{itemize}%[nosep,leftmargin=2em]
+%
+
+%\item 
+{\bf 1.}
+Global methods tend to outperform local methods in terms of prediction performance, but are also significantly (or even much) slower (running times can differ by as much as three orders of magnitude). This is not surprising, and is in line with previous experimental findings (e.g., \cite{shahriari2014ranking,wu2016troll}). \compbayesian{} looks like an exception to this rule, but its running time is indeed in the same ballpark as global methods.
+%
+
+%\item
+{\bf 2.} 
+\uslpropGsec{} always ranks first or at least second in this comparison when MCC is considered. On top of it, \uslpropGsec{} is fastest among the global methods (one or even two orders of magnitude faster), thereby showing the benefit of our approach to edge sign prediction.
+%\item
+
+{\bf 3.} The regularized solution computed by \uslpropGsec{} is always better than the unregularized one computed by \qoptim{} in terms of both MCC and running time.
+
+{\bf 4.} 
+As claimed in the introduction, our Bayes approximator \usrule{} closely mirrors in performance the more involved \uslogregp{} model. In fact, supporting our generative model of Section~\ref{s:gen}, the logistic regression weights for features $1-\htr(i)$ and $1-\hun(j)$ are almost equal (see Table~2 in the supplementary material), thereby suggesting that predictor~\eqref{eq:predictor}, derived from the theoretical results at the beginning of Section~\ref{s:algbatch}, is {\em also} the best logistic model based on trollness and untrustworthiness.
+%This also contributes to giving our generative model of Section\ref{s:gen} a desireable robustness.
+%\end{itemize}
+%
+
+
+\iffalse
+**********************************************
+In our experiments, we sample uniformly at random $3$, $5$, $7$, $9$, $15$,
+$20$, $30$, $40$, $50$, $70$, $80$ and $90$\% of the edges and train each
+method on that sample before predicting the edges not sampled. This procedure
+is repeated 10 times to account for the randomness of the sampling. As showed
+in \autoref{tab:mcc_all}, in the low regime (that
+is when $|\trainset{}|$ is less than $25\%$) our methods are always first or at
+least second. Furthermore, we can compare their runtime performances since all
+algorithms are implemented using the same stack of Python libraries and run
+on the same machine (16 Xeon cores and 192Gb Ram). As showed in
+\autoref{tab:time_per_edge}, our method are faster
+(\uslprop{}), up to several orders of magnitude (\usrule{}).
+**********************************************
+\fi
+
+
+\iffalse
+**********************************************************
+\begin{table}[b]
+	\centering
+	\caption{The time needed for each method to train on a $15\%$ training set and make its prediction.
+		It is measured in number of test edges predicted per microsecond, to illustrate that our methods scale linearly with the number of edges.
+		Out of fairness, we did not include the time needed to compute triads features needed by \compbayesian{} and \comptriads{} since our implementation is not optimal. 
+		% However, this is a $O(|V|^3)$ operation which would necessarily comes at a cost.
+	\label{tab:time_per_edge}}
+	\input{exp_data/time_per_edge}
+\end{table}
+
+\begin{figure}[tb]
+  \centering
+  \begin{subfigure}[b]{\textwidth}
+    \centering
+    \caption{The time (in millisecond) needed for each method to train on a
+      $15\%$ training set and make its prediction. Out of fairness, we did not
+			include the time needed to compute triads features needed by \compbayesian{}
+      and \comptriads{} since our implementation is not optimal. 
+		% However, this is a $O(|V|^3)$ operation which would necessarily comes at a cost.
+			\label{tab:time_total}}
+      \input{exp_data/time_total}
+  \end{subfigure}
+  \begin{subfigure}[b]{\textwidth}
+    \centering
+    \caption{The same data scaled by the number of edges. More precisely, it
+      measures the speed of each method by the number of test edges predicted
+      per microsecond.  Note that our methods scale linearly with the number of
+      edges. \label{tab:time_per_edge}}
+      \input{exp_data/time_per_edge}
+  \end{subfigure}
+\end{figure}
+**********************************************************
+\fi

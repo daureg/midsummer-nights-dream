@@ -1,0 +1,46 @@
+
+
+
+\section{Introduction}
+% say that we are facing edge sign prediction from many viewpoints.
+% say about trolls and trustworthy people in a social network
+% say that we are using reductions to node classification (novelty)
+% generative model
+% novel and cool
+%
+Connections in social networks are mostly driven by the {\em homophily} assumption: linked individuals tend to be similar, sharing personality traits, attitudes, or interests. However, homophily alone is clearly not sufficient to explain the variety of social links. In fact, sociologists have long studied networks, hereafter called \emph{signed} social networks, where also {\em negative} relationships ---like dissimilarity, disapproval or distrust--- are explicitly displayed. The presence of negative relationships is also a feature of many technology-mediated social networks. Known examples are \textsc{Ebay}, where users trust or distrust agents in the network based on their personal interactions, \textsc{Slashdot}, where each user can tag another user as friend or foe, and \textsc{Epinion}, where users can rate positively or negatively not only products, but also other users. Even in social networks where connections solely represent friendships, negative links can still emerge from the analysis of online debates among users.
+
+%Consider, in particular, a user joining an online community within a social network. His/her behavior will often fit one of these two stereotypes: the new member could play well with other users, establishing positive relationships with those who have been helpful. Or, the new user could try and disrupt the community by engaging into anti-social behavior, and creating conflictual relationships with other members. This behavioral dichotomy is supported by decades of research in psychology, starting with the seminal work~\cite{Dissonance57} about cognitive dissonance (when someone is acting in contradiction with his/her personal beliefs, ideas, or values). This kind of attitude expressed publicly on social media leads to the definition of \enquote{trolls}~\cite{Hardaker10}: users whose real intentions are to cause disruption and/or to trigger or exacerbate conflict for the purposes of their own amusement. The paper~\cite{Shachaf10} elaborates on their motives, adding that boredom, attention seeking, and revenge motivate trolls; they find pleasure from causing damage to other people or to the community as a whole.
+
+When the social network is signed, specific challenges arise in both network analysis and learning. On the one hand, novel methods are required to tackle standard tasks (e.g., user clustering, link prediction, targeted advertising/recommendation, 
+%prediction of user interests, and 
+analysis of the spreading of diseases in epidemiological models). On the other hand, new problems such as edge sign prediction, which we consider here, naturally emerge. Edge sign prediction is the problem of classifying the positive or negative nature of the links based on the network topology. Prior knowledge of the network topology is often a realistic assumption, for in several situations the discovery of the link sign can be more costly than acquiring the topological information of the network. For instance, when two users of an online social network communicate on a public web page, we immediately detect a link. Yet, the classification of the link sign as positive or negative may require complex techniques. 
+
+From the modeling and algorithmic viewpoints, because of the huge amount of available networked data, a major concern in developing learning methods for edge sign prediction is algorithmic scalability. Many successful, yet simple heuristics for edge sign prediction are based on the troll-trust features, i.e., on the fraction of outgoing negative links (trollness) and incoming positive links (trustworthiness) at each node. We study such heuristics by defining a probabilistic generative model for the signs on the directed links of a given network, and show that these heuristics can be understood and analyzed as approximators to the Bayes optimal classifier for our generative model. We also gather empirical evidence supporting our probabilistic model by observing that a logistic model trained on trollness and trustworthiness features alone is able to learn weights that, on all datasets considered in our experiments, consistently satisfy the properties predicted by our model.
+
+We then introduce suitable graph transformations defining reductions from edge sign prediction to node sign prediction problems. This opens up the possibility of using the arsenal of known algorithmic techniques developed for node classification. In particular, we show that a Label Propagation algorithm, combined with our reduction, approximates the maximum likelihood estimator of our probabilistic generative model. Experiments on real-world data show the competitiveness of our approach in terms of both prediction performance (especially in the regime when training data are scarce) and scalability.
+
+Finally, we point out that the notions of trollness and trustworthiness naturally define a measure of complexity, or learning bias, for the signed network that can also be used to design {\em online} (i.e., sequential) learning algorithms for the edge sign prediction problem. The learning bias encourages settings where the nodes in the network have polarized features (e.g., trollness/trustworthiness are either very high or very low). Our online analysis holds under adversarial conditions, namely, without any stochastic assumption on the assignment of signs to the network links.
+
+
+%Hence, it is necessary to depart from well-established yet computationally expensive approaches by relying on novel algorithmic techniques. 
+
+
+%In this paper, we consider the problem of learning link classifiers, and study this problem from different viewpoints. Our contributions are summarized as follows.
+
+
+
+\subsection{Related work}
+%
+Interest in signed networks can be traced back to the psychological theory of structural balance~\cite{Cartwright56,HeiderBook58} with its weak version~\cite{davis1967clustering}. The advent of online signed social networks has enabled a more thorough and quantitative understanding of that phenomenon. Among the several approaches related to our work, some extend the spectral properties of a graph to the signed case in order to find good embeddings for classification~\cite{Kunegis2009,SignedEmbedding15}. However, the use of the adjacency matrix usually requires a quadratic running time in the number of nodes, which makes those methods hardly scalable to large graphs. Another approach is based on mining ego networks with SVM. Although this method seems to deliver good results~\cite{Papaoikonomou2014}, the running time makes it often impractical for large real-world datasets. An alternative approach, based on local features only and proposed in~\cite{Leskovec2010}, relies on the so-called status theory for directed graphs~\cite{guha2004propagation}. Some works in active learning, using a more sophisticated bias based on the correlation clustering (CC) index~\cite{Cesa-Bianchi2012a,Cesa-Bianchi2012b}, provide strong theoretical guarantees. However, the bias used there is rather strong, since it assumes the existence of a $2$-clustering of the nodes with a small CC index.
+
+Whereas our focus will be on {\em binary} prediction, researchers have also considered a weighted version of the problem, where edges measure the amount of trust or distrust between two users~(e.g., \cite{guha2004propagation,Tang2013,
+%Bachi2012,
+Qian2014sn}). Other works have also considered versions of the problem where side information related to the network is available to the learning system. For instance, \cite{EdgeSignsRating15} uses the product purchased on Epinion in conjunction with a neural network, \cite{TrollDetection15} identifies trolls by analysing the textual content of their post, and~\cite{SNTransfer13} uses SVM to perform transfer learning from one network to another. While many of these approaches have interesting performances, they often require extra information which is not always available (or reliable) and, in addition, may face severe scaling issues.
+% are not as scalable as ours. 
+The recent survey~\cite{Tang2015a} contains pointers to many papers on edge sign prediction for signed networks, especially in the Data Mining area. Additional references, more closely related to our work, will be mentioned at the end of Section~\ref{ss:passive}.
+% using the notation we now introduce. 
+%for further references to the link classification problem.
+
+
+
