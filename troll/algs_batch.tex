@@ -1,304 +1,274 @@
 \section{Algorithms in the Batch Setting}\label{s:algbatch}
-Given $G(Y) =(V,E(Y))$, we have at our disposal a training set $E_0$ of labeled edges from $E(Y)$, our goal being that of building a predictive model for the labels of the remaining edges.
 
-Our first algorithm is an approximation to the Bayes optimal predictor $y^*(i,j)$. Let us denote by $\htr(i)$ and $\hun(i)$ the trollness and the untrustworthiness of node $i$ when both are computed on the subgraph induced by the training edges. We now design and analyze an edge classifier of the form
-%
+Given $G(Y) =(V,E(Y))$, we have at our disposal a training set \trainset{} of labeled edges from
+$E(Y)$, our goal being that of building a predictive model for the labels of the remaining edges.
+
+Our first algorithm is an approximation to the Bayes optimal predictor $y^*(u,v)$. Let us denote by
+$\htr(u)$ and $\hun(u)$ the trollness and the untrustworthiness of node $u$ when both are computed
+on the subgraph induced by the training edges. We now design and analyze an edge classifier of the
+form
+
 \begin{equation}
-\label{eq:predictor}
-	\sgn\Big(\big(1-\htr(i)\big) + \big(1-\hun(j)\big) - \tfrac{1}{2} -\tau\Big)~,
+  \label{eq:predictor}
+  \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) - \tfrac{1}{2} -\tau\Big)~,
 \end{equation}
-%
-where $\tau \ge 0$ is the only parameter to be trained. Despite its simplicity, this classifier works reasonably well in practice, as demonstrated by our experiments (see Section~\ref{s:exp}). Moreover, unlike previous edge sign prediction methods for directed graphs, our classifier comes with a rigorous theoretical motivation, since it approximates the Bayes optimal classifier $y^*(i,j)$ with respect to the generative model defined in Section~\ref{s:gen}. It is important to point out that when we use $1-\htr(i)$ and $1-\hun(j)$ to estimate $p_i$ and $q_j$, an additive bias shows up due to~(\ref{e:pout}). This motivates the need of a threshold parameter $\tau$ to cancel this bias. Yet, the presence of a prior distribution $\mu(p,q)$ ensures that this bias is the same for all edges $(i,j) \in E$. 
 
-%\subsection{Approximation to Bayes via Active Learning}\label{ss:active}
-%
-% We now introduce an active learning algorithm approximating the Bayes optimal predictions $y^*(i,j)$. 
+where $\tau \ge 0$ is the only parameter to be trained. Despite its simplicity, this classifier
+works reasonably well in practice, as demonstrated by our experiments (see \autoref{s:exp}).
+Moreover, unlike previous edge sign prediction methods for directed graphs, our classifier comes
+with a rigorous theoretical motivation, since it approximates the Bayes optimal classifier
+$y^*(u,v)$ with respect to the generative model defined in \autoref{s:gen}. It is important to point
+out that when we use $1-\htr(u)$ and $1-\hun(v)$ to estimate $p_u$ and $q_v$, an additive bias shows
+up due to \eqref{e:pout} and \eqref{e:pin}. This motivates the need of a threshold parameter $\tau$
+to cancel this bias. Yet, the presence of a prior distribution $\mu(p,q)$ ensures that this bias is
+the same for all edges $(u,v) \in E$.
 
 \iffalse
-***********************************************************************
-Given a positive integer parameter $Q < \tfrac{|E|}{2|V|+1}$ such that there exists a set\footnote
-{
-This set is needed to find an estimate $\tauhat$ of $\tau$ in~(\ref{eq:predictor}), see Step~3 of the algorithm. It can be any set of directed paths/cycles in $G$ that are pairwise vertex-disjoint.
-}
-$E_L \ss E$ of size $Q$ where each vertex $i \in V$ appearing as an endpoint of some edge in $E_L$ occurs at most once as origin ---i.e., $(i,j)$, and at most once as destination ---i.e., $(j,i)$. The algorithm performs the following steps:
+\subsection{Approximation to Bayes via Active Learning}\label{ss:active}
 
-\textbf{1.} For each $i \in V$ such that $\din(i) \ge Q$, $Q$ edges are drawn at random without replacement from $\Nin(i)$, and their are labels queried. Let
-$
-	\hdeltain(i) = \hdin^+(i)/Q
-$,
-where $\hdin^+(i)$ is the number of positive edges sampled from $\Nin(i)$;
+We now introduce a non-adaptive active learning algorithm approximating the Bayes optimal
+predictions $y^*(u,v)$.
 
-\textbf{2.} For each $i \in V$ such that $\dout(i) \ge Q$, $Q$ edges are drawn at random without replacement from $\Nout(i)$ and their labels are queried. Let
-$
-	\hdeltaout(i) = \hdout^+(i)/Q
-$,
-where $\hdout^+(i)$ is the number of positive edges sampled from $\Nout(i)$;
+Given a positive integer parameter $Q < \tfrac{|E|}{2|V|+1}$ such that there exists a
+set\footnote{This set is needed to find an estimate $\tauhat$ of $\tau$ in~(\ref{eq:predictor}), see
+Step~3 of the algorithm. It can be any set of directed paths/cycles in $G$ that are pairwise
+vertex-disjoint.} $E_L \ss E$ of size $Q$ where each vertex $u \in V$ appearing as an endpoint of
+some edge in $E_L$ occurs at most once as origin ---ie{}., $(u,v)$, and at most once as destination
+---ie{}., $(v,u)$. The algorithm performs the following steps:
 
-\textbf{3.} Sample any edge in $E_L$ not yet sampled, and let $\tauhat$ be the fraction of positive edges in $E_L$;
+\textbf{1.} For each $u \in V$ such that $\din(u) \ge Q$, $Q$ edges are drawn at random without
+replacement from $\Nin(u)$, and their are labels queried. Let $\hdeltain(u) = \hdin^+(u)/Q$, where
+$\hdin^+(u)$ is the number of positive edges sampled from $\Nin(u)$;
 
-\textbf{4.} Any remaining non-sampled edge $(i,j)$ is predicted as
-$
-	\yhat(i,j) = \sgn\big(\hdeltaout(i) + \hdeltain(j) - \tfrac{1}{2} - \tauhat \big)
-$.
-***********************************************************************
+\textbf{2.} For each $u \in V$ such that $\dout(u) \ge Q$, $Q$ edges are drawn at random without
+replacement from $\Nout(u)$ and their labels are queried. Let $ \hdeltaout(u) = \hdout^+(u)/Q $,
+where $\hdout^+(u)$ is the number of positive edges sampled from $\Nout(u)$;
+
+\textbf{3.} Sample any edge in $E_L$ not yet sampled, and let $\tauhat$ be the fraction of positive
+edges in $E_L$;
+
+\textbf{4.} Any remaining non-sampled edge $(u,v)$ is predicted as $ \yhat(u,v) =
+\sgn\big(\hdeltaout(u) + \hdeltain(v) - \tfrac{1}{2} - \tauhat \big) $.
 \fi
 
+Our algorithm works under the assumption that for given parameters $Q$ (a positive integer) and
+$\alpha \in (0,1)$ there exists a set\footnote{$E_L$ is needed to find an estimate $\tauhat$ of
+$\tau$ in~(\ref{eq:predictor}) ---see Step~3 of the algorithm. Any undirected matching of $G$ of
+size $\mathcal{O}(\log|V|)$ can be used, for instance using the blossom
+algorithm~\autocite{matching65}. In practice, however, we never computed $E_L$, and estimated $\tau$
+on the entire training set \trainset{}.} $E_L \ss E$ of size $\tfrac{2Q}{\alpha}$ where each vertex
+$u \in V$ appearing as an endpoint of some edge in $E_L$ occurs at most once as origin ---ie{}.,
+$(u,v)$--- and at most once as destination ---ie{}., $(v,u)$. Moreover, we assume \trainset{} has
+been drawn from $E$ at random {\em without} replacement, with $m = |E_0| = \alpha\,|E|$. The
+algorithm performs the following steps:
 
-Our algorithm works under the assumption that for given parameters $Q$ (a positive integer) and $\alpha \in (0,1)$ there exists a set\footnote
-{
-$E_L$ is needed to find an estimate $\tauhat$ of $\tau$ in~(\ref{eq:predictor}) ---see Step~3 of the algorithm. Any undirected matching of $G$ of size $\mathcal{O}(\log|V|)$ can be used. In practice, however, we never computed $E_L$, and estimated $\tau$ on the entire training set $E_0$.
-}
-$E_L \ss E$ of size $\tfrac{2Q}{\alpha}$ where each vertex $i \in V$ appearing as an endpoint of some edge in $E_L$ occurs at most once as origin ---i.e., $(i,j)$--- and at most once as destination ---i.e., $(j,i)$. Moreover, we assume $E_0$ has been drawn from $E$ at random {\em without} replacement, with $m = |E_0| = \alpha\,|E|$. The algorithm performs the following steps:
+\begin{enumerate}[label=\textbf{\arabic*.}]
+	\item For each $v \in V$, let $\hun(v) = \hdin^-(v)/\hdin(v)$, \ie{} the fraction of
+	  negative edges found in $\Nin(v) \cap \trainset{}$.
 
-%\textbf{1.} Draw a subset $E_0$ of $m = \alpha|E|$ edges from $E$ at random {\em without} replacement, and observe the corresponding labels.
+	\item For each $u \in V$, let $\htr(u) = \hdout^-(u)/\hdout(u)$, \ie{} the fraction of
+	  negative edges found in $\Nout(u) \cap \trainset{}$.
 
-\begin{enumerate}[leftmargin=*,nosep,label=\textbf{\arabic*.}]
-	\item For each $j \in V$, let
-		$
-		\hun(j) = \hdin^-(j)/\hdin(j)
-		$,
-		i.e., the fraction of negative edges found in $\Nin(j) \cap E_0$.
+	\item Let $\tauhat$ be the fraction of positive edges in $E_L\cap \trainset{}$.
 
-	\item For each $i \in V$, let
-		$
-		\htr(i) = \hdout^-(i)/\hdout(i)
-		$,
-		i.e., the fraction of negative edges found in $\Nout(i) \cap E_0$.
-
-	\item Let $\tauhat$ be the fraction of positive edges in $E_L\cap E_0$.
-
-	\item Any remaining edge $(i,j) \in E\setminus E_0$ is predicted as
-		$
-		\yhat(i,j) = \sgn\Big(\big(1-\htr(i)\big) + \big(1-\hun(j)\big) - \tfrac{1}{2} -\tauhat\Big)
-		$.
+	\item Any remaining edge $(u,v) \in E\setminus \trainset{}$ is predicted as
+		$$
+		\yhat(u,v) = \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) - \tfrac{1}{2} -\tauhat\Big)
+		$$
 \end{enumerate}
 
-The next result\footnote
-{
-All proofs are in the supplementary material.
-} 
-shows that if the graph is not too sparse, then the above algorithm can approximate the Bayes optimal predictor on nodes whose in-degree and out-degree is not too small.
-%
-% Let $n = |V|$. Given a function $f\,:\, \Nat \rightarrow \R$, such that $f(n) \rightarrow \infty$ as $n \rightarrow \infty$ (e.g., $f(n) = \ln n$) and a threshold $\theta = \frac{1}{n\,f(n)}$, let $\kintheta$ be the number of nodes $i \in V$ with $\din(i) \geq \theta$, and $\kouttheta$ be the number of nodes $i \in V$ with $\dout(i) \geq \theta$.
-%
+The next result\footnote{All proofs are in the supplementary material.} shows that if the graph is
+not too sparse, then the above algorithm can approximate the Bayes optimal predictor on nodes whose
+in-degree and out-degree is not too small.
 
 \begin{theorem}
-\label{t:active}
-Let $G(Y) = (V,E(Y))$ be a directed graph with labels on the edges generated according to the model in Section~\ref{s:gen}.
-%, and let $E_0$ of $m = |E_0| = \alpha|E|$. 
-If the algorithm is run with parameter $Q = \Omega(\ln|V|)$, and $\alpha \in (0,1)$ such that the above assumptions are satisfied, then $\yhat(i,j) = y^*(i,j)$ holds with high probability simultaneously for all test edges $(i,j) \in E$ such that $\dout(i),\din(j) = \Omega(\ln|V|)$, and $\eta(i,j) = \Pr(y_{i,j}=1)$ is bounded away from $\tfrac{1}{2}$. 
-%The overall number of training edges is $\Theta\big(|V|\ln|V|\big)$.
+  \label{t:active}
+  Let $G(Y) = (V,E(Y))$ be a directed graph with labels on the edges generated according to the
+  model in \autoref{s:gen}.
+  If the algorithm is run with parameter $Q = \Omega(\ln|V|)$, and $\alpha \in (0,1)$ such that the
+  above assumptions are satisfied, then $\yhat(u,v) = y^*(u,v)$ holds with high probability
+  simultaneously for all test edges $(u,v) \in E$ such that $\dout(u),\din(v) = \Omega(\ln|V|)$, and
+  $\eta(u,v) = \Pr(\yuv=1)$ is bounded away from $\tfrac{1}{2}$.
+  The overall number of training edges is $\Theta\big(|V|\ln|V|\big)$.
 \end{theorem}
-%
-% While learning the Bayes optimal predictor is alluring, in practice
 
-%NCB The approach leading to Theorem~\ref{t:active} needs the graph to be sufficiently dense and the bias $\tau$ to be the same for all edges. In order to address these limitations, we now introduce a second algorithm.
-
-
-%\textcolor{blue}{
-% The approach leading to Theorem~\ref{t:active} needs the graph to be sufficiently dense and the bias $\tau$ to be the same for all edges. In order to address these limitations, we now introduce a second method, which is used to derive the \usrule\ algorithm assessed in our experiments of Section~\ref{s:exp}.%}
-The approach leading to Theorem~\ref{t:active} lets us derive the \usrule{}
-algorithm assessed in our experiments of Section~\ref{s:exp}, but it needs the graph to be
-sufficiently dense and the bias $\tau$ to be the same for all edges. In order to
-address these limitations, we now introduce a second method based on label
-propagation.
-
-% From this algorithm we derive the \textsc{blc} algorithm we use in our
-% experiments of Section~\ref{s:exp}.
-%we show that \textsc{blc} works well even in a passive learning setting.
-
-%{\bf CG: also pointer to logistic regression from here?}
+The approach leading to Theorem~\ref{t:active} lets us derive the \usrule{} algorithm assessed in
+our experiments of \autoref{s:exp}, but it needs the graph to be sufficiently dense and the bias
+$\tau$ to be the same for all edges. In order to address these limitations, we now introduce a
+second method based on label propagation.
 
 \subsection{Approximation to Maximum Likelihood via Label Propagation}\label{ss:passive}
 
-For simplicity, assume the joint prior distribution $\mu(p,q)$ is uniform over $[0,1]^2$ with independent marginals, and suppose that we draw at random without replacement the training set $E_0 = \big((i_1,j_1),y_{i_1,j_1}), ((i_2,j_2),y_{i_2,j_2}), \ldots, ((i_m,j_m),y_{i_m,j_m}\big)$, with $m = |E_0|$. Then a reasonable approach to approximate $y^*(i,j)$ would be to resort to a maximum likelihood estimator of the parameters $\{p_i, q_i\}_{i=1}^{|V|}$ based on $E_0$.
-% Working out the math (details in the supplementary material), one can easily see that
-As showed in the supplementary material,
-the gradient of the log-likelihood function w.r.t.\ $\{p_i, q_i\}_{i=1}^{|V|}$ satisfies
-%
-%
-\begin{small}
-\begin{align}
-&\frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)}{\partial p_{\ell}}\label{e:mlp}\\
-&\ \ = 
+For simplicity, assume the joint prior distribution $\mu(p,q)$ is uniform over $[0,1]^2$ with
+independent marginals, and suppose that we draw at random without replacement the training set $E_0
+= \big((u_1,v_1),y_{u_1,v_1}), ((u_2,v_2),y_{u_2,v_2}), \ldots, ((u_m,v_m),y_{u_m,v_m}\big)$, with
+$m = |E_0|$. Then a reasonable approach to approximate $y^*(u,v)$ would be to resort to a maximum
+likelihood estimator of the parameters $\{p_i, q_i\}_{i=1}^{|V|}$ based on \trainset{}.
+As showed in the supplementary material, the gradient of the log-likelihood function w.r.t.\ $\{p_i,
+q_i\}_{i=1}^{|V|}$ satisfies
+
+\begin{equation}\label{e:mlp}
+\frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{u=1}^{|V|}\right)}{\partial p_{\ell}}
+=
 \sum_{k=1}^m
-\frac{\Ind{i_k = \ell,y_{\ell,j_k}=+1}}{p_{\ell}+q_{j_k}}\, 
+\frac{\Ind{u_k = \ell,y_{\ell,v_k}=+1}}{p_{\ell}+q_{v_k}}\,
 - \sum_{k=1}^m
-\frac{\Ind{i_k = \ell,y_{\ell,j_k}=-1}}{2-p_{\ell}-q_{j_k}}\,,\notag
-\end{align}
-%
+\frac{\Ind{u_k = \ell,y_{\ell,v_k}=-1}}{2-p_{\ell}-q_{v_k}}
+\end{equation}
+
 \begin{align}
-&\frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)}{\partial q_{\ell}}\label{e:mlq}\\
-&\ \ = 
+&\frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{u=1}^{|V|}\right)}{\partial q_{\ell}}\label{e:mlq}\\
+&\ \ =
 \sum_{k=1}^m
-\frac{\Ind{j_k = \ell,y_{i_k,\ell}=+1}}{p_{i_k}+q_{\ell}}\, 
+\frac{\Ind{v_k = \ell,y_{u_k,\ell}=+1}}{p_{u_k}+q_{\ell}}\,
 - \sum_{k=1}^m
-\frac{\Ind{j_k = \ell,y_{i_k,\ell}=-1}}{2-p_{i_k}-q_{\ell}}\,,\notag
+\frac{\Ind{v_k = \ell,y_{u_k,\ell}=-1}}{2-p_{u_k}-q_{\ell}}\,,\notag
 \end{align}
-\end{small}
-%
+
 where $\Ind{\cdot}$ is the indicator function of the event at argument.
-Unfortunately, equating~(\ref{e:mlp}) and~(\ref{e:mlq}) to zero, and solving for parameters $\{p_i, q_i\}_{i=1}^{|V|}$ gives rise to a hard set of nonlinear equations.
-Moreover, some such parameters may never occur in these equations, namely whenever $\Nout(i)$ or $\Nin(j)$ are not represented in $E_0$ for some $i,j\in V$. 
-%Specifically, if $E_0 \cap \Nout(i) = \emptyset$ then $p_i$ does not occur, and if $E_0 \cap \Nin(j) = \emptyset$ then $q_j$ does not.
-%
-Our \emph{first approximation} is therefore to replace the nonlinear equations resulting from~(\ref{e:mlp}) and~(\ref{e:mlq}) by the following set of linear equations\footnote{Details are provided in the supplementary material.}, one for each $\ell \in V$:
-%
+Unfortunately, equating \eqref{e:mlp} and \eqref{e:mlq} to zero, and solving for parameters
+$\{p_i, q_i\}_{i=1}^{|V|}$ gives rise to a hard set of nonlinear equations.
+Moreover, some such parameters may never occur in these equations, namely whenever $\Nout(u)$ or
+$\Nin(v)$ are not represented in \trainset{} for some $u,v\in V$.
+
+Our \emph{first approximation} is therefore to replace the nonlinear equations resulting
+from \eqref{e:mlp} and \eqref{e:mlq} by the following set of linear equations\footnote{Details
+are provided in the supplementary material.}, one for each $\ell \in V$:
+\begin{equation*}
+  \sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=+1} \left(2-p_{\ell}-q_{v_k}\right)
+  = \sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=-1}
+  (p_{\ell}+q_{v_k})
+\end{equation*}
+
 \begin{align*}
-\sum_{k=1}^m &\Ind{i_k = \ell,y_{\ell,j_k}=+1} \left(2-p_{\ell}-q_{j_k}\right)\\
-=
-&\sum_{k=1}^m \Ind{i_k = \ell,y_{\ell,j_k}=-1}
-(p_{\ell}+q_{j_k})%, \quad \ell = 1, \ldots, |V|
+  \sum_{k=1}^m &\Ind{v_k = \ell,y_{u_k,\ell}=+1} \left(2-p_{u_k}-q_{\ell}\right)\\
+  =
+  &\sum_{k=1}^m  \Ind{v_k = \ell,y_{u_k,\ell}=-1}
+  \left(p_{u_k}+q_{\ell}\right)
 \end{align*}
-%
-%\ncb{Claudio, che significa la doppia somma qui sotto?}
-% CG: un typo...
-%
-\begin{align*}
-\sum_{k=1}^m &\Ind{j_k = \ell,y_{i_k,\ell}=+1} \left(2-p_{i_k}-q_{\ell}\right)\\
-=
-&\sum_{k=1}^m  \Ind{j_k = \ell,y_{i_k,\ell}=-1}
-\left(p_{i_k}+q_{\ell}\right)~.%,\ \ \ \ell = 1, \ldots, |V|\,,
-\end{align*}
-%
-%
-%
-\iffalse
-************************************
-Denoting for brevity ${\wh \dout(i)}$ and  ${\wh \din(i)}$ the out-degre and the in-degree 
-of node $i$ over the training set, these can be rewritten as
-% 
-\begin{align*}
-\sum_{k=1\,:\,i_k = \ell}^m \left(p_{\ell}+q_{j_k}\right) 
-&= 
-{\wh \dout(\ell)} + \sum_{k=1\,:\,i_k = \ell} y_{\ell,j_k}, \qquad \ell = 1, \ldots, |V|~,\\
-\sum_{k=1\,:\,j_k = \ell}^m \left(p_{i_k}+q_{\ell}\right) 
-&= 
-{\wh \din(\ell)} + \sum_{k=1\,:\,j_k = \ell} y_{i_k,\ell}, \qquad \ell = 1, \ldots, |V|\,,
-\end{align*}
-%
-************************************
-\fi
-The solution to these equations are precisely the points where the gradient w.r.t.\ $(\bp,\bq) =\{p_i, q_i\}_{i=1}^{|V|}$ of the quadratic function
+
+The solution to these equations are precisely the points where the gradient w.r.t.\ $(\bp,\bq)
+=\{p_i, q_i\}_{i=1}^{|V|}$ of the quadratic function
 \[
-f_{E_0}(\bp,\bq) = \sum_{(i,j) \in E_0} \left(\frac{1+y_{i,j}}{2} - \frac{p_i+q_j}{2} \right)^2
+f_{E_0}(\bp,\bq) = \sum_{(u,v) \in E_0} \left(\frac{1+\yuv}{2} - \frac{p_u+q_v}{2} \right)^2
 \]
 vanishes.
-We follow a label propagation approach by adding to $f_{E_0}$ the corresponding test set function $f_{E\setminus E_0}$, and treat the sum of the two as the function to be minimized during training w.r.t.\ both $(\bp,\bq)$ and all $y_{i,j} \in [-1,+1]$ for $(i,j)\in E\setminus E_0$, i.e.,
-%
-\begin{equation}\label{e:quadratic}
-\min_{(\bp,\bq), y_{i,j} \in [-1,+1],\,(i,j)\in E\setminus E_0} 
-\left(f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)\right)\,.
-\end{equation}
-%
-Binary $\pm 1$ predictions on the test set $E\setminus E_0$ are then obtained by thresholding the obtained values $y_{i,j}$ at $0$.
+We follow a label propagation approach by adding to $f_{E_0}$ the corresponding test set function
+$f_{E\setminus \trainset}$, and treat the sum of the two as the function to be minimized during
+training w.r.t.\ both $(\bp,\bq)$ and all $\yuv \in [-1,+1]$ for $(u,v)\in E\setminus \trainset{}$:
 
+\begin{equation}\label{e:quadratic}
+  \min_{(\bp,\bq), \yuv \in [-1,+1],\,(u,v)\in E\setminus E_0}
+  \left(f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)\right)
+\end{equation}
+
+Binary $\pm 1$ predictions on the test set $E\setminus \trainset{}$ are then obtained by
+thresholding the obtained values $\yuv$ at $0$.
 
 \iffalse
 ********************************************************
-and then solve for parameters $\{p_i, q_i\}_{i=1}^{|V|}$.
+and then solve for parameters $\{p_u, q_i\}_{u=1}^{|V|}$.
 Yet, it may well be the case that some such parameters never occur in all these equations.\footnote
 {
-On the other hand, recall that no pairing $(i,j) \in E$ can occur more than once here, since $E_0$ is sampled without replacement.
+On the other hand, recall that no pairing $(u,v) \in E$ can occur more than once here, since \trainset{} is sampled without replacement.
 }
-This will happen precisely whenever $\Nout(i)$ or $\Nin(j)$ are not represented in $E_0$. Specifically, if $E_0 \cap \Nout(i) = \emptyset$ then $p_i$ does not occur, and if $E_0 \cap \Nin(j) = \emptyset$ then $q_j$ does not occur. Hence, for each unsampled edge $(\ell,j)\in E\setminus E_0$, we add to~(\ref{e:mlp2}) the equations
+This will happen precisely whenever $\Nout(u)$ or $\Nin(v)$ are not represented in \trainset{}. Specifically, if $E_0 \cap \Nout(u) = \emptyset$ then $p_u$ does not occur, and if $E_0 \cap \Nin(v) = \emptyset$ then $q_v$ does not occur. Hence, for each unsampled edge $(\ell,v)\in E\setminus \trainset{}$, we add to~(\ref{e:mlp2}) the equations
 \[
-p_{\ell}+q_j = 1+y_{\ell,j}~,
+p_{\ell}+q_v = 1+y_{\ell,v}~,
 \]
-motivated by the fact that $\E \left[\frac{1+y_{\ell,j}}{2}\,|\, (\ell,j)\right] =  \frac{p_{\ell}+q_j}{2}$. Similarly, we add to~(\ref{e:mlq2}) the equations
+motivated by the fact that $\E \left[\frac{1+y_{\ell,v}}{2}\,|\, (\ell,v)\right] =  \frac{p_{\ell}+q_v}{2}$. Similarly, we add to~(\ref{e:mlq2}) the equations
 \[
-p_i+q_{\ell} = 1+y_{i,\ell}~.
+p_u+q_{\ell} = 1+y_{u,\ell}~.
 \]
 This gives rise to the following set of equations
-% 
+%
 \begin{align}
-p_{i}+ \frac{1}{\dout(i)}\,\sum_{j \in \Nout(i)} q_{j}
-&= 
-\frac{1}{\dout(i)}\,\sum_{j=1}^{|V|} (1+y_{i,j}), \qquad i = 1, \ldots, |V|~,\label{e:mlpa}\\
-q_{j} +  \frac{1}{\din(j)}\,\sum_{i \in \Nin(j)} p_{i}
-&= 
-\frac{1}{\din(j)}\,\sum_{i=1}^{|V|} (1+y_{i,j}), \qquad j = 1, \ldots, |V|\,,\label{e:mlqa}\\
-1+y_{i,j} &= p_i+q_{j},\qquad\qquad\qquad\quad\,\, (i,j) \in E\setminus E_0~.\label{e:mlya}
+p_{u}+ \frac{1}{\dout(u)}\,\sum_{v \in \Nout(u)} q_{v}
+&=
+\frac{1}{\dout(u)}\,\sum_{v=1}^{|V|} (1+\yuv), \qquad u = 1, \ldots, |V|~,\label{e:mlpa}\\
+q_{v} +  \frac{1}{\din(v)}\,\sum_{u \in \Nin(v)} p_{u}
+&=
+\frac{1}{\din(v)}\,\sum_{u=1}^{|V|} (1+\yuv), \qquad v = 1, \ldots, |V|\,,\label{e:mlqa}\\
+1+\yuv &= p_u+q_{v},\qquad\qquad\qquad\quad\,\, (u,v) \in E\setminus E_0~.\label{e:mlya}
 \end{align}
 %
 *******************************************************
 \fi
 
-%\textcolor{red}{
-We now proceed to solve \eqref{e:quadratic} via label propagation~\cite{LabelPropa03} on the graph $G''$ obtained through the $G \rightarrow G''$ reduction of Section~\ref{s:prel}.%} 
+We now proceed to solve \eqref{e:quadratic} via label propagation~\autocite{LabelPropa03} on the
+graph $G''$ obtained through the $G \rightarrow G''$ reduction of \autoref{s:prel}.
 However, because of the presence of negative edge weights in $G''$, we first have to symmetrize\footnote{%
-While we note here that such linear transformation of the variables does not change the problem, we provide more details in Section~1.3 of the supplementary material.} variables $p_i, q_i, y_{i,j}$ so as they all lie in the interval $[-1,+1]$.
-After this step, one can 
-%easily 
-see that, once we get back to the original variables, label propagation computes the harmonic solution minimizing the function
-%
-%\hspace*{-0.01cm}\vbox{%
+While we note here that such linear transformation of the variables does not change the problem, we
+provide more details in Section~1.3 of the supplementary material.} variables $p_i, q_i$ and $\yuv$
+so as they all lie in the interval $[-1,+1]$.
+After this step, one can see that, once we get back to the original variables, label propagation
+computes the harmonic solution minimizing the function
+
+\begin{equation*}
+{\widehat f}\big(\bp,\bq,{\yuv}_{(u,v) \in E\setminus E_0}\big)
+= f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)
++ \frac{1}{2}\sum_{u\in V}
+\left(\dout(u)\Bigl(p_u-\frac{1}{2}\Bigl)^2+\din(u)\Bigl(q_i-\frac{1}{2}\Bigl)^2\right)
+\end{equation*}
+
+The function ${\widehat f}$ is thus a regularized version of the target function $f_{E_0} +
+f_{E\setminus E_0}$ in (\ref{e:quadratic}), where the regularization term tries to enforce the extra
+constraint that whenever a node $u$ has a high out-degree then the corresponding $p_u$ should be
+close to \shalf. Thus, on any edge $(u,v)$ departing from $u$, the Bayes optimal predictor $y^*(u,v)
+= \sgn(p_u+q_v-1)$ will mainly depend on $q_v$ being larger or smaller than \shalf{} (assuming $v$
+has small in-degree). Similarly, if $u$ has a high in-degree, then the corresponding $q_u$ should be
+close to \shalf{} implying that on any edge $(v,u)$ arriving at $u$ the Bayes optimal predictor
+$y^*(v,u)$ will mainly depend on $p_v$ (assuming $v$ has small out-degree). Put differently, a node
+having a huge out-neighborhood makes each outgoing edge \enquote{count less} than a node having only
+a small number of outgoing edges, and similarly for in-neighborhoods.
+
+The label propagation algorithm operating on $G''$ does so (see again
+\autoref{fig:troll_reduction_gsecond}) by iteratively updating as follows:
+
 \begin{align*}
-{\widehat f}&\big(\bp,\bq,{y_{i,j}}_{(i,j) \in E\setminus E_0}\big)
-%&=
-%\sum_{(i,j) \in E}
-%\Biggl(
-%\frac{1}{2}\left(\frac{1+y_{i,j}}{2}-p_i\right)^2 + \frac{1}{2}\left(\frac{1+y_{i,j}}{2}-q_j\right)^2 \\
-%&\qquad\qquad+ \left(\frac{p_i+q_j-1}{2}\right)^2\Biggl)\\
-= f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)\\ 
-& \qquad + \frac{1}{2}\sum_{i\in V} \left(\dout(i)\Bigl(p_i-\frac{1}{2}\Bigl)^2+\din(i)\Bigl(q_i-\frac{1}{2}\Bigl)^2\right)\,.
+  p_{u}  & \leftarrow \frac{-\sum_{v \in \NNout(u)} q_{v} + \sum_{v \in \NNout(u)} (1+\yuv)}{3\,\dout(u)}\,\quad\forall u\in V\\
+  q_{v}  & \leftarrow \frac{-\sum_{u \in  \NNin(v)} p_{u} + \sum_{u \in \NNin(v) } (1+\yuv)}{3\,\din(v)}\qquad\forall v \in V\\
+  \yuv & \leftarrow \frac{p_u + q_v}{2}~ \quad \forall (u,v) \in E\setminus E_0~.
 \end{align*}
-%}
-%
-The function ${\widehat f}$ is thus a regularized version of the target function $f_{E_0} + f_{E\setminus E_0}$ in (\ref{e:quadratic}), where the regularization term 
-%$\sum_{i\in V} \big(\dout(i)r(p_i)+\din(i)r(q_i)\big)$ 
-tries to enforce the extra constraint that whenever a node $i$ has a high out-degree then the corresponding $p_i$ should be close to $1/2$. Thus, on any edge $(i,j)$ departing from $i$, the Bayes optimal predictor $y^*(i,j) = \sgn(p_i+q_j-1)$ will mainly depend on $q_j$ being larger or smaller than $\tfrac{1}{2}$ (assuming $j$ has small in-degree). Similarly, if $i$ has a high in-degree, then the corresponding $q_i$ should be close to $1/2$ implying that on any edge $(j,i)$ arriving at $i$ the Bayes optimal predictor $y^*(j,i)$ will mainly depend on $p_j$ (assuming $j$ has small out-degree). Put differently, a node having a huge out-neighborhood makes each outgoing edge ``count less" than a node having only a small number of outgoing edges, and similarly for in-neighborhoods.
-%
-%
-\iffalse
-trying to establish the relative contribution of $p_i$ and $q_j$ to $\Pr(y_{i,j}=1) = \frac{p_i+q_j}{2}$  as follows: If $(i,j)$ is such that $i$ has high outdegree, then $q_j$ is more relevant than $p_i$; symmetrically, if  $(i,j)$ is such that $j$ has high indegree, then $p_i$ is more relevant than $q_j$.
-%when both are viewed as functions of $\bp$, $\bq$, and $y_{i,j} \in [-1,+1]$, for $(i,j)\in E\setminus E_0$. 
-\fi
-%
-%
-The label propagation algorithm operating on $G''$ does so (see again Figure \ref{f:etnr} (c)) by iteratively updating as follows:
-%
-\begin{align*}
-	p_{i}  & \leftarrow \frac{-\sum_{j \in \NNout(i)} q_{j} + \sum_{j \in \NNout(i)} (1+y_{i,j})}{3\,\dout(i)}\,\quad\forall i\in V\\ 
-	q_{j}  & \leftarrow \frac{-\sum_{i \in  \NNin(j)} p_{i} + \sum_{i \in \NNin(j) } (1+y_{i,j})}{3\,\din(j)}\qquad\forall j \in V\\
-  y_{i,j} & \leftarrow \frac{p_i + q_j}{2}~ \quad \forall (i,j) \in E\setminus E_0~.
-\end{align*}
-%
-The algorithm is guaranteed to converge~\cite{LabelPropa03} to the minimizer of ${\widehat f}$. Notice that the presence of negative weights on the edges of $G''$ does not prevent label propagation from converging. 
-%Indeed, any node classification algorithm handling both positive and negative weights on the edges of $G''$ could be used instead of label propagation. One alternative would be the {\textsc wta} algorithm from \cite{}.
-This is the algorithm we will be championing in our experiments of Section~\ref{s:exp}.
 
-
-% \footnote
-% {
-% Notice that in the case of negative weights $w_{i,j}$ over the edges, the label propagation update should read as
-% \(
-% y_{i,j} = \frac{\sum_{j \in \Nout(i)} w_{i,j} y_{i,j}}{\sum_{j \in \Nout(i)} |w_{i,j}|}~.
-% \)
-% }
-% 
-
-%A computation-friendly alternative is to follow a {\em method of moments}-like approach. We start off from the statistics $\{1-\htr(i),1-\hun(i)\}_{i=1}^{|V|}$, and observe that, even if we are sampling $E_0$ without replacement, $1-\htr(i)$ is an unbiased estimator of (\ref{e:pout}), and $1-\hun(i)$ is an unbiased estimator of (\ref{e:pin}).
+The algorithm is guaranteed to converge~\autocite{LabelPropa03} to the minimizer of ${\widehat f}$.
+Notice that the presence of negative weights on the edges of $G''$ does not prevent label
+propagation from converging. Indeed, any node classification algorithm handling both positive and
+negative weights on the edges of $G''$ could be used instead of label propagation. One alternative
+would be the \textsc{wta} algorithm from \autocite{WTA13}.  This is the algorithm we will be
+championing in our experiments of Section~\ref{s:exp}.
 
 
 \label{ssec:further_related}
-{\bf Further related work.} The vast majority of existing edge sign prediction algorithms for directed graphs are based on the computation of local features of the graph. These features are evaluated on the subgraph induced by the training edges, and the resulting values are used to train a supervised classification algorithm (e.g., logistic regression). The most basic set of local features used to classify a given edge $(i,j)$ are defined by 
-% the neighbourhoods\footnote
-% {
-% We abuse notation here, and define the quantities $\din^+(j),\din^-(j),\dout^+(i),\dout^-(i)$ on the subgraph induced by the training edges.
-% }
-$\din^+(j),\din^-(j),\dout^+(i),\dout^-(i)$ computed over the training set $E_0$, and by the embeddedness coefficient $\big|\Nout(i) \cap \Nin(j)\big|$. In turn, these can be used to define more complicated features, such as
+{\bf Further related work.} The vast majority of existing edge sign prediction algorithms for
+directed graphs are based on the computation of local features of the graph. These features are
+evaluated on the subgraph induced by the training edges, and the resulting values are used to train
+a supervised classification algorithm (e.g., logistic regression). The most basic set of local
+features used to classify a given edge $(u,v)$ are defined by
+$\din^+(v),\din^-(v),\dout^+(u),\dout^-(u)$ computed over the training set \trainset{}, and by the
+embeddedness coefficient $\big|\Nout(u) \cap \Nin(v)\big|$. In turn, these can be used to define
+more complicated features, such as
 \(
-	\frac{\din^+(j) + |E^+|\uin(j)}{\din(j) + \uin(j)}
+	\frac{\din^+(v) + |E^+|\uin(v)}{\din(v) + \uin(v)}
 \quad\text{and}\quad
-	\frac{\dout^+(i) + p^+\uout(i)}{\dout(i) + \uout(i)}
+	\frac{\dout^+(u) + p^+\uout(u)}{\dout(u) + \uout(u)}
 \)
-introduced in~\cite{Bayesian15}, together with their negative counterparts, where $|E^+|$ is the overall fraction of positive edges, and $\uin(j),\uout(i)$ are, respectively, the number of test edges outgoing from $i$ and the number of test edges incoming to $j$.
-Other types of features are derived from social status theory~(e.g., \cite{Leskovec2010}), and involve the so-called triads; namely, the triangles formed by $(i,j)$ together with $(i,w)$ and $(w,j)$ for any $w \in \NNout(i) \cap \NNin(j)$. A third group of features is based on node ranking scores. These scores are computed using a variery of methods, including Prestige~\cite{zolfaghar2010mining}, exponential ranking~\cite{traag2010exponential}, PageTrust~\cite{de2008pagetrust}, Bias and Deserve~\cite{mishra2011finding}, TrollTrust~\cite{wu2016troll}, and generalizations of PageRank and HITS to signed networks~\cite{shahriari2014ranking}. Examples of features using such scores are \textsl{reputation} and \textsl{optimism}~\cite{shahriari2014ranking}, defined for a node $i$ by
+introduced in~\autocite{Bayesian15}, together with their negative counterparts, where $|E^+|$ is the
+overall fraction of positive edges, and $\uin(v),\uout(u)$ are, respectively, the number of test
+edges outgoing from $u$ and the number of test edges incoming to $v$.
+Other types of features are derived from social status theory~(e.g., \autocite{Leskovec2010}), and
+involve the so-called triads; namely, the triangles formed by $(u,v)$ together with $(u,w)$ and
+$(w,v)$ for any $w \in \NNout(u) \cap \NNin(v)$. A third group of features is based on node ranking
+scores. These scores are computed using a variery of methods, including
+Prestige~\autocite{zolfaghar2010mining}, exponential ranking~\autocite{traag2010exponential},
+PageTrust~\autocite{de2008pagetrust}, Bias and Deserve~\autocite{mishra2011finding},
+TrollTrust~\autocite{wu2016troll}, and generalizations of PageRank and HITS to signed
+networks~\autocite{shahriari2014ranking}. Examples of features using such scores are \textsl{reputation}
+and \textsl{optimism}~\autocite{shahriari2014ranking}, defined for a node $u$ by
 \(
-	\frac{\sum_{j \in \NNin(i)} y_{j,i}\sigma(j)}{\sum_{j \in \NNin(i)} \sigma(j)}
+	\frac{\sum_{v \in \NNin(u)} y_{v,u}\sigma(v)}{\sum_{v \in \NNin(u)} \sigma(v)}
 \quad\text{and}\quad
-	\frac{\sum_{j \in \NNout(i)} Y_{i,j}\sigma(j)}{\sum_{j \in \NNout(i)} \sigma(j)}\,,
+	\frac{\sum_{v \in \NNout(u)} \yuv\sigma(v)}{\sum_{v \in \NNout(u)} \sigma(v)}\,,
 \)
-where $\sigma(j)$ is the ranking score assigned to node $j$. Some of these algorithms will be used as representative competitors in our experimental study of Section~\ref{s:exp}.
-
+where $\sigma(v)$ is the ranking score assigned to node $v$. Some of these algorithms will be used
+as representative competitors in our experimental study of \autoref{s:exp}.
