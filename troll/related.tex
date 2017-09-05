@@ -1,0 +1,112 @@
+\section{Related work}
+
+Interest in signed networks can be traced back to the psychological theory of structural
+balance~\autocites{Cartwright56}{HeiderBook58} with its weak
+version~\autocite{davis1967clustering}.  The advent of online signed social networks has enabled a
+more thorough and quantitative understanding of that phenomenon. Among the several approaches
+related to our work, some extend the spectral properties of a graph to the signed case in order to
+find good embeddings for classification~\autocites{Kunegis2009}{SignedEmbedding15}. However, the
+use of the adjacency matrix usually requires a quadratic running time in the number of nodes, which
+makes those methods hardly scalable to large graphs. Another approach is based on mining ego
+networks with SVM. Although this method seems to deliver good results~\autocite{Papaoikonomou2014},
+the running time makes it often impractical for large real-world datasets. An alternative approach,
+based on local features only and proposed in~\autocite{Leskovec2010}, relies on the so-called
+status theory for directed graphs~\autocite{guha2004propagation}. Some works in active learning,
+using a more sophisticated bias based on the correlation clustering (CC)
+index~\autocites{Cesa-Bianchi2012a}{Cesa-Bianchi2012b}, provide strong theoretical guarantees.
+However, the bias used there is rather strong, since it assumes the existence of a $2$-clustering
+of the nodes with a small CC index.\Todo{don't put it that way since we use that bias later}
+
+Whereas our focus will be on \emph{binary} prediction, researchers have also considered a weighted
+version of the problem, where edges measure the amount of trust or distrust between two
+users~\autocites{guha2004propagation}{Tang2013}{Bachi2012}{Qian2014sn}. Other works have also
+considered versions of the problem where side information related to the network is available to
+the learning system. For instance, \autocite{EdgeSignsRating15} uses the product purchased on
+Epinion in conjunction with a neural network, \autocite{TrollDetection15} identifies trolls by
+analysing the textual content of their post, and~\autocite{SNTransfer13} uses SVM to perform
+transfer learning from one network to another. While many of these approaches have interesting
+performances, they often require extra information which is not always available (or reliable) and,
+in addition, may face severe scaling issues.
+
+The survey~\autocite{Tang2015a} contains pointers to many papers on edge sign prediction for
+signed networks, especially in the Data Mining area.
+
+The vast majority of existing edge sign prediction algorithms for
+directed graphs are based on the computation of local features of the graph. These features are
+evaluated on the subgraph induced by the training edges, and the resulting values are used to train
+a supervised classification algorithm (e.g., logistic regression). The most basic set of local
+features used to classify a given edge $(u,v)$ are defined by
+$\din^+(v),\din^-(v),\dout^+(u),\dout^-(u)$ computed over the training set \trainset{}, and by the
+embeddedness coefficient $\big|\Nout(u) \cap \Nin(v)\big|$. In turn, these can be used to define
+more complicated features, such as
+\(
+	\frac{\din^+(v) + |E^+|\uin(v)}{\din(v) + \uin(v)}
+\quad\text{and}\quad
+	\frac{\dout^+(u) + p^+\uout(u)}{\dout(u) + \uout(u)}
+\)
+introduced in~\autocite{Bayesian15}, together with their negative counterparts, where $|E^+|$ is the
+overall fraction of positive edges, and $\uin(v),\uout(u)$ are, respectively, the number of test
+edges outgoing from $u$ and the number of test edges incoming to $v$.
+Other types of features are derived from social status theory~(e.g., \autocite{Leskovec2010}), and
+involve the so-called triads; namely, the triangles formed by $(u,v)$ together with $(u,w)$ and
+$(w,v)$ for any $w \in \NNout(u) \cap \NNin(v)$. A third group of features is based on node ranking
+scores. These scores are computed using a variery of methods, including
+Prestige~\autocite{zolfaghar2010mining}, exponential ranking~\autocite{traag2010exponential},
+PageTrust~\autocite{de2008pagetrust}, Bias and Deserve~\autocite{mishra2011finding},
+TrollTrust~\autocite{wu2016troll}, and generalizations of PageRank and HITS to signed
+networks~\autocite{shahriari2014ranking}. Examples of features using such scores are \textsl{reputation}
+and \textsl{optimism}~\autocite{shahriari2014ranking}, defined for a node $u$ by
+\(
+	\frac{\sum_{v \in \NNin(u)} y_{v,u}\sigma(v)}{\sum_{v \in \NNin(u)} \sigma(v)}
+\quad\text{and}\quad
+	\frac{\sum_{v \in \NNout(u)} \yuv\sigma(v)}{\sum_{v \in \NNout(u)} \sigma(v)}\,,
+\)
+where $\sigma(v)$ is the ranking score assigned to node $v$. Some of these algorithms will be used
+as representative competitors in our experimental study of \autoref{s:exp}.
+
+\iffalse
+We compare these methods with four competitors, each exploiting the sign information and network
+topology in a different way:
+
+Looking at undirected graphs with a global perspective, \textcite{LowRankCompletion14} consider the
+observed adjacency matrix $A$, made of the edges in \trainset{}, as a noisy sampling of the
+adjacency matrix $A^\star$ of an underlying complete graph satisfying the weakly balance condition
+(that is with no triangle containing only one negative edge).
+%TODO the previous sentence is too long
+This condition implies the existence of a small number $k$ of node clusters with positive links
+within clusters and negative links across clusters, which in turn implies $\rank A^\star=k$.  By
+recovering a complete matrix $\tilde{A}$ which matches the non-zeros entries of $A$, it is possible
+to predict the sign of $\eij \notin \trainset$ as $\yhat_{i,j} = \sgn(\tilde{A}_{i,j})$. Although
+the exact version of this problem is NP-hard, authors assume that $k$ is an hyperparameter known
+beforehand\footnote{The method is showed to be robust to the choice of its value, thus we pick
+$k=7$.} and look for two matrices $W,H\in \mathbb{R}^{k\times|V|}$ which minimise a sigmoidal
+reconstruction loss with $A$, subject to a regularization term. We refer to this method as
+\emph{\complowrank{}}.
+
+The status theory heuristic posits that a positive link from $i$ to $j$ denotes that user $i$
+considers user $j$ as having a higher status or skill than himself~\autocite{Leskovec2010}. It
+implies that among the 16 possible triads of three nodes with two directed signed edges among them,
+some must be more represented than others. The \emph{\comptriads{}} method exploits this fact by
+counting for each edge in the training set how frequently it is involved in each of the 16 triad
+types. Based on these edge features and 7 degree features of each edge endpoints, a Logistic
+Regression model is trained and used to predict the sign of the test edges.
+
+Inspired by the PageRank algorithm, \textcite{wu2016troll} propose a recursive definition of
+trollness based on the opinion of one node's neighbors weighted by their own trollness, which allow
+to assign a trustworthiness $\pi(i)$ to each node $i$ through a set of non linear equations solved
+by an iterative method. This $\pi$ values are used to rank the nodes by computing their Reputation
+and Optimism scores, thus providing four features for each edge, which are in turn used to train a
+Logistic Regression model for the classification task. We refer to this method as
+\emph{\compranknodes{}}.  Computing $\pi$ requires to choose two hyperparameters of the model,
+$\beta$ and $\lambda_1$ and the authors suggest to do it by holding out some training data to
+perform cross validation but in practice we found little difference in performance in our
+implementation while it consumes a lot of time.
+
+The last competitors is also local. \textcite{Bayesian15} note that  a node can belong to one of the
+16 types based of whether is number of its positive (resp.  negative) outgoing (resp. incoming)
+edges is zero or not.  The number of unobserved incoming and outgoing edges of each node $i$ let us
+define its 16-dimensional vector $V_i$ containing the probability of transitioning to any other
+state.  Then for each edge \eij we compute the outer product of $V_i$ with $V_j$ and also include
+additional features such as triads count and degree information before training a Logistic
+Regression model. We refer to this method as \emph{\compbayesian{}}.
+\fi

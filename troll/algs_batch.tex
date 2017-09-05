@@ -237,38 +237,3 @@ propagation from converging. Indeed, any node classification algorithm handling 
 negative weights on the edges of $G''$ could be used instead of label propagation. One alternative
 would be the \textsc{wta} algorithm from \autocite{WTA13}.  This is the algorithm we will be
 championing in our experiments of Section~\ref{s:exp}.
-
-
-\label{ssec:further_related}
-{\bf Further related work.} The vast majority of existing edge sign prediction algorithms for
-directed graphs are based on the computation of local features of the graph. These features are
-evaluated on the subgraph induced by the training edges, and the resulting values are used to train
-a supervised classification algorithm (e.g., logistic regression). The most basic set of local
-features used to classify a given edge $(u,v)$ are defined by
-$\din^+(v),\din^-(v),\dout^+(u),\dout^-(u)$ computed over the training set \trainset{}, and by the
-embeddedness coefficient $\big|\Nout(u) \cap \Nin(v)\big|$. In turn, these can be used to define
-more complicated features, such as
-\(
-	\frac{\din^+(v) + |E^+|\uin(v)}{\din(v) + \uin(v)}
-\quad\text{and}\quad
-	\frac{\dout^+(u) + p^+\uout(u)}{\dout(u) + \uout(u)}
-\)
-introduced in~\autocite{Bayesian15}, together with their negative counterparts, where $|E^+|$ is the
-overall fraction of positive edges, and $\uin(v),\uout(u)$ are, respectively, the number of test
-edges outgoing from $u$ and the number of test edges incoming to $v$.
-Other types of features are derived from social status theory~(e.g., \autocite{Leskovec2010}), and
-involve the so-called triads; namely, the triangles formed by $(u,v)$ together with $(u,w)$ and
-$(w,v)$ for any $w \in \NNout(u) \cap \NNin(v)$. A third group of features is based on node ranking
-scores. These scores are computed using a variery of methods, including
-Prestige~\autocite{zolfaghar2010mining}, exponential ranking~\autocite{traag2010exponential},
-PageTrust~\autocite{de2008pagetrust}, Bias and Deserve~\autocite{mishra2011finding},
-TrollTrust~\autocite{wu2016troll}, and generalizations of PageRank and HITS to signed
-networks~\autocite{shahriari2014ranking}. Examples of features using such scores are \textsl{reputation}
-and \textsl{optimism}~\autocite{shahriari2014ranking}, defined for a node $u$ by
-\(
-	\frac{\sum_{v \in \NNin(u)} y_{v,u}\sigma(v)}{\sum_{v \in \NNin(u)} \sigma(v)}
-\quad\text{and}\quad
-	\frac{\sum_{v \in \NNout(u)} \yuv\sigma(v)}{\sum_{v \in \NNout(u)} \sigma(v)}\,,
-\)
-where $\sigma(v)$ is the ranking score assigned to node $v$. Some of these algorithms will be used
-as representative competitors in our experimental study of \autoref{s:exp}.

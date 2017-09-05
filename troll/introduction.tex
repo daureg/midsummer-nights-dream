@@ -63,37 +63,3 @@ network links.
 %Hence, it is necessary to depart from well-established yet computationally expensive approaches by relying on novel algorithmic techniques. 
 
 %In this paper, we consider the problem of learning link classifiers, and study this problem from different viewpoints. Our contributions are summarized as follows.
-
-\subsection{Related work}
-
-Interest in signed networks can be traced back to the psychological theory of structural
-balance~\autocites{Cartwright56}{HeiderBook58} with its weak
-version~\autocite{davis1967clustering}.  The advent of online signed social networks has enabled a
-more thorough and quantitative understanding of that phenomenon. Among the several approaches
-related to our work, some extend the spectral properties of a graph to the signed case in order to
-find good embeddings for classification~\autocites{Kunegis2009}{SignedEmbedding15}. However, the
-use of the adjacency matrix usually requires a quadratic running time in the number of nodes, which
-makes those methods hardly scalable to large graphs. Another approach is based on mining ego
-networks with SVM. Although this method seems to deliver good results~\autocite{Papaoikonomou2014},
-the running time makes it often impractical for large real-world datasets. An alternative approach,
-based on local features only and proposed in~\autocite{Leskovec2010}, relies on the so-called
-status theory for directed graphs~\autocite{guha2004propagation}. Some works in active learning,
-using a more sophisticated bias based on the correlation clustering (CC)
-index~\autocites{Cesa-Bianchi2012a}{Cesa-Bianchi2012b}, provide strong theoretical guarantees.
-However, the bias used there is rather strong, since it assumes the existence of a $2$-clustering
-of the nodes with a small CC index.\Todo{don't put it that way since we use that bias later}
-
-Whereas our focus will be on \emph{binary} prediction, researchers have also considered a weighted
-version of the problem, where edges measure the amount of trust or distrust between two
-users~\autocites{guha2004propagation}{Tang2013}{Bachi2012}{Qian2014sn}. Other works have also
-considered versions of the problem where side information related to the network is available to
-the learning system. For instance, \autocite{EdgeSignsRating15} uses the product purchased on
-Epinion in conjunction with a neural network, \autocite{TrollDetection15} identifies trolls by
-analysing the textual content of their post, and~\autocite{SNTransfer13} uses SVM to perform
-transfer learning from one network to another. While many of these approaches have interesting
-performances, they often require extra information which is not always available (or reliable) and,
-in addition, may face severe scaling issues.
-
-The survey~\autocite{Tang2015a} contains pointers to many papers on edge sign prediction for
-signed networks, especially in the Data Mining area. Additional references, more closely related to
-our work, will be mentioned at the end of \autoref{ss:passive}.

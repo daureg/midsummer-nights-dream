@@ -148,7 +148,6 @@ hinges on building local predictive features, based on neighborhoods: \usrule{},
 designed to depend on global properties of the graph topology.
 
 \iffalse
-***************************************************
 %Given a training set \trainset{}, we exploit the revealed signs in two ways.
 First, with label propagation (referred to as \uslprop{} in the following). We
 initialize the labels vector $f_0$ to $|V'|$ random values drawn uniformly in
@@ -175,51 +174,6 @@ Then we again associate each edge $\eij$ with $a_{i,j} = \left(1-\htr(i)\right) 
 \left(1-\hun(j)\right)$ and find the $\tau$ of \eqref{eq:predictor} that minimizes the empirical
 risk.  Another way to exploit those quantities is to train a Logistic Regression model where each
 edge is associated with two features: $[1-\htr(i), 1-\hun(j)]$ (we call this method \uslogregp{}).
-
-We compare these methods with four competitors, each exploiting the sign information and network
-topology in a different way:
-
-Looking at undirected graphs with a global perspective, \textcite{LowRankCompletion14} consider the
-observed adjacency matrix $A$, made of the edges in \trainset{}, as a noisy sampling of the
-adjacency matrix $A^\star$ of an underlying complete graph satisfying the weakly balance condition
-(that is with no triangle containing only one negative edge).
-%TODO the previous sentence is too long
-This condition implies the existence of a small number $k$ of node clusters with positive links
-within clusters and negative links across clusters, which in turn implies $\rank A^\star=k$.  By
-recovering a complete matrix $\tilde{A}$ which matches the non-zeros entries of $A$, it is possible
-to predict the sign of $\eij \notin \trainset$ as $\yhat_{i,j} = \sgn(\tilde{A}_{i,j})$. Although
-the exact version of this problem is NP-hard, authors assume that $k$ is an hyperparameter known
-beforehand\footnote{The method is showed to be robust to the choice of its value, thus we pick
-$k=7$.} and look for two matrices $W,H\in \mathbb{R}^{k\times|V|}$ which minimise a sigmoidal
-reconstruction loss with $A$, subject to a regularization term. We refer to this method as
-\emph{\complowrank{}}.
-
-The status theory heuristic posits that a positive link from $i$ to $j$ denotes that user $i$
-considers user $j$ as having a higher status or skill than himself~\autocite{Leskovec2010}. It
-implies that among the 16 possible triads of three nodes with two directed signed edges among them,
-some must be more represented than others. The \emph{\comptriads{}} method exploits this fact by
-counting for each edge in the training set how frequently it is involved in each of the 16 triad
-types. Based on these edge features and 7 degree features of each edge endpoints, a Logistic
-Regression model is trained and used to predict the sign of the test edges.
-
-Inspired by the PageRank algorithm, \textcite{wu2016troll} propose a recursive definition of
-trollness based on the opinion of one node's neighbors weighted by their own trollness, which allow
-to assign a trustworthiness $\pi(i)$ to each node $i$ through a set of non linear equations solved
-by an iterative method. This $\pi$ values are used to rank the nodes by computing their Reputation
-and Optimism scores, thus providing four features for each edge, which are in turn used to train a
-Logistic Regression model for the classification task. We refer to this method as
-\emph{\compranknodes{}}.  Computing $\pi$ requires to choose two hyperparameters of the model,
-$\beta$ and $\lambda_1$ and the authors suggest to do it by holding out some training data to
-perform cross validation but in practice we found little difference in performance in our
-implementation while it consumes a lot of time.
-
-The last competitors is also local. \textcite{Bayesian15} note that  a node can belong to one of the
-16 types based of whether is number of its positive (resp.  negative) outgoing (resp. incoming)
-edges is zero or not.  The number of unobserved incoming and outgoing edges of each node $i$ let us
-define its 16-dimensional vector $V_i$ containing the probability of transitioning to any other
-state.  Then for each edge \eij we compute the outer product of $V_i$ with $V_j$ and also include
-additional features such as triads count and degree information before training a Logistic
-Regression model. We refer to this method as \emph{\compbayesian{}}.
 \fi
 
 \begin{table*}[t]
