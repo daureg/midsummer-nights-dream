@@ -12,7 +12,12 @@ for instance, $\dout^-(u)/\dout(u)$ is the fraction of outgoing edges from node 
 $G(Y)$ is $-1$. We call $tr(u) = \dout^-(u)/\dout(u)$ the \emph{trollness} of node $u$, and $un(u)
 = \din^-(u)/\din(u)$ the \emph{untrustworthiness} of node $u$. Finally, we also use the notation
 $\NNin(u)$ and $\NNout(u)$ to represent, respectively, the in-neighborhood and the out-neighborhood
-of node $u \in V$.
+of node $u \in V$. Some of these notations are illustrated on \autoref{fig:troll_Gexample}.
+\begin{figure}[htpb]
+  \centering
+  \includegraphics[width=0.8\linewidth]{tikz/troll_notations_tikz}
+  \caption{Two nodes in a \dssn{}. \label{fig:troll_Gexample}}
+\end{figure}
 
 Given the directed graph $G = (V,E)$, we define two \emph{edge-to-node reductions} transforming the
 original graph $G$ into other graphs. As we see later, these reductions are useful in turning the
@@ -43,14 +48,14 @@ illustrates these two reductions.
 \begin{figure*}[t]
   \centering
   \begin{subfigure}[b]{0.28\textwidth}
-    \centering \includegraphics[height=.10\textheight]{g_latex-crop} \caption{}
+    \centering \includegraphics[height=.10\textheight]{raw/g_latex-crop} \caption{}
   \end{subfigure}~
   \begin{subfigure}[b]{0.30\textwidth}
-    \centering \includegraphics[height=.12\textheight]{gprime_latex-crop}
+    \centering \includegraphics[height=.12\textheight]{raw/gprime_latex-crop}
     \caption{\label{fig:troll_reduction_gprime}}
   \end{subfigure}~
   \begin{subfigure}[b]{0.36\textwidth}
-    \centering \includegraphics[height=.14\textheight]{gsecond_latex-crop}
+    \centering \includegraphics[height=.14\textheight]{raw/gsecond_latex-crop}
     \caption{\label{fig:troll_reduction_gsecond}}
   \end{subfigure}
   \caption{\label{f:etnr}
