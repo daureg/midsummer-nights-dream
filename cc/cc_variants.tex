@@ -86,7 +86,8 @@ present a modification of the \ccpivot{} algorithm that pick edges instead of no
 grow clusters by adding monochromatic triangles. This gives an approximation factor of six times the
 maximum degree of the graph. They also present a method when the number $k$ of clusters is fixed
 beforehand, starting with an initial partition and then alternating between finding the majority
-color of clusters and finding better clusters. Unfortunately, the maximum degree of a graph can be
+color of clusters and finding better clusters. An improved heuristic algorithm is given in
+\url{http://ieeexplore.ieee.org/document/7732322/}. Unfortunately, the maximum degree of a graph can be
 as large as $n$. However, \textcite{Anava2015} present constant factor approximations. Namely, they
 show the problem can be reduced to classical \pcc{} by setting all edges incident to a node $u$ to
 negative if they are not of the majority color of $u$. They then apply the regular \ccpivot{} and
