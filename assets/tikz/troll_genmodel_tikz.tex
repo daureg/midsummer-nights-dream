@@ -1,0 +1,12 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+  \begin{tikzpicture}[auto,vertex/.append style={minimum width=10mm,font=\Large},
+    edge/.append style={-{Latex[length=4mm,width=1.5mm,angle'=40]}},]
+    \node[vertex] (u) at (0,0) {$u$};
+    \node[anchor=south] (iparams) at (0,0.5) {$(\outqt{p_u}, q_u) \sim \mu(p, q)$};
+    \node[vertex,] (v) at (6,0) {$v$};
+    \node[anchor=south] (jparams) at (6,0.5) {$(p_v, \inqt{q_v}) \sim \mu(p, q)$};
+    \draw[edge,opacity=1] (u) edge node[below,yshift=-2mm] {$\mathbb{P}(y_{u,v}=+1) = \frac{1}{2}\left(\outqt{p_u}+\inqt{q_v}\right)$} (v);
+  \end{tikzpicture}
+\end{document}
