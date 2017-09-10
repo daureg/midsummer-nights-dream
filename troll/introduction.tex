@@ -1,22 +1,72 @@
-\section{Introduction}
-% say that we are facing edge sign prediction from many viewpoints.
-% say about trolls and trustworthy people in a social network
-% say that we are using reductions to node classification (novelty)
-% generative model
-% novel and cool
+As we saw in the introduction, many situations in various fields can be modeled by signed graphs.
+One of the most natural usage of signed graphs, though, is the study of social networks. That is
+indeed what first motivated their inception. Quite naturally, we thus begin our exploration of the
+role of edges in complex networks by a binary classification problem in signed graphs. Namely, we
+want to predict whether an observed interaction between two nodes is positive or negative and we
+call this problem \esp{}.\footnote{This chapter is closely based on a paper written with several
+co-authors~\autocite{trollSign17}.} To motivate this problem from a practical point of view, let us
+first define precisely the type of social networks we consider. We call \emph{Directed Signed Social
+Network} (DSSN) a directed graph whose nodes are either human beings (often called users if they are
+the members of an online community) or artifacts directly created by individuals\footnote{This
+semantic detail allows us to treat citation networks as social networks.}. Furthermore, a directed
+edge from node $u$ to node $v$ denote an interaction initiated by the user $u$ and whose object is
+user $v$. Such an interaction can be positive (to praise, to support, to trust, to befriend) or
+negative (to criticize, to oppose, to distrust, to befoe).
 
-Connections in social networks are mostly driven by the \emph{homophily} assumption: linked
-individuals tend to be similar, sharing personality traits, attitudes, or interests. However,
-homophily alone is clearly not sufficient to explain the variety of social links\Todo{link with
-chapter 3}. In fact, sociologists have long studied networks, hereafter called \emph{signed} social
-networks\Todo{DSSN?}, where also {\em negative} relationships ---like dissimilarity, disapproval or
-distrust--- are explicitly displayed. The presence of negative relationships is also a feature of
-many technology-mediated social networks. Known examples are \textsc{Ebay}, where users trust or
-distrust agents in the network based on their personal interactions, \textsc{Slashdot}, where each
-user can tag another user as friend or foe, and \textsc{Epinion}, where users can rate positively
-or negatively not only products, but also other users. Even in social networks where connections
-solely represent friendships, negative links can still emerge from the analysis of online debates
-among users.
+Known examples are \textsc{Ebay}, where users trust or distrust agents in the network based on their
+personal interactions, \textsc{Slashdot}, where each user can tag another user as friend or foe,
+\textsc{BlaBlaCar}, a carpooling website where users can evaluate drivers and passengers as pleasant
+travelers or not, and \textsc{Epinion}, where users can rate positively or negatively not only
+products, but also other users. In such examples, the sign of the interaction is explicit. However,
+there are other cases where such interactions are only displayed in their raw form and need further
+processing to be given a sign. The typical situation where this happens is when interactions are
+mediated through text, for instance in Twitter or in the comment section of some online content. It
+is then possible to extract signs using sentiment analysis methods~\autocite{signedText12}.
+
+Another distinction is that in most cases, only the owner of the network can observe its graph.
+Think for instance of \textsc{YouTube}, where users can like or dislike the video of another user
+but where only aggregate anonymous statistics are available publicly. The situation is similar on
+the \textsc{Stack Overflow} community, where users can upvote or downvote answers according to their
+perceived quality, but where only the total score are available.
+
+\bigskip
+
+With this definition of social networks, we now look at how the learning problem of \esp{} can be
+used in real world applications. More precisely, we present four possible applications, and order
+them by how severely negative interactions impact the well-being of users of the networks.
+First, it could help improve the quality of link recommendation in solely positive networks. Such
+networks indeed contain implicit negative links~\autocite{Yang2012}. By asking users to label a
+small proportion of existing links as truly positive or actually negative, recommended links could
+be discarded if they are predicted to be negative.
+%
+Second, this could be used to monitor news textual comments in a scalable fashion and thus ensure
+that online debates remain courteous and constructive. For instance, \textcite{betterDebate14} show
+that by visually reminding comment authors of the importance of respecting the plurality of
+opinions, the quality of debates is improved (other references can be found
+in~\autocite{journalism15}).
+%
+Third, like many other fields, human resource management is undergoing a transformation through the
+increasing use of Machine Learning~\autocite{MLinHR16}. Among other tools, assessing personal
+relationships between employees is crucial to maintain a productive work environment. Whereas this
+can be done by invasive wearable sensors~\autocite{WearableBehavior09}, our methods could predict
+which employees would form the tighter teams from a small amount of labeled data.
+%
+Fourth, and most critical, predicting the sign of interactions could be a tool to detect users with
+a high proportion of negative interactions. Indeed, because people tend to be less inhibited in
+their online interactions~\cite{Suler04}, some users may join an online community with the main goal
+to disrupt it, by engaging into anti-social behavior and creating conflictual relationships with
+other members. This kind of attitude expressed publicly on social media leads to the following
+definition of \emph{trolls}: \enquote{users whose real intentions are to cause disruption and/or to
+trigger or exacerbate conflict for the purposes of their own amusement}~\autocite{Hardaker10}.
+\Textcite{Shachaf10} elaborate on their motives, adding that boredom, attention seeking, and
+revenge motivate trolls; they find pleasure from causing damage to other people or to the community
+as a whole. An extreme form of trolling is bullying (\ie{} the behavior of someone intentionally and
+repeatedly harming a victim that is unable to defend himself or herself) and just like anything
+else, it has an online version called cyber bullying~\autocite{cyberbullying13}. Such behavior is
+rather widespread, one study revealing that 72\% of \np{1454} surveyed teenagers reported at least
+one occurrence of cyberbullying, most of them through instant messaging~\autocite{Juvonen08}. While
+we have not conducted experimental study on this topic, we believe that being able to predict such
+harmful interactions would be beneficial for the majority of users.
 
 %Consider, in particular, a user joining an online community within a social network. His/her behavior will often fit one of these two stereotypes: the new member could play well with other users, establishing positive relationships with those who have been helpful. Or, the new user could try and disrupt the community by engaging into anti-social behavior, and creating conflictual relationships with other members. This behavioral dichotomy is supported by decades of research in psychology, starting with the seminal work~\autocite{Dissonance57} about cognitive dissonance (when someone is acting in contradiction with his/her personal beliefs, ideas, or values). This kind of attitude expressed publicly on social media leads to the definition of \enquote{trolls}~\autocite{Hardaker10}: users whose real intentions are to cause disruption and/or to trigger or exacerbate conflict for the purposes of their own amusement. The paper~\autocite{Shachaf10} elaborates on their motives, adding that boredom, attention seeking, and revenge motivate trolls; they find pleasure from causing damage to other people or to the community as a whole.
 
