@@ -70,46 +70,56 @@ harmful interactions would be beneficial for the majority of users.
 
 %Consider, in particular, a user joining an online community within a social network. His/her behavior will often fit one of these two stereotypes: the new member could play well with other users, establishing positive relationships with those who have been helpful. Or, the new user could try and disrupt the community by engaging into anti-social behavior, and creating conflictual relationships with other members. This behavioral dichotomy is supported by decades of research in psychology, starting with the seminal work~\autocite{Dissonance57} about cognitive dissonance (when someone is acting in contradiction with his/her personal beliefs, ideas, or values). This kind of attitude expressed publicly on social media leads to the definition of \enquote{trolls}~\autocite{Hardaker10}: users whose real intentions are to cause disruption and/or to trigger or exacerbate conflict for the purposes of their own amusement. The paper~\autocite{Shachaf10} elaborates on their motives, adding that boredom, attention seeking, and revenge motivate trolls; they find pleasure from causing damage to other people or to the community as a whole.
 
-When the social network is signed, specific challenges arise in both network analysis and learning.
-On the one hand, novel methods are required to tackle standard tasks (e.g., user clustering, link
-prediction, targeted advertising/recommendation, prediction of user interests, and analysis of the
-spreading of diseases in epidemiological models). On the other hand, new problems such as edge sign
-prediction, which we consider here, naturally emerge. Edge sign prediction is the problem of
-classifying the positive or negative nature of the links based on the network topology. Prior
-knowledge of the network topology is often a realistic assumption, for in several situations the
-discovery of the link sign can be more costly than acquiring the topological information of the
-network. For instance, when two users of an online social network communicate on a public web page,
-we immediately detect a link. Yet, the classification of the link sign as positive or negative may
-require complex techniques. 
+% When the social network is signed, specific challenges arise in both network analysis and
+% learning. On the one hand, novel methods are required to tackle standard tasks (e.g., user
+% clustering, link prediction, targeted advertising/recommendation, prediction of user interests,
+% and analysis of the spreading of diseases in epidemiological models). On the other hand, new
+% problems such as edge sign prediction, which we consider here, naturally emerge.
+
+\bigskip
+
+Such applications motivate studying \esp{}, which is the problem of classifying the positive or
+negative nature of the links based on the
+network topology. Prior knowledge of the network topology is often a realistic assumption, for in
+several situations the discovery of the link sign can be more costly than acquiring the topological
+information of the network. For instance, when two users of an online social network communicate on
+a public web page, we immediately detect a link. Yet, the classification of the link sign as
+positive or negative may require more involved techniques.
 
 From the modeling and algorithmic viewpoints, because of the huge amount of available networked
-data, a major concern in developing learning methods for edge sign prediction is algorithmic
-scalability. Many successful, yet simple heuristics for edge sign prediction are based on the
-troll-trust features, i.e., on the fraction of outgoing negative links (trollness) and incoming
-positive links (trustworthiness) at each node. We study such heuristics by defining a probabilistic
-generative model for the signs on the directed links of a given network, and show that these
+data, a major concern in developing learning methods for \esp{} is algorithmic
+scalability. Many successful, yet simple heuristics for \esp{} are based on the
+troll-trust features, \ie{} on the fraction of outgoing negative links (trollness) and incoming
+positive links (trustworthiness) at each node. We first define these notions and more notations in
+\autoref{s:prel}, along with others tools and precise problem statements. Then we study such
+troll-trust heuristics by defining in \autoref{s:gen} a probabilistic
+generative model for the signs on the directed links of a given network. We also show that these
 heuristics can be understood and analyzed as approximators to the Bayes optimal classifier for our
-generative model. We also gather empirical evidence supporting our probabilistic model by observing
+generative model. In this context, we design our first batch algorithm and show in
+\autoref{s:algbatch} that it provably approximates the Bayes classifier on dense graphs.
+We furthermore gather empirical evidence supporting our probabilistic model by observing
 that a logistic model trained on trollness and trustworthiness features alone is able to learn
 weights that, on all datasets considered in our experiments, consistently satisfy the properties
 predicted by our model.
 
-We then introduce suitable graph transformations defining reductions from edge sign prediction to
+We then introduce suitable graph transformations defining reductions from \esp{} to
 node sign prediction problems. This opens up the possibility of using the arsenal of known
-algorithmic techniques developed for node classification. In particular, we show that a Label
-Propagation algorithm, combined with our reduction, approximates the maximum likelihood estimator
-of our probabilistic generative model. Experiments on real-world data show the competitiveness of
-our approach in terms of both prediction performance (especially in the regime when training data
-are scarce) and scalability.
+algorithmic techniques developed for node classification. In particular, we introduce in
+\autoref{ss:passive} our second batch algorithm. It takes the form of a Label
+Propagation algorithm that, combined with our problem reduction, approximates the maximum likelihood
+estimator of our probabilistic generative model.
+In order to compare our two algorithms with existing work, we then describe with more details
+previous heuristics and related methods in \autoref{sec:troll_related}.
+We then experimentally evaluate our proposed approach in \autoref{s:exp}. On synthetic data, we
+confirm the quality of our approximation of the Bayes predictor. More importantly, on real-world
+data, we show the competitiveness of our approach in terms of both prediction performance
+(especially in the regime when training data are scarce) and scalability.
 
-Finally, we point out that the notions of trollness and trustworthiness naturally define a measure
+Finally, in \autoref{s:algonline}, we point out that the notions of trollness and trustworthiness
+naturally define a measure
 of complexity, or learning bias, for the signed network that can also be used to design
-\emph{online} (i.e., sequential) learning algorithms for the edge sign prediction problem. The
+\emph{online} (\ie{} sequential) learning algorithms for the \esp{} problem. The
 learning bias encourages settings where the nodes in the network have polarized features (e.g.,
 trollness/trustworthiness are either very high or very low). Our online analysis holds under
 adversarial conditions, namely, without any stochastic assumption on the assignment of signs to the
 network links.
-
-%Hence, it is necessary to depart from well-established yet computationally expensive approaches by relying on novel algorithmic techniques. 
-
-%In this paper, we consider the problem of learning link classifiers, and study this problem from different viewpoints. Our contributions are summarized as follows.
