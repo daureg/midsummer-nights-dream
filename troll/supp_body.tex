@@ -1,6 +1,7 @@
 \section{Proofs from \autoref{s:algbatch}}
 
 \subsection{Proof of \autoref{t:active}}
+\label{ssec:troll_proof_bayes}
 
 The following ancillary results will be useful.
 
@@ -17,26 +18,27 @@ every $\ve > 0$,
 
 \begin{lemma}\label{l:bins}
 % Given a function $f\,:\, \Nat \rightarrow \R$ such that $f(n) \rightarrow \infty$ as $n \rightarrow \infty$, 
-Let $\NN_1, \ldots, \NN_n$ be subsets of a finite set $E$.
+Let $\NN_1, \ldots, \NN_n$ be $n$ subsets of a finite set $E$.
 % with $|E| \geq n\,f(n)$
 % Let $\theta = \frac{|E|}{n\,f(n)}$, 
 % and $k = k(\theta)$ be the number of subsets $\NN_i$ such that $|\NN_i| \geq \theta$. Let 
-Let $E_0 \subseteq E$ be sampled uniformly at random {\em without} replacement from $E$, with $|E_0| = m$. Then, for $\delta \in (0,1)$, $Q > 0$, and $\theta \geq 2\times\max\left\{Q,4\ln \frac{n}{\delta}\right\}$, we have
+Let $E_0 \subseteq E$ be sampled uniformly at random {\em without} replacement from $E$, with $|E_0| = m$. Then, for $\delta \in (0,1)$, $Q > 0$, and $\theta \geq 2\times\max\left\{Q,4\log \frac{n}{\delta}\right\}$, we have
 \[
 \Pr\Bigl( \exists i \,:\, |\NN_i| \geq \theta, |\NN_i \cap E_0| < Q\Bigl) \leq \delta
 \]
-provided $|E| \geq m \geq \frac{2|E|}{\theta}\times\max\left\{Q,4\ln \frac{n}{\delta}\right\}$.
+provided $|E| \geq m \geq \frac{2|E|}{\theta}\times\max\left\{Q,4\log \frac{n}{\delta}\right\}$.
 \end{lemma}
 
-\begin{proof}[Proof of Lemma \ref{l:bins}]
-Set for brevity $p_i = |\NN_i|/|E|$. Then, due to the sampling without replacement, each random
+\begin{proof}[Proof of \autoref{l:bins}]
+  Set for brevity $p_i = \nicefrac{|\NN_i|}{|E|}$. Then, due to the sampling without replacement,
+  each random
 variable $|\NN_i \cap E_0|$ is the sum of $m$ dependent Bernoulli random variables $X_{i,1}, \ldots,
 X_{i,m}$ such that $\Pr(X_{i,t} = 1) = p_i$, for $t = 1, \ldots, m$. Let $i$ be such that $|\NN_i|
-\geq \theta$. Then the condition $m \geq \frac{2|E|Q}{\theta}$ implies
+\geq \theta$. Then, since $\theta \geq 2Q$, we may assume that $m\frac{2Q}{\theta} \leq |E|$, which implies
 \[
 Q \leq \frac{m\theta}{2|E|} \leq \frac{m\,p_i}{2} = \frac{\E\big[|\NN_i \cap E_0|\big]}{2}~.
 \]
-Since the variables $X_{u,v}$ are negatively associated, we may apply a (multiplicative) Chernoff
+Since the variables $X_{i,j}$ are negatively associated, we may apply a (multiplicative) Chernoff
 bound~\autocite[Section~3.1]{dpbook}.
 This gives
 \[
@@ -47,106 +49,107 @@ $
 \Pr\bigl( \exists i\,:\, |\NN_i| \geq \theta, |\NN_i \cap E_0| < Q\bigr) \leq n\,e^{-\frac{m\,\theta}{8|E|}}
 $,
 which is in turn upper bounded by $\delta$ whenever 
-$m \geq \frac{8|E|}{\theta}\ln \frac{n}{\delta}$. % = 8\,n\,f(n)\,\ln \frac{n}{\delta}$.
+$m \geq \frac{8|E|}{\theta}\log \frac{n}{\delta}$ (again a natural assumption since $\theta \geq
+8\log\frac{n}{\delta}$). % = 8\,n\,f(n)\,\log \frac{n}{\delta}$.
 \end{proof}
 
 Let now $E_{\theta} = \theset{(u,v) \in E}{\din(v) \ge \theta,\, \dout(u) \ge \theta} \setminus
-E_0$, where $E_0 \ss E$ is the set of edges sampled by the learning algorithm of
-\autoref{s:algbatch}. Then \autoref{t:active} in the main paper is an immediate consequence of the
+E_0$, where $E_0 \ss E$ is the set of sampled edges provided to the learning algorithm of
+\autoref{ss:bayes_approx}. Then \autoref{t:active} in the main paper is an immediate consequence of the
 following lemma. 
 
 \begin{lemma}\label{l:active}
 Let $G(Y) = (V,E(Y))$ be a directed graph with labels on the edges generated according to the model
 in \autoref{s:gen}.
 For all $0 < \alpha,\delta < 1$ and $0 < \ve < \tfrac{1}{16}$, if the learning algorithm of
-\autoref{s:algbatch} is run with parameters $Q = \tfrac{1}{2\ve^2}\ln\frac{4|V|}{\delta}$ and
-$\alpha$, then with probability at least $1-11\delta$ the predictions $\yhat(u,v)$ satisfy
+\autoref{ss:bayes_approx} is run with parameters $Q = \tfrac{1}{2\ve^2}\log\frac{4|V|}{\delta}$ and
+$\alpha$, then with probability at least $1-9\delta$ the predictions $\yhat(u,v)$ satisfy
 $\yhat(u,v) = y^*(u,v)$ for all $(u,v) \in E_{\theta}$ such that $\big|\eta(u,v) - \tfrac{1}{2}\big|
 > 8\ve$.
 \end{lemma}
 
-\begin{proof}[Proof of Lemma \ref{l:active}]
-We apply \autoref{l:bins} with $\theta = \tfrac{2Q}{\alpha} \ge 2\times\max\big\{Q,4\ln
-\frac{2|V|+1}{\delta}\big\}$ to the $2|V|+1$ subsets of $E$ consisting of $E_L$ and
-$\Nin(u),\Nout(u)$, for $i \in V$. We have that, with probability at least $1-\delta$, at least $Q$
-edges of $E_L$ are sampled, at least $Q$ edges of $\Nin(u)$ are sampled for each $i$ such that
-$\NNin(u) \ge \theta$, and at least $Q$ edges of $\Nout(v)$ are sampled for each $j$ such that
-$\NNout(v) \ge \theta$.
+\begin{proof}[Proof of \autoref{l:active}]
+We apply \autoref{l:bins} with $\theta = \tfrac{2Q}{\alpha} \ge 2\times\max\big\{Q,4\log
+\frac{2|V|+1}{\delta}\big\}$ to the $2|V|+1$ subsets of $E$ consisting of $E_L$ and, for all $u \in
+V$, of $\Nin(u)$ and $\Nout(u)$. We have that, with probability at least $1-\delta$, at least $Q$
+edges of $E_L$ are sampled, at least $Q$ edges of $\Nin(v)$ are sampled for each $v$ such that
+$\NNin(v) \ge \theta$, and at least $Q$ edges of $\Nout(u)$ are sampled for each $u$ such that
+$\NNout(u) \ge \theta$.
 For all $(u,v) \in E_{\theta}$ let
 \[
-  \pbar_j = \frac{1}{\din(v)}\sum_{i\in\NNin(v)} p_i \quad\text{and}\quad \qbar_i = \frac{1}{\dout(u)}\sum_{j\in\NNout(u)} q_j
+  \pbar_v = \frac{1}{\din(v)}\sum_{u\in\NNin(v)} p_u \quad\text{and}\quad
+  \qbar_u = \frac{1}{\dout(u)}\sum_{v\in\NNout(u)} q_v
 \]
 and set for brevity $\hdeltain(v) = 1-\hun(v)$ and $\hdeltaout(u) = 1-\htr(u)$.
 We now prove that $\hdeltain(v)$ and $\hdeltaout(u)$ are concentrated around their expectations for
 all $(u,v) \in E_{\theta}$. Consider $\hdeltaout(u)$ (the same argument works for $\hdeltain(v)$).
-Let $J_1,\dots,J_Q$ be the first $Q$ draws in $E_0 \cap \NNout(u)$ and define
+Let $V_1,\dots,V_Q$ be the first $Q$ draws in $E_0 \cap \NNout(u)$ and define
 \[
-  \muhat_p(u) = \frac{1}{Q} \sum_{t=1}^Q \frac{p_i+q_{J_t}}{2}~.
+  \muhat_p(u) = \frac{1}{Q} \sum_{t=1}^Q \frac{p_u+q_{V_t}}{2}~.
 \]
 Applying \autoref{l:hoeff-wr} to the set $\theset{\tfrac{p_i+q_j}{2}}{j \in \NNout(u)}$, and using
 our choice of $Q$, we get that $\big|\muhat_p(u) - \mu_p(u)\big| \le \ve$ holds with probability at
 least $1-\delta/(2|V|)$, where
 \[
-  \mu_p(u) = \frac{1}{\dout(u)}\sum_{j \in \NNout(u)} \frac{p_i + q_j}{2} = \frac{p_i + \qbar_i}{2}~.
+  \mu_p(u) = \frac{1}{\dout(u)}\sum_{v \in \NNout(u)} \frac{p_u + q_v}{2} = \frac{p_u + \qbar_u}{2}~.
 \]
 Now consider the random variables $Z_t = \Ind{y_{u,v_t}=1}$, for $t=1,\dots,Q$. Conditioned on
-$J_1,\dots,J_Q$, these are independent Bernoulli random variables with $\E[Z_t \mid J_t] =
-\tfrac{p_i+q_{J_t}}{2}$. Hence, applying a standard Hoeffding bound for independent variables and
+$V_1,\dots,V_Q$, these are independent Bernoulli random variables with $\E[Z_t \mid V_t] =
+\tfrac{p_u+q_{V_t}}{2}$. Hence, applying a standard Hoeffding bound for independent variables and
 using our choice of $Q$, we get that
 \[
   \left|\frac{1}{Q}\sum_{t=1}^Q Z_t - \muhat_p(u) \right| \le \ve 
 \]
-with probability at least $1-\delta/(2|V|)$ for every realization of $J_1,\dots,J_Q$. 
+with probability at least $1-\delta/(2|V|)$ for every realization of $V_1,\dots,V_Q$. 
 
 Since $\hdeltaout(u) = (Z_1+\cdots+Z_Q)/Q$, we get that $\big|\hdeltaout(u) - \mu_p(u)\big| \le
 2\ve$ with probability at least $1-2\delta/(2|V|)$. Applying the same argument to $\hdeltain(v)$,
 and the union bound\footnote{The sample spaces for the ingoing and outgoing edges of the vertices
 occurring as endpoints in $E_{\theta}$ overlap. Hence, in order to prove a uniform concentration
-result, we need to apply the union bound over the random variables defined over these sample spaces,
-which motivates the presence of the factor $\ln(2|V|)$ in the definition of $Q$.}
+result, we need to apply the union bound over the random variables defined over these sample spaces.}
 on the set $\theset{\hdeltain(v),\hdeltaout(u)}{(u,v) \in E_{\theta}}$, we get that
 \begin{equation}
   \label{eq:first}
-  \left| \hdeltaout(u) + \hdeltain(v) - \frac{p_i + q_j}{2} - \frac{\pbar_j + \qbar_i}{2} \right| \le 4\ve
+  \left| \hdeltaout(u) + \hdeltain(v) - \frac{\pbar_v + \qbar_u}{2} - \frac{p_u + q_v}{2} \right| \le 4\ve
 \end{equation}
 simultaneously holds for all $(u,v) \in E_{\theta}$ with probability at least $1 - 4\delta$. Now
-notice that $\pbar_j$ is a sample mean of $Q$ i.i.d.\ $[0,1]$-valued random variables drawn from the
-prior marginal $\int_0^1 \mu\big(\cdot,q\bigr) dq$ with expectation $\mu_p$. Similarly, $\qbar_i$ is
+notice that $\pbar_v$ is a sample mean of $Q$ i.i.d.\ $[0,1]$-valued random variables drawn from the
+prior marginal $\int_0^1 \mu\big(\cdot,q\bigr) dq$ with expectation $\mu_p$. Similarly, $\qbar_u$ is
 a sample mean of $Q$ i.i.d.\ $[0,1]$-valued random variables independently drawn from the prior
 marginal $\int_0^1 \mu\big(p,\cdot\big) dp$ with expectation $\mu_q$. By applying Hoeffding bound
 for independent variables, together with the union bound to the set of pairs of random variables
-whose sample means are $\pbar_j$ and $\qbar_i$ for each $(u,v) \in E_{\theta}$ (there are at most
+whose sample means are $\pbar_v$ and $\qbar_u$ for each $(u,v) \in E_{\theta}$ (there are at most
 $2|V|$ of them) we obtain that
 \begin{align*}
-  \big|\pbar_j - \mu_p\big| \le \ve
+  \big|\pbar_v - \mu_p\big| \le \ve
   \qquad\text{and}\qquad
-  \big|\qbar_i - \mu_q\big| \le \ve
+  \big|\qbar_u - \mu_q\big| \le \ve
 \end{align*}
 hold simultaneously for all $(u,v) \in E_{\theta}$ with probability at least $1-2\delta$. Combining
 with~\eqref{eq:first} we obtain that
 \begin{equation}
   \label{eq:this}
-  \left| \hdeltaout(u) + \hdeltain(v) - \frac{p_i + q_j}{2} - \frac{\mu_p + \mu_q}{2} \right| \le 5\ve
+  \left| \hdeltaout(u) + \hdeltain(v) - \frac{\mu_p + \mu_q}{2} - \frac{p_u + q_v}{2} \right| \le 5\ve
 \end{equation}
 simultaneously holds for each $(u,v) \in E_{\theta}$ with probability at least $1 - 6\delta$. Next,
 let $E_L'$ be the set of the first $Q$ edges drawn in $E_L \cap E_0$. Then
 \[
-  \E\big[\tauhat\big] = \frac{1}{Q}\sum_{(u,v) \in E_L'} \Pr\big(y_{u,v} = 1\big) = \frac{1}{Q}\sum_{(u,v) \in E_L'} \frac{p_i+q_j}{2}~,
+  \E\big[\tauhat\big] = \frac{1}{Q}\sum_{(u,v) \in E_L'} \Pr\big(y_{u,v} = 1\big) = \frac{1}{Q}\sum_{(u,v) \in E_L'} \frac{p_u+q_v}{2}~,
 \]
 where the expectation is w.r.t.\ the independent draws of the labels $y_{u,v}$ for $(u,v) \in E_L'$.
 Hence, by applying again Hoeffding bound (this time without the union bound) to the $Q =
-\tfrac{1}{2\ve^2}\ln\tfrac{2}{\delta}$ independent Bernoulli random variables $\Ind{y_{u,v} = 1}$,
+\tfrac{1}{2\ve^2}\log\tfrac{4|V|}{\delta}$ independent Bernoulli random variables $\Ind{y_{u,v} = 1}$,
 $(u,v) \in E_L'$, the event
 $
 \big| \tauhat - \E\big[\tauhat\big] \big| \le \ve
 $
 holds with probability at least $1-\delta$. Now, introduce the function
 \[
-  F(\bp,\bq) = \E\big[\tauhat\big] = \frac{1}{Q}\sum_{(u,v) \in E_L'} \frac{p_i+q_j}{2}~.
+  F(\bp,\bq) = \E\big[\tauhat\big] = \frac{1}{Q}\sum_{(u,v) \in E_L'} \frac{p_u+q_v}{2}~.
 \]
 For any realization $\bq_0$ of $\bq$, the function $F_1(\bp) = F(\bp,\bq_0)$ is a sample mean of $Q
-= \tfrac{1}{2\ve^2}\ln\tfrac{4|V|}{\delta}$ i.i.d.\ $[0,1]$-valued random variables
-$\theset{p_i}{(u,v) \in E_L'}$ (recall that if $i \in V$ is the origin of an edge $(u,v) \in E_L'$,
+= \tfrac{1}{2\ve^2}\log\tfrac{4|V|}{\delta}$ i.i.d.\ $[0,1]$-valued random variables
+$\theset{p_u}{(u,v) \in E_L'}$ (recall that if $u \in V$ is the origin of an edge $(u,v) \in E_L'$,
 then it is not the origin of any other edge $(u,v') \in E_L'$). Using again the standard Hoeffding
 bound, we obtain that
 \[
@@ -168,9 +171,9 @@ we obtain that
 \end{equation}
 with probability at least $1-3\delta$. Combining~(\ref{eq:this}) with~(\ref{eq:that}) we obtain
 \[
-  \left| \hdeltaout(u) + \hdeltain(v) - \tauhat - \frac{p(u) + q(v)}{2} \right| \le 8\ve
+  \left| \hdeltaout(u) + \hdeltain(v) - \tauhat - \frac{p_u+q_v}{2} \right| \le 8\ve
 \]
-simultaneously holds for each $(u,v) \in E_{\theta}$ with probability at least $1 - 10\delta$.
+simultaneously holds for each $(u,v) \in E_{\theta}$ with probability at least $1 - 9\delta$.
 Putting together concludes the proof.
 \end{proof}
 
@@ -532,7 +535,7 @@ then using Randomized Weighted Majority on the two experts
 \]
 we get an expected mistake bound of
 \[
-    2\Psi(Y) + \sqrt{(4\ln 2) \Psi(Y)}~.
+    2\Psi(Y) + \sqrt{(4\log 2) \Psi(Y)}~.
 \]
 \fi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

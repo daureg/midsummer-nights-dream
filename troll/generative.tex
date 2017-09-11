@@ -29,9 +29,13 @@ Notice that the Bayes optimal prediction for $\yuv$ is $y^*(u,v) = \sgn\big(\eta
 \tfrac{1}{2}\big)$, where $\eta(u,v) = \Pr\big( \yuv = 1 \big)$. Moreover, the probability of
 drawing at random a $+1$-labeled edge from $\Nout(u)$ equals
 \begin{equation}\label{e:pout}
-	\frac{1}{2}\,\Biggl(p_u + \frac{1}{\dout(u)} \sum_{v\in \NNout(u)} q_v \Biggl)
+	\frac{1}{2}\,\Biggl(p_u + \frac{1}{\dout(u)} \sum_{v\in \nnout(u)} q_v \Biggl) =
+		\frac{1}{2}\,\left(p_u + \qbar_u\right)\,,
 \end{equation}
+where $\qbar_u = \frac{1}{\dout(u)} \sum_{v\in \nnout(u)} q_v$ is the average $q$ value of $u$ out
+neighbors.
 Similarly, the probability of drawing at random a $+1$-labeled edge from $\Nin(v)$ equals
 \begin{equation}\label{e:pin}
-	\frac{1}{2}\,\Biggl(q_v + \frac{1}{\din(v)} \sum_{u\in \NNin(v)} p_u \Biggl)
+	\frac{1}{2}\,\Biggl(q_v + \frac{1}{\din(v)} \sum_{u\in \NNin(v)} p_u \Biggl)=
+		\frac{1}{2}\,\left(q_v + \pbar_v\right)
 \end{equation}

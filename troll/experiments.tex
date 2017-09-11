@@ -105,7 +105,7 @@ We compared the following algorithms:
   \item The label propagation algorithm of \autoref{ss:passive} (referred to as \uslpropGsec{}).
     The actual binarizing threshold was set by cross-validation on the training set.
 
-  \item The algorithm analyzed at the beginning of \autoref{s:algbatch}, which we call \usrule{}
+  \item The algorithm analyzed \autoref{ss:bayes_approx}, which we call \usrule{}
     (Bayes Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness). After
     computing $\htr(u)$ and $\hun(u)$ on training set $E_0$ for all $u \in V$ (or setting those
     values to $\frac{1}{2}$ in case there is no outgoing or incoming edges for some node), we use
@@ -259,7 +259,7 @@ set. Though our experiments are not conclusive, some trends can be readily spott
     performance the more involved \uslogregp{} model. In fact, supporting our generative model of
     \autoref{s:gen}, the logistic regression weights for features $1-\htr(i)$ and $1-\hun(j)$
     are almost equal (see Table~2 in the supplementary material), thereby suggesting that
-    predictor~\eqref{eq:predictor}, derived from the theoretical results at the beginning of
-    \autoref{s:algbatch}, is \emph{also} the best logistic model based on trollness and
+    predictor~\eqref{eq:predictor}, derived from the theoretical results in
+    \autoref{ss:bayes_approx}, is \emph{also} the best logistic model based on trollness and
     untrustworthiness.
 \end{enumerate}

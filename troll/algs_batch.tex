@@ -1,7 +1,16 @@
 \section{Algorithms in the Batch Setting}\label{s:algbatch}
 
-Given $G(Y) =(V,E(Y))$, we have at our disposal a training set \trainset{} of labeled edges from
-$E(Y)$, our goal being that of building a predictive model for the labels of the remaining edges.
+Given $G(Y) =(V,E(Y))$, in the batch setting we have at our disposal a training set \trainset{} of
+labeled edges from $E(Y)$. We want to build a predictive model for the labels of the remaining
+edges. We present two algorithms to do so, which both compute estimates of the all parameters $p$
+and $q$ of our generative model. They differ in the approximation guarantees they provide, and in
+the class of graphs to which they apply. The first algorithm runs on the graph $G$ and estimates
+locally the parameters by their empirical means in the training set, which under some density
+assumptions are showed to concentrate around their true values. The second algorithm, on the other
+hand, exploits the reduced graph $G''$ and computes a maximum likelihood estimation of the
+parameters through a global label propagation approach, without making any density assumption.
+
+\subsection{Approximation to Bayes via dense sampling}\label{ss:bayes_approx}
 
 Our first algorithm is an approximation to the Bayes optimal predictor $y^*(u,v)$. Let us denote by
 $\htr(u)$ and $\hun(u)$ the trollness and the untrustworthiness of node $u$ when both are computed
@@ -10,7 +19,7 @@ form
 
 \begin{equation}
   \label{eq:predictor}
-  \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) - \tfrac{1}{2} -\tau\Big)~,
+  \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) -\tau - \tfrac{1}{2}\Big)~,
 \end{equation}
 
 where $\tau \ge 0$ is the only parameter to be trained. Despite its simplicity, this classifier
@@ -24,7 +33,6 @@ to cancel this bias. Yet, the presence of a prior distribution $\mu(p,q)$ ensure
 the same for all edges $(u,v) \in E$.
 
 \iffalse
-\subsection{Approximation to Bayes via Active Learning}\label{ss:active}
 
 We now introduce a non-adaptive active learning algorithm approximating the Bayes optimal
 predictions $y^*(u,v)$.
@@ -52,13 +60,13 @@ edges in $E_L$;
 \fi
 
 Our algorithm works under the assumption that for given parameters $Q$ (a positive integer) and
-$\alpha \in (0,1)$ there exists a set\footnote{$E_L$ is needed to find an estimate $\tauhat$ of
-$\tau$ in~(\ref{eq:predictor}) ---see Step~3 of the algorithm. Any undirected matching of $G$ of
-size $\mathcal{O}(\log|V|)$ can be used, for instance using the blossom
-algorithm~\autocite{matching65}. In practice, however, we never computed $E_L$, and estimated $\tau$
+$\alpha \in (0,1)$, there exists a set\footnote{$E_L$ is needed to find an estimate $\tauhat$ of
+$\tau$ in~(\ref{eq:predictor}), as done in Step~3 of the algorithm. Any undirected matching of $G$ of
+size $O(\log|V|)$ can be used, obtained for instance by the blossom algorithm~\autocite{matching65}.
+In practice, however, we never computed $E_L$, and estimated $\tau$
 on the entire training set \trainset{}.} $E_L \ss E$ of size $\tfrac{2Q}{\alpha}$ where each vertex
-$u \in V$ appearing as an endpoint of some edge in $E_L$ occurs at most once as origin ---ie{}.,
-$(u,v)$--- and at most once as destination ---ie{}., $(v,u)$. Moreover, we assume \trainset{} has
+$u \in V$ appearing as an endpoint of some edge in $E_L$ occurs at most once as origin ---\ie{}
+$(u,v)$--- and at most once as destination ---\ie{} $(v,u)$. Moreover, we assume \trainset{} has
 been drawn from $E$ at random {\em without} replacement, with $m = |E_0| = \alpha\,|E|$. The
 algorithm performs the following steps:
 
@@ -73,29 +81,53 @@ algorithm performs the following steps:
 
 	\item Any remaining edge $(u,v) \in E\setminus \trainset{}$ is predicted as
 		$$
-		\yhat(u,v) = \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) - \tfrac{1}{2} -\tauhat\Big)
+		\yhat(u,v) = \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) -\tauhat - \tfrac{1}{2}\Big)
 		$$
 \end{enumerate}
 
-The next result\footnote{All proofs are in the supplementary material.} shows that if the graph is
-not too sparse, then the above algorithm can approximate the Bayes optimal predictor on nodes whose
-in-degree and out-degree is not too small.
+The next result shows that the above algorithm can approximate the Bayes optimal predictor on nodes
+whose in-degree and out-degree is not too small.
 
 \begin{theorem}
   \label{t:active}
   Let $G(Y) = (V,E(Y))$ be a directed graph with labels on the edges generated according to the
   model in \autoref{s:gen}.
-  If the algorithm is run with parameter $Q = \Omega(\ln|V|)$, and $\alpha \in (0,1)$ such that the
+  If the algorithm is run with parameter $Q = \Omega(\log|V|)$, and $\alpha \in (0,1)$ such that the
   above assumptions are satisfied, then $\yhat(u,v) = y^*(u,v)$ holds with high probability
-  simultaneously for all test edges $(u,v) \in E$ such that $\dout(u),\din(v) = \Omega(\ln|V|)$, and
+  simultaneously for all test edges $(u,v) \in E$ such that $\dout(u),\din(v) = \Omega(\log|V|)$, and
   $\eta(u,v) = \Pr(\yuv=1)$ is bounded away from $\tfrac{1}{2}$.
-  The overall number of training edges is $\Theta\big(|V|\ln|V|\big)$.
 \end{theorem}
 
-The approach leading to Theorem~\ref{t:active} lets us derive the \usrule{} algorithm assessed in
-our experiments of \autoref{s:exp}, but it needs the graph to be sufficiently dense and the bias
-$\tau$ to be the same for all edges. In order to address these limitations, we now introduce a
-second method based on label propagation.
+While we defer the full proof of \autoref{t:active} to the additional material at the end of this
+chapter (\autoref{ssec:troll_proof_bayes}), here we give a sketch of the method used, focusing on
+parameter $p$. First, by \autoref{l:bins} on negatively associated random variables (stated
+\vpageref{l:bins}), we show that with our choice of $Q$, for $\theta=\frac{2Q}{\alpha}$ and for any
+$u$ having enough out neighbors (\ie{} $\NNout(u) \ge \theta$), at least $Q$ edges of $\Nout(u)$
+are in the training set with high probability.
+We use these $Q$ edges to compute $1-\htr(u)$, the empirical probability of drawing a $+1$-labeled
+edge from $\Nout(i)$. We show that it is close to the real probability, which according to equation
+\eqref{e:pout} is equal to $\frac{1}{2}\,\left(p_u + \qbar_u\right)$. $\qbar_u$ being a sample mean
+of i.i.d.~$[0,1]$-valued random variables independently drawn from the prior marginal $\int_0^1
+\mu\big(p,\cdot\big) dp$, it concentrates around its expectation $\mu_q$.
+
+By following the same reasoning on the parameters $q$ and using an union bound, we then show that
+$\left(1-\htr(u)\right) + \left(1-\hun(v)\right) - \frac{\mu_p+\mu_q}{2}$ is close to
+$\frac{p_u+q_v}{2}$ simultaneously for all edges. Another set of concentration arguments then show
+that our estimate $\tauhat$ is close to $\frac{\mu_p+\mu_q}{2}$. Combining these two facts ends the
+proof.
+
+\medskip
+
+The approach leading to \autoref{t:active} needs the graph to be sufficiently dense. At first sight,
+having $Q = \Omega(\log|V|)$ training edges per nodes does not sound that like such a stringent
+requirement. Consider for instance Facebook ---which is neither signed nor directed though. It has
+two billion
+users~\bottomfootnote{\url{https://investor.fb.com/investor-news/press-release-details/2017/Facebook-Reports-Second-Quarter-2017-Results/}},
+each of them having $155\approx 7.2\log|V|$ friends on average~\autocite{facebookFriend16}. However,
+the constant hidden in the $\Omega$ notation, and needed to guarantee a good behavior, is much
+larger than $7.2$. We will nonetheless see in the experiments that we can still apply the resulting
+algorithm (we call it \usrule{}) with satisfying results. Additionally, and in order to address this
+density limitation, we now introduce a second method based on label propagation.
 
 \subsection{Approximation to Maximum Likelihood via Label Propagation}\label{ss:passive}
 
@@ -163,7 +195,7 @@ training w.r.t.\ both $(\bp,\bq)$ and all $\yuv \in [-1,+1]$ for $(u,v)\in E\set
 \end{equation}
 
 Binary $\pm 1$ predictions on the test set $E\setminus \trainset{}$ are then obtained by
-thresholding the obtained values $\yuv$ at $0$.
+thresholding the computed values $\yuv$ at $0$.
 
 \iffalse
 ********************************************************
