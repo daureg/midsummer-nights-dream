@@ -23,16 +23,16 @@ our model as reminiscent of standard models for link generation in social networ
 classical $p_1$ model from \cite{hl81}. However, note that the similarity falls short, for all these
 models aim at
 representing the likelihood of the network topology, rather than the probability of edge signs, once
-the topology is \emph{given}.} 
+the topology is \emph{given}.
 
 Notice that the Bayes optimal prediction for $\yuv$ is $y^*(u,v) = \sgn\big(\eta(u,v) -
 \tfrac{1}{2}\big)$, where $\eta(u,v) = \Pr\big( \yuv = 1 \big)$. Moreover, the probability of
 drawing at random a $+1$-labeled edge from $\Nout(u)$ equals
 \begin{equation}\label{e:pout}
-	\frac{1}{2}\,\Biggl(p_u + \frac{1}{\dout(u)} \sum_{v\in \nnout(u)} q_v \Biggl) =
+	\frac{1}{2}\,\Biggl(p_u + \frac{1}{\dout(u)} \sum_{v\in \NNout(u)} q_v \Biggl) =
 		\frac{1}{2}\,\left(p_u + \qbar_u\right)\,,
 \end{equation}
-where $\qbar_u = \frac{1}{\dout(u)} \sum_{v\in \nnout(u)} q_v$ is the average $q$ value of $u$ out
+where $\qbar_u = \frac{1}{\dout(u)} \sum_{v\in \NNout(u)} q_v$ is the average $q$ value of $u$ out
 neighbors.
 Similarly, the probability of drawing at random a $+1$-labeled edge from $\Nin(v)$ equals
 \begin{equation}\label{e:pin}
