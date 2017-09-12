@@ -132,12 +132,15 @@ density limitation, we now introduce a second method based on label propagation.
 \subsection{Approximation to Maximum Likelihood via Label Propagation}\label{ss:passive}
 
 For simplicity, assume the joint prior distribution $\mu(p,q)$ is uniform over $[0,1]^2$ with
-independent marginals, and suppose that we draw at random without replacement the training set $E_0
+independent marginals,\footnote{As we will see, in real data, around $80\%$ if the edges are
+positive, meaning this assumption of uniformity over $[0,1]^2$ is unlikely to fully holds, for
+otherwise the signs would more balanced} and suppose that we draw at random without replacement the
+training set $E_0
 = \big((u_1,v_1),y_{u_1,v_1}), ((u_2,v_2),y_{u_2,v_2}), \ldots, ((u_m,v_m),y_{u_m,v_m}\big)$, with
 $m = |E_0|$. Then a reasonable approach to approximate $y^*(u,v)$ would be to resort to a maximum
 likelihood estimator of the parameters $\{p_i, q_i\}_{i=1}^{|V|}$ based on \trainset{}.
-As showed in the supplementary material, the gradient of the log-likelihood function w.r.t.\ $\{p_i,
-q_i\}_{i=1}^{|V|}$ satisfies
+As showed in the supplementary material \vpageref{ssec:troll_mle_deriv}, the gradient of the
+log-likelihood function w.r.t.\ $\{p_i, q_i\}_{i=1}^{|V|}$ satisfies
 
 \begin{equation}\label{e:mlp}
 \frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{u=1}^{|V|}\right)}{\partial p_{\ell}}
@@ -148,14 +151,13 @@ q_i\}_{i=1}^{|V|}$ satisfies
 \frac{\Ind{u_k = \ell,y_{\ell,v_k}=-1}}{2-p_{\ell}-q_{v_k}}
 \end{equation}
 
-\begin{align}
-&\frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{u=1}^{|V|}\right)}{\partial q_{\ell}}\label{e:mlq}\\
-&\ \ =
-\sum_{k=1}^m
+\begin{equation}\label{e:mlq}
+\frac{\partial \log \Pr\left(E_0 \,\Big|\, \{p_i, q_i\}_{u=1}^{|V|}\right)}{\partial q_{\ell}}
+= \sum_{k=1}^m
 \frac{\Ind{v_k = \ell,y_{u_k,\ell}=+1}}{p_{u_k}+q_{\ell}}\,
 - \sum_{k=1}^m
-\frac{\Ind{v_k = \ell,y_{u_k,\ell}=-1}}{2-p_{u_k}-q_{\ell}}\,,\notag
-\end{align}
+\frac{\Ind{v_k = \ell,y_{u_k,\ell}=-1}}{2-p_{u_k}-q_{\ell}}\,,
+\end{equation}
 
 where $\Ind{\cdot}$ is the indicator function of the event at argument.
 Unfortunately, equating \eqref{e:mlp} and \eqref{e:mlq} to zero, and solving for parameters
@@ -163,21 +165,24 @@ $\{p_i, q_i\}_{i=1}^{|V|}$ gives rise to a hard set of nonlinear equations.
 Moreover, some such parameters may never occur in these equations, namely whenever $\Nout(u)$ or
 $\Nin(v)$ are not represented in \trainset{} for some $u,v\in V$.
 
+
 Our \emph{first approximation} is therefore to replace the nonlinear equations resulting
-from \eqref{e:mlp} and \eqref{e:mlq} by the following set of linear equations\footnote{Details
-are provided in the supplementary material.}, one for each $\ell \in V$:
+from \eqref{e:mlp} and \eqref{e:mlq} by a set of linear equations. In the case of \eqref{e:mlp}, for
+a given $\ell \in V$, we make the assumption that $(p_{\ell}+q_{v_k}) (2-p_{\ell}-q_{v_k})$ is
+constant for every $k \in [1,\ldots,m]$. Multiplying \eqref{e:mlp} by this constant
+quantity and setting the resulting equation to zero, we obtain for each $\ell \in V$:
 \begin{equation*}
   \sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=+1} \left(2-p_{\ell}-q_{v_k}\right)
   = \sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=-1}
   (p_{\ell}+q_{v_k})
 \end{equation*}
 
-\begin{align*}
-  \sum_{k=1}^m &\Ind{v_k = \ell,y_{u_k,\ell}=+1} \left(2-p_{u_k}-q_{\ell}\right)\\
-  =
-  &\sum_{k=1}^m  \Ind{v_k = \ell,y_{u_k,\ell}=-1}
+We apply a similar transformation to \eqref{e:mlq} in order to obtain, for each $\ell \in V$:
+\begin{equation*}
+  \sum_{k=1}^m \Ind{v_k = \ell,y_{u_k,\ell}=+1} \left(2-p_{u_k}-q_{\ell}\right)
+  = \sum_{k=1}^m  \Ind{v_k = \ell,y_{u_k,\ell}=-1}
   \left(p_{u_k}+q_{\ell}\right)
-\end{align*}
+\end{equation*}
 
 The solution to these equations are precisely the points where the gradient w.r.t.\ $(\bp,\bq)
 =\{p_i, q_i\}_{i=1}^{|V|}$ of the quadratic function
@@ -195,7 +200,7 @@ training w.r.t.\ both $(\bp,\bq)$ and all $\yuv \in [-1,+1]$ for $(u,v)\in E\set
 \end{equation}
 
 Binary $\pm 1$ predictions on the test set $E\setminus \trainset{}$ are then obtained by
-thresholding the computed values $\yuv$ at $0$.
+thresholding the computed values $\yuv$.
 
 \iffalse
 ********************************************************
@@ -231,8 +236,8 @@ We now proceed to solve \eqref{e:quadratic} via label propagation~\autocite{Labe
 graph $G''$ obtained through the $G \rightarrow G''$ reduction of \autoref{s:prel}.
 However, because of the presence of negative edge weights in $G''$, we first have to symmetrize\footnote{%
 While we note here that such linear transformation of the variables does not change the problem, we
-provide more details in Section~1.3 of the supplementary material.} variables $p_i, q_i$ and $\yuv$
-so as they all lie in the interval $[-1,+1]$.
+provide more details in \autoref{ssec:troll_lprop_weights} of the supplementary material.} variables
+$p_i, q_i$ and $\yuv$ so as they all lie in the interval $[-1,+1]$.
 After this step, one can see that, once we get back to the original variables, label propagation
 computes the harmonic solution minimizing the function
 
@@ -244,7 +249,7 @@ computes the harmonic solution minimizing the function
 \end{equation*}
 
 The function ${\widehat f}$ is thus a regularized version of the target function $f_{E_0} +
-f_{E\setminus E_0}$ in (\ref{e:quadratic}), where the regularization term tries to enforce the extra
+f_{E\setminus E_0}$ in \eqref{e:quadratic}, where the regularization term tries to enforce the extra
 constraint that whenever a node $u$ has a high out-degree then the corresponding $p_u$ should be
 close to \shalf. Thus, on any edge $(u,v)$ departing from $u$, the Bayes optimal predictor $y^*(u,v)
 = \sgn(p_u+q_v-1)$ will mainly depend on $q_v$ being larger or smaller than \shalf{} (assuming $v$
@@ -265,7 +270,7 @@ The label propagation algorithm operating on $G''$ does so (see again
 
 The algorithm is guaranteed to converge~\autocite{LabelPropa03} to the minimizer of ${\widehat f}$.
 Notice that the presence of negative weights on the edges of $G''$ does not prevent label
-propagation from converging. Indeed, any node classification algorithm handling both positive and
+propagation from converging. In fact, any node classification algorithm handling both positive and
 negative weights on the edges of $G''$ could be used instead of label propagation. One alternative
-would be the \textsc{wta} algorithm from \autocite{WTA13}.  This is the algorithm we will be
-championing in our experiments of Section~\ref{s:exp}.
+would thus be the \textsc{wta} algorithm from \autocite{WTA13}. However, our label propagation
+algorithm is the one we will be championing in our experiments of \autoref{s:exp}.

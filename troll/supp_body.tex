@@ -178,6 +178,7 @@ Putting together concludes the proof.
 \end{proof}
 
 \subsection{Derivation of the maximum likelihood equations}
+\label{ssec:troll_mle_deriv}
 
 Recall that the training set $\trainset = \theset{\big(u_t,v_t),y_{u_t,v_t}\big)}{t=1,\dots,m}$
 is drawn uniformly at random from $E$ without replacement. 
@@ -231,40 +232,6 @@ so that
 \frac{\partial \log \Pr\left(E_0\,\Big|\, \{p_i, q_i\}_{i=1}^{|V|}\right)}{\partial q_{\ell}}
 = \sum_{k=1}^m \frac{\Ind{v_k = \ell,y_{u_k,\ell}=+1}}{p_{u_k}+q_{\ell}}\,
 - \, \sum_{k=1}^m \frac{\Ind{v_k = \ell,y_{u_k,\ell}=-1}}{2-p_{u_k}-q_{\ell}}\,.
-\end{align*}
-
-We then derive the approximation presented in the main paper. Namely, equating to zero the
-gradient of the log likelihood w.r.t $p_\ell$ gives
-\begin{align*}
-\sum_{k=1}^m 
-\frac{\Ind{u_k = \ell,y_{\ell,v_k}=+1}}{p_{\ell}+q_{v_k}}\,
- - \,
-\frac{\Ind{u_k = \ell,y_{\ell,v_k}=-1}}{2-p_{\ell}-q_{v_k}} &= 0
-\end{align*}
-
-To simplify the notation, let $a_k = \Ind{u_k = \ell,y_{\ell,v_k}=+1}$, $b_k=\Ind{u_k =
-\ell,y_{\ell,v_k}=+1}$ and $c_k = p_{\ell} + q_{v_k}$, we can rewrite the previous equation as 
-\begin{align*}
-  \sum_{k=1}^m \frac{a_k}{c_k} - \frac{b_k}{2-c_k} = 0 =
-  \sum_{k=1}^m  \frac{a_k(2-c_k) - b_k c_k }{ c_k(2-c_k) }
-\end{align*}
-
-The approximation consists in assuming that the denominator $c_k(2-c_k)$ is a
-constant for all $k$, and can therefore be disregarded.
-Moving $b_kc_k$ to the right hand side and returning to the original variables,
-it yields the approximate equation presented in the main paper, namely
-\begin{align*}
-  \sum_{k=1}^m \Ind{i_k = \ell,y_{\ell,v_k}=+1} \left(2-p_{\ell}-q_{v_k}\right)
-  = \sum_{k=1}^m \Ind{i_k = \ell,y_{\ell,v_k}=-1}
-  (p_{\ell}+q_{v_k})
-\end{align*}
-
-By applying a similar process to the gradient w.r.t. $q_\ell$, we obtain the
-following approximate equation
-\begin{align*}
-\sum_{k=1}^m \Ind{v_k = \ell,y_{u_k,\ell}=+1} \left(2-p_{u_k}-q_{\ell}\right)
-= \sum_{k=1}^m  \Ind{v_k = \ell,y_{u_k,\ell}=-1}
-\left(p_{u_k}+q_{\ell}\right)
 \end{align*}
 
 \subsection{Label propagation on $G''$}
