@@ -277,75 +277,20 @@ By setting $\eps=2$, we can factor this expression into
   \frac{1}{2}\right)^2 \right)~.
 \end{align*}
 
-\section{Proofs from \autoref{s:algonline}}
+\section{Proof from \autoref{s:algonline}}
 
-\begin{proof}[Proof of \autoref{t:online}]
+\begin{proof}[Proof sketch that, in the context of \autoref{t:mistake_bound}, as $\frac{K}{|E|}
+  \rightarrow 0$ then $\E M_A(Y)=K$  ]\label{proof:troll_K_mistakes}
 
-Let each node $u \in V$ host two instances of the randomized Weighted Majority (RWM)
-algorithm~\cite{LittlestoneWa94} with an online tuning of their learning rate~\cite{cb+97,acg02}:
-one instance for predicting the sign of outgoing edges $(u,v)$, and one instance for predicting the
-sign of incoming edges $(v,u)$. Both instances simply compete against the two constant experts,
-predicting always $+1$ or always $-1$. Denote by $M(u,v)$ the indicator function (zero-one loss) of
-a mistake on edge $(u,v)$. Then the expected number of mistakes of each RWM instance
-satisfy~\cite{cb+97,acg02}:
-\[
-    \sum_{v \in \NNout(u)} \E\,M(u,v) = \Psiout(u,Y) + O\left(\sqrt{\Psiout(u,Y)}+ 1\right)
-\]
-and
-\[
-    \sum_{u \in \NNin(v)} \E\,M(u,v) = \Psiin(v,Y) + O\left(\sqrt{\Psiin(v,Y)} + 1\right)~.
-\]
-We then define two meta-experts: an ingoing expert, which predicts $y_{u,v}$ using the prediction of
-the ingoing RWM instance for node $v$, and the outgoing expert, which predicts $y_{u,v}$ using the
-prediction of the outgoing RWM instance for node $u$.
-The number of mistakes of these two experts satisfy
-\begin{align*}
-  \sum_{u \in V}\sum_{v \in \NNout(u)} \E\,M(u,v)
-                                       &= \Psiout(Y) + O\left(\sqrt{|V|\Psiout(Y)} + |V|\right)\\
-  \sum_{v \in V}\sum_{u \in \NNin(v)} \E\,M(u,v)
-                                      &= \Psiin(Y)  + O\left(\sqrt{|V|\Psiin(Y)}  + |V|\right)~,
-\end{align*}
-where we used $\sum_{v \in V} \sqrt{\Psiin(v,Y)} \leq \sqrt{|V|\Psiin(Y)}$, and similarly for
-$\Psiout(Y)$.
-Finally, let the overall prediction of our algorithm be a RWM instance run on top of the ingoing and
-the outgoing experts. Then the expected number of mistakes of this predictor satisfies~
-\begin{align*}
-  \sum_{(u,v) \in E} \E\,M(u,v) &= \Psi_G(Y) + O\Biggl(\sqrt{|V|\Psi_G(Y)} + |V|
-    + \sqrt{\left(\Psi_G(Y) + |V| + \sqrt{|V|\Psi_G(Y)}\right)} \Biggl)\\
-    &= \Psi_G(Y) + O\left(\sqrt{|V|\Psi_G(Y)} + |V|\right)
-\end{align*}
-as claimed.
-\end{proof}
-
-\begin{proof}[Proof sketch of \autoref{t:mistake_bound}]
-
-Let $\mathcal{Y}_K$ be the set of all labelings $Y$ such that the total number of negative and
-positive edges are $K$ and $|E|-K$, respectively (without loss of generality we will focus on
-negative edges). Consider the randomized strategy that draws a labeling $Y \in \spin^{|E|}$ of the
-edges of the input graph \uar{} from $\mathcal{Y}_K$. For each node $u \in V$, we have $\Psiin(u,Y)
-\le \din^-(u)$, which implies $\Psiin(Y) \le K$. A very similar argument applies to the outgoing
-edges, leading to $\Psiout(Y) \le K$. The constraint $\Psi_G(Y) \le K$ is therefore always
-satisfied.
-
-The adversary will force on average \shalf{} mistakes in each one of the first $K$ rounds of the
-online protocol by repeating $K$ times the following: (i) A label value $\ell\in\{-1,+1\}$ is
-selected uniformly at random. (ii) An edge $(u,v)$ is sampled uniformly at random from the set of
-all edges that were not previously revealed and whose labels are equal to $\ell$. 
-
-The learner is required to predict $y_{u,v}$ and, in doing so, \shalf{} mistakes will be clearly
-made on average because of the randomized labeling procedure. Observe that this holds even when $A$
-knows the value of $K$ and $\Psi_G(Y)$. Hence, we can conclude that the expected number of mistakes
-that $A$ can be forced to make is always at least $K/2$, as claimed.
-
-\medskip
-
-We now show that, as $\frac{K}{|E|} \rightarrow 0$, the lower bound gets arbitrarily close to $K$
-for any $G(Y)$ and any constant $K$.
 Let $\mathcal{E}$ be the following event: There is at least one unrevealed negative label.
-The randomized iterative strategy used to achieve this result is identical to the one described
-above, except for the stopping criterion. Instead of repeating step (i) and (ii) only for the first
-$K$ rounds, these steps are repeated until $\mathcal{E}$ is true.
-%
+The randomized iterative strategy used to force a number of mistakes arbitrarily close to $K$ is identical to the one described
+in the proof of \autoref{t:mistake_bound} \vpageref{t:mistake_bound}, except for the stopping criterion.
+Namely, the adversary draws a labeling $Y$ \uar{} from $\mathcal{Y}_K$, the set of all labelings $Y$
+such that the total number of negative and positive edges are $K$ and $|E|-K$. Then the adversary
+repeats the following two steps: (i) A label value $\ell\in\{-1,+1\}$ is selected \uar{}. (ii) An
+edge $(u,v)$ is sampled \uar{} from the set of all edges that were not previously revealed and whose
+labels are equal to $\ell$. This is done until $\mathcal{E}$ is true.
+
 Let $m_{r,c}$ be defined as follows: For $c=1$ it is equal to the expected number of mistakes forced
 in round $r$ when $K=1$. For $c > 1$ it is equal to the difference between the expected number of
 mistakes forced in round $r$ when $K=c$ and $K=c-1$. One can see that $m_{r,c}$ is 
