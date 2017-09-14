@@ -81,11 +81,14 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
 }
 \newcommand{\marginpars}[1]{\marginpar{\small#1}}
 \usepackage{caption}
-\usepackage[margin=0pt,font+=small,labelformat=parens,labelsep=space,
+\usepackage[margin=0pt,labelformat=parens,labelsep=space,%font+=small,
 skip=6pt,list=false,hypcap=false]{subcaption}
 \captionsetup{compatibility=false}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{makecell}
+\renewcommand\theadfont{\small}
 \graphicspath{{./assets/}}
 % \usepackage[capitalize,noabbrev]{cleveref}
 \usepackage[]{extdash}

@@ -8,13 +8,21 @@ scenario since all competing methods we are aware of have been developed in that
 
 \paragraph{Datasets}
 
-We considered five real-world classification datasets. The first three are directed \ssn{} widely
-used as benchmarks for this task~(\eg{}\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}):
+We considered six real-world classification datasets. The first four are \dssn{} widely
+used as benchmarks for this
+task~(\eg{}\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}{OnlineCompletion17}):
+In \adv{}, a trust-based social network for open source developer, a user $u$ can certify another
+user $v$ with different degrees of trust: \enquote{Observer}, \enquote{Apprentice} (both of which we
+consider negative), \enquote{Journeyer} and \enquote{Master} (both of which we consider
+positive).\footnote{We download the 7\thup{} of July, 2014 version from
+\url{http://www.trustlet.org/datasets/advogato/}.} A full description of this trust metric and its
+resistance to attacks is available in the PhD thesis of the website's creator~\autocite[Section
+4]{AdvogatoTrustThesis02}).
 In \wik{}, there is an edge from user $u$ to user $v$ if $v$ applies for an admin position and $u$
 votes for or against that promotion. In \sla{}, a news sharing and commenting website, member $u$
 can tag other members $v$ as friends or foes. Finally, in \epi{}, an online shopping website, user
 $v$ reviews products and, based on these reviews, another user $u$ can display whether he considers
-$v$ to be reliable or not. In addition to these three datasets, we considered two other \ssn{} where
+$v$ to be reliable or not. In addition to these four datasets, we considered two other \ssn{} where
 the signs are inferred automatically, rather than given explicitly by the users.  In
 \kiw{}~\cite{wikiedits11}, an edge from Wikipedia user $u$ to user $v$ indicates whether they edited
 the same article in a constructive manner or not.\footnote{This is the
@@ -28,17 +36,20 @@ multi-edges which are all of the same sign.}
 
 \begin{table*}[bt]
   \centering
-  \caption{Dataset properties. The 5th column gives the fraction of positive labels. The last two
-  columns provide two different measures of label regularity ---see main text.\label{tab:dataset}}
+  \small
+  \caption{Dataset properties. The 5\thup{} column gives the fraction of positive labels. The next two
+  columns provide two different measures of label regularity, while the last two columns give the
+  proportion of reciprocal edges, and among them the fraction with different signs.\label{tab:dataset}}
   \begin{tabular}{lrrrrrrrr}
     \toprule
-    Dataset &       $|V|$ &       $|E|$ &$\frac{|E|}{|V|}$ & $\frac{|E^+|}{|E|}$ & $\frac{\Psi^2_{G''}(Y)}{|E|}$ & $\frac{\Psi_G(Y)}{|E|}$ \\ % & twin edges & twin disagreement \\
-    \midrule
-    \aut{} &   \np{4831} &  \np{39452} & 8.1  &              72.3\% &                    .076 &                       .191 \\ %&      5.07\% &            27.10\% \\
-    \wik{} &   \np{7114} & \np{103108} & 14.5 &              78.8\% &                    .063 &                       .142 \\ %&      5.56\% &            10.04\% \\
-    \sla{} &  \np{82140} & \np{549202} & 6.7  &              77.4\% &                    .059 &                       .143 \\ %&     17.74\% &             4.00\% \\
-    \kiw{} & \np{138587} & \np{740106} & 5.3  &              87.9\% &                    .034 &                       .086 \\ %&      6.55\% &             2.09\% \\
-    \epi{} & \np{131580} & \np{840799} & 6.4  &              85.3\% &                    .031 &                       .074 \\ %&     30.83\% &            14.64\% \\
+    Dataset & $|V|$       & $|E|$       & $\frac{|E|}{|V|}$ & $\frac{|E^+|}{|E|}$ & $\frac{\Psi^2_{G''}(Y)}{|E|}$ & $\frac{\Psi_G(Y)}{|E|}$ & twin edges & twin disagreement \\
+    \midrule                                                                                                   
+    \aut{}  & \np{4831}   & \np{39452}  & 8.2               & 72.3\%              & .076                          & .191                    & 5.1\%      & 27.1\%            \\
+    \adv{}  & \np{5417}   & \np{51312}  & 9.5               & 75.1\%              & .061                          & .132                    & 33.6\%     & 28.6\%            \\
+    \wik{}  & \np{7114}   & \np{103108} & 14.5              & 78.8\%              & .063                          & .142                    & 5.6\%      & 10.0\%            \\
+    \sla{}  & \np{82140}  & \np{549202} & 6.7               & 77.4\%              & .059                          & .143                    & 17.7\%     & 4.0\%             \\
+    \epi{}  & \np{131580} & \np{840799} & 6.4               & 85.3\%              & .031                          & .074                    & 30.8\%     & 2.1\%             \\
+    \kiw{}  & \np{138587} & \np{740106} & 5.3               & 87.9\%              & .034                          & .086                    & 6.5\%      & 14.6\%            \\
     \bottomrule
   \end{tabular}
 \end{table*}
@@ -74,29 +85,15 @@ comply with our inductive bias principles. Moreover, $\Psi^2_{G''}(Y)/|E|$ tends
 to $\Psi_{G}(Y)/|E|$ across datasets, hence confirming the anticipated connection between the two
 regularity measures.
 
-\iffalse
-***********************************************************************
-Finally, there is a low fraction of reciprocal (or \emph{twin}) edges (i.e.\
-$\eij \in E$ and $\eji \in E$, which is a common mechanism of link formation in
-directed networks~\cite{DirectedReciprocity04}), and in most cases they do not
-disagree, meaning they have the same sign. In practice, we use that fact to
-improve our accuracy at no additional computational cost: when predicting $\eij
-\in E_{\mathrm{test}}$, if the reciprocal edge \eji{} is part of the training set, we
-set $\sgn(\eij) = \sgn(\eji)$.
-
-from http://www.nature.com/articles/srep02729
-
-The study of link reciprocity in binary directed networks1,2, or the tendency
-of vertex pairs to form mutual connections, has received an increasing
-attention in recent years3,4,5,6,7,8,9,10,11,12,13,14. Among other things,
-reciprocity has been shown to be crucial in order to classify3 and model4
-directed networks, understand the effects of network structure on dynamical
-processes (e.g. diffusion or percolation processes5,6,7), explain patterns of
-growth in out-of-equilibrium networks (as in the case of the Wikipedia8 or the
-World Trade Web9,10), and study the onset of higher-order structures such as
-correlations11,12 and triadic motifs13,14,15,16
-************************************************************************
-\fi
+Finally, there is a low fraction of reciprocal (or \emph{twin}) edges (\ie{} both $\euv \in E$ and $\evu
+\in E$), which is a common mechanism of link formation in directed
+networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases such twin edges do not disagree,
+\ie{} they have the same sign. In practice, we can use that fact to improve our accuracy at no
+additional computational cost: when predicting $\euv \in E_{\mathrm{test}}$, if the reciprocal edge
+\evu{} is part of the training set, we set $\sgn(\euv) = \sgn(\evu)$. For clarity, when comparing
+our methods with existing approaches, we not use that trick. But afterwards, we show in
+\autoref{tab:all_mcc_pp} when it can be beneficial.
+% more references in  http://www.nature.com/articles/srep02729
 
 \paragraph{Algorithms and parameter tuning.} 
 We compared the following algorithms:
@@ -176,62 +173,12 @@ risk.  Another way to exploit those quantities is to train a Logistic Regression
 edge is associated with two features: $[1-\htr(i), 1-\hun(j)]$ (we call this method \uslogregp{}).
 \fi
 
-\begin{table*}[t]
-  \centering
-  \setlength{\tabcolsep}{3pt}
-  \scriptsize
-  \caption{MCC with increasing training set size, with one standard deviation over 12 random
-  sampling of $\trainset$. The last four columns refer to the methods we took from the literature.
-For the sake of readability, we multiplied all MCC values by 100. The best number in each row is
-highlighted in \textbf{\textcolor{brown}{bold brown}} and the second one in
-\textit{\textcolor{red}{italic red}}. If the difference is statistically significant ($p$-value of a
-paired Student's $t$-test less than $0.005$), the best score is underlined. The ``time" rows contain
-the time taken to train on a $15\%$ training set.\label{tab:all_mcc}}
-  \begin{tabular}{lrcccc|cccc}
-    \toprule
-    & $\frac{|\trainset{}|}{|E|}$ &                 \uslpropGsec{} &                       \usrule{} &                    \uslogregp{} &         \qoptim{} &     \complowrank{} &      \comptriads{} &   \compranknodes{} &              \compbayesian{} \\
-    \midrule
-    \multirow{7}{*}{\rotatebox[origin=c]{90}{\aut{}}} & $5\%$                       & $\vfirstSig{24.54} \pm 0.69$  & $\vsecondSig{20.21} \pm 0.66$ & $20.19 \pm 0.71$              & $15.86 \pm 0.81$ & $12.76 \pm 0.65$ & $11.04 \pm 0.81$ & $17.18 \pm 1.11$             & $15.28 \pm 1.31$ \\
-                                                      & $10\%$                      & $\vfirstSig{31.20} \pm 0.58$  & $\vsecondSig{27.54} \pm 0.56$ & $27.49 \pm 0.62$              & $25.36 \pm 0.78$ & $17.81 \pm 0.76$ & $16.99 \pm 0.63$ & $25.36 \pm 0.85$             & $24.74 \pm 0.59$ \\
-                                                      & $15\%$ &  $\vfirstSig{35.66} \pm 0.68$  &  $\vsecondSig{32.87} \pm 0.58$  &               $32.79 \pm 0.60$  &  $31.39 \pm 0.75$  &  $22.58 \pm 0.53$  &  $21.55 \pm 0.91$  &  $30.60 \pm 0.87$  &            $31.71 \pm 0.99$  \\
-                                                      & $20\%$ &  $\vfirstSig{38.67} \pm 0.48$  &  $\vsecondSig{36.94} \pm 0.51$  &               $36.86 \pm 0.48$  &  $35.47 \pm 0.41$  &  $25.80 \pm 0.94$  &  $24.27 \pm 0.56$  &  $35.01 \pm 0.83$  &            $36.13 \pm 0.75$  \\
-                                                      & $25\%$ &     $\vfirst{41.05} \pm 0.73$  &               $39.83 \pm 0.58$  &               $39.76 \pm 0.59$  &  $38.48 \pm 0.55$  &  $29.67 \pm 0.78$  &  $26.85 \pm 0.87$  &  $38.06 \pm 0.86$  &  $\vsecond{40.34} \pm 0.94$  \\
-                                                      & time   &                           19.6 &                             0.6 &                             2.6 &               2835 &               3279 &                6.2 &                155 &                         4813 \\
-    \midrule
-    \multirow{7}{*}{\rotatebox[origin=c]{90}{\wik{}}} & $5\%$                       & $\vfirstSig{39.46} \pm 0.79$  & $38.03 \pm 0.97$              & $\vsecondSig{38.50} \pm 0.87$ & $35.72 \pm 0.70$ & $24.58 \pm 1.18$ & $9.59 \pm 1.10$  & $33.60 \pm 0.64$             & $26.45 \pm 0.57$ \\
-                                                      & $10\%$                      & $\vsecond{47.17} \pm 0.35$    & $46.03 \pm 0.49$              & $\vfirst{47.22} \pm 0.40$     & $44.53 \pm 0.48$ & $31.72 \pm 0.61$ & $26.36 \pm 0.83$ & $43.21 \pm 0.81$             & $40.28 \pm 0.69$ \\
-                                                      & $15\%$ &     $\vsecond{50.49} \pm 0.33$  &  $49.89 \pm 0.40$  &      $\vfirst{50.87} \pm 0.36$  &  $49.08 \pm 0.33$  &  $35.77 \pm 0.58$  &  $33.64 \pm 0.83$  &  $48.50 \pm 0.47$  &  $47.07 \pm 0.38$  \\
-                                                      & $20\%$ &  $\vsecondSig{52.74} \pm 0.31$  &  $52.24 \pm 0.49$  &   $\vfirstSig{53.13} \pm 0.27$  &  $51.79 \pm 0.35$  &  $37.90 \pm 0.27$  &  $38.41 \pm 0.53$  &  $51.49 \pm 0.43$  &  $50.54 \pm 0.39$  \\
-                                                      & $25\%$ &     $\vsecond{54.00} \pm 0.63$  &  $53.42 \pm 0.59$  &      $\vfirst{54.26} \pm 0.37$  &  $53.31 \pm 0.37$  &  $40.16 \pm 0.57$  &  $41.34 \pm 1.07$  &  $53.30 \pm 0.37$  &  $52.92 \pm 0.48$  \\
-                                                      & time   &                            41.9 &                1.6 &                             6.0 &              10629 &               8523 &               14.8 &                249 &              12507 \\
-    \midrule
-    \multirow{7}{*}{\rotatebox[origin=c]{90}{\sla{}}} & $5\%$                       & $\vsecondSig{40.77} \pm 0.20$ & $36.13 \pm 0.57$              & $37.00 \pm 0.29$              & $33.49 \pm 0.32$ & $36.83 \pm 0.47$ & $27.10 \pm 0.75$ & $\vfirstSig{45.16} \pm 0.59$ & $29.25 \pm 0.23$ \\
-                                                      & $10\%$                      & $\vsecondSig{46.61} \pm 0.29$ & $41.89 \pm 0.39$              & $43.15 \pm 0.21$              & $40.92 \pm 0.23$ & $39.57 \pm 0.27$ & $40.38 \pm 1.47$ & $\vfirstSig{47.84} \pm 0.50$ & $38.25 \pm 0.21$ \\
-                                                      & $15\%$ &   $\vfirstSig{49.62} \pm 0.22$  &  $45.42 \pm 0.36$  &  $46.42 \pm 0.16$  &  $45.56 \pm 0.19$  &  $41.21 \pm 0.19$  &  $45.88 \pm 1.01$  &  $\vsecondSig{48.75} \pm 0.71$  &  $43.47 \pm 0.16$  \\
-                                                      & $20\%$ &     $\vsecond{51.88} \pm 0.24$  &  $47.78 \pm 0.25$  &  $48.66 \pm 0.10$  &  $48.10 \pm 0.30$  &  $42.74 \pm 0.44$  &  $48.79 \pm 0.57$  &      $\vfirst{52.10} \pm 0.33$  &  $46.89 \pm 0.27$  \\
-                                                      & $25\%$ &     $\vsecond{53.12} \pm 0.20$  &  $49.39 \pm 0.24$  &  $50.22 \pm 0.12$  &  $50.11 \pm 0.20$  &  $44.24 \pm 0.44$  &  $50.62 \pm 0.53$  &      $\vfirst{53.29} \pm 0.22$  &  $49.42 \pm 0.22$  \\
-                                                      & time   &                             677 &                8.3 &               32.8 &              78537 &              69988 &                131 &                            2441 &              68085 \\
-    \midrule
-    \multirow{7}{*}{\rotatebox[origin=c]{90}{\epi{}}} & $5\%$                       & $\vsecondSig{54.83} \pm 0.16$ & $46.94 \pm 0.80$              & $49.16 \pm 0.32$              & $42.79 \pm 0.34$ & $39.96 \pm 0.60$ & $42.94 \pm 2.06$ & $\vfirstSig{56.04} \pm 0.76$ & $37.99 \pm 0.49$ \\
-                                                      & $10\%$                      & $\vsecondSig{58.94} \pm 0.27$ & $54.03 \pm 0.46$              & $55.90 \pm 0.13$              & $53.43 \pm 0.39$ & $44.50 \pm 0.52$ & $50.29 \pm 1.07$ & $\vfirstSig{60.60} \pm 0.32$ & $49.90 \pm 0.36$ \\
-                                                      & $15\%$ &  $\vsecondSig{61.47} \pm 0.21$  &  $57.63 \pm 0.45$  &  $59.25 \pm 0.17$  &  $58.80 \pm 0.32$  &  $48.24 \pm 0.58$  &  $54.64 \pm 1.62$  &  $\vfirstSig{62.69} \pm 0.21$  &            $56.94 \pm 0.65$  \\
-                                                      & $20\%$ &  $\vsecondSig{63.17} \pm 0.13$  &  $60.15 \pm 0.40$  &  $61.45 \pm 0.17$  &  $61.86 \pm 0.13$  &  $52.21 \pm 0.37$  &  $57.27 \pm 1.42$  &  $\vfirstSig{64.10} \pm 0.12$  &            $61.18 \pm 0.45$  \\
-                                                      & $25\%$ &               $64.05 \pm 0.20$  &  $61.88 \pm 0.38$  &  $62.89 \pm 0.12$  &  $63.42 \pm 0.14$  &  $54.68 \pm 0.62$  &  $58.42 \pm 1.59$  &     $\vfirst{65.40} \pm 0.85$  &  $\vsecond{64.59} \pm 0.30$  \\
-                                                      & time   &                            1329 &               10.1 &               54.0 &             143881 &             127654 &                209 &                           3174 &                       104305 \\
-    \midrule
-    \multirow{7}{*}{\rotatebox[origin=c]{90}{\kiw{}}} & $5\%$                       & $\vfirstSig{36.36} \pm 0.53$  & $\vsecondSig{30.89} \pm 0.28$ & $30.81 \pm 0.20$              & $21.69 \pm 0.25$ & $23.15 \pm 0.26$ & $3.04 \pm 0.46$  & $26.63 \pm 0.44$             & $26.68 \pm 0.34$ \\
-                                                      & $10\%$                      & $\vfirstSig{38.58} \pm 0.74$  & $35.68 \pm 0.22$              & $\vsecondSig{35.93} \pm 0.16$ & $29.75 \pm 0.21$ & $27.07 \pm 0.44$ & $12.34 \pm 0.79$ & $33.85 \pm 0.33$             & $35.00 \pm 0.34$ \\
-                                                      & $15\%$ &  $\vsecondSig{39.08} \pm 0.55$  &               $37.77 \pm 0.22$  &               $38.27 \pm 0.19$  &  $33.61 \pm 0.11$  &  $30.05 \pm 0.29$  &  $17.95 \pm 0.92$  &  $36.88 \pm 0.32$  &  $\vfirstSig{40.00} \pm 0.26$  \\
-                                                      & $20\%$ &               $39.04 \pm 0.69$  &               $38.88 \pm 0.36$  &  $\vsecondSig{39.55} \pm 0.11$  &  $35.04 \pm 0.17$  &  $32.17 \pm 0.31$  &  $21.44 \pm 0.67$  &  $38.60 \pm 0.31$  &  $\vfirstSig{43.32} \pm 0.22$  \\
-                                                      & $25\%$ &               $38.90 \pm 0.45$  &               $39.41 \pm 0.16$  &  $\vsecondSig{40.44} \pm 0.14$  &  $36.18 \pm 0.20$  &  $33.94 \pm 0.74$  &  $23.41 \pm 0.41$  &  $39.75 \pm 0.32$  &  $\vfirstSig{45.76} \pm 0.29$  \\
-                                                      & time   &                             927 &                             9.6 &                            46.8 &             219109 &             129460 &                177 &               3890 &                          92719 \\
-    \bottomrule
-  \end{tabular}
-\end{table*}
+\input{all_mcc}
 
 \paragraph{Results}
 Our main results are summarized in \autoref{tab:all_mcc}, reporting MCC test set performance after
-training on sets of varying size (from 5\% to 25\%). Results have been averaged over 12 repetitions.
+training on sets of varying size (from 5\% to 25\%, plus 50\% and 90\%). Results have been averaged
+over 12 repetitions.
 Because scalability is a major concern when training on sizeable datasets, we also give an idea of
 relative training times (in milliseconds) by reporting the time it took to train a single run of
 each algorithm on a training set of size\footnote{Comparison of training time performances is fair
@@ -258,8 +205,47 @@ set. Though our experiments are not conclusive, some trends can be readily spott
   \item As claimed in the introduction, our Bayes approximator \usrule{} closely mirrors in
     performance the more involved \uslogregp{} model. In fact, supporting our generative model of
     \autoref{s:gen}, the logistic regression weights for features $1-\htr(i)$ and $1-\hun(j)$
-    are almost equal (see Table~2 in the supplementary material), thereby suggesting that
+    are almost equal (see \autoref{tab:coeff} in the supplementary material), thereby suggesting that
     predictor~\eqref{eq:predictor}, derived from the theoretical results in
     \autoref{ss:bayes_approx}, is \emph{also} the best logistic model based on trollness and
     untrustworthiness.
 \end{enumerate}
+
+We perform two other experiments. The first one is to assess the effect of predicting reciprocal
+edges by their value if available. As expected, the results in \autoref{tab:twin} demonstrate that
+it improves MCC when the network has enough twin edges with low disagreements, like \sla{} and
+\epi{}. It has no effect when there are few twin edges, like in \aut{}, \wik{} and \kiw{}. And it is
+detrimental if when there are many twin edges that do  not agree enough, like in \adv{}, in which
+case it is better to rely solely on the learned model.
+
+\input{diff_mcc_pp}
+
+In the second, we study the effect of our hypothesis that the labeled edges of the training set are
+chosen \uar{}. In two of our datasets (\wik{} and \epi{}), edges come the timestamp at which they
+were created. A more realistic way of choosing the training set is therefore, for a given training
+size $m$, to let $E_0$ be the $m$ oldest edges, and try to predict the remaining, newest one. This
+is a common experimental setting in link prediction, where the goal is to infer which pair of nodes
+will be connected in the future~\autocite{linkPredSurvey16}. However, as showed in
+\input{ts_mcc}
+\autoref{tab:troll_ts_mcc}, this makes the problem much more challenging, both for our methods and
+the existing ones. It is quite surprising that even when the training set is as large as 90\% of all
+edges, the MCC are so low compared with those reported \autoref{tab:all_mcc}. The explanation of
+why these two sampling strategies produce so different results can be inferred from
+\autoref{tab:troll_early_sampling}. Letting $V_{\mathrm{out}}$ be the subset of node of $V$ with at
+least one outgoing edge, and defining similarly $V_{\mathrm{in}}$, we see that the node coverage is
+naturally larger when sampling at random. Yet when the training set reach 90\% size, with both
+sampling strategies we cover roughly 90\% of the nodes in $V_{\mathrm{out}}$ and in
+$V_{\mathrm{out}}$. The difference in MCC is thus explained by the last three columns. It shows, for
+testing edges \euv{}, the breakdown between three situations, from the least to the most
+informative:
+\begin{enumerate}[(i),nosep]
+  \item no sampled edge outgoing from $u$ nor incoming to $v$;
+  \item some sampled edges, but only either outgoing from $u$ or incoming to $v$; and
+  \item some sampled edges, both outgoing from $u$ and incoming to $v$;
+\end{enumerate}
+When the training set is build \uar{}, the vast majority of testing edges falls into the case (iii).
+This is no longer true with temporal training set, where situations (ii) and even (i) are more
+common, making prediction more difficult. The difference of repartition is particularly strong in
+\wik{}, justifying the better performance in \epi{}.
+
+\input{sampling}

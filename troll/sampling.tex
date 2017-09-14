@@ -1,0 +1,39 @@
+\begin{table}[htpb]
+  % \centering
+  \small
+  \caption[The effect of not sampling edges at random]{The effect of not sampling edges at random on
+  \wik{} and \epi{}. In case of random sampling, all values are averaged over 20 trials.
+  Refer to the main text for an interpretation of how this affects the predictive performance.
+\label{tab:troll_early_sampling}}
+  \begin{longtable}{lrrrrr}
+    \toprule
+    Sampling &  \thead{Fraction of\\ $V_{\mathrm{out}}$ sampled} &
+    \thead{Fraction of\\ $V_{\mathrm{in}}$ sampled} &
+    \thead{Testing edges with\\ no endpoint sampled} &
+    \thead{Testing edges with\\ one endpoint sampled} &
+    \thead{Testing edges with\\ both endpoints sampled} \\
+    \midrule
+    & \multicolumn{5}{c}{\wik{}} \\
+    \cmidrule(lr){2-6}
+    20\% oldest & $28.84\%$ & $27.76\%$ & $70.06\%$ & $27.18\%$ & $2.76\%$  \\
+    20\% random & $53.23\%$ & $91.45\%$ & $0.10\%$  & $7.17\%$  & $92.73\%$ \\
+    \midrule
+    50\% oldest & $57.51\%$ & $52.46\%$ & $48.71\%$ & $45.22\%$ & $6.07\%$  \\
+    50\% random & $76.48\%$ & $97.46\%$ & $0.04\%$  & $3.62\%$  & $96.34\%$ \\
+    \midrule
+    90\% oldest & $92.44\%$ & $90.09\%$ & $14.82\%$ & $68.37\%$ & $16.81\%$ \\
+    90\% random & $95.98\%$ & $99.65\%$ & $0.03\%$  & $2.47\%$  & $97.50\%$ \\
+    & \multicolumn{5}{c}{\epi{}} \\
+    \cmidrule(lr){2-6}
+    20\% oldest & $7.81\%$  & $36.39\%$ & $20.94\%$ & $70.84\%$ & $8.22\%$  \\
+    20\% random & $40.00\%$ & $43.87\%$ & $3.24\%$  & $19.00\%$ & $77.75\%$ \\
+    \midrule
+    50\% oldest & $33.71\%$ & $61.48\%$ & $15.95\%$ & $65.55\%$ & $18.50\%$ \\
+    50\% random & $67.81\%$ & $71.40\%$ & $1.57\%$  & $12.82\%$ & $85.62\%$ \\
+    \midrule
+    90\% oldest & $90.09\%$ & $91.13\%$ & $13.34\%$ & $45.92\%$ & $40.75\%$ \\
+    90\% random & $94.34\%$ & $95.16\%$ & $0.94\%$  & $9.72\%$  & $89.35\%$ \\
+    \bottomrule
+  \end{longtable}
+\end{table}
+

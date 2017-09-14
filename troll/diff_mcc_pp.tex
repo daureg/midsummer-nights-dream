@@ -1,0 +1,30 @@
+\begin{table}[htpb]
+  \centering
+  \caption{100 time the difference of MCC between using the twin heuristic and not using it for our
+  two main methods. Those values are computed on the same training/testing split as of
+\autoref{tab:all_mcc}.\label{tab:twin}}
+  \begin{tabular}{lrrrrrrr}
+    \toprule
+                                & $5\%$                    & $10\%$                   & $15\%$                   & $20\%$                   & $25\%$                   & $50\%$                   & $90\%$                   \\
+    \midrule
+    \multicolumn{8}{c}{\aut{}} \\
+    \uslpropGsecTwin{}          & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.7$}  \\
+    \usruleTwin{}               & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & \textcolor{Green}{$0.1$} & \textcolor{Red}{$-0.2$}  & \textcolor{Red}{$-0.7$}  \\
+    \multicolumn{8}{c}{\adv{}} \\
+    \uslpropGsecTwin{}          & \textcolor{Red}{$-0.2$}  & \textcolor{Red}{$-0.6$}  & \textcolor{Red}{$-1.0$}  & \textcolor{Red}{$-1.6$}  & \textcolor{Red}{$-2.2$}  & \textcolor{Red}{$-5.4$}  & \textcolor{Red}{$-10.8$} \\
+    \usruleTwin{}               & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.5$}  & \textcolor{Red}{$-1.0$}  & \textcolor{Red}{$-1.6$}  & \textcolor{Red}{$-2.2$}  & \textcolor{Red}{$-5.7$}  & \textcolor{Red}{$-11.1$} \\
+    \multicolumn{8}{c}{\wik{}} \\
+    \uslpropGsecTwin{}          & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.2$}  \\
+    \usruleTwin{}               & $0.0$                    & $0.0$                    & $0.0$                    & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.2$}  & \textcolor{Red}{$-0.2$}  \\
+    \multicolumn{8}{c}{\sla{}} \\
+    \uslpropGsecTwin{}          & \textcolor{Green}{$0.3$} & \textcolor{Green}{$0.5$} & \textcolor{Green}{$0.8$} & \textcolor{Green}{$0.9$} & \textcolor{Green}{$1.1$} & \textcolor{Green}{$2.0$} & \textcolor{Green}{$3.3$} \\
+    \usruleTwin{}               & \textcolor{Green}{$0.3$} & \textcolor{Green}{$0.6$} & \textcolor{Green}{$0.9$} & \textcolor{Green}{$1.1$} & \textcolor{Green}{$1.3$} & \textcolor{Green}{$2.2$} & \textcolor{Green}{$3.5$} \\
+    \multicolumn{8}{c}{\epi{}} \\
+    \uslpropGsecTwin{}          & \textcolor{Green}{$0.3$} & \textcolor{Green}{$0.5$} & \textcolor{Green}{$0.7$} & \textcolor{Green}{$0.8$} & \textcolor{Green}{$1.0$} & \textcolor{Green}{$1.9$} & \textcolor{Green}{$3.0$} \\
+    \usruleTwin{}               & \textcolor{Green}{$0.4$} & \textcolor{Green}{$0.6$} & \textcolor{Green}{$0.8$} & \textcolor{Green}{$1.0$} & \textcolor{Green}{$1.2$} & \textcolor{Green}{$1.8$} & \textcolor{Green}{$2.8$} \\
+    \multicolumn{8}{c}{\kiw{}} \\
+    \uslpropGsecTwin{}          & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.1$}  & \textcolor{Red}{$-0.3$}  \\
+    \usruleTwin{}               & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & $0.0$                    & \textcolor{Red}{$-0.2$}  & \textcolor{Red}{$-0.5$}  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
