@@ -2,112 +2,217 @@
 \label{sec:troll_related}
 
 Interest in signed networks can be traced back to the psychological theory of structural
-balance~\autocites{Cartwright56}{HeiderBook58} with its weak
-version~\autocite{davis1967clustering}.  The advent of online signed social networks has enabled a
-more thorough and quantitative understanding of that phenomenon. Among the several approaches
-related to our work, some extend the spectral properties of a graph to the signed case in order to
-find good embeddings for classification~\autocites{Kunegis2009}{SignedEmbedding15}. However, the
-use of the adjacency matrix usually requires a quadratic running time in the number of nodes, which
-makes those methods hardly scalable to large graphs. Another approach is based on mining ego
-networks with SVM. Although this method seems to deliver good results~\autocite{Papaoikonomou2014},
-the running time makes it often impractical for large real-world datasets. An alternative approach,
-based on local features only and proposed in~\autocite{Leskovec2010}, relies on the so-called
-status theory for directed graphs~\autocite{guha2004propagation}. Some works in active learning,
-using a more sophisticated bias based on the correlation clustering (CC)
-index~\autocites{Cesa-Bianchi2012a}{Cesa-Bianchi2012b}, provide strong theoretical guarantees.
-However, the bias used there is rather strong, since it assumes the existence of a $2$-clustering
-of the nodes with a small CC index.\Todo{don't put it that way since we use that bias later}
+balance~\autocites{Cartwright56}{HeiderBook58} and its weak version~\autocite{davis1967clustering},
+that we will describe with more details in \autoref{sub:bias_balance} \vpageref{sub:bias_balance}.
+The advent of online signed social networks has enabled a
+more thorough and quantitative understanding of that phenomenon. In this section, we provide an
+overview of methods tackling the same \esp{} problem as us. Along the way, we give five of them a
+name in small capitals, for they are recent and effective. Therefore, we will compare our approaches
+with those methods in the experiments of the next section. At the end, we mention some closely
+related variants of the original \esp{} problem.
 
-Whereas our focus will be on \emph{binary} prediction, researchers have also considered a weighted
-version of the problem, where edges measure the amount of trust or distrust between two
-users~\autocites{guha2004propagation}{Tang2013}{Bachi2012}{Qian2014sn}. Other works have also
+\bigskip
+
+Existing methods can be broadly divided into three strategies, which share some similarities:
+\begin{enumerate}[1),nosep]
+	\item embedding the nodes of the graph in a low dimensional space using spectral or neural
+		techniques, before using node positions as features for a classifier;
+	\item completing the adjacency matrix through a global optimization algorithm; and
+	\item computing local features of the edges with several heuristics and train a classifier such as
+		logistic regression or SVM.
+\end{enumerate}
+
+In the first direction, the spectral embedding is illustrated by works from
+\textcites{Kunegis2009}{SignedEmbedding15}. We shall describe them more thoroughly in
+\autoref{par:cc_spectral}, but here we note that, following the natural orientation of the study of
+graph spectrum, they focus more on clustering than \esp{}. Furthermore, the
+use of the adjacency matrix usually requires a quadratic running time in the number of nodes, which
+makes those methods hardly scalable to large graphs. More recently, there has been great interest in
+adapting word embedding techniques such as \textsf{word2vec}~\autocite{word2vec13} to a
+\enquote{corpus} of random walks that are considered as documents, while nodes play the role of
+word. This allows the unsupervised extraction of node features that can then used to train
+downstream classifier, see \autocite{nodeEmbeddingsurvey16} for a recent survey. It can also be
+tailored to exploit the specificity of signed graphs.
+The goal is to find for every node $u$ a vector $x_u\in\Rbb^d$ in such a way that in this new space,
+nodes are close to their positive neighbors and far from their negative neighbors. For instance in
+SiNE~\autocite{neuralSigned17}, for a node triplet $u,v,w$ such that the edge $(u,v)$ is positive
+and the edge $(u,w)$ is negative, the objective is to find vectors maximizing $f(x_u, x_w) + \delta
+- f(x_u, x_v)$. The similarity function $f$ is chosen to be a Siamese multilayers neural network,
+whose parameters are learned by back propagation. In SIGNet~\autocite{SIGNet17}, the similarity
+function is a sigmoid whose argument $x_u^Tx_v$ is weighted by the sign of the corresponding edge,
+with an optimization technique closer to \textsf{word2vec}. Finally, SNE~\autocite{SNE17} uses a
+log-bilinear model, and the training objective is to predict, given a path $\mathcal{P}$, which node
+should follow $\mathcal{P}$, weighting differently the vector nodes in $\mathcal{P}$ depending of
+whether they are the source of a positive or negative edge in $\mathcal{P}$.
+
+\medskip
+
+Next we look at matrix completion approaches, which are global by nature.
+For instance, \Textcite{LowRankCompletion14} tackle the \esp{} problem through this lens,
+restricting themselves to undirected graphs. They consider the
+observed adjacency matrix $A$, made of the edges in the training set \trainset{}, as a noisy
+sampling of the adjacency matrix $A^\star$ of an underlying complete graph satisfying the weakly
+balance condition (that is with no cycle containing only one negative edge, see
+\autoref{def:weak_balance} \vpageref{def:weak_balance}).
+This condition implies the existence of a small number $k$ of node clusters with positive links
+within clusters and negative links across clusters, which in turn implies $\rank A^\star=k$.  By
+recovering a complete matrix $\tilde{A}$ that matches the non-zeros entries of $A$, it is possible
+to predict the sign of $(u,v) \notin \trainset$ as $\yhat_{u,v} = \sgn(\tilde{A}_{u,v})$. Although
+the exact version of this problem is \NPh{}, the authors assume that $k$ is an hyperparameter known
+beforehand and look for two matrices $W,H\in \mathbb{R}^{k\times|V|}$ that minimise a sigmoidal
+reconstruction loss of $A$, subject to a nuclear norm regularization term. The minimization is
+carried out by Stochastic Gradient Descent and we refer to this method as \emph{\complowrank{}}.
+The approach of \textcite{OnlineCompletion17} is similar, but they consider directed graphs, use the
+logistic loss and compute at each iteration a threshold optimizing the $F_1$-score on the observed
+signs. Furthermore, they argue that to better handles class imbalance, it is preferable to minimize
+the maxnorm of the recovered matrix, which is a tighter approximation to the rank function than the
+nuclear norm. We thus refer to this method as \compmaxnorm{}.
+
+\medskip
+
+Finally, the last set of methods
+are based on the computation of local features of the graph. These features are
+evaluated on the subgraph induced by the training edges, and the resulting values are used to train
+a supervised classification algorithm. The most basic set of local
+features used to classify a given edge \euv{} are defined by
+$\din^+(v),\din^-(v),\dout^+(u),\dout^-(u)$ computed over the training set \trainset{}, and by the
+embeddedness coefficient $\big|\Nout(u) \cap \Nin(v)\big|$, which is the number of
+common neighbors of $u$ and $v$. In turn, these degree features can be used to define more
+complicated features, such as a notion of similarity between two nodes based on how they rate and
+are rated by their neighbors~\autocite{Yuan2017}.
+Another way of looking at neighborhoods and degrees is to mine ego networks\footnote{Recall that the
+ego network of a node $u$ is the subgraph induced by the neighbors $\nei(u)$ of $u$.} with a
+SVM~\autocite{Papaoikonomou2014}. \Textcite{Bachi2012} also use an approach based on ego networks,
+in a data mining fashion. Namely, they extract frequent small subgraphs from the collection of all
+ego networks of $G$. Then, they construct rules, which are made of two frequent subgraphs differing
+by a single edge.
+
+A sophisticated take on degree features is presented by \textcite{Bayesian15}, who note that a node
+can belong to one of the 16 types based of whether the number of its positive (respectively
+negative) outgoing (respectively incoming) edges is zero or not. The number of unobserved incoming
+and outgoing edges of each node $u$ let us define a 16-dimensional vector $V_u$ containing the
+probability of transitioning to any other type. Then for each edge \euv, they compute the outer
+product of $V_u$ with $V_v$ and also include additional features such as triads count and degree
+information before training a Logistic Regression model. We refer to this method as
+\emph{\compbayesian{}}.
+
+Other types of features are derived from social status theory, which posits that a positive link
+from $u$ to $v$ denotes that user $u$ considers user $v$ as having a higher status or skill than
+herself~\autocite{Leskovec2010}. This has implications on the distribution of the so called
+\emph{triads} in the network. A triad is a triangle formed by \euv{} together with $u \rightarrow w$
+(or $w \rightarrow u$) and $v \rightarrow w$ (or $w \rightarrow v$) for any $w \in \NNout(u) \cap
+\NNin(v)$. Taking signs and direction into account, there are 16 possible triads but according to
+the status theory some must be more represented than others. The \emph{\comptriads{}}
+method~\autocite{Leskovec2010} exploits this fact by counting for each edge in the training set how
+frequently it is involved in each of the 16 triad types. It also adds 7 degree features before
+training a Logistic Regression model.
+
+A third group of features is based on node ranking scores. These scores (usually one or two per
+node) are computed using a variety of methods, including
+\begin{itemize}
+	\item	PageTrust~\autocite{de2008pagetrust}, which adapts the random walk of
+		PageRank~\autocite{pagerank99}, by making walkers keep in memory a list of nodes they do not
+		like. If they ever reach such a node, their walk stop. The final PageTrust is computed
+		iteratively until convergence. 
+	\item Prestige~\autocite{zolfaghar2010mining}, which can be seen as a compounded degree feature,
+		as it is defined by $P(u) = \frac{\dinp(u)-\dinm(u)}{\din(u)}$.
+	\item	exponential ranking~\autocite{traag2010exponential}, which is the fixed point of the
+		equation $\pi = A^T\frac{\exp{\frac{1}{\mu}\pi}}{||\exp{\frac{1}{\mu}\pi}||_1}$. This follows
+		from the discrete choice theory and by assuming that we observe the reputation with some noise
+		that is double exponentially distributed with parameter $\mu$.
+	\item	Bias and Deserve~\autocite{mishra2011finding}, which are defined in terms of each other in
+		weighted graphs. The bias is the tendency of a node $u$ to trust/mistrust others, that is the
+		difference between its opinion of a neighbor $v$ and what $v$ truly deserve according to the
+		network: $bias(u) = \frac{1}{\dout(u)}\sum_{v\in\NNout(u)}(\wuv - deserve(v))$. The deserve of a
+		node $v$ is the aggregated opinion of its in-neighbors, discounted by their bias: $deserve(v) =
+		\frac{1}{\din(v)}\sum_{u\in\NNin(v)}\left(\wuv(1-\max\{0, \sgn(\wuv)\times bias(u)\})\right)$.
+	\item	Reputation and Optimism~\autocite{shahriari2014ranking}, defined for a node $u$ by
+		$\frac{\sum_{v \in \NNin(u)} y_{v,u}\sigma(v)}{\sum_{v \in \NNin(u)} \sigma(v)}$ and $
+		\frac{\sum_{v \in \NNout(u)} \yuv\sigma(v)}{\sum_{v \in \NNout(u)} \sigma(v)}$, where
+		$\sigma(v)$ is the ranking score assigned to node $v$. The former can be seen as a weighted
+		version of Prestige, while the latter is its outgoing counterpart.
+	\item	TrollTrust~\autocite{wu2016troll}, which builds upon \autocite{shahriari2014ranking} but
+		defined the ranking $\sigma(u)$ as the trustworthiness of $u$. It is follows from a recursive
+		definition of trollness based on the opinion of one node's neighbors weighted by their own
+		trollness, which allow to assign a $\sigma(u)$ to each node $u$ through a set of non linear
+		equations solved by an iterative method. These $\sigma$ values are used to compute Reputation
+		and Optimism scores, thus providing four features for each edge, which are in turn used to train
+		a Logistic Regression model for the classification task. We refer to this method as
+		\emph{\compranknodes{}}.
+% Computing $\pi$ requires to choose two hyperparameters of the model,
+% $\beta$ and $\lambda_1$ and the authors suggest to do it by holding out some training data to
+% perform cross validation but in practice we found little difference in performance in our
+% implementation while it consumes a lot of time.
+\end{itemize}
+
+\bigskip
+
+Other works have also\Todo{maybe that part would be better in the conclusion, especially since side
+information would help with the cold start problem showed in the experiments and trust version is
+one of the future direction.}
 considered versions of the problem where side information related to the network is available to
 the learning system. For instance, \autocite{EdgeSignsRating15} uses the product purchased on
-Epinion in conjunction with a neural network, \autocite{TrollDetection15} identifies trolls by
+\epi{} in conjunction with a neural network, \autocite{TrollDetection15} identifies trolls by
 analysing the textual content of their post, and~\autocite{SNTransfer13} uses SVM to perform
-transfer learning from one network to another. While many of these approaches have interesting
+transfer learning from one network to another.
+\autocite{Tang2013} uses a matrix completion approach, approximating $A$ by $PCP^T$, where the
+row $P_u$ of the matrix $P\in\Rbb^{n\times d}$ is the low rank representation of the node $u$ and
+$C\in\Rbb^{d\times d}$ is the correlation matrix between these representations. They also assume
+they are given a symmetric matrix $Z$ of the homophily coefficients $\zeta_{u,v}$ between $u$ and
+$v$ and add the following regularization term to be minimized: $\sum_{u<v} \zeta_{u,v}||P_u -
+P_v||_2^2 = Tr(U^T L_Z U)$, where $L_Z$ is the Laplacian of $Z$.
+While many of these approaches have interesting
 performances, they often require extra information which is not always available (or reliable) and,
 in addition, may face severe scaling issues.
 
-The survey~\autocite{Tang2015a} contains pointers to many papers on edge sign prediction for
-signed networks, especially in the Data Mining area.
+\medskip
 
-The vast majority of existing edge sign prediction algorithms for
-directed graphs are based on the computation of local features of the graph. These features are
-evaluated on the subgraph induced by the training edges, and the resulting values are used to train
-a supervised classification algorithm (e.g., logistic regression). The most basic set of local
-features used to classify a given edge $(u,v)$ are defined by
-$\din^+(v),\din^-(v),\dout^+(u),\dout^-(u)$ computed over the training set \trainset{}, and by the
-embeddedness coefficient $\big|\Nout(u) \cap \Nin(v)\big|$. In turn, these can be used to define
-more complicated features, such as
-\(
-	\frac{\din^+(v) + |E^+|\uin(v)}{\din(v) + \uin(v)}
-\quad\text{and}\quad
-	\frac{\dout^+(u) + p^+\uout(u)}{\dout(u) + \uout(u)}
-\)
-introduced in~\autocite{Bayesian15}, together with their negative counterparts, where $|E^+|$ is the
-overall fraction of positive edges, and $\uin(v),\uout(u)$ are, respectively, the number of test
-edges outgoing from $u$ and the number of test edges incoming to $v$.
-Other types of features are derived from social status theory~(e.g., \autocite{Leskovec2010}), and
-involve the so-called triads; namely, the triangles formed by $(u,v)$ together with $(u,w)$ and
-$(w,v)$ for any $w \in \NNout(u) \cap \NNin(v)$. A third group of features is based on node ranking
-scores. These scores are computed using a variery of methods, including
-Prestige~\autocite{zolfaghar2010mining}, exponential ranking~\autocite{traag2010exponential},
-PageTrust~\autocite{de2008pagetrust}, Bias and Deserve~\autocite{mishra2011finding},
-TrollTrust~\autocite{wu2016troll}, and generalizations of PageRank and HITS to signed
-networks~\autocite{shahriari2014ranking}. Examples of features using such scores are \textsl{reputation}
-and \textsl{optimism}~\autocite{shahriari2014ranking}, defined for a node $u$ by
-\(
-	\frac{\sum_{v \in \NNin(u)} y_{v,u}\sigma(v)}{\sum_{v \in \NNin(u)} \sigma(v)}
-\quad\text{and}\quad
-	\frac{\sum_{v \in \NNout(u)} \yuv\sigma(v)}{\sum_{v \in \NNout(u)} \sigma(v)}\,,
-\)
-where $\sigma(v)$ is the ranking score assigned to node $v$. Some of these algorithms will be used
-as representative competitors in our experimental study of \autoref{s:exp}.
+Whereas our focus is on \emph{binary} prediction, researchers have also considered a weighted
+version of the problem, where edges measure the amount of trust or distrust between two users. Note
+that typically, the embedding methods we discussed at the beginning of this section are able to
+handle weighted networks.
+%
+One of the early and influential work on modeling how distrust propagate among users is
+\autocite{guha2004propagation}. They propose to represent atomic conclusions (such as if $u$ trusts
+$v$ and $v$ trusts $w$ then $u$ is likely to trusts $w$) as matrix operators and define four of them
+that are assembled by a weighted linear combination. Starting from the observed adjacency matrix
+$A$, they repeatedly apply this operator (with potentially a discount factor) to obtain a final
+weigh matrix $F$ (that can also be rounded to provide sign prediction).
+%
+\Textcite{Qian2014sn} extend the binary case with categorical relationships (such as strongly
+positive or weakly negative) and describe how every unbalanced triads experience some stress
+depending on the strength of its contradictory relationships. Arguing that the network should
+converge to a balanced state with as little change as possible, they express finding this minimal
+transformation as a Multidimensional Scaling problem, and the resulting graph to characterize
+unlabeled edges.
+%
+Finally, \textcite{edgeWeights16} explicitly consider the weight prediction problem in signed graph.
+They use a procedure similar to the ranking methods discussed above. Namely, they defined two scores
+for each node that are computed iteratively from a uniform initialization. Assuming that weights lie
+in $[-1,1]$, the fairness $f(u)$ of $u$ is a measure of how fair or reliable $u$ is when rating
+others nodes, while the goodness $g(v)$ of $v$ measure how trustworthy is $v$ when evaluated with
+complete fairness.  Formally, $f(u) =  1 - \frac{1}{2\NNout(u)} \sum_{v\in\NNout(u)}
+\frac{|\wuv-g(v)|}{2}$ and $g(v) = \frac{1}{\NNin(v)}\sum_{u\in\NNin(v)}f(u)\wuv$. Note that these
+definitions are very close to bias and deserve from \textcite{mishra2011finding}, but the absolute
+value in the factor $2$ in the expression of fairness allows for better convergence property.
+Finally, the weight of a test edge \euv is predicted as $f(u)\times g(v)$.
 
-\iffalse
-We compare these methods with four competitors, each exploiting the sign information and network
-topology in a different way:
+\medskip
 
-Looking at undirected graphs with a global perspective, \textcite{LowRankCompletion14} consider the
-observed adjacency matrix $A$, made of the edges in \trainset{}, as a noisy sampling of the
-adjacency matrix $A^\star$ of an underlying complete graph satisfying the weakly balance condition
-(that is with no triangle containing only one negative edge).
-%TODO the previous sentence is too long
-This condition implies the existence of a small number $k$ of node clusters with positive links
-within clusters and negative links across clusters, which in turn implies $\rank A^\star=k$.  By
-recovering a complete matrix $\tilde{A}$ which matches the non-zeros entries of $A$, it is possible
-to predict the sign of $\eij \notin \trainset$ as $\yhat_{i,j} = \sgn(\tilde{A}_{i,j})$. Although
-the exact version of this problem is NP-hard, authors assume that $k$ is an hyperparameter known
-beforehand\footnote{The method is showed to be robust to the choice of its value, thus we pick
-$k=7$.} and look for two matrices $W,H\in \mathbb{R}^{k\times|V|}$ which minimise a sigmoidal
-reconstruction loss with $A$, subject to a regularization term. We refer to this method as
-\emph{\complowrank{}}.
+While we presented methods that operate in the batch setting, and will present an online algorithm
+as well in \autoref{s:algsonline}, other works have attacked the \esp{} problem from an active
+learning point of view~\autocites{Cesa-Bianchi2012a}{Cesa-Bianchi2012b}.  Recall that in the active
+setting, we are given a budget of edge labels to observe, and are free to select them the way we
+want within $E(Y)$. Again, the goal is to make as few mistakes as possible when predicting the sign
+of the remaining edges. These two methods build a spanning subgraph of $G$ and query all its edge,
+but they differ in its the construction. \Textcite{Cesa-Bianchi2012a} partition $G$ into stars and
+connect them in a tree, whereas \textcite{Cesa-Bianchi2012b} cover the graph with cycles, each
+containing one test edge and being queried for the other, while respecting the user specified query
+budget.  This relies on a different bias than our generative model, and this will be the subject of
+our next chapter.  One might also consider an online version of the problem where the topology is
+not known in advance but discovered as prediction are made~\autocite{Gentile2013}. This naturally
+increases and the difficulty of the problem, as reflected by the computational cost of the solution
+proposed, which is quadratic in $|V|$ \emph{at each prediction}.
 
-The status theory heuristic posits that a positive link from $i$ to $j$ denotes that user $i$
-considers user $j$ as having a higher status or skill than himself~\autocite{Leskovec2010}. It
-implies that among the 16 possible triads of three nodes with two directed signed edges among them,
-some must be more represented than others. The \emph{\comptriads{}} method exploits this fact by
-counting for each edge in the training set how frequently it is involved in each of the 16 triad
-types. Based on these edge features and 7 degree features of each edge endpoints, a Logistic
-Regression model is trained and used to predict the sign of the test edges.
-
-Inspired by the PageRank algorithm, \textcite{wu2016troll} propose a recursive definition of
-trollness based on the opinion of one node's neighbors weighted by their own trollness, which allow
-to assign a trustworthiness $\pi(i)$ to each node $i$ through a set of non linear equations solved
-by an iterative method. This $\pi$ values are used to rank the nodes by computing their Reputation
-and Optimism scores, thus providing four features for each edge, which are in turn used to train a
-Logistic Regression model for the classification task. We refer to this method as
-\emph{\compranknodes{}}.  Computing $\pi$ requires to choose two hyperparameters of the model,
-$\beta$ and $\lambda_1$ and the authors suggest to do it by holding out some training data to
-perform cross validation but in practice we found little difference in performance in our
-implementation while it consumes a lot of time.
-
-The last competitors is also local. \textcite{Bayesian15} note that  a node can belong to one of the
-16 types based of whether is number of its positive (resp.  negative) outgoing (resp. incoming)
-edges is zero or not.  The number of unobserved incoming and outgoing edges of each node $i$ let us
-define its 16-dimensional vector $V_i$ containing the probability of transitioning to any other
-state.  Then for each edge \eij we compute the outer product of $V_i$ with $V_j$ and also include
-additional features such as triads count and degree information before training a Logistic
-Regression model. We refer to this method as \emph{\compbayesian{}}.
-\fi
+The survey~\autocite{Tang2015a} contains pointers to many papers on signed networks, in particular
+for the \esp{} problem.
