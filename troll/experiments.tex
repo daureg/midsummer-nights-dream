@@ -1,23 +1,23 @@
 \section{Experimental Analysis}\label{s:exp}
 
 We now evaluate our edge sign classification methods on representative real-world datasets of
-varying density and label regularity. This shows showing that our methods compete well against
+varying density and label regularity. This shows that our methods compete well against
 existing approaches in terms of both predictive and computational performance. We are especially
 interested in small training set regimes, and have restricted our comparison to the batch learning
 scenario since all competing methods we are aware of have been developed in that setting only.
 
 \paragraph{Datasets}
 
-We considered six real-world classification datasets. The first four are \dssn{} widely
+We consider six real-world classification datasets. The first four are \dssn{} widely
 used as benchmarks for this
 task~(\eg{}\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}{OnlineCompletion17}):
 \begin{newcontent}
-In \adv{}, a trust-based social network for open source developer, a user $u$ can certify another
+In \adv{}, a trust-based social network for open source developers, a user $u$ can certify another
 user $v$ with different degrees of trust: \enquote{Observer}, \enquote{Apprentice} (both of which we
 consider negative), \enquote{Journeyer} and \enquote{Master} (both of which we consider
 positive).\footnote{We download the 7\thup{} of July, 2014 version from
 \url{http://www.trustlet.org/datasets/advogato/}.} A full description of this trust metric and its
-resistance to attacks is available in the PhD thesis of the website's creator~\autocite[Section
+resistance to attacks are available in the PhD thesis of the website's creator~\autocite[Section
 4]{AdvogatoTrustThesis02}).
 \end{newcontent}
 In \wik{}, there is an edge from user $u$ to user $v$ if $v$ applies for an admin position and $u$
@@ -59,8 +59,7 @@ multi-edges which are all of the same sign.}
 \autoref{tab:dataset} summarizes statistics for these datasets. We note that most edge labels are
 positive. Hence, test set accuracy is not an appropriate measure of prediction performance. We
 instead evaluated our performance using the so-called Matthews Correlation Coefficient
-(MCC)~\autocite{MCC00}), defined as \Todo{For completeness, we could also report accuracy results in
-the supplementary material.}  
+(MCC)~\autocite{MCC00}), defined as
 \[
 	\mathrm{MCC} = \frac{tp\times tn-fp\times fn}%
         {\sqrt{ (tp + fp) ( tp + fn ) ( tn + fp ) ( tn + fn ) } } = \pm \sqrt{\frac{\chi^2}{n}}
@@ -90,10 +89,10 @@ regularity measures.
 \begin{newcontent}
 Finally, there is a low fraction of reciprocal (or \emph{twin}) edges (\ie{} both $\euv \in E$ and $\evu
 \in E$), which is a common mechanism of link formation in directed
-networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases such twin edges do not disagree,
-\ie{} they have the same sign. In practice, we can use that fact to improve our accuracy at no
+networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases, such twin edges do not disagree,
+\ie{} they have the same sign. In practice, we can use this fact to improve our accuracy at no
 additional computational cost: when predicting $\euv \in E_{\mathrm{test}}$, if the reciprocal edge
-\evu{} is part of the training set, we set $\sgn(\euv) = \sgn(\evu)$. For clarity, when comparing
+\evu{} is part of the training set, we set $\yhat_{u,v} = y_{v,u}$. For clarity, when comparing
 our methods with existing approaches, we not use that trick. But afterwards, we show in
 \autoref{tab:twin} when it can be beneficial.
 % more references in  http://www.nature.com/articles/srep02729
@@ -217,24 +216,24 @@ set. Though our experiments are not conclusive, some trends can be readily spott
 \input{all_mcc}
 
 \begin{newcontent}
-We perform two other experiments. The first one is to assess the effect of predicting reciprocal
+We perform two other sets of experiments. The first one assesses the effect of predicting reciprocal
 edges by their value if available. As expected, the results in \autoref{tab:twin} demonstrate that
-it improves MCC when the network has enough twin edges with low disagreements, like \sla{} and
+it improves MCC when the network has enough twin edges with low disagreements, like in \sla{} and
 \epi{}. It has no effect when there are few twin edges, like in \aut{}, \wik{} and \kiw{}. And it is
-detrimental if when there are many twin edges that do  not agree enough, like in \adv{}, in which
+detrimental when there are many twin edges that do not agree enough, like in \adv{}, in which
 case it is better to rely solely on the learned model.
 
 \input{diff_mcc_pp}
 
-In the second, we study the effect of our hypothesis that the labeled edges of the training set are
-chosen \uar{}. In two of our datasets (\wik{} and \epi{}), edges come the timestamp at which they
+In the second set of experiments, we study the effect of our hypothesis that the labeled edges of the training set are
+chosen \uar{}. In two of our datasets (\wik{} and \epi{}), edges come with the timestamp at which they
 were created. A more realistic way of choosing the training set is therefore, for a given training
-size $m$, to let $E_0$ be the $m$ oldest edges, and try to predict the remaining, newest one. This
+size $m$, to let $E_0$ be the $m$ oldest edges, and try to predict the remaining, newest ones. This
 is a common experimental setting in link prediction, where the goal is to infer which pair of nodes
 will be connected in the future~\autocite{linkPredSurvey16}. However, as showed in
 \autoref{tab:troll_ts_mcc}, this makes the problem much more challenging, both for our methods and
-the existing ones. It is quite surprising that even when the training set is as large as 90\% of all
-edges, the MCC are so low compared with those reported \autoref{tab:all_mcc}.
+out competitors. It is quite surprising that even when the training set is as large as 90\% of all
+edges, the MCC are so low compared with those reported in \autoref{tab:all_mcc}.
 
 \input{ts_mcc}
 
@@ -242,8 +241,8 @@ The explanation of
 why these two sampling strategies produce so different results can be inferred from
 \autoref{tab:troll_early_sampling}. Letting $V_{\mathrm{out}}$ be the subset of node of $V$ with at
 least one outgoing edge, and defining similarly $V_{\mathrm{in}}$, we see that the node coverage is
-naturally larger when sampling at random. Yet when the training set reach 90\% size, with both
-sampling strategies we cover roughly 90\% of the nodes in $V_{\mathrm{out}}$ and in
+naturally larger when sampling at random. Yet, when the training set reaches 90\% size, both
+sampling strategies cover roughly 90\% of the nodes in $V_{\mathrm{out}}$ and in
 $V_{\mathrm{out}}$. The difference in MCC is thus explained by the last three columns. It shows, for
 testing edges \euv{}, the breakdown between three situations, from the least to the most
 informative:
