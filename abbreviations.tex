@@ -34,6 +34,7 @@
 \newcommand{\shalf}{\ensuremath{\nicefrac{1}{2}}}
 \newcommand{\lhalf}{\ensuremath{\frac{1}{2}}}
 \newcommand{\cluster}{\ensuremath{\mathcal{C}}}
+\newcommand{\etauv}{\ensuremath{\eta(u,v)}}
 \newcommand{\NPc}{\textsc{NP-complete}}
 \newcommand{\NPh}{\textsc{NP-hard}}
 \newcommand{\APXh}{\textsc{APX\Hyphdash{}hard}}
@@ -177,3 +178,10 @@
 \newcommand{\eps}{\epsilon}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 \newcolumntype{N}{@{}m{0pt}@{}}
+
+% \newenvironment{newcontent}{}{}
+\newenvironment{newcontent}{%
+\begin{tcolorbox}[before skip=0pt, after skip=0pt, left skip=-.75em, right skip=-.75em, left=.5em,
+  right=.5em, colback=white, colframe=black!20!white, sharp corners, toprule=0pt, bottomrule=0pt,
+  boxsep=0pt, breakable, notitle,]}%
+{\end{tcolorbox}}

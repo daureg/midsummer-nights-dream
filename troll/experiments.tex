@@ -11,6 +11,7 @@ scenario since all competing methods we are aware of have been developed in that
 We considered six real-world classification datasets. The first four are \dssn{} widely
 used as benchmarks for this
 task~(\eg{}\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}{OnlineCompletion17}):
+\begin{newcontent}
 In \adv{}, a trust-based social network for open source developer, a user $u$ can certify another
 user $v$ with different degrees of trust: \enquote{Observer}, \enquote{Apprentice} (both of which we
 consider negative), \enquote{Journeyer} and \enquote{Master} (both of which we consider
@@ -18,6 +19,7 @@ positive).\footnote{We download the 7\thup{} of July, 2014 version from
 \url{http://www.trustlet.org/datasets/advogato/}.} A full description of this trust metric and its
 resistance to attacks is available in the PhD thesis of the website's creator~\autocite[Section
 4]{AdvogatoTrustThesis02}).
+\end{newcontent}
 In \wik{}, there is an edge from user $u$ to user $v$ if $v$ applies for an admin position and $u$
 votes for or against that promotion. In \sla{}, a news sharing and commenting website, member $u$
 can tag other members $v$ as friends or foes. Finally, in \epi{}, an online shopping website, user
@@ -85,6 +87,7 @@ comply with our inductive bias principles. Moreover, $\Psi^2_{G''}(Y)/|E|$ tends
 to $\Psi_{G}(Y)/|E|$ across datasets, hence confirming the anticipated connection between the two
 regularity measures.
 
+\begin{newcontent}
 Finally, there is a low fraction of reciprocal (or \emph{twin}) edges (\ie{} both $\euv \in E$ and $\evu
 \in E$), which is a common mechanism of link formation in directed
 networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases such twin edges do not disagree,
@@ -92,8 +95,9 @@ networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most ca
 additional computational cost: when predicting $\euv \in E_{\mathrm{test}}$, if the reciprocal edge
 \evu{} is part of the training set, we set $\sgn(\euv) = \sgn(\evu)$. For clarity, when comparing
 our methods with existing approaches, we not use that trick. But afterwards, we show in
-\autoref{tab:all_mcc_pp} when it can be beneficial.
+\autoref{tab:twin} when it can be beneficial.
 % more references in  http://www.nature.com/articles/srep02729
+\end{newcontent}
 
 \paragraph{Algorithms and parameter tuning.} 
 We compared the following algorithms:
@@ -173,7 +177,6 @@ risk.  Another way to exploit those quantities is to train a Logistic Regression
 edge is associated with two features: $[1-\htr(i), 1-\hun(j)]$ (we call this method \uslogregp{}).
 \fi
 
-\input{all_mcc}
 
 \paragraph{Results}
 Our main results are summarized in \autoref{tab:all_mcc}, reporting MCC test set performance after
@@ -211,6 +214,9 @@ set. Though our experiments are not conclusive, some trends can be readily spott
     untrustworthiness.
 \end{enumerate}
 
+\input{all_mcc}
+
+\begin{newcontent}
 We perform two other experiments. The first one is to assess the effect of predicting reciprocal
 edges by their value if available. As expected, the results in \autoref{tab:twin} demonstrate that
 it improves MCC when the network has enough twin edges with low disagreements, like \sla{} and
@@ -226,10 +232,13 @@ were created. A more realistic way of choosing the training set is therefore, fo
 size $m$, to let $E_0$ be the $m$ oldest edges, and try to predict the remaining, newest one. This
 is a common experimental setting in link prediction, where the goal is to infer which pair of nodes
 will be connected in the future~\autocite{linkPredSurvey16}. However, as showed in
-\input{ts_mcc}
 \autoref{tab:troll_ts_mcc}, this makes the problem much more challenging, both for our methods and
 the existing ones. It is quite surprising that even when the training set is as large as 90\% of all
-edges, the MCC are so low compared with those reported \autoref{tab:all_mcc}. The explanation of
+edges, the MCC are so low compared with those reported \autoref{tab:all_mcc}.
+
+\input{ts_mcc}
+
+The explanation of
 why these two sampling strategies produce so different results can be inferred from
 \autoref{tab:troll_early_sampling}. Letting $V_{\mathrm{out}}$ be the subset of node of $V$ with at
 least one outgoing edge, and defining similarly $V_{\mathrm{in}}$, we see that the node coverage is
@@ -249,3 +258,5 @@ common, making prediction more difficult. The difference of repartition is parti
 \wik{}, justifying the better performance in \epi{}.
 
 \input{sampling}
+
+\end{newcontent}

@@ -1,5 +1,6 @@
 \section{Algorithms in the Batch Setting}\label{s:algbatch}
 
+\begin{newcontent}
 Given $G(Y) =(V,E(Y))$, in the batch setting we have at our disposal a training set \trainset{} of
 labeled edges from $E(Y)$. We want to build a predictive model for the labels of the remaining
 edges. We present two algorithms to do so, which both compute estimates of the all parameters $p$
@@ -9,6 +10,7 @@ locally the parameters by their empirical means in the training set, which under
 assumptions are showed to concentrate around their true values. The second algorithm, on the other
 hand, exploits the reduced graph $G''$ and computes a maximum likelihood estimation of the
 parameters through a global label propagation approach, without making any density assumption.
+\end{newcontent}
 
 \subsection{Approximation to Bayes via dense sampling}\label{ss:bayes_approx}
 
@@ -98,6 +100,7 @@ whose in-degree and out-degree is not too small.
   $\eta(u,v) = \Pr(\yuv=1)$ is bounded away from $\tfrac{1}{2}$.
 \end{theorem}
 
+\begin{newcontent}
 While we defer the full proof of \autoref{t:active} to the additional material at the end of this
 chapter (\autoref{ssec:troll_proof_bayes}), here we give a sketch of the method used, focusing on
 parameter $p$. First, by \autoref{l:bins} on negatively associated random variables (stated
@@ -128,6 +131,7 @@ the constant hidden in the $\Omega$ notation, and needed to guarantee a good beh
 larger than $7.2$. We will nonetheless see in the experiments that we can still apply the resulting
 algorithm (we call it \usrule{}) with satisfying results. Additionally, and in order to address this
 density limitation, we now introduce a second method based on label propagation.
+\end{newcontent}
 
 \subsection{Approximation to Maximum Likelihood via Label Propagation}\label{ss:passive}
 
@@ -164,7 +168,6 @@ Unfortunately, equating \eqref{e:mlp} and \eqref{e:mlq} to zero, and solving for
 $\{p_i, q_i\}_{i=1}^{|V|}$ gives rise to a hard set of nonlinear equations.
 Moreover, some such parameters may never occur in these equations, namely whenever $\Nout(u)$ or
 $\Nin(v)$ are not represented in \trainset{} for some $u,v\in V$.
-
 
 Our \emph{first approximation} is therefore to replace the nonlinear equations resulting
 from \eqref{e:mlp} and \eqref{e:mlq} by a set of linear equations. In the case of \eqref{e:mlp}, for

@@ -40,12 +40,12 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
 \usepackage{mathtools}
 \usepackage{sidenotes}
 \let\bottomfootnote\footnote
-\renewcommand{\footnote}[1]{\sidenote{\footnotesize #1}}
+% \renewcommand{\footnote}[1]{\sidenote{\footnotesize #1}}
 \usepackage[shortlabels]{enumitem}
 \usepackage{tabulary}
 \usepackage{bm}
 \usepackage{multirow}
-\usepackage[marginpar]{todo}
+\usepackage[]{todo}
 \usepackage[np,autolanguage]{numprint}
 \usepackage{listings}
 \lstset{frame=none, language=Python, tabsize=4,}
@@ -59,12 +59,22 @@ sorting=nyvt, backref=true, backend=biber, defernumbers=true,maxbibnames=60]{bib
 \def\algorithmautorefname{Algorithm}
 
 \usepackage{mdframed}
+\usepackage[breakable]{tcolorbox}
 \newenvironment{aside}%
 {\begin{mdframed}[hidealllines=true, leftline=true, innertopmargin=0.5ex, innerbottommargin=0.5ex,
       innermargin=2.3em, leftmargin=2.3em, outermargin=0em, innerleftmargin=0.7em, innerrightmargin=0pt,
       linewidth=1.5pt, skipabove=\baselineskip, skipbelow=\baselineskip,
    linecolor=DodgerBlue!30!White]\small}%
 {\end{mdframed}}
+% \newenvironment{newcontent}%
+% {\begin{mdframed}[hidealllines=true, leftline=true, rightline=true, innertopmargin=0.3ex,
+%       innerbottommargin=0.3ex,
+%       innermargin=-.75em, leftmargin=-.75em,
+%       outermargin=-.75em, rightmargin=-.75em,
+%       innerleftmargin=0.75em, innerrightmargin=0.75em,
+%       linewidth=1.3pt, skipabove=0,
+%       skipbelow=0, linecolor=Black!20!White]}%
+% {\end{mdframed}}
 \usepackage{stmaryrd}
 
 \usepackage{varioref}

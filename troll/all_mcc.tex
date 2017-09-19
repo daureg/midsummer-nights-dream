@@ -1,15 +1,17 @@
-\begin{table}[tb]
-  \centering
+% \begin{table}[tbp]
+%   \centering
+\begingroup
   \setlength{\tabcolsep}{3pt}
   \scriptsize
+  \begin{longtable}{lrcccc|ccccc}
   \caption{MCC with increasing training set size, with one standard deviation over 12 random sampling of
     $\trainset$. The last five columns refer to the methods we took from the literature. For the sake of
     readability, we multiplied all MCC values by 100. The best number in each row is highlighted in
     \textbf{\textcolor{brown}{bold brown}} and the second one in \textit{\textcolor{red}{italic red}}.
     If the difference is statistically significant ($p$-value of a paired Student's $t$-test less than
     $0.005$), the best score is underlined. The \enquote{time} rows contain the time taken to train on a
-  $15\%$ training set.\label{tab:all_mcc}}
-  \begin{tabular}{lrcccc|ccccc}
+  $15\%$ training set.\label{tab:all_mcc}}\\
+  % \begin{tabular}{lrcccc|ccccc}
     \toprule
                                                       & $\frac{|\trainset{}|}{|E|}$ & \uslpropGsec{}              & \usrule{}                   & \uslogregp{}                & \usoptim{}                  & \complowrank{} & \compmaxnorm{}             & \comptriads{}  & \compranknodes{}            & \compbayesian{}             \\
     \midrule
@@ -67,5 +69,6 @@
                                                   & $90\%$ &               $41.7 \pm 0.5$  &               $44.5 \pm 0.6$  &               $43.9 \pm 0.4$  &  $41.0 \pm 0.5$  &  $45.3 \pm 0.4$  &  $45.8 \pm 0.3$  &  $31.6 \pm 0.5$  &  $\vsecondSig{46.0} \pm 0.5$  &  $\vfirstSig{58.5} \pm 0.4$  \\
                                                   & time   &                    $\np{897}$ &                    $\np{9.6}$ &                   $\np{60.2}$ &    $\np{208676}$ &    $\np{125884}$ &    $\np{632663}$ &       $\np{188}$ &                   $\np{4233}$ &                 $\np{95374}$ \\
     \bottomrule
-  \end{tabular}
-\end{table}
+  \end{longtable}
+% \end{table}
+\endgroup

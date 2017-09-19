@@ -1,6 +1,7 @@
 \section{Related work}
 \label{sec:troll_related}
 
+\begin{newcontent}
 Interest in signed networks can be traced back to the psychological theory of structural
 balance~\autocites{Cartwright56}{HeiderBook58} and its weak version~\autocite{davis1967clustering},
 that we will describe with more details in \autoref{sub:bias_balance} \vpageref{sub:bias_balance}.
@@ -200,7 +201,7 @@ Finally, the weight of a test edge \euv is predicted as $f(u)\times g(v)$.
 \medskip
 
 While we presented methods that operate in the batch setting, and will present an online algorithm
-as well in \autoref{s:algsonline}, other works have attacked the \esp{} problem from an active
+as well in \autoref{s:algonline}, other works have attacked the \esp{} problem from an active
 learning point of view~\autocites{Cesa-Bianchi2012a}{Cesa-Bianchi2012b}.  Recall that in the active
 setting, we are given a budget of edge labels to observe, and are free to select them the way we
 want within $E(Y)$. Again, the goal is to make as few mistakes as possible when predicting the sign
@@ -213,6 +214,7 @@ our next chapter.  One might also consider an online version of the problem wher
 not known in advance but discovered as prediction are made~\autocite{Gentile2013}. This naturally
 increases and the difficulty of the problem, as reflected by the computational cost of the solution
 proposed, which is quadratic in $|V|$ \emph{at each prediction}.
+\end{newcontent}
 
 The survey~\autocite{Tang2015a} contains pointers to many papers on signed networks, in particular
 for the \esp{} problem.
