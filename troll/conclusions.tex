@@ -1,25 +1,64 @@
+\section{Conclusion}
 
-\section{Conclusions and Ongoing Research}
-%
-%FV
-We have studied the edge sign prediction problem in directed graphs in both batch and online learning settings. In both cases, the underlying modeling assumption hinges on the trollness and (un)trustworthiness predictive features. We have introduced a simple generative model for the edge labels 
-%FV that serves both as a theoretical justification for many successful heuristic methods to edge sign prediction and 
-%FV as a way 
-to craft this problem as a node sign prediction problem to be efficiently tackled by standard Label Propagation algorithms. 
-%FV We then observed that the two features used
-%FV notion of trollness and trustworthiness
-%FV naturally lend themselves to define a notion of edge sign regularity that can also be analyzed in an (adversarial) online setting. In this setting, 
-%FV 
-Furthermore, we have studied the problem in an (adversarial) online setting providing 
-upper and (almost matching) lower bounds on the expected number of prediction mistakes.
+In this chapter, we started our characterization of edges in complex networks by studying the \esp{}
+problem in \dssn{}. As mentioned in the introduction, given a network topology and a few labeled
+interactions, being able to infer the polarity of the remaining interactions is valuable to improve
+user experience. Our main insight is that two features of users behavior, trollness and
+(un)trustworthiness, are key to understand their interactions. This leads us to design a simple sign
+generative model. Such a model serves both as a theoretical justification for many successful
+heuristics and as the underpinning of our \usrule{} algorithm. This algorithm is fast, trivially
+parallelizable, provably close to the Bayes optimal predictor on dense graphs and experimentally
+accurate even on sparse graphs. We further exploit this model in the batch setting through an
+approximation of the maximum likelihood estimation procedure. While making this approximation, we
+moreover cast the problem as a node prediction problem. This can be efficiently tackled by standard
+Label Propagation algorithms.
 
-%FV Finally, we complemented the above with experiments on five real-world datasets in the small training set regime. 
+We validate our theoretical results by experimentally assessing these two methods in the small
+training set regime, on synthetic and real-world datasets. We draw two main conclusions from our
+experiments. First, our generative model is robust across domains. Indeed, it produces predictors
+that are empirically both close to the Bayes optimal and to general linear models trained on
+trollness and trustworthiness features. This is notable as this result is achieved by simply
+counting negative edges, without resorting to Stochastic Gradient Descent methods typically involved
+in training large scale linear models. Second, our methods are in practice either strictly better
+than their competitors in terms of prediction quality or, when they are not, they are faster.
 
-%FV 
-Finally, we validated our theoretical results by experimentally assessing our methods on five real-world datasets in the small training set regime. 
-Two interesting conclusions from our experiments are: i. Our generative model is robust, for it produces Bayes optimal predictors which tend to be empirically best also within the larger set of models that includes all logistic regressors based on trollness and trustworthiness alone; ii. 
-%We showed that 
-our methods are in practice either strictly better than their competitors in terms of prediction quality or, when they are not, they are faster.
-We are currently engaged in 
-%FV gathering more experimental evidence, as well as in 
-extending our approach so as to incorporate further predictive features (e.g., side information, when available).
+Finally, we study the online adversarial setting, where trollness and (un)trustworthiness naturally
+lend themselves to define a notion of edge sign regularity. Based on this regularity, we provide an
+upper and an (almost matching) lower bounds on the expected number of prediction mistakes. Before
+exploring in the next chapter another learning bias for \esp{}, which is not based on trollness and
+(un)trustworthiness, we present directions in which this work could be extended.
+
+\bigskip
+
+Given the fundamental role of our generative model, we would like to adapt it in order to handle
+the three problem extensions presented in the related work of \autoref{sec:troll_related}.
+
+\begin{enumerate}[1.,]
+
+  \item When available, using \textbf{side information} about users is an alluring option to
+    alleviate the cold start problem. Recall that in our experiments, we saw that if we learn our
+    model on historical data, we cannot successfully predict the interactions involving new users,
+    for their trollness and trustworthiness are not yet known to us. However, we expect that for
+    existing users, side information is correlated with their value of $p$ and $q$. This knowledge
+    thus provides a parameterised prior for the $p$ and $q$ values of news users. As we observe
+    their behavior in the network, our estimation of $p$ and $q$ would rely less and less on prior
+    information and more and more on observed data, as it is common in a Bayesian approach. Note
+    that this introduces an additional learning stage.
+
+  \item Our generative model, and in particular the prior distribution $\mu(p,q)$, could be
+    exploited to guide label queries in an adaptive \textbf{active learning} setting. Given a budget
+    of queries $B$, and after an initial phase of querying edge labels \uar{}, one might use
+    concentration results on $\mu$\footnote{As done in the proof of \autoref{t:active},
+    \vpageref{ssec:troll_proof_bayes}.} to devise an informativeness criterion, indicating for which
+    node the value of $p$ and $q$ are the most uncertain. Combined with the graph topology, this
+    would suggest which edge is the most important to query next, until the budget is exhausted.
+
+  \item So far we discussed binary classification of edges. In \textbf{weighted graphs} though, a
+    refined problem would be to predict the weight of unlabeled edges. Let us assume for simplicity
+    that the weights are bounded and within $[-1, 1]$. The most immediate solution would be, for an
+    edge \euv{}, to linearly shift our estimation of $\frac{p_u+q_v}{2}=\etauv{}$ from $[0,1]$ to
+    $[-1,1]$ and use this quantity as our prediction. We could also change the semantic of \etauv{}
+    from being the probability of \euv{} to be positive to the mean of a narrow Gaussian from which
+    the weight of \euv{} is drawn. Finally, by letting $p_u$ range from $-1$ to $+1$, we note a
+    similarity with fairness and goodness, suggesting $p_u\times q_v$ could approximate the weights.
+\end{enumerate}
