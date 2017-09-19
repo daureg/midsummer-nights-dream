@@ -11,7 +11,7 @@ existing approaches in terms of both predictive and computational performance. W
 interested in small training set regimes, and have restricted our comparison to the batch learning
 scenario since all competing methods we are aware of have been developed in that setting only.
 
-\paragraph{Datasets}
+\subsection{Datasets}
 
 We consider six real-world classification datasets. The first four are \dssn{} widely
 used as benchmarks for this
@@ -104,7 +104,7 @@ our methods with existing approaches, we not use that trick. But afterwards, we 
 \end{newcontent}
 
 \begin{newcontent}
-\paragraph{Synthetic signs}
+\subsection{Synthetic signs}
 
 Recall that according to our generative model of \autoref{s:gen}, each node $u$ has parameter $p_u$
 governing its sending behavior and each node $v$ has a parameter $q_v$ governing its receiving
@@ -193,21 +193,17 @@ datasets and training size.
   \caption{Results on \wik{} with \usrule{} on a training set of size 40\%}
 \end{figure*}
 
-\paragraph{Algorithms and parameter tuning.} 
+\subsection{Real signs} 
 We compared the following algorithms:
 
 \begin{enumerate}[label=\textbf{\arabic*.}]
   \item The label propagation algorithm of \autoref{ss:passive} (referred to as \uslpropGsec{}).
     The actual binarizing threshold was set by cross-validation on the training set.
 
-  \item The algorithm analyzed \autoref{ss:bayes_approx}, which we call \usrule{}
-    (Bayes Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness). After
-    computing $\htr(u)$ and $\hun(u)$ on training set $E_0$ for all $u \in V$ (or setting those
-    values to $\frac{1}{2}$ in case there is no outgoing or incoming edges for some node), we use
-    equation \eqref{eq:predictor} and estimate $\tau$ on $E_0$.
+  \item The \usrule{} algorithm, as described above.
 
   \item A logistic regression model where each edge $(u,v)$ is associated with the features
-    $[1-\htr(u), 1-\hun(v)]$ computed again on \trainset{} (we call this method \uslogregp{}). Best
+    $[1-\htr(u), 1-\hun(v)]$ computed again on \trainset{} (we call this method \uslogregp{}). The best
     binary thresholding is again computed on \trainset{}. Experimenting with this logistic model
     serves to support the claim we made in the introduction that our generative model in
     \autoref{s:gen} is a good fit for the data.
@@ -222,15 +218,15 @@ We compared the following algorithms:
     matrix factorization. Since the authors showed their method to be robust to the choice of the
     rank parameter $k$, we picked $k=7$ in our experiments.
 
+  \item The other \compmaxnorm{} matrix completion method from~\autocite{OnlineCompletion17},
+    setting the parameter $\lambda$ to $1.2$ as advised in their paper.
+
   \item A logistic regression model built on \comptriads{} features derived from status
     theory~\autocite{Leskovec2010}.
 
-  \item The PageRank-inspired algorithm from \autocite{wu2016troll}, where a recursive notion of
-    trollness is computed by solving a suitable set of nonlinear equations through an iterative
-    method, and then used to assign ranking scores to nodes, from which (un)trustworthiness features
-    are finally extracted for each edge. We call this method \compranknodes{}. As for hyperparameter
-    tuning ($\beta$ and $\lambda_1$ in~\autocite{wu2016troll}), we closely followed the authors'
-    suggestion of doing cross validation.
+  \item The TrollTrust algorithm from~\autocite{wu2016troll}, naming it \compranknodes{}. As for
+    hyperparameter tuning ($\beta$ and $\lambda_1$ in~\autocite{wu2016troll}), we closely followed
+    the authors' suggestion of doing cross validation.
 
   \item  The last competitor is the logistic regression model whose features have been build
     according to \autocite{Bayesian15}. We call this method \compbayesian{}.
@@ -239,7 +235,8 @@ We compared the following algorithms:
 The above methods can be roughly divided into \emph{local} and \emph{global} methods. A local method
 hinges on building local predictive features, based on neighborhoods: \usrule{}, \uslogregp{},
 \comptriads{}, and \compbayesian{} essentially fall into this category. The remaining methods
-(\uslpropGsec{}, \complowrank{}, and \compranknodes{}) are global in that their features are
+(\uslpropGsec{}, \complowrank{}, \compmaxnorm{} and \compranknodes{}) are global in that their
+features are
 designed to depend on global properties of the graph topology.
 
 \iffalse
@@ -271,8 +268,8 @@ risk.  Another way to exploit those quantities is to train a Logistic Regression
 edge is associated with two features: $[1-\htr(i), 1-\hun(j)]$ (we call this method \uslogregp{}).
 \fi
 
+\bigskip
 
-\paragraph{Results}
 Our main results are summarized in \autoref{tab:all_mcc}, reporting MCC test set performance after
 training on sets of varying size (from 5\% to 25\%, plus 50\% and 90\%). Results have been averaged
 over 12 repetitions.
@@ -311,6 +308,8 @@ set. Though our experiments are not conclusive, some trends can be readily spott
 \input{all_mcc}
 
 \begin{newcontent}
+\subsection{Additional experiments}
+  
 We perform two other sets of experiments. The first one assesses the effect of predicting reciprocal
 edges by their value if available. As expected, the results in \autoref{tab:twin} demonstrate that
 it improves MCC when the network has enough twin edges with low disagreements, like in \sla{} and
