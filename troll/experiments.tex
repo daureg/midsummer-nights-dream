@@ -1,7 +1,12 @@
 \section{Experimental Analysis}\label{s:exp}
 
 We now evaluate our edge sign classification methods on representative real-world datasets of
-varying density and label regularity. This shows that our methods compete well against
+varying density and label regularity.
+After presenting the data and our evaluation criterion, we proceed in two steps. First, we simulate
+our generative model on real networks to give them signs, then we study to which extent we can recover
+the parameters $p$ and $q$ of each node, and how this translates to accurate prediction. Second, we
+select random training sets from the actual signs.
+This shows that our methods compete well against
 existing approaches in terms of both predictive and computational performance. We are especially
 interested in small training set regimes, and have restricted our comparison to the batch learning
 scenario since all competing methods we are aware of have been developed in that setting only.
@@ -97,6 +102,96 @@ our methods with existing approaches, we not use that trick. But afterwards, we 
 \autoref{tab:twin} when it can be beneficial.
 % more references in  http://www.nature.com/articles/srep02729
 \end{newcontent}
+
+\begin{newcontent}
+\paragraph{Synthetic signs}
+
+Recall that according to our generative model of \autoref{s:gen}, each node $u$ has parameter $p_u$
+governing its sending behavior and each node $v$ has a parameter $q_v$ governing its receiving
+behavior such that the sign of the edge \euv{} is positive with probability $\frac{p_u+q_v}{2} =
+\etauv$. Given a topology $G=(V,E)$, we start by assigning a $p$ and $q$ values to each node. If we
+want \etauv{} to be uniform over $E$, we have to take into account the out-degree of nodes with at
+least one outgoing edges, and likewise the in-degree of nodes with at least one incoming edges. For
+that, we partition the interval $[0,1]$ into $|V|$ segments of size proportional to $\dout(u_1),
+\dout(u_2), \ldots, \dout(u_{|V|})$. We shuffle these segments and draw a number \uar{} from each of
+them, which we set as the $p$ value of the corresponding node. Then, because we want to have more
+positive edges, we apply an exponential transformation \[ p \rightarrow \frac{1}{1-e^{-\lambda}}
+\left( 1-e^{-\lambda p} \right) \,,\] where we choose $\lambda=3$. We do the same for $q$, then for
+every edge \euv{}, we set it positive with probability \etauv{}. An example of the distributions we
+obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}.
+
+Once the signs are generated, we select a training set \trainset{} \uar{}, and we want to predict
+the signs of the remaining edges in the testing set $E\setminus \trainset{}$. The Bayes optimal
+predictor classifies an edge \euv{} as positive if $\etauv \geq \shalf$ and negative otherwise. 
+We compare it with the algorithm analyzed in \autoref{ss:bayes_approx}, which we call \usrule{}
+(Bayes Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness). In practice,
+\usrule{} proceeds as follow: after computing $\htr(u)$ and $\hun(u)$ on training set $E_0$ for all
+$u \in V$ (or setting those values to \shalf{} in case there is no outgoing or incoming edges for
+some node), we use the equation \eqref{eq:predictor}, having estimated $\tau$ on $E_0$.
+
+The results of this comparison on the six datasets are showed in \autoref{tab:troll_synth_global}.
+For each network, we generated the signs once. Then for different training size (20\%, 40\% or 80\%
+of $E$), we sampled a training set and predict using the knowledge of the true $\eta$ (Bayes
+predictor) or its estimated value (\usrule{}).
+The MCC of the Bayes predictor is the same on all datasets (around $30$), and so is its accuracy
+(around $75$). The corresponding values for \usrule{} are close on all datasets (although some are
+easier) and the gap naturally decreases as the training size increases. Another interesting
+quantity is how close can \usrule{} estimates $\eta$ using $\wh{\eta} = \left(1-\htr(u)\right) +
+\left(1-\hun(v)\right) -\tauhat$ as defined in \autoref{ss:bayes_approx}. We compute the mean
+absolute error (MAE) between $\eta$ and $\wh{\eta}$ for all testing edges, and specifically for
+the testing edges whose both endpoints have been sampled above a certain threshold in the training
+set. As expected, the estimation is more accurate with increasing training set size, and with
+increasing number of samples for a given edge.
+
+\input{synth_res}
+
+Finally, we can also look in more details at the role of $p$ and $q$ by building a 2D histogram of
+the testing edges \euv{} based on their coordinate $(p_u, q_v)$. For instance on
+\autoref{fig:tr_synth_mae}, we see that the MAE between $\eta$ and $\wh{\eta}$ is not uniform over
+the $p,q$-space. It seems to decrease along the diagonal from $(0,0)$ to $(1,1)$. Note though that
+\autoref{fig:tr_synth_sizemae} suggests this is likely due to the higher number of edges in the top
+right corner (reflecting the imbalance toward positive edges), which allows better estimation. 
+
+In this case, we cannot use the MCC because off-diagonal, the Bayes predictor classifies edges
+either all positive or all negative, resulting in a division by zero in the definition. We thus
+fall back on accuracy and display in \autoref{fig:tr_synth_acc} the difference between the accuracy
+of the Bayes predictor and the accuracy of \usrule{}. This time, the anti diagonal where
+$\frac{p+q}{2}=\lhalf$ seems to play a special role. Indeed, as showed more clearly in
+\autoref{fig:tr_synth_cmpacc}, the gap in accuracy between the Bayes predictor and \usrule{}
+increases symmetrically as $\frac{p+q}{2}$ moves away from \shalf{}. The gap also tends to disappear
+when $\frac{p+q}{2}=\lhalf$, most likely because in that area, prediction can only be made by
+chance. 
+
+While we show those patterns on \wik{} with a 40\% training size, they are consistent across
+datasets and training size.
+
+\end{newcontent}
+
+\begin{figure*}[hbtp]
+  % \centering
+  \begin{subfigure}[b]{0.504\textwidth} 
+    \includegraphics[width=\textwidth]{raw/synthgen_wik_rule_40_mae.pdf} 
+    \caption{Mean absolute error (MAE) of the \etauv{} estimation.} 
+    \label{fig:tr_synth_mae}
+  \end{subfigure}~
+  \begin{subfigure}[b]{0.504\textwidth} 
+    \includegraphics[width=\textwidth]{raw/synthgen_wik_rule_40_sizemae.pdf} 
+    \caption{MAE in each cell as a function of the number of sampled edges.} 
+    \label{fig:tr_synth_sizemae}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{0.504\textwidth} 
+    \includegraphics[width=\textwidth]{raw/synthgen_wik_rule_40_acc.pdf} 
+    \caption{100 times the accuracy.} 
+    \label{fig:tr_synth_acc}
+  \end{subfigure}~
+  \begin{subfigure}[b]{0.504\textwidth} 
+    \includegraphics[width=\textwidth]{raw/synthgen_wik_rule_40_cmpacc.pdf} 
+    \caption{Difference of accuracy between \usrule{} and Bayes as $\frac{p+q}{2}$ moves away from $\frac{1}{2}$.} 
+    \label{fig:tr_synth_cmpacc}
+  \end{subfigure}
+  \caption{Results on \wik{} with \usrule{} on a training set of size 40\%}
+\end{figure*}
 
 \paragraph{Algorithms and parameter tuning.} 
 We compared the following algorithms:
