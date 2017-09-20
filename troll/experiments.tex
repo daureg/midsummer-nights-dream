@@ -1,11 +1,11 @@
 \section{Experimental Analysis}\label{s:exp}
 
-We now evaluate our edge sign classification methods on representative real-world datasets of
+We now evaluate our \esp{} methods on representative real-world datasets of
 varying density and label regularity.
 After presenting the data and our evaluation criterion, we proceed in two steps. First, we simulate
 our generative model on real networks to give them signs, then we study to which extent we can recover
-the parameters $p$ and $q$ of each node, and how this translates to accurate prediction. Second, we
-select random training sets from the actual signs.
+the parameters $p$ and $q$ of each node, and how predictions based on these estimation compare with
+the Bayes optimal. Second, we select random training sets from the actual signs.
 This shows that our methods compete well against
 existing approaches in terms of both predictive and computational performance. We are especially
 interested in small training set regimes, and have restricted our comparison to the batch learning
@@ -21,8 +21,8 @@ In \adv{}, a trust-based social network for open source developers, a user $u$ c
 user $v$ with different degrees of trust: \enquote{Observer}, \enquote{Apprentice} (both of which we
 consider negative), \enquote{Journeyer} and \enquote{Master} (both of which we consider
 positive).\footnote{We download the 7\thup{} of July, 2014 version from
-\url{http://www.trustlet.org/datasets/advogato/}.} A full description of this trust metric and its
-resistance to attacks are available in the PhD thesis of the website's creator~\autocite[Section
+\url{http://www.trustlet.org/datasets/advogato/}.} A full description of this trust metric, and its
+resistance to attacks, is available in the PhD thesis of the website's creator~\autocite[Section
 4]{AdvogatoTrustThesis02}).
 \end{newcontent}
 In \wik{}, there is an edge from user $u$ to user $v$ if $v$ applies for an admin position and $u$
@@ -37,11 +37,11 @@ the same article in a constructive manner or not.\footnote{This is the
 \enquote{Wikisigned} dataset}, from which we removed self-loops.} Finally, in the
 \aut{}~\cite{kumar2016structure} network, an author $u$ cites another author $v$ by either endorsing
 or criticizing $v$'s work. The edge sign is derived by classifying the citation sentiment with a
-simple, yet powerful, keyword-based technique using a list of positive and negative words. See
+technique using a list of positive and negative words; see
 \cite{kumar2016structure} for more details.\footnote{We again removed self-loops and merged
 multi-edges which are all of the same sign.}
 
-\begin{table*}[bt]
+\begin{table}[bt]
   \centering
   \small
   \caption{Dataset properties. The 5\thup{} column gives the fraction of positive labels. The next two
@@ -49,7 +49,10 @@ multi-edges which are all of the same sign.}
   proportion of reciprocal edges, and among them the fraction with different signs.\label{tab:dataset}}
   \begin{tabular}{lrrrrrrrr}
     \toprule
-    Dataset & $|V|$       & $|E|$       & $\frac{|E|}{|V|}$ & $\frac{|E^+|}{|E|}$ & $\frac{\Psi^2_{G''}(Y)}{|E|}$ & $\frac{\Psi_G(Y)}{|E|}$ & twin edges & twin disagreement \\
+    Dataset & \thead{$|V|$}       & \thead{$|E|$}       & \thead{$\frac{|E|}{|V|}$} &
+    \thead{$\frac{|E^+|}{|E|}$} & \thead{$\frac{\Psi^2_{G''}(Y)}{|E|}$} &
+    \thead{$\frac{\Psi_G(Y)}{|E|}$} & \thead{reciprocal\\ edges} &
+    \thead{reciprocal\\ disagreement} \\
     \midrule                                                                                                   
     \aut{}  & \np{4831}   & \np{39452}  & 8.2               & 72.3\%              & .076                          & .191                    & 5.1\%      & 27.1\%            \\
     \adv{}  & \np{5417}   & \np{51312}  & 9.5               & 75.1\%              & .061                          & .132                    & 33.6\%     & 28.6\%            \\
@@ -59,15 +62,15 @@ multi-edges which are all of the same sign.}
     \kiw{}  & \np{138587} & \np{740106} & 5.3               & 87.9\%              & .034                          & .086                    & 6.5\%      & 14.6\%            \\
     \bottomrule
   \end{tabular}
-\end{table*}
+\end{table}
 
 \autoref{tab:dataset} summarizes statistics for these datasets. We note that most edge labels are
 positive. Hence, test set accuracy is not an appropriate measure of prediction performance. We
 instead evaluated our performance using the so-called Matthews Correlation Coefficient
-(MCC)~\autocite{MCC00}), defined as
+(MCC)~\autocite{MCC00}, defined as
 \[
 	\mathrm{MCC} = \frac{tp\times tn-fp\times fn}%
-        {\sqrt{ (tp + fp) ( tp + fn ) ( tn + fp ) ( tn + fn ) } } = \pm \sqrt{\frac{\chi^2}{n}}
+        {\sqrt{ (tp + fp) ( tp + fn ) ( tn + fp ) ( tn + fn ) } }% = \pm \sqrt{\frac{\chi^2}{n}}
 \]
 MCC combines all the four quantities found in a binary confusion matrix ($t$rue $p$ositive, $t$rue
 $n$egative, $f$alse $p$ositive and $f$alse $n$egative) into a single metric which ranges from $-1$
@@ -75,14 +78,14 @@ $n$egative, $f$alse $p$ositive and $f$alse $n$egative) into a single metric whic
 predictions are made uniformly at random).
 
 Although the semantics of the edge signs is not the same across these networks, we can see from
-\autoref{tab:dataset} that our generative model essentially fits all of them. Specifically, the last
+\autoref{tab:dataset} that our generative model essentially fits all of them. Specifically,
 two columns of the table report the rate of label (ir)regularity, as measured by
-$\Psi^2_{G''}(Y)/|E|$ (second-last column) and $\Psi_{G}(Y)/|E|$ (last column), where 
+$\Psi^2_{G''}(Y)/|E|$ (6\thup{} column) and $\Psi_{G}(Y)/|E|$ (7\thup{} column), where 
 \[
 \Psi^2_{G''}(Y) = \min_{(\bp,\bq)} \left(f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)\right)\,,
 \]
 $f_{E_0}$ and $f_{E\setminus E_0}$ being the quadratic criterions of \autoref{ss:passive}, viewed as
-functions of both $(\bp,\bq)$, and $y_{i,j}$ when all labels are known, and $\Psi_{G}(Y)$ is the
+functions of both $(\bp,\bq)$, and \yuv{} when all labels are known, and $\Psi_{G}(Y)$ is the
 label regularity measure adopted in the online setting, as defined in \autoref{s:prel}. It is
 reasonable to expect that higher label irregularity corresponds to lower prediction performance.
 This trend is in fact confirmed by our experimental findings: whereas \epi{} tends to be easy,
@@ -92,9 +95,9 @@ to $\Psi_{G}(Y)/|E|$ across datasets, hence confirming the anticipated connectio
 regularity measures.
 
 \begin{newcontent}
-Finally, there is a low fraction of reciprocal (or \emph{twin}) edges (\ie{} both $\euv \in E$ and $\evu
+Finally, there is a low fraction of reciprocal edges (\ie{} both $\euv \in E$ and $\evu
 \in E$), which is a common mechanism of link formation in directed
-networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases, such twin edges do not disagree,
+networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases, such reciprocal edges do not disagree,
 \ie{} they have the same sign. In practice, we can use this fact to improve our accuracy at no
 additional computational cost: when predicting $\euv \in E_{\mathrm{test}}$, if the reciprocal edge
 \evu{} is part of the training set, we set $\yhat_{u,v} = y_{v,u}$. For clarity, when comparing
@@ -106,39 +109,76 @@ our methods with existing approaches, we not use that trick. But afterwards, we 
 \begin{newcontent}
 \subsection{Synthetic signs}
 
-Recall that according to our generative model of \autoref{s:gen}, each node $u$ has parameter $p_u$
+Recall that according to our generative model of \autoref{s:gen}, each node $u$ has a parameter $p_u$
 governing its sending behavior and each node $v$ has a parameter $q_v$ governing its receiving
-behavior such that the sign of the edge \euv{} is positive with probability $\frac{p_u+q_v}{2} =
+behavior, such that the sign of the edge \euv{} is positive with probability $\frac{p_u+q_v}{2} =
 \etauv$. Given a topology $G=(V,E)$, we start by assigning a $p$ and $q$ values to each node. If we
 want \etauv{} to be uniform over $E$, we have to take into account the out-degree of nodes with at
-least one outgoing edges, and likewise the in-degree of nodes with at least one incoming edges. For
-that, we partition the interval $[0,1]$ into $|V|$ segments of size proportional to $\dout(u_1),
+least one outgoing edge, and likewise the in-degree of nodes with at least one incoming edge. For
+that, in the case of $p$, we partition the interval $[0,1]$ into $|V|$ segments of size proportional
+to $\dout(u_1),
 \dout(u_2), \ldots, \dout(u_{|V|})$. We shuffle these segments and draw a number \uar{} from each of
-them, which we set as the $p$ value of the corresponding node. Then, because we want to have more
+them, which we set as the $p$ value of the corresponding node. Then, because we want to model real
+sign distribution and have more
 positive edges, we apply an exponential transformation \[ p \rightarrow \frac{1}{1-e^{-\lambda}}
 \left( 1-e^{-\lambda p} \right) \,,\] where we choose $\lambda=3$. We do the same for $q$, then for
 every edge \euv{}, we set it positive with probability \etauv{}. An example of the distributions we
-obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}.
+obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}, giving $71.9\%$ of
+positive edges.
 
-Once the signs are generated, we select a training set \trainset{} \uar{}, and we want to predict
+\vspace{\baselineskip}
+\noindent\begin{minipage}{187mm} 
+  \begin{minipage}{46mm}
+    \centering
+    \includegraphics[width=.95\linewidth]{raw/synth_wik_pdense.pdf}
+    \captionof{subfigure}{Density of $p$.}
+    % \label{fig:figure1}
+  \end{minipage}%
+  \begin{minipage}{46mm}
+    \centering 
+    \includegraphics[width=.95\linewidth]{raw/synth_wik_qdense.pdf} 
+    \captionof{subfigure}{Density of $q$.} 
+    % \label{fig:figure2} 
+  \end{minipage} 
+  \begin{minipage}{46mm}
+    \centering 
+    \includegraphics[width=.95\linewidth]{raw/synth_wik_etadense.pdf} 
+    \captionof{subfigure}{Density of $\eta$.} 
+    % \label{fig:figure2} 
+  \end{minipage} 
+  \begin{minipage}{46mm}
+    \centering 
+    \includegraphics[width=.95\linewidth]{raw/synth_wik_signdense.pdf}
+    \captionof{subfigure}{Density of $\eta$ for both signs.} 
+    % \label{fig:figure2} 
+  \end{minipage} 
+  \captionof{figure}{Synthetic distributions on \wik{}.} 
+  \label{fig:troll_synth_distrib} 
+\end{minipage}
+\vspace{\baselineskip}
+
+Once the signs are generated, we select a training set \trainset{} \uar{}, and predict
 the signs of the remaining edges in the testing set $E\setminus \trainset{}$. The Bayes optimal
 predictor classifies an edge \euv{} as positive if $\etauv \geq \shalf$ and negative otherwise. 
 We compare it with the algorithm analyzed in \autoref{ss:bayes_approx}, which we call \usrule{}
 (Bayes Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness). In practice,
 \usrule{} proceeds as follow: after computing $\htr(u)$ and $\hun(u)$ on training set $E_0$ for all
 $u \in V$ (or setting those values to \shalf{} in case there is no outgoing or incoming edges for
-some node), we use the equation \eqref{eq:predictor}, having estimated $\tau$ on $E_0$.
+some node), we use the equation \eqref{eq:predictor}\footnote{We reproduce this equation here for
+convenience: $\sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) -\tau - \tfrac{1}{2}\Big)$.},
+having estimated $\tau$ on $E_0$.
 
-The results of this comparison on the six datasets are showed in \autoref{tab:troll_synth_global}.
-For each network, we generated the signs once. Then for different training size (20\%, 40\% or 80\%
+The result of this comparison on the six datasets is showed in \autoref{tab:troll_synth_global}.
+For each network, we generated the signs once. Then, for different training size (20\%, 40\% or 80\%
 of $E$), we sampled a training set and predict using the knowledge of the true $\eta$ (Bayes
 predictor) or its estimated value (\usrule{}).
-The MCC of the Bayes predictor is the same on all datasets (around $30$), and so is its accuracy
-(around $75$). The corresponding values for \usrule{} are close on all datasets (although some are
+The MCC of the Bayes predictor is the same on all datasets (around $30$\footnote{Here and in the
+following, we multiply all MCC value by 100 to improve readability.}), and so is its accuracy
+(around $75\%$). The corresponding values for \usrule{} are close on all datasets (although some are
 easier) and the gap naturally decreases as the training size increases. Another interesting
 quantity is how close can \usrule{} estimates $\eta$ using $\wh{\eta} = \left(1-\htr(u)\right) +
 \left(1-\hun(v)\right) -\tauhat$ as defined in \autoref{ss:bayes_approx}. We compute the mean
-absolute error (MAE) between $\eta$ and $\wh{\eta}$ for all testing edges, and specifically for
+absolute error (MAE) between $\eta$ and $\wh{\eta}$ for all testing edges, and then specifically for
 the testing edges whose both endpoints have been sampled above a certain threshold in the training
 set. As expected, the estimation is more accurate with increasing training set size, and with
 increasing number of samples for a given edge.
@@ -151,7 +191,6 @@ the testing edges \euv{} based on their coordinate $(p_u, q_v)$. For instance on
 the $p,q$-space. It seems to decrease along the diagonal from $(0,0)$ to $(1,1)$. Note though that
 \autoref{fig:tr_synth_sizemae} suggests this is likely due to the higher number of edges in the top
 right corner (reflecting the imbalance toward positive edges), which allows better estimation. 
-
 In this case, we cannot use the MCC because off-diagonal, the Bayes predictor classifies edges
 either all positive or all negative, resulting in a division by zero in the definition. We thus
 fall back on accuracy and display in \autoref{fig:tr_synth_acc} the difference between the accuracy
@@ -159,12 +198,10 @@ of the Bayes predictor and the accuracy of \usrule{}. This time, the anti diagon
 $\frac{p+q}{2}=\lhalf$ seems to play a special role. Indeed, as showed more clearly in
 \autoref{fig:tr_synth_cmpacc}, the gap in accuracy between the Bayes predictor and \usrule{}
 increases symmetrically as $\frac{p+q}{2}$ moves away from \shalf{}. The gap also tends to disappear
-when $\frac{p+q}{2}=\lhalf$, most likely because in that area, prediction can only be made by
-chance. 
+when $\frac{p+q}{2}=\lhalf$, for in that region, both predictors can only rely on random predictions.
 
 While we show those patterns on \wik{} with a 40\% training size, they are consistent across
 datasets and training size.
-
 \end{newcontent}
 
 \begin{figure*}[hbtp]
@@ -310,11 +347,11 @@ set. Though our experiments are not conclusive, some trends can be readily spott
 \begin{newcontent}
 \subsection{Additional experiments}
   
-We perform two other sets of experiments. The first one assesses the effect of predicting reciprocal
+We perform two other sets of experiments. The first one evaluates the effect of predicting reciprocal
 edges by their value if available. As expected, the results in \autoref{tab:twin} demonstrate that
-it improves MCC when the network has enough twin edges with low disagreements, like in \sla{} and
-\epi{}. It has no effect when there are few twin edges, like in \aut{}, \wik{} and \kiw{}. And it is
-detrimental when there are many twin edges that do not agree enough, like in \adv{}, in which
+it improves MCC when the network has enough reciprocal edges with low disagreements, like in \sla{} and
+\epi{}. It has no effect when there are few reciprocal edges, like in \aut{}, \wik{} and \kiw{}. And it is
+detrimental when there are many reciprocal edges that do not agree enough, like in \adv{}, in which
 case it is better to rely solely on the learned model.
 
 \input{diff_mcc_pp}
