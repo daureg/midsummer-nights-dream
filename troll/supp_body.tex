@@ -1,6 +1,8 @@
-\section{Proofs from \autoref{s:algbatch}}
+% \section{Proofs from \autoref{s:algbatch}}
+\section{Additional material}
+\subsection{Proofs from \autoref{s:algbatch}}
 
-\subsection{Proof of \autoref{t:active}}
+\subsubsection{Proof of \autoref{t:active}}
 \label{ssec:troll_proof_bayes}
 
 The following ancillary results will be useful.
@@ -177,7 +179,7 @@ simultaneously holds for each $(u,v) \in E_{\theta}$ with probability at least $
 Putting together concludes the proof.
 \end{proof}
 
-\subsection{Derivation of the maximum likelihood equations}
+\subsubsection{Derivation of the maximum likelihood equations}
 \label{ssec:troll_mle_deriv}
 
 Recall that the training set $\trainset = \theset{\big(u_t,v_t),y_{u_t,v_t}\big)}{t=1,\dots,m}$
@@ -234,7 +236,7 @@ so that
 - \, \sum_{k=1}^m \frac{\Ind{v_k = \ell,y_{u_k,\ell}=-1}}{2-p_{u_k}-q_{\ell}}\,.
 \end{align*}
 
-\subsection{Label propagation on $G''$}
+\subsubsection{Label propagation on $G''$}
 \label{ssec:troll_lprop_weights}
 
 Here we provide more details on the choice of weight for the edges of $G''$, as well as an
@@ -277,7 +279,7 @@ By setting $\eps=2$, we can factor this expression into
   \frac{1}{2}\right)^2 \right)~.
 \end{align*}
 
-\section{Proof from \autoref{s:algonline}}
+\subsection{Proof from \autoref{s:algonline}}
 
 \begin{proof}[Proof sketch that, in the context of \autoref{t:mistake_bound}, as $\frac{K}{|E|}
   \rightarrow 0$ then $\E M_A(Y)=K$  ]\label{proof:troll_K_mistakes}
@@ -451,7 +453,7 @@ we get an expected mistake bound of
 \]
 \fi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Further Experimental Results}
+\subsection{Further Experimental Results}
 
 This section contains more evidence related to the experiments in \autoref{s:exp}.
 In particular, we experimentally demonstrate the alignment between \usrule{} and \uslogregp{}.
