@@ -1,0 +1,191 @@
+\section{Settings and learning problem}
+\label{sec:edge_model}
+
+As in the previous chapters, we are given an unweighted graph $G=(V,E)$\stodo{undirected?}. This
+time though, we also have side information in addition to the graph topology. Namely, each node $u$
+is associated with a $d$-dimensional feature vector $x_u \in \Rbb^d$. As an example, in a social
+network, $x_u$ would be the profile of user $u$, describing $u$'s demographics and preferences. We
+are also given a combination operator between feature vectors $s$ such that $s(x_u, x_v) = s_{uv}
+\in \Rbb^d$. Finally, we consider distinguished feature vectors $w_{uv}$\stodo{is it better to
+introduce $w$ with a single $\ell$ index, to emphasise that later, it will not be unique per edge?},
+along which the combination $s_{uv}$ between two nodes $u$ and $v$ is evaluated. We call such
+$w_{uv}$ \emph{directions}, and constrain them to have unit norm. As we will discuss, this
+constraint can be seen as a way to couple the different dimensions of the profiles.
+
+Depending on the application, and the semantic we ascribe to links between nodes, we can design and
+interpret the combination operator $s$ as a difference, a similarity or a distance. Likewise, we
+also have some freedom in defining how $s_{uv}$ and $w_{uv}$ are combined to assign a single real
+value $g(s_{uv}, w_{uv})$ to the edge $(u,v)$. Let us call $g(w_{uv}, s_{uv})$ the \emph{goodness}
+of $w_{uv}$ with respect to the edge $(u,v)$. We view this value as how adequately the direction
+$w_{uv}$ \emph{explains}, or describes, the connection between $u$ and $v$.
+
+\medskip
+
+We assume in the following that both the profiles and the directions are vectors with components in
+$[-1, 1]$. A natural choice for the operator $s$ is then the difference between the profile, that is
+$s_{uv} = x_u - x_v$. In that spirit, if $u$ and $v$ are close along a direction $w_{uv}$, we expect
+${x_u}^T w_{uv}$ to be close to ${x_v}^T w_{uv}$, as measured by $|{x_u}^T w_{uv} - {x_v}^T
+w_{uv}|$. Because we prefer to work with smooth functions, we define the goodness to be $g(s_{uv},
+w_{uv}) = \left({s_{uv}}^T w_{uv} \right)^2$, and we want to minimize it with respect to $w_{uv}$.
+When ${x_u}_{;i} - {x_v}_{;i}$ is close to zero, the minimization and the fact that $w_{uv}$ is
+unit-norm impose that ${w_{uv}}_{;i}$ should be large. On the other hand, with this formulation,
+there is no way to set ${w_{uv}}_{;i}$ in order to \enquote{reward/favor} the fact that
+${x_u}_{;i}$ and ${x_v}_{;i}$ are widely different.
+Whereas there might be situations where this is not a problem, as we discussed in the introduction,
+here we seek to model heterophilic interactions, at least along a subset of dimensions. Therefore, in
+the following, we will adopt a refined approach.
+
+Namely, we define $s$ to be the Hadamard (or component wise) product: $s_{uv} = x_u \circ x_v$, and
+$g$ to be the dot product: $g(s_{uv}, w_{uv}) = {s_{uv}}^T w_{uv}$. The goodness of a direction $w$
+for a given edge can thus be seen as a weighted sum of the per component similarity of $u$ and $v$
+profiles. Therefore, it must be maximized with respect to $w_{uv}$. For a given component $i$, when
+both ${x_u}_{;i}$ and ${x_v}_{;i}$ are large and of the same sign (that is close to either $+1$ or
+$-1$), we see that $u$ and $v$ agree on the \ith{} dimension, and ${w_{uv}}_{;i}$ must accordingly
+be a large positive value. On the other hand, when ${x_u}_{;i}$ and ${x_v}_{;i}$ are both large but
+of different signs (\eg ${x_u}_{;i} = +1$ and ${x_v}_{;i} = -1$), $u$ and $v$ strongly disagree on
+the \ith{} dimension, requiring in a large negative value for ${w_{uv}}_{;i}$.  Finally, if one of
+${x_u}_{;i}$ or ${x_v}_{;i}$ is zero, denoting either an unimportant feature or a missing value,
+then the value of ${w_{uv}}_{;i}$ does not matter, and will be set to zero by the maximization
+procedure because of the unit norm constraint on $w_{uv}$.
+
+\begin{aside}
+When $s$ is a distance, and therefore positive, we impose $w_{uv}\geq 0$. A link $(u,v)$ is then
+well explained by $w_{uv}$ when observed differences along this direction are small. More precisely,
+when the quantity ${s_{uv}}^T w_{uv}$ is close to zero. Because $w_{uv}$ is unit norm, the \ith{}
+component of $w_{uv}$ should be large when the \ith{} feature of $x_u$ and $x_v$ are close. Hence, a
+null value for a component $i$ of $s_{uv}$ should not mean anything else than $u$ and $v$ share a
+known and similar feature $i$ (\eg{} the unknown value should be different from $0$). When $s$ is
+the difference $x_u - x_v$, it can be negative and the same reasoning can be applied, but with
+$w_{uv}\in [-1,1]^d$ and a link value of $\left({s_{uv}}^T w_{uv}\right)^2$.
+
+An alternative is to consider that the combination is a similarity. Links are created when the
+observed similarity is high. Again, if $s$ is positive, it seems reasonable to impose that
+$w_{uv}\geq0$ (and if $s$ can be negative, then $w_{uv}$ should be in $[-1,1]$). One main advantage
+of similarities is maybe to avoid (or minimize) problems with missing values setting them to 0.
+\end{aside}
+
+\medskip
+
+Based on these specific definitions of $s$ and $g$, we now formally write down the problem of
+finding and assigning the most informative directions to every edge of $G$
+\begin{problem}[]
+  \label{p:edge_full}
+  Given a graph $G=(V, E)$, node profiles $X\in [-1, 1]^{n\times d}$ and an integer $k \in \Nbb$,
+  find a set of $k$ unit-norm directions $\mathcal{D}_k = \{w_1, w_2, \ldots, w_k\} \in \dsphere$
+  and associate to every edge of $E$ the direction with the maximal goodness. Formally, solve
+  \begin{equation}
+    \label{eq:edge_full}
+    \argmax_{w_1,\ldots,w_k \in \dsphere}
+    \sum_{u,v \in E} \max_{\ell \in \rangesk} g(s_{uv}, w_{\ell}) =
+    \sum_{u,v \in E} \max_{\ell \in \rangesk} \left(x_u \circ x_v\right)^T w_{\ell} = f(k)
+  \end{equation}
+\end{problem}
+
+If $k=|E|$, the topology of the graph becomes irrelevant, as we can simply exploit the trivial
+solution of having a single direction $w_{uv} = \frac{s_{uv}}{||s_{uv}||}$ for every edge $(u,v)$.
+More generally, as $k$ increases, we expect the value $\max_{\mathcal{D}_k} f(k)$ to increases as
+well, at the cost of interpretability. There could be a principled approach to finding the
+\enquote{best} $k$, based on a information theoretical measure of the complexity of $\mathcal{D}_k$
+and the minimum description length principle~\autocite{grunwald2005tutorial}. However, in the
+interest of simplicity, in the following we focus on the formulation stated in
+\autoref{p:edge_full}, where $k$ is given. In practice, we further constrain $k$ to be small (say
+less than \np{10}). Within the multilayer framework, $k$ could also be seen as the number of
+underlying layers\stodo{elaborate on that connection}.
+
+\begin{aside}
+Generalizing the balance theory from signed graphs, we could imagine that in triangles or short
+cycles, only certain combinations of directions are valid (or at least desirable). As a nice side
+effect, this would likely require more innovative optimization algorithms. However, it sounds very
+application-dependant. Furthermore, in our current setting, we do not know in advance in the
+semantic of each direction, and we have no labeled edges. Therefore, it is not clear how those
+constraints would be specified or whether they can be learned, if applicable. 
+\end{aside}
+
+Another way to leverage the graph topology is to define local constraints at the node level. Since
+the beginning we considered that the user profiles were given, but from now on we further assume
+that they are normalized so that they are unit norm, just like directions. In practice, if nodes are
+users of a social network and the profiles measure their activity across several domains, this
+allows to compare users with various level of total activity. One way to integrate that fact in
+our optimization formulation is to assume that profiles are linear combination of directions, that
+is $x_u = b_u + \sum_{v \in \nei(u)} a_{uv} w_{uv}$, where $a_{uv}$ are real coefficients and $b_u
+\in \Rbb^d$. Viewed in the other direction, this can be interpreted as follow: each time a node $u$
+connect to another node $v$ along a direction $w_{uv}$, it consume a part of its profile
+proportional to $w_{uv}$. Therefore, we subtract the term $\sum_{u\in V} \left|\left| x_u - b_u -
+\sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2$ to \eqref{eq:edge_full}.
+%
+We can also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
+different directions. The intuition is that when $d$ is large enough, users have to focus their
+energy and can only express their interest in a few number of dimensions. In other words, all the
+edges incident to $u$ can only be associated with one of $k_\mathrm{local}$ directions. This is
+difficult to incorporate directly in the optimization formulation, as for certain value of
+$k_\mathrm{local}$, this is a \NPc{} graph colouring problem. Still, it can be seen as a learning
+bias and will be used to generate synthetic data.
+These two constraints can be combined, so that the profiles are close to a linear combination of a
+small number of directions.
+
+% $\theset{(u,v) \in E}{v \in \nei(u)}$
+
+\bigskip
+
+In order to make the optimization more tractable, we relax the formulation of \autoref{p:edge_full}
+by replacing the $\max$ inside the sum of \eqref{eq:edge_full}, either by a continuous approximation
+or by a low rank matrix approach.
+
+One can check that given a set of numbers $S=\{a_1, a_2, \ldots, a_{|S|}\}$ and real number $\beta >
+0$, we have
+\begin{equation*}
+  \max_{a_i \in S} a_i = \lim_{\beta \rightarrow + \infty} \frac{1}{\beta}
+  \log\left( \sum_{i=1}^{|S|} \exp{\beta a_i} \right)
+\end{equation*}
+Using this fact, and averaging the two components of our objective function, we can rewrite
+\eqref{eq:edge_full} as:
+\begin{equation}
+  \argmax_{w_1,\ldots,w_k \in \dsphere,\, a_{uv}\in\Rbb,\, b_u \in \Rbb^d}
+  \frac{1}{|E|\beta} \sum_{u,v\in E}
+  \log\Bigl(\sum_{\ell=1}^k\exp\left(\beta {s_{uv}}^T w_\ell \right)\Bigr)
+  - \frac{1}{|V|}\sum_{u\in V}
+  \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2
+\end{equation}
+
+Another way to remove the $\max$ is to look for a single direction per edge, stacked horizontally in
+one matrix. Then we can directly minimize \eqref{eq:edge_full} while enforcing the matrix
+$W\in\mathbb{R}^{d\times |E|}$ of all directions to be low-rank, so that each $w_{uv}$ (given by the
+$(u-1)n+v$-th column of $W$) can be expressed as a linear combination of a small number of basis
+vectors. Formally, if $W$ has rank $k$, then there exists $P\in\mathbb{R}^{d\times k}$ and
+$Q\in\mathbb{R}^{|E|\times k}$ such that $W=PQ^T$ and $w_{uv} = Pq_{uv}^T$. $P$ defines $k$
+representative directions in $\Rbb^d$ while $Q$ gives, for each edge, the weights of each
+representative direction. Similar to what is done in spectral clustering, we could cluster the
+$q_{uv}$'s to obtain an edge labeling.
+%
+Denoting by $\mathbb{M}^{d\times |E|}$ the set of $d\times |E|$ matrices with unit $L_2$ norm
+columns, a convex formulation of the problem is as follows:
+\begin{equation}
+  \label{eq:fact_convex}
+  \min_{W\in\mathbb{M}^{d\times |E|}} \quad
+  \sum_{i,j \in E} {s_{uv}}^T w_{uv} + \lambda \|W\|_*,
+\end{equation}
+where $w_{uv} \in \Rbb$ denotes the $(u-1)n+v$-th column of $W$, $\|W\|_* =
+\sum_{i=1}^{\min(d,|E|)}\sigma_i(W)$ is the sum of the singular values of $W$ (called the nuclear
+norm or trace norm), and $\lambda \geq 0$ is a regularization parameter.\footnote{To make the
+optimal solution unique, we can use an additional Frobenius norm regularization on $W$.} The nuclear
+favors low-rank solutions as it is essentially an $L_1$ norm on the spectrum.
+Problem~\eqref{eq:fact_convex} can be solved using proximal gradient descent (requires singular
+value decomposition at each iteration) \autocite{Parikh2013a} or Frank-Wolfe (requires only to find
+the largest singular vector) \autocite{Jaggi2013a}.
+
+Alternatively, we can consider a nonconvex formulation where we make the low-rank decomposition of
+$W$ explicit. Given a rank $k\leq \min(d,|E|)$:
+\begin{equation}
+  \label{eq:fact_nonconvex}
+  \min_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad
+  \sum_{u,v \in E} {s_{uv}}^T w_{uv}.
+\end{equation}
+Problem~\eqref{eq:fact_nonconvex} can be solved via alternating optimization over $P$ and $Q$ using
+standard (projected) gradient descent algorithms.
+
+Note however that this matrix formulation requires learning more parameters, as it each edge has a
+different, albeit made up of a small number of basis direction.  Impose sparsity on $Q$?
+
+Max margin, replace the max by a difference of the currently assigned direction with the other
+(trade off parameter). At least I think I used it in synthetic data.
+
