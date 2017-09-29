@@ -13,14 +13,42 @@ with each other~\autocite{ComplexNetworksApp11}. Coupled with the increasing ava
 amount of relational data, it has recently spurred a lot of interest across various and tangible
 applications:
 \begin{itemize}[nosep,leftmargin=*]
-  \item community detection ~\autocite{FortunatoSurvey10} Describe the task in one sentence and give
-    some nice examples from the survey, if possible supported by real-world numbers;
-  \item semi-supervised learning ~\autocites{SSL06}{graphSSL14} Idem
-  \item node classification ~\autocite{nodeClassif11} Idem
-  \item node embedding ~\autocite{representationLearning17} Idem
-  \item link prediction ~\autocite{linkPredSurvey16} Idem
-  \item influence maximization ~\autocites{infmaxKempe15}{infmax13} Idem
-  \item network evolution ~\autocite{networkEvolution14} Idem
+  \item community detection~\autocite{FortunatoSurvey10}, where the goal is to cluster nodes in
+    tightly connected group that are loosely connected with the rest of the graph, in order to
+    better understand their relationships and the graph organization. Is has been used for instance
+    to identify proteins functional groups~\autocite{clusterBio03} or see how different scientific
+    fields relate based on publication data~\autocite{clusterScience08}.
+  \item semi-supervised learning~\autocites{SSL06}{graphSSL14}, where during training, we are
+    provided with unlabeled data at the same time as labeled data. Connecting similar instances
+    allow propagating information along the graph, with applications in classifying text
+    documents~\autocite{sslText09} or aligning categories and relations across multiple knowledge
+    base~\autocite{sslKB13}.
+  % \item node classification~\autocite{nodeClassif11} Idem
+    % could add visualisation (Roberto Tamassia. 2013. Handbook of Graph Drawing and Visualization.
+    % CRC Press.) but it's not exactly learning
+  \item node embedding~\autocite{representationLearning17}, where we seek a low dimensional
+    representation of nodes based on their structural patterns, usually in an unsupervised way,
+    although it is also possible to include problem supervision when available. Such representation can
+    then be used in downstream tasks, for instance visualisation~\autocite{LINE15} or the
+    aforementioned node classification, even when new nodes join the graph after
+    training~\autocite{inductiveRepresentation17}.
+  \item link prediction~\autocite{linkPredSurvey16}, where the goal is, given a snapshot of the
+    graph at time $t$, to return a set of non-existing links that will be created by time
+    $t+\Delta$. Most methods are based on the assumption that link creation is driven by node
+    similarity and it has been successfully applied to inferring potential interaction between
+    proteins without expensive experiments~\autocite{linkPredBio06} and uncovering hidden
+    association in criminal networks~\autocite{linkPredCrime08}.
+  \item information and influence propagation~\autocite{infmax13}, which is the study of processes
+    by which content is spread across networks, and how such processes can be influenced to speed
+    them up or slow them down. Two main applications are selecting the best seed in a social
+    network to promote a viral marketing campaign~\autocite{infmaxKempe15} and better contain the
+    diffusion of actual biological viruses~\autocite{influenceBio13}.
+  \item network evolution~\autocite{networkEvolution14}, which focuses on the mechanisms and
+    consequences of the growth of most networks, as well as how to keep the results on some data
+    mining algorithms \enquote{fresh} and relevant. Monitoring the changes in the interactions of
+    proteins can indeed be used as an early indicator for some kind of
+    diseases~\autocite{evolBio10}, while sudden changes in networks of computers are usually worth
+    investigating for they might signal some external attack~\autocite{evolSecurity04}.
 \end{itemize}
 
 \vspace{-\baselineskip}
@@ -154,109 +182,49 @@ gender~\autocites{homophilyMyspace09}{Tinder16}; spreading innovation ---where m
 different background and point of view is crucial to favor diversity and
 creativity~\autocite{rogers2003diffusion}; and online news consumption ---where connecting people
 from different sides of the political spectrum helps avoiding echo chambers and fueling a democratic
-debate~\autocite{balancedNews17}. More generally, multilayer graphs have applications in various
-fields. In social networks, where players of the Pardus massively multilayer online game can have
-six types of relations (friendship, enmity, private message, trading, aggression and
-bounty)~\autocite{Szell2010} or where photo sharers of the Flickr website can interact in eleven
-ways (either directly or through comments, tags, groups and so on)~\autocite{RecoFlickrMulti11}. In
-citation networks, where authors of the DBLP dataset are connected if they have co-authored a paper
-in one the \np{1000} conferences that form the edge type~\autocite{communityDBLPbyConf05}, or where
-\np{5000} SIAM papers can be connected for five reasons (abstract similarity, title similarity,
-keywords similarity, author similarity or citation)~\autocite{articlesMultiSim11} in economic
-networks, where 951 ports are connected by 3 kind of ships (bulk dry carriers, container ships and
-oil tankers)~\autocite{ports3kindofships10} or in the International Trade Network, where 162
-countries are connected by 96 kind of commodities they can exchange~\autocite{worldTradeNetwork10}.
-And in biology, where genes co-expression network under 130 different experimental
-conditions~\autocite{bioLayerExp11}
+debate~\autocite{balancedNews17}. Our goal is to predict to which category a given belong. This is
+widely applicable, for multilayer graphs are present  in various fields. In social networks, where
+players of the Pardus massively multilayer online game can have six types of relations (friendship,
+enmity, private message, trading, aggression and bounty)~\autocite{Szell2010} or where photo sharers
+of the Flickr website can interact in eleven ways (either directly or through comments, tags, groups
+and so on)~\autocite{RecoFlickrMulti11}. In citation networks, where authors of the DBLP dataset are
+connected if they have co-authored a paper in one the \np{1000} conferences that form the edge
+type~\autocite{communityDBLPbyConf05}, or where \np{5000} SIAM papers can be connected for five
+reasons (abstract similarity, title similarity, keywords similarity, author similarity or
+citation)~\autocite{articlesMultiSim11} in economic networks, where 951 ports are connected by 3
+kind of ships (bulk dry carriers, container ships and oil tankers)~\autocite{ports3kindofships10} or
+in the International Trade Network, where 162 countries are connected by 96 kind of commodities they
+can exchange~\autocite{worldTradeNetwork10}. And in biology, where genes are connected in a
+co-expression network under 130 different experimental conditions~\autocite{bioLayerExp11}.
 
-Existing works ~\autocite{egoNips12}
-
-The social circles model defines a generative for connection inside ego
-networks~\autocites{LeskovecEgo12}{LeskovecEgo14}. Basically, each node makes friends along $K$
-categories and we learn the parameters that maximize the probability for each edge to belong to one
-of the $K$ categories\footnote{But those categories can change from node to node.}.
-
-Yixiang Fang, Reynold Cheng, Siqiang Luo, and Jiafeng Hu. 2016. Effective community search for large
-attributed graphs. Proc. VLDB Endow. 9, 12 (August 2016), 1233-1244. DOI:
-\url{http://dx.doi.org/10.14778/2994509.2994538}
-
-Look for attributed community,  which are subgraphs satisfying both structure cohesiveness (i.e.,
-its vertices are tightly connected) and keyword cohesiveness (i.e., its vertices share common
-keywords),  enabling a better understanding of how and why a community is formed
-To enable efficient AC search, we develop the CL-tree index structure and three algorithms based on
-it. We evaluate our solutions on four large graphs, namely Flickr, DBLP, Tencent, and DBpedia. Our
-results show that ACs are more effective and efficient than existing community retrieval approaches.
-
-
-
-Find partitions by maximizing the densite of intra community edges, but weight the edge between $i$
-and $j$ by a function that depends both of the $i$ and $j$ profile similarities and a learned weight
-vector per community~\autocite{ZhangModelFree16}. Solved by alternating optimizing over node
-assignment and over community weight learning.
-vector 
-
-each node can be seen as a point in $R^d$ and because the dimensions are assumed to be not
-independent, each point belong to a subspace. It's a well studied problem~\autocite{SCSurvey11}
-
-Recovering $d$ different metric spaces whose intersection form the observed social multiplex in
-almost linear time with bounded distortion~\autocite{Abraham2012a}. Assume there are $K$ social
-categories modelled by Euclidean spaces $\mathcal{D}_i$. Users in there are near uniformly
-distributed and categories have small local correlation:
-\[ \forall i\neq i', \; \forall r, r' = O(polylog(n)),\,
-  \forall u, u',\, |\mathcal{B}_i(u, r) \cap \mathcal{B}_{i'}(u', r')| \leq O(\log n) \]
-These spaces give rise to small world networks $\mathcal{G}_i$ with edge probability $\propto
-\mathcal{D}_i(u, v)^{-d}$ and we observe the real network $\mathcal{G} =\bigcup_i \mathcal{G}_i$.
-From $\mathcal{G}$, the proposed algorithm recovers in $n \mathrm{polylog} n$ time a bounded
-approximation $\mathcal{D}'_i$ of all $\mathcal{D}_i$
-\[ \sigma \mathcal{D}_i(u, v) \leq \mathcal{D}'_i(u, v) \leq \delta \mathcal{D}_i(u, v) + \Delta \]
-
-As hinted by the title, \autocite{Ahmed2016}\footnote{published version in
-\autocite{ahmed2017roles}?} is a specific instantiation of a more general framework
-about Role Discovery in Networks by the same authors. Originally, two nodes were said to have the
-same role if they were structurally equivalent (that is, connected to the rest of the network in
-identical ways). Hereafter, structural equivalence is relaxed into mere similarity. Furthermore, the
-entities under consideration are now edges instead of nodes.
-The framework has two main steps:
-1) Automatically extracting a feature matrix X from an attributed graph
-2) Applying clustering or factorization methods on X to assign roles to edges
-
-The first step is mostly based on counting the number of k-motifs in which edges is involved,
-although the authors stresses that their method could easily be extended to handle features derived
-from node attributes. Letting m be the number of edges, the output of this step is a $m\times f$
-matrix X of edge features.
-
-In the second step, the authors seek a low rank approximation of X. Namely, they
-want to minimize the Bregman divergence between X and UVT, where U and V are
-two non-negative matrix of rank at most r. The optimization is carried out by a
-parallel coordinate descent method called PCMF-BASIC and described in a separate
-journal article: Parallel collective factorization for modeling large heterogeneous
-networks.
-There is also a regularization term, which is not given explicitly (although it
-might have something to do with ensuring UVT sparsity). The rank r is chosen
-dynamically through a Minimum Description Length approach.
-
-The article ends with an extension to time evolving graph and some experimental
-illustrations on the Enron mail dataset (and a citation one I assume). They also
-give an example of application: detecting malicious user in Social Network. While its
-node and most of its edges are normal, some edges might not be (harassment,
-scam, …)
-
-Stattner, Erick, and Martine Collard. "Link Clustering for Extracting Collaborative Patterns in a Scientific Co-Authored Network.", FAB workshop, ANOSAM 2017
-they use their method of conceptual links
-Groups of nodes are first created when they have common attributes. The set of links between two
-groups is called a conceptual link in the sense that it corresponds to a relationship between two
-sets of attributes, namely two concepts in the field of formal concept analysis [7]. The number of
-links between two groups is then evaluated and when the frequency is greater than a given support
-threshold $\beta$, we talk about frequent conceptual link. Note that we only keep maximal frequent conceptual links (mfcl), i.e. those who are not included in others.
-Finally, the set of maximal frequent conceptual links is used to create a new network structure called a conceptual view which summarizes all the knowledge extracted from the initial network. In a conceptual view, each node corresponds to a set of attributes (in this context we call them Meta-nodes) and a link corresponds to maximal frequent conceptual links.
-A formal presentation of frequent conceptual links can be found in [18].
+There exists previous work that leans towards analyzing and characterising edges in such multilayer
+graphs, although they do not share exact our goal of predicting category. For instance, one can
+maximize the probability of a generative model in ego networks with $K$
+categories~\autocites{LeskovecEgo12}{LeskovecEgo14}, look for communities that are both tightly
+connected and share common keywords~\autocite{AttributedCommunity16}, find a partition maximizing
+the density of intra community edges ---weighted by the endpoints profile similarities and a learned
+community weight vector~\autocite{ZhangModelFree16}, recover with low distortion $K$ metric spaces
+whose small-world superposition yield the observed graph~\autocite{Abraham2012a}, discover edge role
+by computing high order topological features~\autocite{ahmed2017roles}, group nodes with common
+attributes and extract frequent links between such group as edge type~\autocite{conceptualLinks12},
+or cluster the profiles into a set of affine subspace of $\mathbb{R}^d$~\autocite{SCSurvey11}.
 
 Our approach is to seek a small number of vectors that, once assigned to every edge, best explain
 the graph (\ie maximize a score function between the edge vector and the profiles of its endpoints).
 From this initial formulation, we derive two optimization problems, and initially solve them on
 synthetic data, generated with a few natural topological constraints. We compared these solutions
 with the result of a baseline approach that simply clusters the pairwise profile vectors using
-$k$-means.
+$k$-means. As showed in \autoref{fig:edge}, on a graph with \np{500} nodes, \np{1300} edges and 7
+types of edges (where each node is involved in at most 3 types of relation), we recover the hidden
+edge assignment more accurately than the $k$-means baseline.
+
+\begin{figure}[htpb]
+  \centering
+  \includegraphics[width=0.7\linewidth]{assets/raw/Gfixed_over0_step2_7dirs3_ambi.pdf}
+  \caption{Distribution of the Adjusted Mutual Information (the closer to one the better) over
+  \np{600} generation of 7 random directions, comparing our \textsf{optim} method with the $k$-means
+baseline. \label{fig:edge}}
+\end{figure}
 
 % Surveys are also available about applications of unsigned networks
 % such as data classification [Sen et al. 2008], recommendation [Tang et al. 2013], and
