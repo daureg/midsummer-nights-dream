@@ -1,8 +1,9 @@
-Graphs are useful to represent relationships between entities. In particular, a lot can be learned
+Graphs are well-suited to represent relationships between entities. In particular, a lot can be learned
 from graphs encompassing several types of relations in one integrated structure. However, many
-existing works assume that such graphs are given, before studying interesting properties like
-community structure and information spreading. In this thesis instead, we develop methods to predict
-the type of edges given a graph topology, a few initial label and possibly attributes of the nodes.
+existing works that study interesting properties of such graphs, like community structure and
+information spreading, assume that the graph if fully given. In this thesis instead, we develop
+methods to predict
+the type of edges given a graph topology, a few initial labels or alternatively attributes of the nodes.
 \smallskip
 
 \paragraph{Learning on graphs}
@@ -10,19 +11,20 @@ the type of edges given a graph topology, a few initial label and possibly attri
 Graph theory has been around for almost three centuries~\autocite{biggs1976graph}, and it provides a
 conceptually simple yet immensely rich framework to model situations where entities are connected
 with each other~\autocite{ComplexNetworksApp11}. Coupled with the increasing availability of large
-amount of relational data, it has recently spurred a lot of interest across various and tangible
-applications:
+amount of relational data, learning on graphs has recently spurred a lot of interest across various
+lines of research, with tangible benefits:
 \begin{itemize}[nosep,leftmargin=*]
   \item community detection~\autocite{FortunatoSurvey10}, where the goal is to cluster nodes in
-    tightly connected group that are loosely connected with the rest of the graph, in order to
-    better understand their relationships and the graph organization. Is has been used for instance
+    tightly connected groups that are loosely connected with the rest of the graph, in order to
+    better understand the graph organization the nodes relationships. It has been used for instance
     to identify proteins functional groups~\autocite{clusterBio03} or see how different scientific
     fields relate based on publication data~\autocite{clusterScience08}.
-  \item semi-supervised learning~\autocites{SSL06}{graphSSL14}, where during training, we are
-    provided with unlabeled data at the same time as labeled data. Connecting similar instances
+  \item semi-supervised learning~\autocites{SSL06}{graphSSL14}, where in addition to labeled data,
+    the learner is also provided with unlabeled data at training time, and its goal is to classify
+    nodes. Connecting similar instances
     allow propagating information along the graph, with applications in classifying text
     documents~\autocite{sslText09} or aligning categories and relations across multiple knowledge
-    base~\autocite{sslKB13}.
+    bases~\autocite{sslKB13}.
   % \item node classification~\autocite{nodeClassif11} Idem
     % could add visualisation (Roberto Tamassia. 2013. Handbook of Graph Drawing and Visualization.
     % CRC Press.) but it's not exactly learning
@@ -33,22 +35,22 @@ applications:
     aforementioned node classification, even when new nodes join the graph after
     training~\autocite{inductiveRepresentation17}.
   \item link prediction~\autocite{linkPredSurvey16}, where the goal is, given a snapshot of the
-    graph at time $t$, to return a set of non-existing links that will be created by time
-    $t+\Delta$. Most methods are based on the assumption that link creation is driven by node
-    similarity and it has been successfully applied to inferring potential interaction between
+    graph at time $t$, to return a set of links that do not exist at time $t$ but will be created by time
+    $t+\Delta_t$. Most methods are based on the assumption that link creation is driven by node
+    similarity, and it has been successfully applied to inferring potential interactions between
     proteins without expensive experiments~\autocite{linkPredBio06} and uncovering hidden
-    association in criminal networks~\autocite{linkPredCrime08}.
+    associations in criminal networks~\autocite{linkPredCrime08}.
   \item information and influence propagation~\autocite{infmax13}, which is the study of processes
     by which content is spread across networks, and how such processes can be influenced to speed
-    them up or slow them down. Two main applications are selecting the best seed in a social
-    network to promote a viral marketing campaign~\autocite{infmaxKempe15} and better contain the
+    them up or slow them down. Two representative applications are selecting the best seeds in a social
+    network to promote a viral marketing campaign~\autocite{infmaxKempe15} and containing more effectively the
     diffusion of actual biological viruses~\autocite{influenceBio13}.
   \item network evolution~\autocite{networkEvolution14}, which focuses on the mechanisms and
-    consequences of the growth of most networks, as well as how to keep the results on some data
+    consequences of the growth of networks, as well as how to keep the results on some data
     mining algorithms \enquote{fresh} and relevant. Monitoring the changes in the interactions of
     proteins can indeed be used as an early indicator for some kind of
-    diseases~\autocite{evolBio10}, while sudden changes in networks of computers are usually worth
-    investigating for they might signal some external attack~\autocite{evolSecurity04}.
+    diabetes~\autocite{evolBio10}, while sudden changes in a network of computers are usually worth
+    investigating, for they might signal external attacks~\autocite{evolSecurity04}.
 \end{itemize}
 
 \vspace{-\baselineskip}
@@ -56,24 +58,25 @@ applications:
 
 The prevalent setting for most of the works discussed above is that the graph connections are: (i)
 homogeneous, in the sense that all edges are of a single type, having the same semantics  between
-any pairs of nodes; and (ii) based on the \emph{homophily} principle~\autocite{Homophily01}, roughly
+any pair of nodes; and (ii) based on the \emph{homophily} principle~\autocite{Homophily01}, roughly
 meaning that nodes are linked because they are similar. However, many real world situations require
 a more complex model, with several kind of edges and where nodes can be connected if they are
-similar only on some dimension or even if they are dissimilar. For instance, a e-commerce website
-could allow its users to express whether they find the review of other users trustworthy or not. As
+similar only on some dimensions, or even if they are dissimilar. For instance, an e-commerce website
+could let its users express whether they find the reviews written by other users helpful or not. As a
 more involved example, consider a social network such as Facebook. Whereas the website offers only a
-single \emph{friendship} relation, we may want to distinguish between family, colleague and sport
-buddies~\autocite{egoNips12}. Moreover, among one user's \enquote{friend}, there might be some
-relations that are actually not positive~\autocite{Yang2012}, whether because the receiving end if
-spam or behave in strange way. Note finally that friendship is only kind of relationship between two
+single \emph{friendship} relation, we may want to distinguish between family ties, work ties and
+hobbies ties~\autocite{egoNips12}. Moreover, among one user's \enquote{friends}, there might be some
+relations that are actually not positive~\autocite{Yang2012}, whether because of spam, noise or
+friendship drift.. Note finally that friendship is only one possible kind of relationship between two
 users of Facebook, we could also link them whenever they attend the same event or are tagged in the
 same post. Yet another possibility would be to study the same set of users across multiple social
 networks~\autocite{mergingNetworks16}, in which case the edge type could denote some common
 combinations of connections (\eg Twitter+LinkedIn or Facebook+Instagram). In this thesis, we thus
 defend the following statement: \textbf{There exists efficient and accurate methods to predict edge
-type in complex networks (reyling either only on the graph topology or also on node metadata).}
+type in complex networks, reyling either only on the graph topology or also on node metadata.}
 
-A first motivation is that by labeling all edges, we can split a complex networks in a superposition
+A first motivation for such methods is that by labeling all edges, we can split a complex networks
+in a superposition
 of simple networks with a single edge type, on which we can apply existing methods. Of course,
 different kind of relation are intertwined, thus a second stronger motivation is to identify the
 different layers in order to study their interactions.
@@ -81,45 +84,47 @@ different layers in order to study their interactions.
 \vspace{-\baselineskip}
 \paragraph{Predicting polarity in directed social networks}
 
-The first kind of such complex networks we consider are \emph{signed graphs}~\autocite{Tang2015a},
+The first kind of complex networks we consider are \emph{signed graphs}~\autocite{Tang2015a},
 where edges carry a positive or a negative sign. Among the many applications of signed graphs, a
-natural, and historical~\autocite{harary1953}, one is directed social networks. In such systems,
+natural (and historical~\autocite{harary1953}) one is directed social networks. In such systems,
 users can explicitly tag others, stating whether they trust them, support them, like them, or not.
 Being able to predict edge signs in such networks improve the user experience, for instance by
-promoting reasonable online debates~\autocite{journalism15}, assembling efficient teams within
+promoting courteous online debates~\autocite{journalism15}, assembling efficient teams within
 companies~\autocite{MLinHR16} and mitigating cyberbullying~\autocite{cyberbullying13}. Existing
 approaches attack the problem along several angles: finding a low dimensional representation of the
-nodes based on their connection patterns~\autocites{SIGNet17}{SNE17}, finding low rank approximation
+nodes based on their connection patterns~\autocites{SIGNet17}{SNE17}, finding a low rank approximation
 of the adjacency matrix~\autocites{LowRankCompletion14}{OnlineCompletion17} or extracting
 topological features and training classifiers~\autocites{Leskovec2010}{Bayesian15}{wu2016troll}.
-Guided by the idea that users exhibit various degree of trollness, we propose a simple sign
-generative model. It naturally leads to two batch algorithms, one that probably approximate the
-Bayes optimal predictor when the training set is dense enough and one that approximate the maximum
+Guided by the idea that every users exhibit trollness to various extent, we propose a simple sign
+generative model. This model naturally leads to two batch algorithms, one that probably approximate the
+Bayes optimal predictor when the training set is dense enough, and one that approximate the maximum
 likelihood estimates through label propagation. Extensive experiments on synthetic and real datasets
 show that in addition to their sound theoretical foundations, our methods are competitive with the
 state of the art in predictive performance, while being more scalable. To illustrate this point, a
-short extract of our results is showed in \autoref{tab:troll}.
+short extract of our results is presented in \autoref{tab:troll}.
 
 \begin{table}[ptbh]
   \centering
-  \caption{Matthews Correlation Coefficient measuring (the closer to 100 the better) in a \aut{}
-    network as the proportion of labeled training edges grows. The best result is in red and the
-  second one in blue.\label{tab:troll}}
+  \caption{Matthews Correlation Coefficient measuring binary prediction performance (the closer to
+    100 the better) in a \aut{}
+    network as the proportion of labeled training edges grows. The best result is in red, the
+  second one in blue, and our two methods are highlighted in gray.\label{tab:troll}}
   \vspace{0.5\baselineskip}
   \begin{tabular}{lccccc|r}
     \toprule
-    {}               & 3\%                & 9\%                & 15\%               & 20\%               & 25\%               & time (ms)            \\
+    method           & 5\%               & 10\%              & 15\%              & 20\%              & 25\%              & time (ms)            \\
     \midrule
-    \uslogregp{}     & \vsecondSig{15.19} & \vsecondSig{26.46} & 32.98              & 36.57              & 39.90              & 2                    \\
+    \uslogregp{}     & 19.8              & 27.9              & \vsecondSig{33.2} & 36.9              & 39.7              & \np{4}               \\
     \rowcolor{gray!20!white}
-    \usrule{}        & 15.09              & 26.40              & \vsecondSig{32.98} & \vsecondSig{36.72} & 40.16              & \textbf{\textless 1} \\
+    \usrule{}        & \vsecondSig{19.8} & \vsecondSig{28.0} & 33.1              & \vsecondSig{37.1} & 39.7              & \textbf{\textless 1} \\
     \rowcolor{gray!20!white}
-    \uslpropGsec{}   & \vfirstSig{19.00}  & \vfirstSig{30.25}  & \vfirstSig{35.73}  & \vfirstSig{38.53}  & \vfirstSig{41.32}  & \textbf{16}          \\
+    \uslpropGsec{}   & \vfirstSig{24.2}  & \vfirstSig{31.7}  & \vfirstSig{36.1}  & \vfirstSig{38.9}  & \vfirstSig{41.1}  & \textbf{\np{19}}     \\
     \midrule
-    \compranknodes{} & 12.28              & 24.44              & 31.03              & 34.57              & 38.26              & 128         \\
-    \complowrank{}   & 8.85               & 17.08              & 22.57              & 25.57              & 29.24              & 1894                 \\
-    \compbayesian{}  & 10.91              & 23.75              & 32.25              & 36.52              & \vsecondSig{40.32} & 5398                 \\
-    \comptriads{}    & 8.62               & 16.42              & 22.01              & 24.77              & 27.13              & \textbf{5}           \\
+    \autocite{LowRankCompletion14}   & 12.4              & 17.9              & 22.0              & 25.7              & 29.0              & \np{3222}            \\
+    \autocite{OnlineCompletion17}   & 1.2               & 12.6              & 22.2              & 30.3              & 36.5              & \np{23229}           \\
+    \autocite{Leskovec2010}    & 11.4              & 17.2              & 21.0              & 24.3              & 27.0              & \textbf{\np{7}}      \\
+    \autocite{wu2016troll} & 17.5              & 25.1              & 31.2              & 35.2              & 37.8              & \np{157}             \\
+    \autocite{Bayesian15}  & 15.2              & 25.5              & 32.0              & 36.7              & \vsecondSig{39.8} & \np{4787}            \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -135,82 +140,89 @@ signed graphs are employed to identify coreference~\autocites{graphicalCoreferen
 cluster synonym words~\autocite{SignedWordRatings}. They plays a large role in biology, to clusters
 genes~\autocite{Ben-Dor99}, identify mutation regions in chromosomes~\autocite{Das2015} or finding
 stable subsystems~\autocite{monotoneBiology07}. Finally, given large databases with duplicated
-records, they naturally help solving entity
-resolution~\autocites{Crosslingual07}{DeDup09}{LargeScaleDeDup09}{WeightedER14}.
+records, they naturally help de-deduplicating
+entities~\autocites{Crosslingual07}{DeDup09}{LargeScaleDeDup09}{WeightedER14}.
 
 In all these cases, graphs are not directed and nodes are not human beings, meaning we can hardly
 assign them trollness.  Therefore, we make a different assumption, positing that nodes are
 partitioned in $K$ groups in such a way that links within groups are positive and links across
-groups are negative. Recovering the optimal partition after observing all the signs of a graph is
+groups are negative. Recovering the optimal partition from the observation of all the edge signs is
 called \pcc{}~\autocite{Bansal2002} in the Machine Learning field. Whereas it has been proved to be
 \NPc{} to even approximate in the worst case~\autocites{Charikar2003}{Demaine2006}, our thorough
 literature review paints a less gloomy landscape. Not only does there exist
-exact~\autocite{Berg2015} and fixed parameters algorithms~\autocites{GoldenCE12}{Fomin2014},
+exact~\autocite{Berg2015} and fixed-parameters tractable algorithms~\autocites{GoldenCE12}{Fomin2014},
 efficient approximation~\autocites{CCPivotConf05}{ChawlaArxiv14} and large scale
 heuristics~\autocites{Levorato2015}{Facchetti2011isingmodel}{Kappes2016}, but beyond the worst case,
 we are interested in instances that exhibit stability under
 perturbation~\autocites{clusteringFeasibility15}{StableCC09}{StableLP09} or are obtained through
 random moves from an ideal case~\autocites{plantedAilon09}{Makarychev2014}. This leads us to develop
-a spanning tree tailored to predicting edge signs in such a setting, which we call \gtx{}. It does
-so by aiming to approximately preserve the distances in the
-graph~\autocites{LowerBound95}{Abraham2012}. We present preliminary results showing that on certain
+a spanning tree tailored to predicting edge signs in an active setting~\autocite{Cesa-Bianchi2012b},
+where the learner is allowed to select its training labels in the most informative way. The idea is
+to ensure that for every edge we will predict, there will be a path in the tree as short as
+possible~\autocites{LowerBound95}{Abraham2012} from which we have queried all the signs. We call
+this structure \gtx{}, as it recursively build stars of stars. 
+We present preliminary results showing that on certain
 kind of graphs, this indeed results in better predictive performance than a competitive baseline.
 Namely, we create synthetic graphs of growing size with the \lpa{} model~\autocite{Barabasi1999},
 partition the nodes in two clusters, set the edge signs accordingly and finally flip a fraction of
-them \uar{}. As showed on \autoref{fig:gtx_xp_pasynthmcc}, \gtx{} always predict signs better than a
-\bfs{} tree rooted at the highest degree node, especially when the noise level is low, and is less
-sensible to the graph size.
+the signs \uar{}. As showed on \autoref{fig:gtx_xp_pasynthmcc}, \gtx{} always predict signs better than a
+\bfs{} tree rooted at the highest degree node, especially when the noise level is low. Furthermore,
+\gtx{} is less sensible to the graph size.
 
 \begin{figure}[phtb]
   \centering
-  \includegraphics[width=.6\textwidth]{gtx_exp/pasynthmcc}
-  \caption{Synthetic \lpa{} }\label{fig:gtx_xp_pasynthmcc}
+  \includegraphics[width=.8\textwidth]{gtx_exp/pasynthmcc}
+  \caption{The Matthews Correlation Coefficient of \bfs{} and \gtx{} on synthetic \lpa{} graphs as a
+    function of the number of nodes and of the fraction of signs who have been flipped from the
+    hidden two-clustering.  \label{fig:gtx_xp_pasynthmcc}}
 \end{figure}
 
 \vspace{-\baselineskip}
 \paragraph{Predicting more than two kinds of relations}
 
 Finally, we consider the case where there are more than two possible type of relations, which is
-often called \emph{multilayer graphs}~\autocites{Kivela2014}{multiSurvey14}. In addition, we assume
+often referred to as \emph{multilayer graphs}~\autocites{Kivela2014}{multiSurvey14}. In addition, we assume
 that the graph is attributed, that is every node is described by a vector of numeric features called
-the \emph{profile} of the node. Our assumption is then that links cannot be fully described by a
+the \emph{profile} of the node. Our assumption is then that links cannot be fully described by
 global homophily. Thus we take a more nuanced view, combining partial homophily (that is, nodes are
 connected when they are similar on a subset of the attributes) and heterophily (that is, nodes are
 connected when they are dissimilar on a subset of the attributes). As examples of the latter, think
 of dating websites ---where most users are linked with users of the opposite
-gender~\autocites{homophilyMyspace09}{Tinder16}; spreading innovation ---where meeting people with
-different background and point of view is crucial to favor diversity and
+gender~\autocites{homophilyMyspace09}{Tinder16}; diffusing innovations ---where meeting people with
+different backgrounds and point of views is crucial to favor diversity and
 creativity~\autocite{rogers2003diffusion}; and online news consumption ---where connecting people
 from different sides of the political spectrum helps avoiding echo chambers and fueling a democratic
-debate~\autocite{balancedNews17}. Our goal is to predict to which category a given belong. This is
+debate~\autocite{balancedNews17}. Our goal in this setting remains the same as before: predict the
+type of a given edge. This is
 widely applicable, for multilayer graphs are present  in various fields. In social networks, where
 players of the Pardus massively multilayer online game can have six types of relations (friendship,
-enmity, private message, trading, aggression and bounty)~\autocite{Szell2010} or where photo sharers
+enmity, private message, trading, aggression and bounty)~\autocite{Szell2010}, or where photo sharers
 of the Flickr website can interact in eleven ways (either directly or through comments, tags, groups
 and so on)~\autocite{RecoFlickrMulti11}. In citation networks, where authors of the DBLP dataset are
 connected if they have co-authored a paper in one the \np{1000} conferences that form the edge
-type~\autocite{communityDBLPbyConf05}, or where \np{5000} SIAM papers can be connected for five
+types~\autocite{communityDBLPbyConf05}, or where \np{5000} SIAM papers can be connected for five
 reasons (abstract similarity, title similarity, keywords similarity, author similarity or
-citation)~\autocite{articlesMultiSim11} in economic networks, where 951 ports are connected by 3
+citation)~\autocite{articlesMultiSim11}. In economic networks, where 951 ports are connected by 3
 kind of ships (bulk dry carriers, container ships and oil tankers)~\autocite{ports3kindofships10} or
-in the International Trade Network, where 162 countries are connected by 96 kind of commodities they
+where 162 countries of the International Trade Network are connected by 96 kind of commodities they
 can exchange~\autocite{worldTradeNetwork10}. And in biology, where genes are connected in a
 co-expression network under 130 different experimental conditions~\autocite{bioLayerExp11}.
 
-There exists previous work that leans towards analyzing and characterising edges in such multilayer
-graphs, although they do not share exact our goal of predicting category. For instance, one can
+There exists previous works that lean towards analyzing and characterising edges in such multilayer
+graphs, although they do not share exactly our goal of predicting edge type. For instance, one can
 maximize the probability of a generative model in ego networks with $K$
 categories~\autocites{LeskovecEgo12}{LeskovecEgo14}, look for communities that are both tightly
 connected and share common keywords~\autocite{AttributedCommunity16}, find a partition maximizing
 the density of intra community edges ---weighted by the endpoints profile similarities and a learned
 community weight vector~\autocite{ZhangModelFree16}, recover with low distortion $K$ metric spaces
 whose small-world superposition yield the observed graph~\autocite{Abraham2012a}, discover edge role
-by computing high order topological features~\autocite{ahmed2017roles}, group nodes with common
-attributes and extract frequent links between such group as edge type~\autocite{conceptualLinks12},
+by computing high-order topological features~\autocite{ahmed2017roles}, group nodes with common
+attributes and extract frequent links between such groups as edge types~\autocite{conceptualLinks12},
 or cluster the profiles into a set of affine subspace of $\mathbb{R}^d$~\autocite{SCSurvey11}.
 
 Our approach is to seek a small number of vectors that, once assigned to every edge, best explain
-the graph (\ie maximize a score function between the edge vector and the profiles of its endpoints).
+the graph (\ie maximize a score function between the vector assigned to an edge  and the profiles of
+this edge's endpoints).
 From this initial formulation, we derive two optimization problems, and initially solve them on
 synthetic data, generated with a few natural topological constraints. We compared these solutions
 with the result of a baseline approach that simply clusters the pairwise profile vectors using
@@ -220,17 +232,13 @@ edge assignment more accurately than the $k$-means baseline.
 
 \begin{figure}[htpb]
   \centering
-  \includegraphics[width=0.7\linewidth]{assets/raw/Gfixed_over0_step2_7dirs3_ambi.pdf}
-  \caption{Distribution of the Adjusted Mutual Information (the closer to one the better) over
-  \np{600} generation of 7 random directions, comparing our \textsf{optim} method with the $k$-means
+  \includegraphics[width=0.8\linewidth]{assets/raw/Gfixed_over0_step2_7dirs3_ambi.pdf}
+  \caption{Distribution of the Adjusted Mutual Information (the closer to $1$ the better) over
+  \np{600} generations of 7 random directions, comparing our \textsf{optim} method with the $k$-means
 baseline. \label{fig:edge}}
 \end{figure}
 
-% Surveys are also available about applications of unsigned networks
-% such as data classification [Sen et al. 2008], recommendation [Tang et al. 2013], and
-% information propagation [Chen et al. 2013a]
-
-While our thesis is therefore primarily concerned with learning on graphs, instead of focusing at
+While our thesis is therefore primarily concerned with learning on graphs, instead of focusing on
 nodes (to predict their class, their cluster or to find their representation), we look at edges (\ie
 pairs of nodes), and instead of having one kind of relationship, we have two, or more than two when
 the nodes are attributed.
