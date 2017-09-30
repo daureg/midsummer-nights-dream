@@ -32,7 +32,9 @@ makes those methods hardly scalable to large graphs. More recently, there has be
 adapting word embedding techniques such as \textsf{word2vec}~\autocite{word2vec13} to a
 \enquote{corpus} of random walks that are considered as documents, while nodes play the role of
 word. This allows the unsupervised extraction of node features that can then used to train
-downstream classifier, see \autocite{nodeEmbeddingsurvey16} for a recent survey. It can also be
+downstream classifier, see
+\autocites{nodeEmbeddingsurvey16}{representationLearning17}{graphEmbeddingSurvey17} for three recent
+surveys. It can also be
 tailored to exploit the specificity of signed graphs.
 The goal is to find for every node $u$ a vector $x_u\in\Rbb^d$ in such a way that in this new space,
 nodes are close to their positive neighbors and far from their negative neighbors. For instance in
