@@ -31,7 +31,7 @@ lines of research, with tangible benefits:
   \item node embedding~\autocite{representationLearning17}, where we seek a low dimensional
     representation of nodes based on their structural patterns, usually in an unsupervised way,
     although it is also possible to include problem supervision when available. Such representation can
-    then be used in downstream tasks, for instance visualisation~\autocite{LINE15} or the
+    then be used in downstream tasks, for instance visualization~\autocite{LINE15} or the
     aforementioned node classification, even when new nodes join the graph after
     training~\autocite{inductiveRepresentation17}.
   \item link prediction~\autocite{linkPredSurvey16}, where the goal is, given a snapshot of the
@@ -60,14 +60,14 @@ The prevalent setting for most of the works discussed above is that the graph co
 homogeneous, in the sense that all edges are of a single type, having the same semantics  between
 any pair of nodes; and (ii) based on the \emph{homophily} principle~\autocite{Homophily01}, roughly
 meaning that nodes are linked because they are similar. However, many real world situations require
-a more complex model, with several kind of edges and where nodes can be connected if they are
+a more complex model, with several kinds of edge and where nodes can be connected if they are
 similar only on some dimensions, or even if they are dissimilar. For instance, an e-commerce website
 could let its users express whether they find the reviews written by other users helpful or not. As a
 more involved example, consider a social network such as Facebook. Whereas the website offers only a
 single \emph{friendship} relation, we may want to distinguish between family ties, work ties and
 hobbies ties~\autocite{LeskovecEgo12}. Moreover, among one user's \enquote{friends}, there might be some
 relations that are actually not positive~\autocite{Yang2012}, whether because of spam, noise or
-friendship drift.. Note finally that friendship is only one possible kind of relationship between two
+friendship drift. Note finally that friendship is only one possible kind of relationship between two
 users of Facebook, we could also link them whenever they attend the same event or are tagged in the
 same post. Yet another possibility would be to study the same set of users across multiple social
 networks~\autocite{mergingNetworks16}, in which case the edge type could denote some common
@@ -95,7 +95,7 @@ approaches attack the problem along several angles: finding a low dimensional re
 nodes based on their connection patterns~\autocites{SIGNet17}{SNE17}, finding a low rank approximation
 of the adjacency matrix~\autocites{LowRankCompletion14}{OnlineCompletion17} or extracting
 topological features and training classifiers~\autocites{Leskovec2010}{Bayesian15}{wu2016troll}.
-Guided by the idea that every users exhibit trollness to various extent, we propose a simple sign
+Guided by the idea that every user exhibit trollness to various extent, we propose a simple sign
 generative model. This model naturally leads to two batch algorithms, one that probably approximate the
 Bayes optimal predictor when the training set is dense enough, and one that approximate the maximum
 likelihood estimates through label propagation. Extensive experiments on synthetic and real datasets
@@ -137,7 +137,7 @@ vision, it is used to segment images in 2D~\autocites{Kim2011}{Bagon2011}{CellSe
 3D~\autocites{VolumeSegmentation12}{Beier2015}, to simplify 3D shapes~\autocite{Shape3D17} and to
 track target across sequential video frames~\autocite{multiTracking15}. When the nodes are words,
 signed graphs are employed to identify coreference~\autocites{graphicalCoreference04}{Elsner2009} or
-cluster synonym words~\autocite{SignedWordRatings}. They plays a large role in biology, to clusters
+cluster synonym words~\autocite{SignedWordRatings}. They play a large role in biology, to clusters
 genes~\autocite{Ben-Dor99}, identify mutation regions in chromosomes~\autocite{Das2015} or finding
 stable subsystems~\autocite{monotoneBiology07}. Finally, given large databases with duplicated
 records, they naturally help de-deduplicating
@@ -191,7 +191,7 @@ of dating websites ---where most users are linked with users of the opposite
 gender~\autocites{homophilyMyspace09}{Tinder16}; diffusing innovations ---where meeting people with
 different backgrounds and point of views is crucial to favor diversity and
 creativity~\autocite{rogers2003diffusion}; and online news consumption ---where connecting people
-from different sides of the political spectrum helps avoiding echo chambers and fueling a democratic
+from different sides of the political spectrum helps to avoid echo chambers and fuel a democratic
 debate~\autocite{balancedNews17}. Our goal in this setting remains the same as before: predict the
 type of a given edge. This is
 widely applicable, for multilayer graphs are present  in various fields. In social networks, where
@@ -202,13 +202,13 @@ and so on)~\autocite{RecoFlickrMulti11}. In citation networks, where authors of 
 connected if they have co-authored a paper in one the \np{1000} conferences that form the edge
 types~\autocite{communityDBLPbyConf05}, or where \np{5000} SIAM papers can be connected for five
 reasons (abstract similarity, title similarity, keywords similarity, author similarity or
-citation)~\autocite{articlesMultiSim11}. In economic networks, where 951 ports are connected by 3
-kind of ships (bulk dry carriers, container ships and oil tankers)~\autocite{ports3kindofships10} or
-where 162 countries of the International Trade Network are connected by 96 kind of commodities they
+citation)~\autocite{articlesMultiSim11}. In economic networks, where 951 ports are connected by three
+kinds of ships (bulk dry carriers, container ships and oil tankers)~\autocite{ports3kindofships10} or
+where 162 countries of the International Trade Network are connected by 96 kinds of commodities they
 can exchange~\autocite{worldTradeNetwork10}. And in biology, where genes are connected in a
 co-expression network under 130 different experimental conditions~\autocite{bioLayerExp11}.
 
-There exists previous works that lean towards analyzing and characterising edges in such multilayer
+There exists previous works that lean towards analyzing and characterizing edges in such multilayer
 graphs, although they do not share exactly our goal of predicting edge type. For instance, one can
 maximize the probability of a generative model in ego networks with $K$
 categories~\autocites{LeskovecEgo12}{LeskovecEgo14}, look for communities that are both tightly
@@ -226,7 +226,7 @@ this edge's endpoints).
 From this initial formulation, we derive two optimization problems, and initially solve them on
 synthetic data, generated with a few natural topological constraints. We compared these solutions
 with the result of a baseline approach that simply clusters the pairwise profile vectors using
-$k$-means. As showed in \autoref{fig:edge}, on a graph with \np{500} nodes, \np{1300} edges and 7
+$k$-means. As showed on \autoref{fig:edge}, on a graph with \np{500} nodes, \np{1300} edges and 7
 types of edges (where each node is involved in at most 3 types of relation), we recover the hidden
 edge assignment more accurately than the $k$-means baseline.
 
