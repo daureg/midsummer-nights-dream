@@ -1,8 +1,11 @@
 \section{Algorithms in the Batch Setting}\label{s:algbatch}
 
-\begin{newcontent}
 Given $G(Y) =(V,E(Y))$, in the batch setting we have at our disposal a training set \trainset{} of
-labeled edges from $E(Y)$. We want to build a predictive model for the labels of the remaining
+labeled edges from $E(Y)$. Formally, we have a training set $\trainset
+= \big((u_1,v_1),y_{u_1,v_1}), ((u_2,v_2),y_{u_2,v_2}), \ldots, ((u_m,v_m),y_{u_m,v_m}\big)$, that
+has been drawn from $E\times Y$ \uar{} with replacement, with
+$m = |E_0|$. Then a reasonable approach to approximate $y^*(u,v)$ would be to resort to a maximum
+ We want to build a predictive model for the labels of the remaining
 edges. We present two algorithms to do so, which both compute estimates of the all parameters $p$
 and $q$ of our generative model. They differ in the approximation guarantees they provide, and in
 the class of graphs to which they apply. The first algorithm runs on the graph $G$ and estimates
@@ -10,21 +13,60 @@ locally the parameters by their empirical means in the training set, which under
 assumptions are showed to concentrate around their true values. The second algorithm, on the other
 hand, exploits the reduced graph $G''$ and computes a maximum likelihood estimation of the
 parameters through a global label propagation approach, without making any density assumption.
-\end{newcontent}
 
 \subsection{Approximation to Bayes via dense sampling}\label{ss:bayes_approx}
 
 Our first algorithm is an approximation to the Bayes optimal predictor $y^*(u,v)$. Let us denote by
 $\htr(u)$ and $\hun(u)$ the trollness and the untrustworthiness of node $u$ when both are computed
-on the subgraph induced by the training edges. We now design and analyze an edge classifier of the
-form
-
+on the subgraph induced by the training edges.
+Recall that the Bayes optimal predictor classifies an edge \euv{} using the following rule:
+$y^*(u,v) = \sgn\left( \frac{p_u+q_v}{2} - \frac{1}{2} \right)$. Our approximation thus consists in
+using the quantities $\htr(u)$ and $\hun(u)$ to estimate $\frac{p_u+q_v}{2}$. This results in the
+following rule:
 \begin{equation}
   \label{eq:predictor}
-  \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) -\tau - \tfrac{1}{2}\Big)~,
+  \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) - \tau - \tfrac{1}{2}\Big)~,
 \end{equation}
+where $\tau \ge 0$ is the only parameter to be trained. We now give an intuition to justify this
+equation, and defer the technical arguments to end of the chapter,
+\vpageref{ssec:troll_proof_bayes}, where we will formalize what it means for a quantity to be
+\enquote{close} to another. Note first that $1-\htr(u) = \frac{\hdout^+(u)}{\hdout(u)}$ is the
+empirical mean\footnote{The hat symbol denote quantities computed solely on the training set.} of
+the probability of a random edge outgoing from $u$ to be positive, and is therefore \enquote{close}
+to $\frac{1}{2}\,\left(p_u + \qbar_u\right)$ according to \eqref{e:pout}. By the same reasoning,
+$1-\hun(v) \approx \frac{1}{2}\,\left(q_v + \pbar_v\right)$ in accordance with \eqref{e:pin}. At
+this stage, $\left( 1 - \htr(u) \right) + \left( 1 - \hun(v) \right) - \frac{p_u+q_v}{2} \approx
+\lhalf \left( \pbar_v + \qbar_u \right)$. Since $\pbar_v$ is a sample mean of i.i.d.~$[0,1]$-valued
+random variables independently drawn from the prior marginal $\int_0^1 \mu\big(\cdot, q\big) dq$, it
+concentrates around its expectation $\mu_p$. Likewise, $\qbar_u \approx \mu_q$. Now we seek an
+estimation of $ \lhalf \left( \pbar_v + \qbar_u \right) \approx \lhalf \left( \mu_p + \mu_q
+\right)$. For that, we compute the expected number of positive edges in the graph, which, as in the
+previous section, is the expected value of the random variable $Z = \sum_{\euv \in E} \Ind{\yuv =
++1}$. Let $V_{\mathrm{out}}$ be the subset of node of $V$ with at least one outgoing edge, and
+define similarly $V_{\mathrm{in}}$ as $\theset{v\in V}{\din(v) > 0}$. According to our generative
+model, $\E\left(Z \right) = \sum_{\euv \in E} \frac{p_u+q_v}{2} = \sum_{u \in V_{\mathrm{out}}}
+\left( \sum_{v \in \NNout(u)} \frac{p_u+q_v}{2} \right)$. Observe that
+\begin{align*}
+  \sum_{u \in V_{\mathrm{out}}} \left( \sum_{v \in \NNout(u)} p_u \right) &=
+  \sum_{v \in V_{\mathrm{in}}} \left( \sum_{u \in \NNin(v)} p_u \right) =
+  \sum_{v \in V_{\mathrm{in}}} \din(v) \pbar_v \approx
+  \sum_{v \in V_{\mathrm{in}}} \din(v) \mu_p = |E| \mu_p \label{eq:troll_mup}\quad \text{and} \\
+  \sum_{u \in V_{\mathrm{out}}} \left( \sum_{v \in \NNout(u)} q_v \right) &=
+  \sum_{u \in V_{\mathrm{out}}} \dout(u) \qbar_u \approx
+  \sum_{u \in V_{\mathrm{out}}} \dout(u) \mu_q = |E| \mu_q \,.% \label{eq:troll_muq} \,.
+\end{align*}
+Therefore, letting $\tau$ be the fraction of positive edge in the graph, we have that $\tau =
+\frac{\E\left(Z \right)}{|E|} \approx \lhalf \left( \mu_p + \mu_q \right)$. This means that if
+$\tauhat$ is the quantity $\tau$ computed on the training, then $\tauhat$ is close to $\left(
+\pbar_v + \qbar_u \right)$. Putting together all this approximations thus provide an informal
+justification of the rule \eqref{eq:predictor}.
 
-where $\tau \ge 0$ is the only parameter to be trained. Despite its simplicity, this classifier
+We are now ready to describe our algorithm, which follows naturally from the formula derived above.
+It takes as input a training set \trainset{} drawn at random with replacement and outputs a sign
+prediction for all the edges in $E\setminus \trainset$. We call it \usrule{}, which stands for Bayes
+Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness.
+\iffalse
+Despite its apparent simplicity, \usrule{}
 works reasonably well in practice, as demonstrated by our experiments (see \autoref{s:exp}).
 Moreover, unlike previous edge sign prediction methods for directed graphs, our classifier comes
 with a rigorous theoretical motivation, since it approximates the Bayes optimal classifier
@@ -34,7 +76,6 @@ up due to \eqref{e:pout} and \eqref{e:pin}. This motivates the need of a thresho
 to cancel this bias. Yet, the presence of a prior distribution $\mu(p,q)$ ensures that this bias is
 the same for all edges $(u,v) \in E$.
 
-\iffalse
 
 We now introduce a non-adaptive active learning algorithm approximating the Bayes optimal
 predictions $y^*(u,v)$.
@@ -59,7 +100,6 @@ edges in $E_L$;
 
 \textbf{4.} Any remaining non-sampled edge $(u,v)$ is predicted as $ \yhat(u,v) =
 \sgn\big(\hdeltaout(u) + \hdeltain(v) - \tfrac{1}{2} - \tauhat \big) $.
-\fi
 
 Our algorithm works under the assumption that for given parameters $Q$ (a positive integer) and
 $\alpha \in (0,1)$, there exists a set\footnote{$E_L$ is needed to find an estimate $\tauhat$ of
@@ -71,67 +111,81 @@ $u \in V$ appearing as an endpoint of some edge in $E_L$ occurs at most once as 
 $(u,v)$--- and at most once as destination ---\ie{} $(v,u)$. Moreover, we assume \trainset{} has
 been drawn from $E$ at random {\em without} replacement, with $m = |E_0| = \alpha\,|E|$. The
 algorithm performs the following steps:
+\fi
 
 \begin{enumerate}[label=\textbf{\arabic*.}]
-	\item For each $v \in V$, let $\hun(v) = \hdin^-(v)/\hdin(v)$, \ie{} the fraction of
-	  negative edges found in $\Nin(v) \cap \trainset{}$.
-
 	\item For each $u \in V$, let $\htr(u) = \hdout^-(u)/\hdout(u)$, \ie{} the fraction of
 	  negative edges found in $\Nout(u) \cap \trainset{}$.
 
-	\item Let $\tauhat$ be the fraction of positive edges in $E_L\cap \trainset{}$.
+	\item For each $v \in V$, let $\hun(v) = \hdin^-(v)/\hdin(v)$, \ie{} the fraction of
+	  negative edges found in $\Nin(v) \cap \trainset{}$.
 
-	\item Any remaining edge $(u,v) \in E\setminus \trainset{}$ is predicted as
+	\item Let $\tauhat$ be the fraction of positive edges in $E_L\cap \trainset{}$ (this set
+	  $E_L$ is a technical requirement that we shall define shortly).
+
+	\item Any edge $(u,v) \in E\setminus \trainset{}$ is predicted as
 		$$
 		\yhat(u,v) = \sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) -\tauhat - \tfrac{1}{2}\Big)
 		$$
 \end{enumerate}
 
-The next result shows that the above algorithm can approximate the Bayes optimal predictor on nodes
-whose in-degree and out-degree is not too small.
+Despite its apparent simplicity, \usrule{}
+works reasonably well in practice, as demonstrated by our experiments (see \autoref{s:exp}).
+Moreover, unlike previous edge sign prediction methods for directed graphs, our classifier comes
+with a rigorous theoretical motivation, since it approximates the Bayes optimal classifier
+$y^*(u,v)$ with respect to the generative model defined in \autoref{s:gen}. Indeed, we quantify this
+approximation on nodes whose in-degree and out-degree are not too small in the next result. However,
+this first requires a few extra assumption on the training set. Namely, given parameters $Q$ (a
+positive integer) and $\alpha = \nicefrac{|\trainset|}{|E|} \in (0,1)$, we assume there exists a set
+$E_L \ss E$ of size $\tfrac{2Q}{\alpha}$ where each vertex $u \in V$ appearing as an endpoint of
+some edge in $E_L$ occurs at most once as origin ---\ie{} \euv{}--- and at most once as destination
+---\ie{} \evu{}. While the definition of $E_L$ is not immediately intuitive, this set is needed to
+find an estimate $\tauhat$ of $\tau$ in~\eqref{eq:predictor} during Step~3 of \usrule{}, and its
+definition allows us to applying an Hoeffding bound on independent variables. Any undirected
+matching of $G$ of size $O(\log|V|)$ can be used, obtained for instance by the blossom
+algorithm~\autocite{matching65}. In practice, however, we never computed $E_L$, and estimated $\tau$
+on the entire training set \trainset{} (instead of $E_L \cap \trainset$).
 
 \begin{theorem}
   \label{t:active}
   Let $G(Y) = (V,E(Y))$ be a directed graph with labels on the edges generated according to the
   model in \autoref{s:gen}.
   If the algorithm is run with parameter $Q = \Omega(\log|V|)$, and $\alpha \in (0,1)$ such that the
-  above assumptions are satisfied, then $\yhat(u,v) = y^*(u,v)$ holds with high probability
+  above assumption about $E_L$ is satisfied, then $\yhat(u,v) = y^*(u,v)$ holds with high probability
   simultaneously for all test edges $(u,v) \in E$ such that $\dout(u),\din(v) = \Omega(\log|V|)$, and
   $\eta(u,v) = \Pr(\yuv=1)$ is bounded away from $\tfrac{1}{2}$.
 \end{theorem}
 
-\begin{newcontent}
 While we defer the full proof of \autoref{t:active} to the additional material at the end of this
-chapter (\autoref{ssec:troll_proof_bayes}), here we give a sketch of the method used, focusing on
-parameter $p$. First, by \autoref{l:bins} on negatively associated random variables (stated
+chapter (\autoref{ssec:troll_proof_bayes}), here we give a sketch of the method used.
+First, by \autoref{l:bins} on negatively associated random variables (stated
 \vpageref{l:bins}), we show that with our choice of $Q$, for $\theta=\frac{2Q}{\alpha}$ and for any
-$u$ having enough out neighbors (\ie{} $\NNout(u) \ge \theta$), at least $Q$ edges of $\Nout(u)$
-are in the training set with high probability.
-We use these $Q$ edges to compute $1-\htr(u)$, the empirical probability of drawing a $+1$-labeled
-edge from $\Nout(i)$. We show that it is close to the real probability, which according to equation
-\eqref{e:pout} is equal to $\frac{1}{2}\,\left(p_u + \qbar_u\right)$. $\qbar_u$ being a sample mean
-of i.i.d.~$[0,1]$-valued random variables independently drawn from the prior marginal $\int_0^1
-\mu\big(p,\cdot\big) dp$, it concentrates around its expectation $\mu_q$.
-
-By following the same reasoning on the parameters $q$ and using an union bound, we then show that
-$\left(1-\htr(u)\right) + \left(1-\hun(v)\right) - \frac{\mu_p+\mu_q}{2}$ is close to
-$\frac{p_u+q_v}{2}$ simultaneously for all edges. Another set of concentration arguments then show
-that our estimate $\tauhat$ is close to $\frac{\mu_p+\mu_q}{2}$. Combining these two facts ends the
-proof.
+$u$ having enough out neighbors (\ie{} $\dout(u) \ge \theta$), at least $Q$ edges of $\Nout(u)$
+are in the training set with high probability. Likewise, for any $v$ with enough in neighbors (\ie
+$\din(v) \ge \theta$), at least $Q$ edges of $\Nin(v)$ are in \trainset with high probability.
+With this number of samples, we then show a chain of concentration results roughly following the
+outline given earlier to justify the equation~\eqref{eq:predictor}, culminating in proving that 
+for any $0 < \ve < \tfrac{1}{16}$,
+\[ \left| \left( 1 - \htr(u) \right) + \left( 1 - \hun(v) \right) - \tauhat
+  - \frac{p_u+q_v}{2} \right| \le 8\ve \]
+simultaneously holds with high probability for each $(u,v) \in \theset{(u,v) \in E}{\din(v) \ge
+  \theta,\, \dout(u) \ge \theta} \setminus E_0$.
 
 \medskip
 
-The approach leading to \autoref{t:active} needs the graph to be sufficiently dense. At first sight,
-having $Q = \Omega(\log|V|)$ training edges per nodes does not sound that like such a stringent
-requirement. Consider for instance Facebook ---which is neither signed nor directed though. It has
-two billion
-users~\bottomfootnote{\url{https://investor.fb.com/investor-news/press-release-details/2017/Facebook-Reports-Second-Quarter-2017-Results/}},
+The approach leading to \autoref{t:active} requires the graph to be sufficiently dense. At first sight,
+having $Q = \Omega(\log|V|)$ training edges per nodes appears to be a reasonable assumption.
+Consider for instance Facebook ---which is neither signed nor directed though. It has two billion
+users as of 2017~\bottomfootnote{%
+\url{https://investor.fb.com/investor-news/press-release-details/2017/Facebook-Reports-Second-Quarter-2017-Results/}},
 each of them having $155\approx 7.2\log|V|$ friends on average~\autocite{facebookFriend16}. However,
-the constant hidden in the $\Omega$ notation, and needed to guarantee a good behavior, is much
-larger than $7.2$. We will nonetheless see in the experiments that we can still apply the resulting
-algorithm (we call it \usrule{}) with satisfying results. Additionally, and in order to address this
-density limitation, we now introduce a second method based on label propagation.
-\end{newcontent}
+the constant in the $\Omega$ notation is a trade off between the number of edges to sample per
+node, and the quality guarantee of the $\frac{p_u+q_v}{2}$ estimation. In the Facebook example,
+having a good guarantee that holds simultaneously for all the test edges might require more than
+$7.2\log|V|$ samples per node. We will nonetheless see in the experiments that we can still apply
+\usrule{} with satisfying results, especially since its simplicity makes it very scalable.
+Additionally, and in order to sidestep this density limitation, we now introduce a second method
+based on label propagation.
 
 \subsection{Approximation to Maximum Likelihood via Label Propagation}\label{ss:passive}
 
@@ -236,7 +290,7 @@ q_{v} +  \frac{1}{\din(v)}\,\sum_{u \in \Nin(v)} p_{u}
 \fi
 
 We now proceed to solve \eqref{e:quadratic} via label propagation~\autocite{LabelPropa03} on the
-graph $G''$ obtained through the $G \rightarrow G''$ reduction of \autoref{s:prel}.
+graph $G''$ obtained through the second reduction of \autoref{s:prel}.
 However, because of the presence of negative edge weights in $G''$, we first have to symmetrize\footnote{%
 While we note here that such linear transformation of the variables does not change the problem, we
 provide more details in \autoref{ssec:troll_lprop_weights} of the supplementary material.} variables

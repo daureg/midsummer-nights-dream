@@ -26,14 +26,19 @@ representing the likelihood of the network topology, rather than the probability
 the topology is \emph{given}.
 
 Notice that the Bayes optimal prediction for $\yuv$ is $y^*(u,v) = \sgn\big(\eta(u,v) -
-\tfrac{1}{2}\big)$, where $\eta(u,v) = \Pr\big( \yuv = 1 \big)$. Moreover, the probability of
+\tfrac{1}{2}\big)$, where $\eta(u,v) = \Pr\big( \yuv = 1 \big)$. Moreover, once all the signs have
+been generated, we can compute the expected number of positive edges outgoing from $u$ as the
+expected value of the random variable $P_u = \sum_{v\in \NNout(u)} \Ind{\yuv = +1}$. Using this, we
+have that the probability of
 drawing at random a $+1$-labeled edge from $\Nout(u)$ equals
 \begin{equation}\label{e:pout}
+	\frac{\E\left(P_u\right)}{\dout(u)} =
+	\frac{1}{\dout(u)} \sum_{v\in \NNout(u)} \frac{p_u + q_v}{2} =
 	\frac{1}{2}\,\Biggl(p_u + \frac{1}{\dout(u)} \sum_{v\in \NNout(u)} q_v \Biggl) =
 		\frac{1}{2}\,\left(p_u + \qbar_u\right)\,,
 \end{equation}
-where $\qbar_u = \frac{1}{\dout(u)} \sum_{v\in \NNout(u)} q_v$ is the average $q$ value of $u$ out
-neighbors.
+where $\qbar_u = \frac{1}{\dout(u)} \left( \sum_{v\in \NNout(u)} q_v \right)$ is the average $q$
+value of $u$ out neighbors.
 Similarly, the probability of drawing at random a $+1$-labeled edge from $\Nin(v)$ equals
 \begin{equation}\label{e:pin}
 	\frac{1}{2}\,\Biggl(q_v + \frac{1}{\din(v)} \sum_{u\in \NNin(v)} p_u \Biggl)=
