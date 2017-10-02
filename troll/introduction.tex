@@ -1,4 +1,3 @@
-\begin{newcontent}
 As we saw in the introduction, many situations in various fields can be modeled by signed graphs.
 One of the most natural usage of signed graphs, though, is the study of social networks. That is
 indeed what first motivated their inception. Quite naturally, we thus begin our exploration of the
@@ -12,7 +11,7 @@ the members of an online community) or artifacts directly created by individuals
 semantic detail allows us to treat citation networks as social networks.}. Furthermore, a directed
 edge from node $u$ to node $v$ denote an interaction initiated by the user $u$ and whose object is
 user $v$. Such an interaction can be positive (to praise, to support, to trust, to befriend) or
-negative (to criticize, to oppose, to distrust, to befoe).
+negative (to criticize, to oppose, to distrust, to make enemy with).
 
 Known examples are \textsc{Ebay}, where users trust or distrust agents in the network based on their
 personal interactions, \textsc{Slashdot}, where each user can tag another user as friend or foe,
@@ -69,7 +68,6 @@ rather widespread, one study revealing that 72\% of \np{1454} surveyed teenagers
 one occurrence of cyberbullying, most of them through instant messaging~\autocite{Juvonen08}. While
 we have not conducted experimental study on this topic, we believe that being able to predict such
 harmful interactions would be beneficial for the majority of users.
-\end{newcontent}
 
 %Consider, in particular, a user joining an online community within a social network. His/her behavior will often fit one of these two stereotypes: the new member could play well with other users, establishing positive relationships with those who have been helpful. Or, the new user could try and disrupt the community by engaging into anti-social behavior, and creating conflictual relationships with other members. This behavioral dichotomy is supported by decades of research in psychology, starting with the seminal work~\autocite{Dissonance57} about cognitive dissonance (when someone is acting in contradiction with his/her personal beliefs, ideas, or values). This kind of attitude expressed publicly on social media leads to the definition of \enquote{trolls}~\autocite{Hardaker10}: users whose real intentions are to cause disruption and/or to trigger or exacerbate conflict for the purposes of their own amusement. The paper~\autocite{Shachaf10} elaborates on their motives, adding that boredom, attention seeking, and revenge motivate trolls; they find pleasure from causing damage to other people or to the community as a whole.
 
@@ -116,7 +114,7 @@ previous heuristics and related methods in \autoref{sec:troll_related}.
 We then experimentally evaluate our proposed approach in \autoref{s:exp}. On synthetic data, we
 confirm the quality of our approximation of the Bayes predictor. More importantly, on real-world
 data, we show the competitiveness of our approach in terms of both prediction performance
-(especially in the regime when training data are scarce) and scalability.
+(especially in the regime where training data are scarce) and scalability.
 
 Finally, in \autoref{s:algonline}, we point out that the notions of trollness and trustworthiness
 naturally define a measure

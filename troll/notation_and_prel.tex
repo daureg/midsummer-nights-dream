@@ -29,32 +29,32 @@ node classification method could in principle be used, the reductions we describ
 essentially aimed at preparing the ground for quadratic energy-minimization approaches computed
 through a \emph{Label Propagation} algorithm~\autocites{LabelPropa03}{BDL06}.
 
-The first reduction, called $G \rightarrow G'$, builds an \emph{undirected} graph $G' = (V',E')$ as
+The first reduction builds an \emph{undirected} graph $G' = (V',E')$ as
 follows. Each node $u \in V$ has two copies in $V'$, call them $\iin$ and $\iout$. Each directed
 edge $(u,v)$ in $E$ is associated with one node, call it $e_{u,v}$, in $V'$, along with the two
 undirected edges $(\iout,e_{u,v})$ and $(e_{u,v},\jin)$. Hence $|V'| = 2|V|+|E|$ and $|E'| = 2|E|$.
 Moreover, if $G = G(Y)$ is edge labeled, then this labeling transfers to the subset of nodes
 $e_{u,v} \in V'$, so that $G'$ is a graph $G'(Y) = (V'(Y),E')$ with partially-labeled nodes. The
-second reduction, called $G \rightarrow G''$, builds an \emph{undirected and weighted} graph $G'' =
+second reduction builds an \emph{undirected and weighted} graph $G'' =
 (V'',E'')$. Specifically, we have $V'' \equiv V'$ and $E'' \supset E'$, where the set $E''$ also
 includes edges $(\iout,\jin)$ for all $u$ and $v$ such that $(u,v) \in E$. The edges in $E'$ have
 weight $2$, whereas the edges in $E''\setminus E'$ have weight $-1$. We provide in
 \autoref{ssec:troll_lprop_weights} an analytic justification for this weights choice in the context
-of Label Propagation. Finally, as in the $G \rightarrow G'$ reduction, if $G = G(Y)$ is edge
+of Label Propagation. Finally, as in the first reduction, if $G = G(Y)$ is edge
 labeled, then this labeling transfers to the subset of nodes $e_{u,v} \in V''$. Graph $G'$, which
 will not be used in the following, is an intermediate structure between $G$ and $G''$ and provides a
-conceptual link to the standard cutsize measure in node sign classification. \autoref{f:etnr}
-illustrates these two reductions. 
-
-\begin{newcontent}
-  There is no new content in that part, instead I moved the discussion about the cutsize from here
-  to after the description of the online learning protocol.
-\end{newcontent}
+conceptual link to the standard cutsize measure in node sign classification, as we will describe
+shortly. \autoref{f:etnr} illustrates these two reductions. Note that because $|V''|=2|V|$ and
+$|E''|=3|E|$, the reduction yielding $G''$ can be computed in linear time, and does not require the
+knowledge of the edge label, meaning it can be done in parallel with potential label querying.
+Furthermore, it can be updated incrementally if new nodes or edges are added to the original graph
+$G$.
 
 \begin{figure*}[t]
   \centering
   \begin{subfigure}[b]{0.28\textwidth}
-    \centering \includegraphics[height=.10\textheight]{raw/g_latex-crop} \caption{}
+    \centering \includegraphics[height=.10\textheight]{raw/g_latex-crop}
+    \caption{\label{fig:troll_reduction_g}}
   \end{subfigure}~
   \begin{subfigure}[b]{0.30\textwidth}
     \centering \includegraphics[height=.12\textheight]{raw/gprime_latex-crop}
@@ -66,12 +66,12 @@ illustrates these two reductions.
   \end{subfigure}
   \caption{\label{f:etnr}
     \textbf{(a)} A directed edge-labeled graph $G$. \textbf{(b)} Its corresponding graph $G'$
-    resulting from the $G\rightarrow G'$ reduction. The square nodes in $G'$ correspond to the
+    resulting from the first reduction we describe. The square nodes in $G'$ correspond to the
     edges in $G$, and carry the same labels as their corresponding edges. On the other hand, the
     $2|V|$ circle nodes in $G'$ are unlabeled. Observe that some nodes in $G'$ are isolated and
     thus unimportant. These are exactly the nodes in $G'$ corresponding to the nodes having in $G$
     no outgoing or no incoming edges: for instance nodes $3$ and $4$ in $G$. \textbf{(c)} The
-    weighted graph resulting from the $G\rightarrow G''$ reduction.
+    weighted graph resulting from the second reduction we describe.
   }
 \end{figure*}
 
@@ -87,7 +87,7 @@ corresponding to the edges in $G$ (the colored squares in \autoref{fig:troll_red
 
 These reductions serve two purposes: First, they allow us to
 use the many algorithms designed for the better studied problem of node sign prediction. Second,
-the reduction $G\rightarrow G''$ with the specific choice of edge weights is designed to make the
+the reduction yielding $G''$, along its specific choice of edge weights, is designed to make the
 Label Propagation solution approximate the maximum likelihood estimator associated with our
 generative model (see Section~\ref{ss:passive}). Note also that efficient Label Propagation
 implementations exist that can leverage the sparsity of $G''$.
@@ -106,9 +106,14 @@ The specific batch setting
 % (passive and active)
 we study here assumes that labels are produced by a
 generative model which we describe in the next section, and our label regularity measure is a
-quadratic function (denoted by $\Psi^2_{G''}(Y)$ and defined in \autoref{s:exp}), related to this
-model. $\Psi^2_{G''}(Y)$ is small just when all nodes in $G$ tend to be either troll or
-trustworthy. 
+quadratic function (denoted by $\Psi^2_{G''}(Y)$ and defined in \autoref{s:exp} as a regularized
+energy function of $G''$\footnote{If we denote the value of the square node $e_{u,v}$ of $G''$ as
+$\frac{1+\yuv}{2}$, the value of the circle node $u_{\mathrm{out}}$ as $p_u$ and the value of the
+circle node $v_{\mathrm{in}}$ as $q_v$, we have that
+$\Psi^2_{G''}(Y) = \min_{(\bp,\bq)} \sum_{(u,v) \in E} \left(\frac{1+\yuv}{2} - \frac{p_u+q_v}{2}
+\right)^2$, where $(\bp,\bq) =\{p_u, q_u\}_{u=1}^{|V|}$.})
+related to this model. $\Psi^2_{G''}(Y)$ is small just when all nodes in $G$ tend to be either troll
+or trustworthy. 
 
 On the other hand, the \emph{online} setting we consider is the standard mistake bound model of
 online learning~\autocite{Winnow88} where all edge labels are assumed to be generated by an
@@ -131,8 +136,8 @@ More precisely,
   $Y$ over the edges of $G$ and the order of their presentation to the learning algorithm. We say
   that $A$ has made a mistake at time $t$ if ${\wh y_t} \neq y_t$, and we measure $A$'s prediction
   performance simply through the total number of mistakes $M_A(Y)$ it makes over $G(Y)$ when the
-  worst possible presentation order of the edge labels in $Y$ is selected by the adversary. As is
-  standard, we contrast $M_A(Y)$ to some kind of \emph{regularity} measure $\Psi_G(Y)$ of the
+  worst possible presentation order of the edge labels in $Y$ is selected by the adversary. As it is
+  standard practice, we contrast $M_A(Y)$ to some kind of \emph{regularity} measure $\Psi_G(Y)$ of the
   labeling $Y$ over $G$, so that we are in fact aimed at bounding the (cumulative) regret \( M_A(Y)
   - \Psi_G(Y)~.\)
 
@@ -155,7 +160,7 @@ $$
 $$
 be the sum of irregularity over all the nodes of the graph.
 Then we define $\Psi_G(Y) = \min\big\{\Psiin(Y),\Psiout(Y)\big\}$. The two measures
-$\Psi^2_{G''}(Y)$ and $\Psi_G(Y)$ are conceptually related and their value on real data is quite
+$\Psi_G(Y)$ and $\Psi^2_{G''}(Y)$ are conceptually related and their value on real data is quite
 similar (see \autoref{tab:all_mcc} \vpageref{s:exp}).
 
 The reductions presented above are meaningful only if they are able to approximately preserve the
@@ -164,17 +169,46 @@ That is, if the \esp{} prediction problem is
 easy for a given $G(Y) = (V,E(Y))$, then the corresponding node sign prediction problems on $G'(Y)
 = (V'(Y),E')$ and $G''(Y) = (V''(Y),E)$ are also easy, and vice versa.
 Let us first introduce the notion of cutsize of an undirected node-labeled graph $G'(Y)$, which is
-the number of edges in $G'$ connecting nodes having mismatching labels.
+the number of edges in $G'$ connecting nodes that have mismatching labels.
   Now, because the only nodes in $G'$ we are
   interested in predicting are those corresponding to the edges in $G$ (the colored squares in
   \autoref{fig:troll_reduction_gprime}), the online prediction problem on the edges of $G$ translates to a node
   sign prediction problem on a subset of $V'$. As for the remaining nodes in $V'$ (the circles in
-  \autoref{fig:troll_reduction_gprime}), we are free to assign dummy labels so as to minimize the corresponding mistake
-  bound over $G'$. It is straightforward to see that if we set the labeling $Y$ on $V'$ in such a
-  way that $y_{\iout} = +1$ if $tr(u) < 0$, and $-1$, otherwise, and $y_{\iin} = +1$ if $un(u) <
-  0$, and $-1$, otherwise, then the cutsize of $G'(Y)$ equals  $\Psiin(Y) + \Psiout(Y)$.%
+  \autoref{fig:troll_reduction_gprime}), we are free to assign arbitrary labels so as to minimize the corresponding mistake
+  bound over $G'$. Such an assignment is constructed as follow: we set the labeling $Y$ on $V'$ in such a
+  way that $y_{\iout} = +1$ if $tr(u) \leq \shalf$ and $-1$ otherwise. Similarly, we have $y_{\iin} = +1$ if
+  $un(u) \leq \shalf$,
+  and $-1$ otherwise. For instance, given the trollness and untrustworthiness values for the graph $G$ of
+  \autoref{fig:troll_reduction_g} reported in \autoref{tab:troll_psi}, following this construction
+  would result in a label version of $G'$ showed on \autoref{fig:troll_psi}.
+\begin{marginfigure}
+	\centering
+	\includegraphics[width=0.98\linewidth]{assets/raw/troll_labeled_gprime.pdf}
+	\caption{The node-labeling of $G'$ illustrating the relation between the edge label
+	  complexity and the cutsize. Here the four edges part of the cut are in heavy black.
+	\label{fig:troll_psi}}
+\end{marginfigure}
+  We see that by labeling circle nodes by the majority label of the square nodes there are connected
+  to, we have that the cutsize of $G'(Y)$ equals  $\Psiin(Y) + \Psiout(Y)$.%
   \footnote{In fact, for the sake of
   this specific argument, nothing prevents from retaining of $G'$ either only the edges
   $(\iout,e_{u,v})$ or only the edges $(e_{u,v},\jin)$, resulting in a cutsize of $\Psiout(Y)$ and
   $\Psiin(Y)$, respectively.}
-  A similar reasoning apply in the batch case with the $\Psi^2_{G''}(Y)$ measure.
+  A similar reasoning apply in the batch case with the $\Psi^2_{G''}(Y)$ measure, which can be seen
+  as a soft quadratic version of the cutsize.
+
+\begin{table}[htb]
+  \centering
+  \caption{The label regularity values for the nodes of the example $G$ graph of
+  \autoref{fig:troll_reduction_g}.  \label{tab:troll_psi}}
+  \begin{tabular}{lccccr}
+    \toprule
+    node $u$       & $1$    & $2$    & $3$               & $4$    & total \\
+    \midrule
+    $\Psiout(u,Y)$ & $0$    & $0$    & $1$               & $0$    & $1$   \\
+    $\Psiin(u,Y)$  & $1$    & $1$    & $0$               & $1$    & $3$   \\
+    $tr(u)$        & $0$    & $1$    & $\nicefrac{1}{3}$ & $1$    & ---   \\
+    $un(u)$        & \shalf & \shalf & \shalf            & \shalf & ---   \\
+    \bottomrule
+  \end{tabular}
+\end{table}
