@@ -16,7 +16,6 @@ scenario since all competing methods we are aware of have been developed in that
 We consider six real-world classification datasets. The first four are \dssn{} widely
 used as benchmarks for this
 task~(\eg{}\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}{OnlineCompletion17}):
-\begin{newcontent}
 In \adv{}, a trust-based social network for open source developers, a user $u$ can certify another
 user $v$ with different degrees of trust: \enquote{Observer}, \enquote{Apprentice} (both of which we
 consider negative), \enquote{Journeyer} and \enquote{Master} (both of which we consider
@@ -24,7 +23,6 @@ positive).\footnote{We download the 7\thup{} of July, 2014 version from
 \url{http://www.trustlet.org/datasets/advogato/}.} A full description of this trust metric, and its
 resistance to attacks, is available in the PhD thesis of the website's creator~\autocite[Section
 4]{AdvogatoTrustThesis02}).
-\end{newcontent}
 In \wik{}, there is an edge from user $u$ to user $v$ if $v$ applies for an admin position and $u$
 votes for or against that promotion. In \sla{}, a news sharing and commenting website, member $u$
 can tag other members $v$ as friends or foes. Finally, in \epi{}, an online shopping website, user
@@ -82,10 +80,11 @@ Although the semantics of the edge signs is not the same across these networks, 
 two columns of the table report the rate of label (ir)regularity, as measured by
 $\Psi^2_{G''}(Y)/|E|$ (6\thup{} column) and $\Psi_{G}(Y)/|E|$ (7\thup{} column), where 
 \[
-\Psi^2_{G''}(Y) = \min_{(\bp,\bq)} \left(f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)\right)\,,
+  \Psi^2_{G''}(Y) = \min_{(\bp,\bq)} \sum_{(u,v) \in E}
+  \left(\frac{1+\yuv}{2} - \frac{p_u+q_v}{2} \right)^2
 \]
-$f_{E_0}$ and $f_{E\setminus E_0}$ being the quadratic criterions of \autoref{ss:passive}, viewed as
-functions of both $(\bp,\bq)$, and \yuv{} when all labels are known, and $\Psi_{G}(Y)$ is the
+as first described in \autoref{ss:passive}
+and $\Psi_{G}(Y)$ is the
 label regularity measure adopted in the online setting, as defined in \autoref{s:prel}. It is
 reasonable to expect that higher label irregularity corresponds to lower prediction performance.
 This trend is in fact confirmed by our experimental findings: whereas \epi{} tends to be easy,
@@ -94,7 +93,6 @@ comply with our inductive bias principles. Moreover, $\Psi^2_{G''}(Y)/|E|$ tends
 to $\Psi_{G}(Y)/|E|$ across datasets, hence confirming the anticipated connection between the two
 regularity measures.
 
-\begin{newcontent}
 Finally, there is a low fraction of reciprocal edges (\ie{} both $\euv \in E$ and $\evu
 \in E$), which is a common mechanism of link formation in directed
 networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases, such reciprocal edges do not disagree,
@@ -104,9 +102,7 @@ additional computational cost: when predicting $\euv \in E_{\mathrm{test}}$, if 
 our methods with existing approaches, we not use that trick. But afterwards, we show in
 \autoref{tab:twin} when it can be beneficial.
 % more references in  http://www.nature.com/articles/srep02729
-\end{newcontent}
 
-\begin{newcontent}
 \subsection{Synthetic signs}
 
 Recall that according to our generative model of \autoref{s:gen}, each node $u$ has a parameter $p_u$
@@ -118,14 +114,16 @@ least one outgoing edge, and likewise the in-degree of nodes with at least one i
 that, in the case of $p$, we partition the interval $[0,1]$ into $|V|$ segments of size proportional
 to $\dout(u_1),
 \dout(u_2), \ldots, \dout(u_{|V|})$. We shuffle these segments and draw a number \uar{} from each of
-them, which we set as the $p$ value of the corresponding node. Then, because we want to model real
+them, which we set as the initial $p'$ value of the corresponding node. Then, because we want to model real
 sign distribution and have more
-positive edges, we apply an exponential transformation \[ p \rightarrow \frac{1}{1-e^{-\lambda}}
-\left( 1-e^{-\lambda p} \right) \,,\] where we choose $\lambda=3$. We do the same for $q$, then for
+positive than negative edges, we apply an exponential transformation \[ p = \frac{1}{1-e^{-\lambda}}
+\left( 1-e^{-\lambda p'} \right) \,,\] where we choose $\lambda=3$. We do the same for $q$, then for
 every edge \euv{}, we set it positive with probability \etauv{}. An example of the distributions we
-obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}, giving $71.9\%$ of
-positive edges.
+obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}\footnote{More precisely,
+these figures are normalized histogram, meaning the counts are scale down so that the bars total
+area sums up to one.}, giving $71.9\%$ of positive edges.
 
+% TODO: do a proper subfigure instead of minipage?
 \vspace{\baselineskip}
 \noindent\begin{minipage}{187mm} 
   \begin{minipage}{46mm}
@@ -160,8 +158,7 @@ positive edges.
 Once the signs are generated, we select a training set \trainset{} \uar{}, and predict
 the signs of the remaining edges in the testing set $E\setminus \trainset{}$. The Bayes optimal
 predictor classifies an edge \euv{} as positive if $\etauv \geq \shalf$ and negative otherwise. 
-We compare it with the algorithm analyzed in \autoref{ss:bayes_approx}, which we call \usrule{}
-(Bayes Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness). In practice,
+We compare it with the \usrule{} algorithm analyzed in \autoref{ss:bayes_approx}. Recall that
 \usrule{} proceeds as follow: after computing $\htr(u)$ and $\hun(u)$ on training set $E_0$ for all
 $u \in V$ (or setting those values to \shalf{} in case there is no outgoing or incoming edges for
 some node), we use the equation \eqref{eq:predictor}\footnote{We reproduce this equation here for
@@ -191,18 +188,17 @@ the testing edges \euv{} based on their coordinate $(p_u, q_v)$. For instance on
 the $p,q$-space. It seems to decrease along the diagonal from $(0,0)$ to $(1,1)$. Note though that
 \autoref{fig:tr_synth_sizemae} suggests this is likely due to the higher number of edges in the top
 right corner (reflecting the imbalance toward positive edges), which allows better estimation. 
-In this case, we cannot use the MCC because off-diagonal, the Bayes predictor classifies edges
-either all positive or all negative, resulting in a division by zero in the definition. We thus
+In this case, we cannot use the MCC because outside the diagonal, the Bayes predictor classifies edges
+either all positive or all negative, resulting in a division by zero in the definition of MCC. We thus
 fall back on accuracy and display in \autoref{fig:tr_synth_acc} the difference between the accuracy
-of the Bayes predictor and the accuracy of \usrule{}. This time, the anti diagonal where
+of of \usrule{} and the accuracy of the Bayes predictor. This time, the anti diagonal where
 $\frac{p+q}{2}=\lhalf$ seems to play a special role. Indeed, as showed more clearly in
-\autoref{fig:tr_synth_cmpacc}, the gap in accuracy between the Bayes predictor and \usrule{}
+\autoref{fig:tr_synth_cmpacc}, the gap in accuracy between \usrule{} and the Bayes predictor
 increases symmetrically as $\frac{p+q}{2}$ moves away from \shalf{}. The gap also tends to disappear
 when $\frac{p+q}{2}=\lhalf$, for in that region, both predictors can only rely on random predictions.
 
 While we show those patterns on \wik{} with a 40\% training size, they are consistent across
 datasets and training size.
-\end{newcontent}
 
 \begin{figure*}[hbtp]
   % \centering
@@ -219,7 +215,7 @@ datasets and training size.
 
   \begin{subfigure}[b]{0.504\textwidth} 
     \includegraphics[width=\textwidth]{raw/synthgen_wik_rule_40_acc.pdf} 
-    \caption{100 times the accuracy.} 
+    \caption{100 time the difference of accuracy between \usrule{} and Bayes.} 
     \label{fig:tr_synth_acc}
   \end{subfigure}~
   \begin{subfigure}[b]{0.504\textwidth} 
@@ -237,7 +233,7 @@ We compared the following algorithms:
   \item The label propagation algorithm of \autoref{ss:passive} (referred to as \uslpropGsec{}).
     The actual binarizing threshold was set by cross-validation on the training set.
 
-  \item The \usrule{} algorithm, as described above.
+  \item The \usrule{} algorithm described in \autoref{ss:passive}.
 
   \item A logistic regression model where each edge $(u,v)$ is associated with the features
     $[1-\htr(u), 1-\hun(v)]$ computed again on \trainset{} (we call this method \uslogregp{}). The best
@@ -311,11 +307,12 @@ Our main results are summarized in \autoref{tab:all_mcc}, reporting MCC test set
 training on sets of varying size (from 5\% to 25\%, plus 50\% and 90\%). Results have been averaged
 over 12 repetitions.
 Because scalability is a major concern when training on sizeable datasets, we also give an idea of
-relative training times (in milliseconds) by reporting the time it took to train a single run of
+relative training times (in milliseconds) by reporting separately in \autoref{tab:all_time} the time it took to train a single run of
 each algorithm on a training set of size\footnote{Comparison of training time performances is fair
 since all algorithms have been carefully implemented using the same stack of Python libraries, and
 run on the same machine (16 Xeon cores and 192Gb Ram).} 15\% of $|E|$, and then predict on the test
-set. Though our experiments are not conclusive, some trends can be readily spotted:
+set. Some conclusions emerge from those experiments:
+
 
 \begin{enumerate}[leftmargin=2em,label=\textbf{\arabic*.}]
 
@@ -325,10 +322,19 @@ set. Though our experiments are not conclusive, some trends can be readily spott
     \autocites{shahriari2014ranking}{wu2016troll}). \compbayesian{} looks like an exception to this
     rule, but its running time is indeed in the same ballpark as global methods.
 
-  \item \uslpropGsec{} always ranks first or at least second in this comparison when MCC is
-    considered. On top of it, \uslpropGsec{} is fastest among the global methods (one or even two
-    orders of magnitude faster), thereby showing the benefit of our approach to edge sign
-    prediction.
+  \item \uslpropGsec{} almost always ranks first or at least second in this comparison when MCC is
+    considered, at least in the small training set regime (that is when having access to at most
+    $25\%$ of the labels, which might be more realistic in many real world situations).
+    On top of it, \uslpropGsec{} is fastest among the global methods (one or even two
+    orders of magnitude faster), thereby showing the benefit of our approach to \esp{}.
+
+  \item Two methods are competitive with us, \compbayesian{} and \compranknodes{}. \compbayesian{}
+    achieves its best results on the larger dataset (\sla{}, \epi{} and \kiw{}) when the training
+    set size is large. Indeed, it learns a much more complex model than our methods, with $256$
+    parameters\footnote{corresponding to $16\times 16$ feature per edge}, which also requires a lot
+    of time to be trained. \compranknodes{} also shines in those large datasets, even at small
+    training size. Note however that the difference with \uslpropGsec{} is usually less than one point,
+    at the expense of a five times longer learning time.
 
   \item The regularized solution computed by \uslpropGsec{} is always better than the unregularized
     one computed by \qoptim{} in terms of both MCC and running time.
@@ -344,7 +350,8 @@ set. Though our experiments are not conclusive, some trends can be readily spott
 
 \input{all_mcc}
 
-\begin{newcontent}
+\input{all_time}
+
 \subsection{Additional experiments}
   
 We perform two other sets of experiments. The first one evaluates the effect of predicting reciprocal
@@ -363,7 +370,7 @@ size $m$, to let $E_0$ be the $m$ oldest edges, and try to predict the remaining
 is a common experimental setting in link prediction, where the goal is to infer which pair of nodes
 will be connected in the future~\autocite{linkPredSurvey16}. However, as showed in
 \autoref{tab:troll_ts_mcc}, this makes the problem much more challenging, both for our methods and
-out competitors. It is quite surprising that even when the training set is as large as 90\% of all
+our competitors. It is quite surprising that even when the training set is as large as 90\% of all
 edges, the MCC are so low compared with those reported in \autoref{tab:all_mcc}.
 
 \input{ts_mcc}
@@ -387,6 +394,12 @@ This is no longer true with temporal training set, where situations (ii) and eve
 common, making prediction more difficult. The difference of repartition is particularly strong in
 \wik{}, justifying the better performance in \epi{}.
 
-\input{sampling}
+This conclusion is not in contradiction with our previous experiments, since our algorithms were
+developed under the assumption that both the revealed labels and the ones to predict were
+distributed uniformly within the graph. Recall for instance that \autoref{t:active} requires to have
+$\Omega(\log |V|)$ labels outgoing from $u$ and incoming to $v$ to guarantee an accurate prediction
+of the sign of \euv{}. Therefore in the next section, we present an online algorithm, whose goal is
+to guarantee good performance when the labeling is regular enough, despite the adversarial order in
+which the predictions are asked.
 
-\end{newcontent}
+\input{sampling}

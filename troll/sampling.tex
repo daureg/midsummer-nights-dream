@@ -1,15 +1,15 @@
-% \begin{table}[htpb]
-  % \centering
-\begin{center}
+\begin{table}[tbh]
+  \centering
+% \begin{center}
   \small
-   \captionsetup{font=small}
-   \captionof{table}{%
-  % \caption[The effect of not sampling edges at random]{
+   % \captionsetup{font=small}
+   % \captionof{table}{%
+  \caption[The effect of not sampling edges at random]{
     The effect of not sampling edges at random on
   \wik{} and \epi{}. In case of random sampling, all values are averaged over 20 trials.
   Refer to the main text for an interpretation of how this affects the predictive performance.
 \label{tab:troll_early_sampling}}
-  \begin{longtable}{lrrrrr}
+  \begin{tabular}{lrrrrr}
     \toprule
     Sampling &  \thead{Fraction of\\ $V_{\mathrm{out}}$ sampled} &
     \thead{Fraction of\\ $V_{\mathrm{in}}$ sampled} &
@@ -38,6 +38,6 @@
     90\% oldest & $90.09\%$ & $91.13\%$ & $13.34\%$ & $45.92\%$ & $40.75\%$ \\
     90\% random & $94.34\%$ & $95.16\%$ & $0.94\%$  & $9.72\%$  & $89.35\%$ \\
     \bottomrule
-  \end{longtable}
-% \end{table}
-\end{center}
+  \end{tabular}
+\end{table}
+% \end{center}

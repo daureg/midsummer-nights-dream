@@ -1,0 +1,20 @@
+\begin{table}[htb]
+  \centering
+  \scriptsize
+  % \setlength{\tabcolsep}{3pt}
+  \caption{The time taken (in milliseconds) to train, for each dataset, on a $15\%$ training set and
+    predict the remaining $85\%$. The experimental setting is the same as in \autoref{tab:all_mcc}.
+  \label{tab:all_time}}
+  \begin{tabular}{lrrrr|rrrrr}
+    \toprule
+    Dataset & \uslpropGsec{} & \usrule{}   & \uslogregp{} & \usoptim{}    & \complowrank{} & \compmaxnorm{} & \comptriads{} & \compranknodes{} & \compbayesian{} \\
+    \midrule
+    \aut{}  & $\np{19.2}$    & $\np{0.6}$  & $\np{3.6}$   & $\np{2827}$   & $\np{3222}$    & $\np{23229}$   & $\np{7.5}$    & $\np{157}$       & $\np{4787}$     \\
+    \adv{}  & $\np{21.4}$    & $\np{0.8}$  & $\np{5.7}$   & $\np{5538}$   & $\np{4094}$    & $\np{37440}$   & $\np{10.9}$   & $\np{224}$       & $\np{6597}$     \\
+    \wik{}  & $\np{42.2}$    & $\np{1.7}$  & $\np{8.0}$   & $\np{10613}$  & $\np{8277}$    & $\np{59992}$   & $\np{17.7}$   & $\np{255}$       & $\np{12583}$    \\
+    \sla{}  & $\np{645}$     & $\np{8.2}$  & $\np{42.9}$  & $\np{78658}$  & $\np{67454}$   & $\np{350742}$  & $\np{139}$    & $\np{2446}$      & $\np{68008}$    \\
+    \epi{}  & $\np{1447}$    & $\np{10.6}$ & $\np{72.5}$  & $\np{142507}$ & $\np{127641}$  & $\np{692560}$  & $\np{234}$    & $\np{3381}$      & $\np{111435}$   \\
+    \kiw{}  & $\np{897}$     & $\np{9.6}$  & $\np{60.2}$  & $\np{208676}$ & $\np{125884}$  & $\np{632663}$  & $\np{188}$    & $\np{4233}$      & $\np{95374}$    \\
+    \bottomrule
+  \end{tabular}
+\end{table}

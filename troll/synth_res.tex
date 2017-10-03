@@ -1,7 +1,10 @@
-\begin{center}
+\begin{table}[htpb]
+  \centering
+% \begin{center}
   \small
-  \captionsetup{font=small}
-  \captionof{table}{%
+  \caption{%
+%   \captionsetup{font=small}
+%   \captionof{table}{%
     Comparing \usrule{} with the Bayes optimal on three metrics: Accuracy, MCC and ability to
     estimate $\eta$.
     The results are averaged over 25 random sampling of \trainset{} for each dataset and each
@@ -13,7 +16,8 @@
     \thead{Dataset} & \thead{$\frac{|\trainset{}|}{|E|}$}
                     & \thead{\usrule{}\\ Accuracy}   & \thead{Bayes\\ Accuracy}
                     & \thead{\usrule{}\\ MCC}        & \thead{Bayes\\ MCC}
-                    & \thead{MAE$(\eta, \wh{\eta})$\\ testing set} & \thead{MAE$(\eta, \wh{\eta})$\\ many samples} \\
+                    & \thead{MAE$(\eta, \wh{\eta})$ for the\\ whole testing set}
+                    & \thead{MAE$(\eta, \wh{\eta})$ for highly\\ sampled edges} \\
 \midrule
 \multirow{3}{*}{\aut{}} & 20\% & $66.1\pm0.6$ & $75.1\pm0.1$ & $16.2\pm0.5$ & $29.7\pm0.2$ & $.256\pm.00$ & $.119\pm.01$ \\
                         & 40\% & $68.2\pm0.4$ & $74.7\pm0.2$ & $19.1\pm0.6$ & $29.6\pm0.4$ & $.205\pm.00$ & $.085\pm.00$ \\
@@ -40,4 +44,5 @@
                         & 80\% & $71.1\pm0.2$ & $75.3\pm0.1$ & $23.7\pm0.2$ & $30.4\pm0.2$ & $.144\pm.00$ & $.047\pm.00$ \\
     \bottomrule
   \end{longtable}
-\end{center}
+% \end{center}
+\end{table}
