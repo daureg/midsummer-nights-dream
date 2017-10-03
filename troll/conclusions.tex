@@ -1,38 +1,7 @@
-\section{Conclusion}
-
-\begin{newcontent}
-In this chapter, we started our characterization of edges in complex networks by studying the \esp{}
-problem in \dssn{}. As mentioned in the introduction, given a network topology and a few labeled
-interactions, being able to infer the polarity of the remaining interactions is valuable to improve
-user experience. Our main insight is that two features of users behavior, trollness and
-(un)trustworthiness, are key to understand their interactions. This leads us to design a simple sign
-generative model. Such a model serves both as a theoretical justification for many successful
-heuristics and as the underpinning of our \usrule{} algorithm. This algorithm is fast, trivially
-parallelizable, provably close to the Bayes optimal predictor on dense graphs and experimentally
-accurate even on sparse graphs. We further exploit this model in the batch setting through an
-approximation of the maximum likelihood estimation procedure. While making this approximation, we
-moreover cast the problem as a node prediction problem. This can be efficiently tackled by standard
-Label Propagation algorithms.
-
-We validate our theoretical results by experimentally assessing these two methods in the small
-training set regime, on synthetic and real-world datasets. We draw two main conclusions from our
-experiments. First, our generative model is robust across domains. Indeed, it produces predictors
-that are empirically both close to the Bayes optimal and to general linear models trained on
-trollness and trustworthiness features. This is notable as this result is achieved by simply
-counting negative edges, without resorting to Stochastic Gradient Descent methods typically involved
-in training large scale linear models. Second, our methods are in practice either strictly better
-than their competitors in terms of prediction quality or, when they are not, they are faster.
-
-Finally, we study the online adversarial setting, where trollness and (un)trustworthiness naturally
-lend themselves to define a notion of edge sign regularity. Based on this regularity, we provide an
-upper and an (almost matching) lower bounds on the expected number of prediction mistakes. Before
-exploring in the next chapter another learning bias for \esp{}, which is not based on trollness and
-(un)trustworthiness, we present directions in which this work could be extended.
-
-\bigskip
+\section{Open questions}
 
 Given the fundamental role of our generative model, we would like to adapt it in order to handle
-the three problem extensions presented in the related work of \autoref{sec:troll_related}.
+the three problem extensions presented in the related works of \autoref{sec:troll_related}.
 
 \begin{enumerate}[1.,]
 
@@ -63,4 +32,38 @@ the three problem extensions presented in the related work of \autoref{sec:troll
     the weight of \euv{} is drawn. Finally, by letting $p_u$ range from $-1$ to $+1$, we note a
     similarity with fairness and goodness, suggesting $p_u\times q_v$ could approximate the weights.
 \end{enumerate}
-\end{newcontent}
+
+\section{Summary}
+
+In this chapter, we started our characterization of edges in complex networks by studying the \esp{}
+problem in \dssn{}. As mentioned in the introduction, given a network topology and a few labeled
+interactions, being able to infer the polarity of the remaining interactions is valuable to improve
+user experience. Our main insight is that two features of users behavior, trollness and
+(un)trustworthiness, are key to understand their interactions. This leads us to design a simple sign
+generative model. Such a model serves both as a theoretical justification for many successful
+heuristics and as the underpinning of our \usrule{} algorithm. This algorithm is fast, trivially
+parallelizable, provably close to the Bayes optimal predictor on dense graphs and experimentally
+accurate even on sparse graphs. We further exploit this model in the batch setting through an
+approximation of the maximum likelihood estimation procedure. While making this approximation, we
+moreover cast the problem as a node prediction problem. This can be efficiently tackled by standard
+Label Propagation algorithms.
+
+We validate our theoretical results by experimentally assessing these two methods in the small
+training set regime, on synthetic and real-world datasets. We draw two main conclusions from our
+experiments. First, our generative model is robust across domains. Indeed, it produces predictors
+that are empirically both close to the Bayes optimal and to general linear models trained on
+trollness and trustworthiness features. This is notable as this result is achieved by simply
+counting negative edges, without resorting to Stochastic Gradient Descent methods typically involved
+in training large scale linear models. Second, our methods are in practice either strictly better
+than their competitors in terms of prediction quality or, when they are not, they are faster.
+
+Finally, we study the online adversarial setting, where trollness and (un)trustworthiness naturally
+lend themselves to define a notion of edge sign regularity. Based on this regularity, we provide an
+upper and an (almost matching) lower bounds on the expected number of prediction mistakes. We
+conclude by presenting three directions in which our generative model could be extended: namely
+use side information as priors, guide budgeted queries in active learning and generate weights in
+addition to signs.
+
+In the next chapter, we will go even further than this generative model and explore another learning
+bias for \esp{}, which is not based on trollness and (un)trustworthiness, but rather on the social
+balance theory.
