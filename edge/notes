@@ -1,0 +1,75 @@
+LinkedIn (used to?) ask how people know each other before they connect
+https://www.linkedin-makeover.com/2016/06/23/11074/
+
+A 2001 review on homophily, with a sociology angle, and mostly real world network, maybe get
+something more recent/CS
+
+“Homophily is the principle that a contact between similar people occurs at a higher rate than among
+dissimilar people.” their conclusion is that “the literature is remarkably consistent across many
+different relationships and many different dimensions of similarity: Homophily characterizes network
+systems, and homogeneity characterizes personal networks.  In diverse societies, race, and race-like
+ethnicity create the most stark divides. Sex, age, religion, and education also strongly structure
+our relations with others.  Occupation, network position, behaviors, and intrapersonal values also
+show considerable homophily, but they seem to be more specific to certain types of networks and/or
+derived from the basic facts of sociodemographic homophily.” They also call for research on
+multiplex: “If different types of relations are structured by different levels of homophily on
+different dimensions, then multiplex relations among individuals may create systematic, important
+patterns of cross-cutting social circles.”
+
+@article{doi:10.1146/annurev.soc.27.1.415,
+	author = {Miller McPherson  and Lynn Smith-Lovin and James M. Cook},
+	title = {Birds of a Feather: Homophily in Social Networks},
+	journal = {Annual Review of Sociology},
+	volume = {27},
+	number = {1},
+	pages = {415-444},
+	year = {2001},
+	doi = {10.1146/annurev.soc.27.1.415},
+	URL = { https://doi.org/10.1146/annurev.soc.27.1.415 },
+}
+
+an online example (Andrew T. Fiore and Judith S. Donath. 2005. Homophily in online dating: when do
+you like someone like yourself?. In CHI '05 Extended Abstracts on Human Factors in Computing Systems
+(CHI EA '05). ACM, New York, NY, USA, 1371-1374. DOI=http://dx.doi.org/10.1145/1056808.1056919) but
+gender must be different since they consider 65000 heterosexual users
+
+This correlation in the class variable of connected objects can be explained by the concept of
+homophily in social science [30]. Homophily suggests that a connection between similar people occurs
+at a higher rate than among dissimilar ones. It is one of the first characteristics studied by early
+social network researchers [2,3,50], and holds for a wide variety of relationships [30]. Homophily
+is also observed in social media [10,45].
+
+30. McPherson M, Smith-Lovin L, Cook JM (2001) Birds of a feather: homophily in social networks.  Annu Rev Sociol 27:415–444
+45. Thelwall M (2009) Homophily in myspace. J Am Soc Inf Sci Technol 60(2):219–231
+10. Fiore AT, Donath JS (2005) Homophily in online dating: when do you like someone like yourself?. In: CHI ’05: CHI ’05 extended abstracts on human factors in computing systems. ACM, New York, NY, USA, pp 1371–1374
+
+from Sanja paper:
+selection Crandall et al. 2008, Feedback effects between similarity and social influence in online
+communities.]): find that the homophily between two Wikipedia admin users sharply
+rises some time before the tie formation and after that continues to slowly grow. This is
+interpreted so that, at first, homophily plays a role in the tie formation, but after that, the tie
+plays a role in the continuous increase of homophily. Research questions:
+(i) Can we quantify the ways in which social influence and selection work together to affect
+people’s interests and interactions?
+(ii) To what extent do similarities and social interactions between people serve as predictors of
+future behavior?
+Another similar study on Flickr [Zeng and Wei 2013, Social ties and user content generation:
+Evidence from Flickr.], finds more subtle insights: the users who have
+similar popularity (defined as the average number of favorites for their photos) are more likely to
+diverge in similarity after the tie formation; while the similarity continues to grow for the users
+who have a larger popularity difference. This is explained by the tendency of users to stay unique
+and diverse in their uploaded content from equally popular users. (talk about it in the conclusion)
+assortive mixing Tang et al. 2013] (I talked about their matrix method in sign prediction)
+geographical loci in FB [Ugander et al. 2011,http://arxiv.org/abs/1111.4503] (look at the full
+adjacency matrix of FB in 2011 and show the block structure when aggregating users by country)
+twitter [Sun and Rui 2017, Link Formation on Twitter: The Role of Achieved Status and Value
+Homophily.] A recent study on Twitter analyzes homophily on the status (defined as the difference in
+the follower counts) and the value (tweet contents, common followees, location, age etc.) levels.
+[provide nice related work in the intro ]
+
+Boutyline, A. and Willer, R. (2017), The Social Structure of Political Echo Chambers: Variation in
+Ideological Homophily in Online Networks. Political Psychology, 38: 551–569. doi:10.1111/pops.12337
+we find that both more extreme and more conservative individuals tend to be more homophilous than
+more liberal and more moderate ones.
+
+\url{http://www2.unb.ca/~ddu/6634/Lecture_notes/Lecture_6_homophily_handout.pdf}

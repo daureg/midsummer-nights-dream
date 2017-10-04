@@ -1,0 +1,31 @@
+Stattner, Erick, and Martine Collard. "Link Clustering for Extracting Collaborative Patterns in a Scientific Co-Authored Network.", FAB workshop, ANOSAM 2017
+they use their method of conceptual links
+
+Groups of nodes are first created when they have common attributes. The set of links between two
+groups is called a conceptual link in the sense that it corresponds to a relationship between two
+sets of attributes, namely two concepts in the field of formal concept analysis [7]. The number of
+links between two groups is then evaluated and when the frequency is greater than a given support
+threshold $\beta$, we talk about frequent conceptual link. Note that we only keep maximal frequent conceptual links (mfcl), i.e. those who are not included in others.
+Finally, the set of maximal frequent conceptual links is used to create a new network structure called a conceptual view which summarizes all the knowledge extracted from the initial network. In a conceptual view, each node corresponds to a set of attributes (in this context we call them Meta-nodes) and a link corresponds to maximal frequent conceptual links.
+A formal presentation of frequent conceptual links can be found in [18].
+
+\Textcite[section 7.2 edge labelling]{nodeClassif11} mention a cool paper from Darja Krushevskaja
+but I can't find it online.
+
+\fullcite{Zhuang2012} and 
+section 2.3 of Semantic Mining of Social Networks (same thing I believe.
+Actually they also talk about a WSDM paper on infering ties using transfer
+learning~\autocite{transferTiesPred16})
+
+\Textcite[Section 4.2.2]{miningSocialTheoriesSurvey14} is about \emph{Social Tie
+Prediction}, but they only mention \autocite{transferTiesPred16} and
+\autocite{Yang2012}.
+
+H. Liang, K. Wang and F. Zhu, "Mining social ties beyond homophily," 2016 IEEE 32nd International Conference on Data Engineering (ICDE), Helsinki, 2016, pp. 421-432.
+\url{http://doi.org/10.1109/ICDE.2016.7498259} very datamining approach, they
+look for link pattern with support and confidence above some threshold, that
+also diverge from homophily by excludingi attributes taking the same value (so
+it's not exactly like us once again)
+
+The kind of graphs with talked in this paper is a special case of what is
+called \emph{heterogenous information network} in \autocite{HINSurvey17}.
