@@ -81,6 +81,94 @@ finding and assigning the most informative directions to every edge of $G$
   \end{equation}
 \end{problem}
 
+
+\paragraph{Generalization of signed graphs}
+\label{par:generalization_of_signed_graphs}
+
+Here we show why \autoref{p:edge_full} can model signed graphs as a special case, namely with $k=2$.
+Remember the learning
+bias we introduced in the previous chapter \vpageref{text:cc_new_bias}: every node belongs to
+exactly one of the $K$ clusters available, is connected positively with the other nodes belonging to
+the same cluster, and is connected negatively with the nodes belonging to every other clusters. Now
+let the dimension of profiles be $d=K$ and the number of directions $k=2$. Moreover, we define the
+two directions vectors as $w_1 = \frac{\onev}{\sqrt{d}} = w^+$ and $w_2 = -w_+ = w_-$, where
+$\onev$ is the vector of dimension $d$ with only $1$ coordinates. Finally, for a node $u$ in
+cluster $i$, we assume its profile $x_u$ is set as follow: all component are equal to $-b$ except
+for the \ith{} one, which is equal to $a$, where $a$ and $b$ are constants we define now.
+
+First, because $x_u$ is a unit vector, we have that $a^2 + (K-1)b^2=1$, from which $a =
+\sqrt{1-(K-1)b^2}$ whenever $1-(K-1)b^2 \geq 0$, or equivalently $b \leq \frac{1}{\sqrt{K-1}}$.
+Next, we look at $\onev^T\left(x_u \circ x_v\right) = \onev^T m_{uv} = \frac{1}{\sqrt{d}}
+\sum_{i=1}^d m_{{uv}_i}$ for any edge $(u,v) \in E$. If $u$ and $v$ are in the same cluster, then
+$\sum_{i=1}^d m_{{uv}_i} = a^2 + (K-1)b^2 = 1$, implying that $w_+^T m_{uv} = \frac{1}{d} > w_-^T
+m_{uv} = -\frac{1}{d}$. Otherwise, $\sum_{i=1}^d m_{{uv}_i} = (K-2)b^2 - 2ab = (K-2)b^2 -
+2b\sqrt{1-(K-1)b^2} = f_K(b)$. By computing the derivative of $f_K$ with respect to $b$, we find
+that it reaches a minimum of $-\frac{1}{K-1}$ at $b = \frac{1}{\sqrt{K(K-1)}} \leq
+\frac{1}{\sqrt{K-1}}$. In this case, $w_+^T m_{uv} = -\frac{1}{(K-1) \sqrt{d}} < w_-^T m_{uv} =
+\frac{1}{(K-1) \sqrt{d}}$. To maximize $\sum_{(u,v)\in E} \max_{1 \leq \ell \leq d} w_\ell^T
+m_{uv}$, we therefore assign $w_+$ to edges whose both endpoints belong to the same cluster, and
+$w_-$ to edges joining two different clusters.
+
+Moreover, given this assignment, we can show that $w_+$ and $w_-$ are the optimal directions, under
+the additional uniformity assumption that there are exactly $r$ edges within every cluster, and $s$
+edges between any two clusters. First, we define
+\begin{equation*}
+  m_{\mathrm{inner}} = \sum_{(u,v) \in E;\, \cluster(u)=\cluster(v)} m_{uv} \qquad \text{and} \qquad
+  m_{\mathrm{outer}} = \sum_{(u,v) \in E;\, \cluster(u)\neq \cluster(v)} m_{uv}
+\end{equation*}
+to be the sum of all edge vectors within and between clusters respectively. By our choice of $a$ and
+$b$, we have that $m_{\mathrm{inner}} = r\onev$ and $m_{\mathrm{outer}} = -\frac{s}{2}\onev$. Now
+recall that the solution of $\argmax_{w\in \dsphere} w^T c$ is $\frac{c}{||c||}$. Therefore, the
+best direction to assign to inner edges is indeed $w_+$, and so is $w_-$ to outer edges.
+
+\begin{aside}
+For inner edge vectors, $m_{uv}$ in cluster $i$ has $a^2$ as its \ith{} component, and $b^2$
+elsewhere. There are $r$ of them in cluster $i$, so summing over all clusters we get
+$m_{\mathrm{inner}} = r\left(a^2 + (K-1)b^2\right)\onev = r\onev$.
+For outer edge vectors, there are a few more steps. Consider the $s$ edges between $C_1$ and $C_2$,
+whose $m_{uv}$ is
+$\begin{pmatrix}
+  -ab \\
+  -ab \\
+  b^2 \\
+  b^2 \\
+  \vdots \\  
+\end{pmatrix}$. Likewise, between $C_1$ and $C_3$ we have
+$m_{uv}=\begin{pmatrix}
+  -ab \\
+  b^2 \\
+  -ab \\
+  b^2 \\
+  \vdots \\  
+\end{pmatrix}$. We thus we see that the first component is always $-ab$, that there is another
+such term at the other cluster index, while the rest is $b^2$. Summing all the vectors incident to
+$C_1$, we get
+$s\begin{pmatrix}
+  -ab(K-1) \\
+  b^2(K-2) -ab \\
+  b^2(K-2) -ab \\
+  \vdots \\  
+\end{pmatrix}$. Similarly, the sum of all vectors incident to $C_2$ is
+$s\begin{pmatrix}
+  b^2(K-2) -ab \\
+  -ab(K-1) \\
+  b^2(K-2) -ab \\
+  \vdots \\  
+\end{pmatrix}$, and so on for every cluster $i$. Summing over all clusters and dividing by $2$ to
+avoid double counting, we get $m_{\mathrm{outer}} = \frac{s}{2}\left( (K-1)\left(b^2(K-2) -ab\right)
+-ab(K-1) \right)\onev = \frac{s(K-1)}{2}\left(b^2(K-2) -2ab\right)\onev =
+\frac{s(K-1)}{2}f_K(b)\onev = -\frac{s(K-1)}{2} \frac{1}{K-1} \onev = -\frac{s}{2}\onev$.
+\end{aside}
+
+Granted, the situation where all the nodes of a cluster have exactly the same profile and where the
+connections are so regular is highly idealized. Moreover, we did not formally prove that there is
+not another assignment (with different direction vectors) that would give a better objective
+value\footnote{Although given the symmetry of the problem, that would be surprising.}. Our point is
+rather that profiles and directions can be seen as a \enquote{latent} explanation for the signs in
+a balanced signed graphs, like our generative model of the first chapter.
+
+\bigskip
+
 If $k=|E|$, the topology of the graph becomes irrelevant, as we can simply exploit the trivial
 solution of having a single direction $w_{uv} = \frac{s_{uv}}{||s_{uv}||}$ for every edge $(u,v)$.
 More generally, as $k$ increases, we expect the value $\max_{\mathcal{D}_k} f(k)$ to increases as
@@ -182,6 +270,7 @@ $W$ explicit. Given a rank $k\leq \min(d,|E|)$:
 \end{equation}
 Problem~\eqref{eq:fact_nonconvex} can be solved via alternating optimization over $P$ and $Q$ using
 standard (projected) gradient descent algorithms.
+See \autocite[Section 6]{attributedSNE17} for a write up example of matrix optimization.
 
 Note however that this matrix formulation requires learning more parameters, as it each edge has a
 different, albeit made up of a small number of basis direction.  Impose sparsity on $Q$?
