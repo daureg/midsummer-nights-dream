@@ -1,0 +1,334 @@
+\paragraph{Synthetic data}
+\label{par:synthetic_data}
+
+While there exists several methods to generate attributed graph with community
+structure~\autocites{Yang2013}{XuBayesian14}{Kataoka2016}, here we present the one we adopted for
+our initial experiments, as it is specifically tailored to the model introduced in the previous
+section. Given a number of directions $k$, a maximum number $k_\mathrm{local}$ of directions
+incident to each node, the dimension of profiles $d$ and a number of node $n$, it return a graph
+$G=(V,E)$, a profile matrix $X\in \Rbb^{n\times d}$, a set of $k$ directions $\mathcal{D}_k$ and an
+assignment from every edge $(u,v)$ to a direction $w_{uv} \in \mathcal{D}_k$ such that in most
+cases, $\forall w_\ell \in \mathcal{D}_k \setminus \{w_{uv}\}\,, {s_{uv}}^T w_{uv} \geq  {s_{uv}}^T
+w_\ell$.
+
+We first generate the $k$ unit-norm directions $\mathcal{D}_k=\{w_1, \ldots, w_k\}$, independently
+of the graph. Furthermore, we control the number of coordinates $n_o$ that overlap with each other.
+That is, when $n_o = 0$, each direction has exactly \nicefrac{k}{d}\footnote{We choose $d$ to be a
+multiple of $k$.} non-zero dimension that are disjoint. On the other hand, if for instance $n_o=5$,
+then $5$ of the $d$ dimensions will have two directions with non-zero components on it. Those
+non-zero components are drawn \uar{} from $[-1, 1]$ and the each directions is then normalized. For
+instance, with $d=6$, $k=3$ and $n_o=2$, we could generate the following directions, where the dots
+represents non-zero numbers and the red ones are overlapping:
+\vspace{-.5\baselineskip}
+\begin{center}
+	\begin{tabular}{ccc}
+		$w_1$ & $w_2$ & $w_3$ \\
+		$\begin{pmatrix}
+			\bullet \\
+			0 \\
+			\bullet \\
+			0 \\
+			0 \\
+			\textcolor{Red}{\bullet}
+		\end{pmatrix}$ & 
+		$\begin{pmatrix}
+			0 \\
+			\bullet \\
+			0 \\
+			\textcolor{Red}{\bullet} \\
+			\bullet \\
+			0
+		\end{pmatrix}$ &
+		$\begin{pmatrix}
+			0 \\
+			0 \\
+			0 \\
+			\bullet \\
+			0 \\
+			\bullet
+		\end{pmatrix}$
+	\end{tabular}
+\end{center}
+
+The next step is to create the graph topology, which we do by assembling small Erdős-Rényi
+subgraphs~\autocites{erdos1959random}{gilbertRG59} that we call \emph{blocks}. Furthermore, driven
+by a topological constraint mentioned earlier, we assign to each node a $k_\mathrm{local}$-tuple of
+directions such that two adjacent node have \emph{at least} one common direction that can later be
+assigned to the edge between them. For convenience, let us first identify directions with colors and
+thus call such a $k_\mathrm{local}$-tuple of directions a \emph{palette}. For a given palette $p$,
+we call adjacent palettes, denoted $\adj(p)$, all the palettes different from $p$\footnote{We ruled
+out $p$ being adjacent to itself to avoid the trivial solution of all nodes being assigned the same
+palette.} but sharing one
+color with $p$. Finally, we say that an edge $u,v$ is \emph{colorless} if the palette of $u$ and $v$ have
+no color in common. Because in the general case, it is not always possible to assign palette to
+every nodes such that there is no colorless edge,\footnote{For instance, consider a $4$-clique with $k=4$
+and $k_\mathrm{local}=2$. Without loss of generality, say we assign the palette $(1,2)$ to node
+$1$. The adjacent palettes are then $(1,3)$, $(1,4)$, $(2,3)$ and $(2,4)$. If we assign those
+starting by $1$ (respectively $2$) to the second and third node, then the fourth palette has to
+contain a $1$ (respectively $2$), which is not possible (because two connected nodes cannot have the
+same palette). On the other hand, if we assign $(1,3)$ to the second, the third node can only have
+$(2,3)$, meaning the fourth node has again no palette available. The same situation with $(1,4)$ and
+$(2,4)$.} we now describe a simple heuristic. It performs a breath first visit of a subgraph,
+starting from a random node. Upon visiting an uncolored node $u$, it builds the intersection $P$ of
+all the adjacent palettes of the palette of its colored neighbors (\ie{} $P=\bigcap_{v\in \nei(u)}
+\adj(p_v)$). Then it selects \uar{} a palette from $P$, or an arbitrary palette if $P$ is empty (see
+\begin{marginfigure}
+  \centering
+	\includegraphics[width=\textwidth]{tikz/edge_palette_tikz.pdf}
+	\caption{A small example of the node palette assignment, with $k=4$ colors (blue, green, red and
+		orange) and palette of size $k_\mathrm{local}=3$. We assume nodes $1$ and $2$ have already been
+		visited, and got assigned the palette $(\text{blue, green, red})$ and $(\text{blue, green,
+		orange})$ respectively. Moreover, we are currently at $3$ while $4$ is yet uncolored. In that
+		case, there are two possible palettes for $3$. If we select $(\text{green, red, orange})$, a
+		possible color assignment for the edges $(1,2)$, $(1, 3)$ and $(2, 3)$ is respectively blue,
+		red, and green.
+	\label{fig:edge_palette}}
+\end{marginfigure}
+\autoref{fig:edge_palette} for a small illustration). Once all nodes have been colored, we count the
+number of edges that are colorless. We repeat this procedure, keeping track of the assignment
+minimizing the number of colorless edges. Once we colored the nodes of every block, we look at pair
+of blocks, build a list of all edges between blocks that are not colorless and sample from it to
+connect blocks. The last step is to a assign a color to each edge from the shared color of its
+endpoint (or an arbitrary color for colorless edges). Note this is reminiscent of the stochastic
+block model, although the probabilities of edges between blocks are not uniform anymore.
+
+The directions $\mathcal{D}_k$, and the graph $G$ along its edge assignment are the two sources of
+randomness we will consider in the following.
+
+\bigskip
+
+Now that we have a direction $w_{uv} \in \mathcal{D}_k$ assigned to every edge $(u,v)$, we want to
+find a set of user profiles $X=\{x_u\}_{u\in V}$ that maximize the edge score and minimize the node
+loss, defined respectively by equations \eqref{eq:edge_full}\stodo{not really} and \eqref{} in the
+previous section as: 
+\begin{align*}
+  \mathcal{L}_{\mathrm{edge}} &=
+  \sum_{u,v \in E} \left(x_u \circ x_v\right)^T w_{uv} \quad \text{and} \\
+  \mathcal{L}_{\mathrm{node}} &=
+  \sum_{u\in V} \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2\,,
+\end{align*}
+where for simplicity, we fix $b_u = \zerov$ and $a_{uv} = 1$. Furthermore, to ensure that the
+assigned direction of any edge $(u,v)$ achieve a better score than the other directions (that is
+$\forall w_\ell \in \mathcal{D}_k \setminus \{w_{uv}\}\,, {s_{uv}}^T w_{uv} \geq  {s_{uv}}^T
+w_\ell$) we also minimize cross-entropy loss commonly used in non-binary classification
+problem~\autocite[Section 4.3.4]{PRML06}.  Specifically, recall that the goodness of direction
+$w_\ell$ for the edge $(u,v)$ is $g(s_{uv}, w_{uv})$. If we denote by $p_{uv,\ell} = \frac{\exp
+\left( g(s_{uv}, w_{uv}) \right)}{\sum_{\ell=1}^k \exp \left( g(s_{uv}, w_\ell) \right)}$ the
+softmax \enquote{probability} of $s_{uv}$ being explained by direction $\ell$, the cross-entropy
+loss is defined by
+\begin{equation*}
+  \mathcal{L}_{\mathrm{cross-entropy}} = -\sum_{u,v \in E} \sum_{l=1}^k
+  \Ind{w_{uv} = w_\ell} p_{uv,\ell}
+\end{equation*}
+
+In practice, we first minimize $\lambda \mathcal{L}_{\mathrm{cross-entropy}} -
+\mathcal{L}_{\mathrm{edge}}$ with respect to $X$ using the Adam algorithm~\autocite{Adam15} and
+automatic differentiation~\autocite{autograd15} as implemented by the Pytorch
+package\footnote{\url{http://pytorch.org/}} and projecting the current iterate back to the set of
+matrix with unit $L_2$ norm columns $\mathbb{M}^{n\times d}$ at each step.
+
+Finally, to minimize $\mathcal{L}_{\mathrm{node}}$, we iterate over the nodes and take some gradient
+steps to minimize $\left|\left| x_u - \sum_{v\in\nei{u}} w_{uv}\right|\right|^2$, but only to the
+extent that $w_{uv}$ remains the direction with the largest score on the edge $u,v \in E$.
+
+\subparagraph{Results}
+\label{par:edge_synth_results}
+
+In the following we generate one graph topology, along with palette assignment to nodes and
+direction assignment to edges. Then we generate a set of unit-norm directions,
+parametrized by four numbers (and their default value): $k=7$, $d=35$, $n_o=0$ and
+$k_{\mathrm{local}}=3$. To account for the randomness of this generation process, we repeat our
+measurement over 200 such $\mathcal{D}_k$. On the other hand, we verify experimentally that
+generating various graphs while keeping $\mathcal{D}_k$ fixed gives the same results, hence we will
+not report them in the main text.
+We also try other configurations to study the parameter sensibility of our methods. Specifically, we
+experiment with less directions ($k=5$) or more directions ($k=9, d=36$)\footnote{We add one
+dimension to ensure that $d$ remains a multiple of $k$}, with two higher levels of overlap between
+the directions ($n_o=6$ and $n_o=12$), with more directions per node ($k_{\mathrm{local}}=4$) and in
+larger dimension ($d=77$).
+
+After having assigned a single direction to every edge and generated the user profiles, we can
+measure how those two quantities *agree* with the edge scores. Namely, recall we predict the
+direction of an edge $(u,v)$ as $\argmax_{\ell \in \rangesk} g(s_{uv}, w_\ell) = {s_{uv}}^T w_\ell$.
+However, in the following, we do not evaluate such predictions using accuracy. Indeed, while the
+methods we evaluate all assign one among $k$ directions to every edge, there is no guarantee those
+directions are recovered in the same order as they were generated. In case of strong disagreement
+between the predictions and ground truth labels, it might additionally be difficult to find a
+permutation to conciliate them.  Therefore, we see the problem as a clustering one with known ground
+truth, and turn to the Adjusted Mutual Information (AMI)~\autocite{AMI09}. It is an information
+theoretic measure that enjoys several properties: it is invariant to permutations of the labels,
+invariant to the shape of clusters and it is bounded between $0$ and $1$, where an AMI of $1$
+indicates perfect correlation with the ground truth labels and $0$ indicates perfect independence
+with the ground truth labels.
+
+First, as we can see in the table below, in the \default{} configuration, we do not always
+generate user profiles leading to a perfect assignment of edge according to their score/goodness. In
+general this is not always possible. Consider a $k$-regular subgraph, where the $k$ edges incident
+to every node are each assigned a different directions. By symmetry, it is impossible to find node
+profiles that would achieve maximum goodness for all the edges. This is partly what motivated the
+$k_{\mathrm{local}}$ local constraint. Even so, and more pragmatically, whereas those AMI scores
+could be made higher by increasing the coefficient in front of the cross entropy loss, this would
+imply a lower edge goodness. Even with our choice, only a few percent of the edges have a mismatch
+between the directions we assigned them and the one with the highest goodness. Note also that
+depending of the parameters of the generation, the AMI is not the same. Therefore, in the following,
+we divide all the AMI scores by this natural score, in order to obtain a normalized measure.
+\newline\vspace{.5\baselineskip}\noindent%
+\begin{tabular}{lccccccc}
+  \toprule
+  {}  & {\smallk{}}    & {\default{}}   & {\largek{}}    & {\smallo{}}    & {\largeo{}}    & {\fdirs{}}     & {\larged{}}    \\
+  \midrule
+  AMI & $.925 \pm .03$ & $.922 \pm .03$ & $.905 \pm .02$ & $.880 \pm .04$ & $.874 \pm .05$ & $.893 \pm .03$ & $.973 \pm .01$ \\
+  \bottomrule
+\end{tabular}
+\vspace{.5\baselineskip}
+
+Besides this normalized AMI, we also measure how far the recovered directions $\mathcal{\wh{D}}_k$
+are from the actual ones, generated initially. More precisely, we associate each vector $w_\ell \in
+\mathcal{D}_k$ with the closest one in $\mathcal{\wh{D}}_k$ and report the average $\ell_2$ distance
+between the two elements of these $k$ pairs, that is 
+\begin{equation*}
+  d(\mathcal{D}_k, \mathcal{\wh{D}}_k) =
+  \frac{1}{k} \sum_{\ell \in \rangesk} \min_{w'_i \in \mathcal{\wh{D}}_k} \| w_\ell - w'_i \|_2
+\end{equation*}
+
+In total we compare five of the methods introduced earlier\stodo{make sure it's clear how we obtain
+directions and prediction from each method}:
+\begin{enumerate}[1.]
+  \item \textsc{$k$-means} clustering of the normalized $s_{uv}$ edge similarity vectors;
+  \item \textsc{Lloyd}-like iterative refinement of the $k$-means solution;
+  \item \textsc{Combined} optimization of $\mathcal{L}_{\mathrm{edge}}$ and
+    $\mathcal{L}_{\mathrm{node}}$;
+  \item \textsc{Frank--Wolfe} maximization of $\mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)$ over
+    the $\delta$-ball of the nuclear norm, with a regularization of the $\ell_2$ norm of the columns
+    of $W$. In other words, denoting by $\langle A, B \rangle_\mathrm{F} = \tr\left(A^T B\right)$
+    the Frobenius inner product of two real matrices, we solve
+    \begin{equation*}
+      \min_{\|W\|_* \leq \delta} -\frop{S^T}{W} + \mu \frop{W}{W}\,\text{; and}
+    \end{equation*}
+  \item \textsc{Explicit} low-rank $PQ^T$ factorization, initialized with the solution of
+    \textsc{Combined}\stodo{describe formally} and minimizing the same objective in matric form.
+\end{enumerate}
+
+As showed in \autoref{tab:edge_Wvaries_nami}, \combined{} is always the best method and, excluding
+\pqt{} for now, the \lloyd{} heuristic is second except in one case, while \kmeans{} is third. Note
+that although the differences are not large in absolute value, they are generally statistically
+significant. Coming back to \pqt{}, not only does it have the same performance as \combined{}, but
+we verified that it actually returns the same predictions, up to a few edges that are classified
+differently. This can be explained because they optimize the same objective and \pqt{} is
+initialized with the solution from \combined{}. However, we also verified that both edge score and
+node loss are respectively higher and lower at the end of the optimization. Finally, the results of
+\fwa{} are much worse than all the others, despite the optimization leading to edge scores
+comparable to the other methods. This suggests that the subsequent clustering is not
+adequate\stodo{Maybe it would be better to save the list of atoms or do a SVD at the end and cluster
+from there.}. Regarding the generative parameters, and compared with the default configuration, the
+problem is easier when the $k$ directions are spread in a larger number of dimension, and more
+difficult when each nodes is involved in four directions instead of three. On the other hand,
+whereas we expect the performance to decrease with increase in the overall number of directions or
+their overlap, there is not consistent evidence of that.
+
+
+\begin{table}[htb]
+  \centering
+  % \setlength{\tabcolsep}{3pt}
+  \small
+  \caption{Normalized AMI of 5 methods, when generating direction with 7 configurations. For each
+    configuration, we generate directions 200 times, and report the mean normalized AMI along with
+    the standard deviation. Among the first three methods (that do not use matrix formulation), we
+    highlight the best one in \textbf{\textcolor{brown}{bold brown}} and the second best one in
+    \textit{\textcolor{red}{italic red}}. When the difference between a score and the next best one
+    is statistically significant (that is we can confidently reject the hypothesis that the two
+    distribution have the same mean), we furthermore underline that score and show in parenthesis the
+    $p$-value of a paired Student's $t$-test.
+  \label{tab:edge_Wvaries_nami}}
+  \begin{tabular}{llll|ll}
+    \toprule
+    {} &         \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &  \thead{\fwa{}} &  \thead{\pqt{}} \\
+    \midrule
+    {\smallk{}}  &            $.836 \pm .08$ &                          $\vsecond{.838 \pm .07}$ &  $\vfirstSig{.875 \pm .06}\,\,\spval{2.17}{-58}$ &  $.213 \pm .11$ &  $.875 \pm .06$ \\
+    {\default{}} &            $.818 \pm .06$ &  $\vsecondSig{.873 \pm .05}\,\,\spval{1.25}{-63}$ &  $\vfirstSig{.893 \pm .04}\,\,\spval{5.68}{-33}$ &  $.381 \pm .05$ &  $.893 \pm .04$ \\
+    {\largek{}}  &            $.803 \pm .04$ &  $\vsecondSig{.881 \pm .04}\,\,\spval{2.66}{-94}$ &  $\vfirstSig{.894 \pm .04}\,\,\spval{8.98}{-17}$ &  $.421 \pm .04$ &  $.894 \pm .04$ \\
+    {\smallo{}}  &            $.813 \pm .07$ &   $\vsecondSig{.824 \pm .06}\,\,\spval{7.57}{-6}$ &  $\vfirstSig{.856 \pm .06}\,\,\spval{2.99}{-57}$ &  $.378 \pm .05$ &  $.855 \pm .06$ \\
+    {\largeo{}}  &  $\vsecond{.827 \pm .07}$ &                                    $.823 \pm .06$ &  $\vfirstSig{.852 \pm .06}\,\,\spval{1.90}{-25}$ &  $.370 \pm .06$ &  $.851 \pm .06$ \\
+    {\fdirs{}}   &            $.772 \pm .07$ &  $\vsecondSig{.814 \pm .07}\,\,\spval{6.02}{-42}$ &  $\vfirstSig{.853 \pm .06}\,\,\spval{2.13}{-47}$ &  $.320 \pm .06$ &  $.853 \pm .06$ \\
+    {\larged{}}  &            $.905 \pm .05$ &  $\vsecondSig{.933 \pm .04}\,\,\spval{1.32}{-31}$ &  $\vfirstSig{.941 \pm .03}\,\,\spval{1.77}{-22}$ &  $.222 \pm .10$ &  $.931 \pm .04$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Similar conclusions carry out when we evaluate methods according to their ability of recovering the
+original directions. Keeping in mind that in the case of perfect recovery, $d(\mathcal{D}_k,
+\mathcal{\wh{D}}_k)$ would be equal to zero, while the distance between two $d$-dimensional unit
+vectors is $\sqrt{2}$ in expectation\footnote{One can derive this from the fact after normalization,
+vectors whose coordinates are drawn from a standard normal distribution are uniformly distributed on
+the unit sphere~\autocite{gaussianSphere59}.}, we see in \autoref{tab:edge_Wvaries_dst} that no
+method gets very close to the original directions. \combined{} is again the closer overall, but now
+\kmeans{} and \lloyd{} are alternating at the second place. The fact $\mathcal{D}_k$ cannot be
+completely recover is not surprising, for in absence of prior information the problem is
+under-constrained. Indeed, while \combined{} and \pqt{} delivers almost the exact same prediction,
+their directions are clearly different.
+
+\begin{table}[hbt]
+  \centering
+  % \setlength{\tabcolsep}{3pt}
+  \small
+  \caption{Same as \autoref{tab:edge_Wvaries_nami}, but reporting $d(\mathcal{D}_k,
+  \mathcal{\wh{D}}_k)$, which should be as close as possible to $0$.
+  \label{tab:edge_Wvaries_dst}}
+    \begin{tabular}{llll|ll}
+      \toprule
+      {} &                                 \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &   \thead{\fwa{}} &  \thead{\pqt{}} \\
+      \midrule
+      {\smallk{}}  &  $\vsecondSig{.581 \pm .08}\,\,\spval{4.78}{-30}$ &                                    $.606 \pm .09$ &  $\vfirstSig{.560 \pm .05}\,\,\spval{8.07}{-24}$ &  $1.007 \pm .05$ &  $.633 \pm .06$ \\
+      {\default{}} &                                    $.533 \pm .08$ &   $\vsecondSig{.528 \pm .09}\,\,\spval{9.61}{-4}$ &   $\vfirstSig{.516 \pm .06}\,\,\spval{4.95}{-5}$ &   $.877 \pm .05$ &  $.564 \pm .06$ \\
+      {\largek{}}  &                                    $.541 \pm .07$ &  $\vsecondSig{.521 \pm .07}\,\,\spval{5.08}{-23}$ &                          $\vfirst{.520 \pm .05}$ &   $.811 \pm .06$ &  $.551 \pm .06$ \\
+      {\smallo{}}  &  $\vsecondSig{.554 \pm .08}\,\,\spval{2.74}{-52}$ &                                    $.589 \pm .08$ &  $\vfirstSig{.538 \pm .05}\,\,\spval{2.38}{-12}$ &   $.908 \pm .05$ &  $.596 \pm .07$ \\
+      {\largeo{}}  &  $\vsecondSig{.554 \pm .09}\,\,\spval{1.50}{-58}$ &                                    $.595 \pm .08$ &   $\vfirstSig{.545 \pm .06}\,\,\spval{4.08}{-5}$ &   $.935 \pm .05$ &  $.604 \pm .08$ \\
+      {\fdirs{}}   &                                    $.565 \pm .08$ &                          $\vsecond{.564 \pm .09}$ &   $\vfirstSig{.546 \pm .05}\,\,\spval{6.30}{-8}$ &   $.928 \pm .06$ &  $.588 \pm .06$ \\
+      {\larged{}}  &  $\vsecondSig{.571 \pm .07}\,\,\spval{2.02}{-89}$ &                                    $.602 \pm .07$ &                          $\vfirst{.567 \pm .05}$ &  $1.033 \pm .06$ &  $.641 \pm .05$ \\
+      \bottomrule
+    \end{tabular}
+\end{table}
+
+\iffalse
+\begin{table}[hbt]
+  \centering
+  % \setlength{\tabcolsep}{3pt}
+  \small
+  \caption{Same as \autoref{tab:edge_Wvaries_nami}, but when $\mathcal{D}_k$ is fixed and generating
+    200 graphs.  \label{tab:edge_Gvaries_nami}}
+    \begin{tabular}{llll|ll}
+      \toprule
+      {} &                                 \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &  \thead{\fwa{}} &  \thead{\pqt{}} \\
+      \midrule
+      {\smallk{}}  &  $\vsecondSig{.678 \pm .07}\,\,\spval{4.16}{-22}$ &                                    $.657 \pm .07$ &  $\vfirstSig{.729 \pm .08}\,\,\spval{1.13}{-62}$ &  $.330 \pm .08$ &  $.729 \pm .08$ \\
+      {\default{}} &                                    $.745 \pm .04$ &  $\vsecondSig{.799 \pm .04}\,\,\spval{2.88}{-65}$ &  $\vfirstSig{.839 \pm .03}\,\,\spval{1.75}{-68}$ &  $.379 \pm .04$ &  $.839 \pm .03$ \\
+      {\largek{}}  &                                    $.769 \pm .03$ &  $\vsecondSig{.843 \pm .04}\,\,\spval{5.06}{-84}$ &  $\vfirstSig{.870 \pm .04}\,\,\spval{8.54}{-40}$ &  $.431 \pm .04$ &  $.870 \pm .04$ \\
+      {\smallo{}}  &                                    $.813 \pm .06$ &  $\vsecondSig{.845 \pm .04}\,\,\spval{1.44}{-27}$ &  $\vfirstSig{.869 \pm .04}\,\,\spval{3.98}{-55}$ &  $.371 \pm .05$ &  $.868 \pm .04$ \\
+      {\largeo{}}  &                                    $.788 \pm .06$ &   $\vsecondSig{.799 \pm .05}\,\,\spval{1.54}{-6}$ &  $\vfirstSig{.830 \pm .05}\,\,\spval{2.36}{-57}$ &  $.408 \pm .05$ &  $.830 \pm .05$ \\
+      {\fdirs{}}   &                                    $.678 \pm .05$ &  $\vsecondSig{.700 \pm .06}\,\,\spval{1.65}{-24}$ &  $\vfirstSig{.761 \pm .06}\,\,\spval{2.73}{-80}$ &  $.336 \pm .05$ &  $.761 \pm .06$ \\
+      {\larged{}}  &                                    $.863 \pm .06$ &  $\vsecondSig{.893 \pm .05}\,\,\spval{8.68}{-44}$ &  $\vfirstSig{.907 \pm .05}\,\,\spval{5.58}{-31}$ &  $.276 \pm .08$ &  $.895 \pm .05$ \\
+      \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[hbt]
+  \centering
+  % \setlength{\tabcolsep}{3pt}
+  \small
+  \caption{Same as \autoref{tab:edge_Wvaries_dst}, but when $\mathcal{D}_k$ is fixed and generating
+    200 graphs.  \label{tab:edge_Gvaries_dst}}
+    \begin{tabular}{llll|ll}
+      \toprule
+      {} &                                 \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &   \thead{\fwa{}} &  \thead{\pqt{}} \\
+      \midrule
+      {\smallk{}}  &  $\vsecondSig{.702 \pm .08}\,\,\spval{2.27}{-69}$ &                                    $.754 \pm .06$ &  $\vfirstSig{.647 \pm .06}\,\,\spval{1.59}{-81}$ &   $.975 \pm .06$ &  $.734 \pm .07$ \\
+      {\default{}} &                          $\vsecond{.607 \pm .06}$ &                                    $.608 \pm .07$ &  $\vfirstSig{.567 \pm .04}\,\,\spval{2.55}{-69}$ &   $.897 \pm .04$ &  $.622 \pm .05$ \\
+      {\largek{}}  &                                    $.584 \pm .06$ &  $\vsecondSig{.563 \pm .07}\,\,\spval{2.79}{-24}$ &                          $\vfirst{.561 \pm .05}$ &   $.804 \pm .05$ &  $.582 \pm .06$ \\
+      {\smallo{}}  &  $\vsecondSig{.530 \pm .08}\,\,\spval{1.20}{-67}$ &                                    $.571 \pm .07$ &   $\vfirstSig{.518 \pm .05}\,\,\spval{5.10}{-8}$ &   $.894 \pm .05$ &  $.572 \pm .06$ \\
+      {\largeo{}}  &  $\vsecondSig{.607 \pm .08}\,\,\spval{1.24}{-70}$ &                                    $.647 \pm .07$ &  $\vfirstSig{.578 \pm .05}\,\,\spval{6.06}{-35}$ &   $.896 \pm .06$ &  $.636 \pm .07$ \\
+      {\fdirs{}}   &  $\vsecondSig{.655 \pm .08}\,\,\spval{2.30}{-32}$ &                                    $.677 \pm .08$ &  $\vfirstSig{.608 \pm .06}\,\,\spval{6.88}{-71}$ &   $.938 \pm .04$ &  $.671 \pm .07$ \\
+      {\larged{}}  &  $\vsecondSig{.603 \pm .07}\,\,\spval{9.25}{-95}$ &                                    $.636 \pm .07$ &  $\vfirstSig{.589 \pm .05}\,\,\spval{6.97}{-12}$ &  $1.003 \pm .07$ &  $.662 \pm .06$ \\
+      \bottomrule
+    \end{tabular}
+\end{table}
+\fi
