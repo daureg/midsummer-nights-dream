@@ -79,6 +79,7 @@ finding and assigning the most informative directions to every edge of $G$
     \sum_{u,v \in E} \max_{\ell \in \rangesk} g(s_{uv}, w_{\ell}) =
     \sum_{u,v \in E} \max_{\ell \in \rangesk} \left(x_u \circ x_v\right)^T w_{\ell} = f(k)
   \end{equation}
+  where $s_{uv} = x_u \circ x_v$ and $g(s_{uv}, w_{\ell}) = {s_{uv}}^T w_{\ell}$.
 \end{problem}
 
 
@@ -169,7 +170,8 @@ a balanced signed graphs, like our generative model of the first chapter.
 
 \bigskip
 
-If $k=|E|$, the topology of the graph becomes irrelevant, as we can simply exploit the trivial
+At the other extreme of $k=2$, when $k=|E|$, the topology of the graph becomes irrelevant,
+as we can simply exploit the trivial
 solution of having a single direction $w_{uv} = \frac{s_{uv}}{||s_{uv}||}$ for every edge $(u,v)$.
 More generally, as $k$ increases, we expect the value $\max_{\mathcal{D}_k} f(k)$ to increases as
 well, at the cost of interpretability. There could be a principled approach to finding the
@@ -180,6 +182,7 @@ interest of simplicity, in the following we focus on the formulation stated in
 less than \np{10}). Within the multilayer framework, $k$ could also be seen as the number of
 underlying layers\stodo{elaborate on that connection}.
 
+\stodo{move that in the conclusion}
 \begin{aside}
 Generalizing the balance theory from signed graphs, we could imagine that in triangles or short
 cycles, only certain combinations of directions are valid (or at least desirable). As a nice side
@@ -188,6 +191,8 @@ application-dependant. Furthermore, in our current setting, we do not know in ad
 semantic of each direction, and we have no labeled edges. Therefore, it is not clear how those
 constraints would be specified or whether they can be learned, if applicable. 
 \end{aside}
+\stodo{Specification of constraints sounds related to network schema in \autocite[Definition
+3]{HINSurvey17}, except we have a single node type and are looking at higher order patter.}
 
 Another way to leverage the graph topology is to define local constraints at the node level. Since
 the beginning we considered that the user profiles were given, but from now on we further assume
@@ -200,12 +205,13 @@ is $x_u = b_u + \sum_{v \in \nei(u)} a_{uv} w_{uv}$, where $a_{uv}$ are real coe
 connect to another node $v$ along a direction $w_{uv}$, it consume a part of its profile
 proportional to $w_{uv}$. Therefore, we subtract the term $\sum_{u\in V} \left|\left| x_u - b_u -
 \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2$ to \eqref{eq:edge_full}.
-%
+
 We can also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
 different directions. The intuition is that when $d$ is large enough, users have to focus their
 energy and can only express their interest in a few number of dimensions. In other words, all the
 edges incident to $u$ can only be associated with one of $k_\mathrm{local}$ directions. This is
-difficult to incorporate directly in the optimization formulation, as for certain value of
+difficult to incorporate directly in the optimization formulation\stodo{actually it's not that
+difficult}, as for certain value of
 $k_\mathrm{local}$, this is a \NPc{} graph colouring problem. Still, it can be seen as a learning
 bias and will be used to generate synthetic data.
 These two constraints can be combined, so that the profiles are close to a linear combination of a
@@ -228,53 +234,199 @@ One can check that given a set of numbers $S=\{a_1, a_2, \ldots, a_{|S|}\}$ and 
 Using this fact, and averaging the two components of our objective function, we can rewrite
 \eqref{eq:edge_full} as:
 \begin{equation}
-  \argmax_{w_1,\ldots,w_k \in \dsphere,\, a_{uv}\in\Rbb,\, b_u \in \Rbb^d}
+  \label{eq:edge_soft}
+  \argmax_{{\substack{w_1,\ldots,w_k \in \dsphere,\\
+  a_{uv}\in\Rbb,\, b_u \in \Rbb^d}}}
   \frac{1}{|E|\beta} \sum_{u,v\in E}
   \log\Bigl(\sum_{\ell=1}^k\exp\left(\beta {s_{uv}}^T w_\ell \right)\Bigr)
   - \frac{1}{|V|}\sum_{u\in V}
   \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2
 \end{equation}
 
-Another way to remove the $\max$ is to look for a single direction per edge, stacked horizontally in
+Another way to remove the $\max$ is to first seek one direction for every edge, that is to maximize
+$\sum_{u,v\in E} {s_{uv}}^T w_{uv}$. This objective can be written in matric form as $\tr(SW) =
+\frop{S^T}{W}$, where $S \in \Rbb^{|E| \times d}$ is the $s_{uv}$ vectors for all edges stacked
+vertically and $W \in \Rbb^{d \times |E|}$ is the matrix of all directions stacked horizontally.
+More specifically, because of the unit norm constraint on directions, we look for $W$ in the set
+$\mathbb{M}^{d\times |E|}$ of $d\times |E|$ matrices with unit $\ell_2$ norm columns. To avoid the
+trivial solution of letting each direction $w_{uv}$ merely be $\frac{s_{uv}}{\|s_{uv}\|}$, we
+further constraint $W$ to be of low rank. That is, what we really want to optimize is \[\min_{W\in
+\mathbb{M}^{d\times |E|}} -\frop{S^T}{W} + \rank(W)\,.\] However, while the Frobenius inner product is
+linear in $W$, the rank operator is highly irregular and optimizing it directly is \NPc{}. Therefore
+we relax the rank term by the nuclear norm of $W$, defined as $\|W\|_* = \sum_{i=1}^{\min(d,|E|)}
+\sigma_i(W)$, where $\sigma_i(W)$ is the \ith{} largest singular value of $W$. The intuition is
+that the rank of $W$ is
+equal to the number of non-zero singular value while the nuclear norm is essentially an $\ell_1$ norm on
+the spectrum of $W$. Therefore, as minimizing the $\ell_1$ enforce sparsity, minimizing the nuclear
+norm tends to make the rank smaller by ensuring the presence of zeros in the singular values of $W$.
+\footnote{As mentioned in \autoref{sec:troll_related} about \autocite{OnlineCompletion17}, a tighter
+relaxation of the low-rank constraint is the max norm, but is it convex?} This
+results in the following optimization problem: \[\min_{W\in \mathbb{M}^{d\times |E|}} -\frop{S^T}{W}
++ \lambda \|W\|_*\,,\] where $\lambda$ is a regularization parameter. Since $\|\cdot\|_*$ is a norm, this
+objective function is convex (although the domain over which we optimize is not), but it does not
+have a gradient, forcing us to rely on potentially costly proximal gradient descent
+methods~\autocite{Parikh2013a}. Instead, we consider the equivalent problem obtained by replacing
+the regularization parameter with an upper bound $\delta$ on the nuclear norm of $W$, yielding:
+\begin{equation*}
+  \min_{\substack{W\in \mathbb{M}^{d\times |E|} \\ \|W\|_* \leq \delta}} -\frop{S^T}{W}\,.
+\end{equation*}
+
+At this stage, we could also add the node loss term, express in matric form as $\|X - B -
+C\left(A\circ W^T \right)\|_F^2$, where $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$
+stacked vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$\footnote{The
+  incidence matrix of a graph $G$, usually denoted by $B$, is the $|V| \times |E|$ matrix such that
+$B_{i,j} = 1$ if the node $v_i$ and edge $e_j$ are incident and 0 otherwise}, $A \in \Rbb^{|E|
+\times d}$ is the matrix whose each row is the corresponding $a_{uv}\onev$ vector and $\|\cdot\|_F$
+denotes the Frobenius norm. Note that this term is jointly convex in $A$, $B$ and $W$.\footnote{As
+one can check that the inequality defining convexity holds for this function.} However, for the
+clarity of exposition, we refrain to do so for now.
+
+The remaining issue is that $W\in \mathbb{M}^{d\times |E|}$ is not a convex constraint. As in the
+previous formulation, we thus relax it by simply imposing that the $\ell_2$ norm of the columns of
+$W$ are not too large. In fact, we already have one bound on these column norms, because of the
+nuclear norm constraint. One can indeed show that for $W\in \Rbb^{d\times |E|}$ such that $\|W\|_*
+\leq \delta$, the \ith{} column $W_{:,i}$ of $W$ satisfies $\|W_{:,i}\|_2 \leq \delta\sqrt{d}$.
+However, setting $\delta = \nicefrac{1}{\sqrt{d}}$ is too stringent in high dimension, and because
+this inequality is rather loose, it will likely results in very small columns norm. Instead of
+relying solely on the nuclear norm constraint, we therefore add an additional regularization term
+equal to $\mu \sum_{i=1}^{|E|} \|W_{:,i}\|_2 = \mu \frop{W}{W}$. Our final convex formulation is
+then:
+\begin{equation}
+  \label{eq:edge_FW}
+  \min_{\substack{W\in \Rbb^{d\times |E|} \\ \|W\|_* \leq \delta}} \frop{\mu W - S^T}{W} \,.
+\end{equation}
+
+\begin{aside}
+  Let $W$ be a matrix in $\Rbb^{d\times m}$ with $d < m$ such that $\|W\|_* \leq \delta$.
+  Furthermore, let its singular value decomposition be such that we can write $W = \sum_{l=1}^d
+  \sigma_l u_l v_l^T$, where $u_l$ and $v_l$ are $d$ unit-norm vectors, of dimension $d$ and $m$
+  respectively. We can thus express the general term $W_{k,i}$ as $\sum_{l=1}^d \sigma_l v_{l,i}
+  u_{l,k}$. Because $v_l$ is unit norm, $v_{l,i} \leq 1$ and $W_{k,i}^2 \leq \left( \sum_{l=1}^d
+  \sigma_l u_{l,k} \right)^2 \leq \sum_{l=1}^d \sigma_l^2 \sum_{l=1}^d u_{l,k}^2$, using
+  Cauchy--Schwartz inequality. The norm of the \ith{} column of $W$ then satisfies:
+  \begin{equation*}
+    \|W_{:,i}\|_2 = \left( \sum_{k=1}^m W_{k,i}^2 \right)^\lhalf
+    \leq \left( \sum_{k=1}^m \left( \sum_{l=1}^d \sigma_l^2 \sum_{l=1}^d u_{l,k}^2 \right) \right)^\lhalf
+    = \left( \left( \sum_{l=1}^d \sigma_l^2 \right) \left( \sum_{l=1}^d \sum_{k=1}^m u_{l,k}^2 \right) \right)^\lhalf
+  \end{equation*}
+  From $\sum_{l=1}^d |\sigma_l | \leq \delta$, we have that $\sum_{l=1}^d \sigma_l^2 \leq \delta^2$.
+  Combined with $u_l$ being unit norm, we conclude that $\|W_{:,i}\|_2 \leq \delta\sqrt{d}$.
+\end{aside}
+
+Because \eqref{eq:edge_FW} is of the form $\min_{x\in \mathcal{X}} f(x)$ where $f$ and $\mathcal{X}$
+are convex, we can solve it using the Frank--Wolfe algorithm~\autocites{FrankWolfe56}{Jaggi2013a},
+which enjoy properties like a $O(\frac{1}{t})$ convergence rate, low computational cost by avoiding
+projection step and sparse solution. It is an iterative procedure that maintains an estimate
+$x^{(t)}$ of the solution and works succinctly as follow: it linearizes the objective $f$ at the
+current position $x^{(t)}$ by computing $\nabla f(x^{(t)})$, it finds a minimum $s$ of that
+linearization within the domain $\mathcal{X}$ by solving $\argmin_{s\in \mathcal{X}}
+\innerp{s}{\nabla f(x^{(t)})}$ and it moves toward that minimizer by a step $\gamma$, setting
+$x^{(t+1)} = (1-\gamma) x^{(t)} + \gamma s$.\footnote{$\gamma$ is either found by a line search of
+set to $\nicefrac{t}{2+t}$.} In the case of \eqref{eq:edge_FW}, the linear minimization step amounts
+to $\argmin_{\|W\|_* \leq \delta} 2\mu W - S^T = \argmax_{\|W\|_* \leq \delta} S^T - 2\mu W$.
+Moreover, the $\delta$-ball of the nuclear norm is the convex hull of the matrix of the form $\delta
+u v^T$ with $\|u\|_2 = 1 = \|v\|_2$~\autocite{Jaggi2013a}. By letting $u_1$ and $v_1$ be
+respectively the left and right vectors associated with the largest singular value of $S^T - 2\mu
+W$, the minimizer \enquote{$s$} we are looking for is therefore $\delta u_1 v_1^T$.
+
+\iffalse
+stacked horizontally in
 one matrix. Then we can directly minimize \eqref{eq:edge_full} while enforcing the matrix
 $W\in\mathbb{R}^{d\times |E|}$ of all directions to be low-rank, so that each $w_{uv}$ (given by the
 $(u-1)n+v$-th column of $W$) can be expressed as a linear combination of a small number of basis
 vectors. Formally, if $W$ has rank $k$, then there exists $P\in\mathbb{R}^{d\times k}$ and
 $Q\in\mathbb{R}^{|E|\times k}$ such that $W=PQ^T$ and $w_{uv} = Pq_{uv}^T$. $P$ defines $k$
 representative directions in $\Rbb^d$ while $Q$ gives, for each edge, the weights of each
-representative direction. Similar to what is done in spectral clustering, we could cluster the
+representative direction. Similar to what is done in spectral clustering, we then cluster the
 $q_{uv}$'s to obtain an edge labeling.
 %
 Denoting by $\mathbb{M}^{d\times |E|}$ the set of $d\times |E|$ matrices with unit $L_2$ norm
-columns, a convex formulation of the problem is as follows:
-\begin{equation}
+columns, a convex formulation\stodo{justify the convexity later: $L_edge$ is linear and both
+$L_node$ and $\|W\|_*$ are norm and thus convex} of the problem is
+as follows:
+\begin{align}
   \label{eq:fact_convex}
-  \min_{W\in\mathbb{M}^{d\times |E|}} \quad
-  \sum_{i,j \in E} {s_{uv}}^T w_{uv} + \lambda \|W\|_*,
-\end{equation}
-where $w_{uv} \in \Rbb$ denotes the $(u-1)n+v$-th column of $W$, $\|W\|_* =
+  \max_{W\in\mathbb{M}^{d\times |E|}} h(W) &=
+  \mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W) -
+  \mu \mathcal{L}_{\mathrm{node}}^{\mathrm{mat}}(W) - \lambda \|W\|_* \\
+  &= \frac{1}{|E|} \tr\left(SW\right) -
+  \frac{\mu}{|V|} \|X - B - C\left(A\circ W^T \right)\|_2^2 - \lambda \|W\|_*
+  % \sum_{i,j \in E} {s_{uv}}^T w_{uv} + \lambda \|W\|_*,
+\end{align}
+where $S \in \Rbb^{|E| \times d}$ is the $s_{uv}$ vectors for all edges stacked vertically, $\mu
+\geq 0$ is a trade-off parameter, $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$ stacked
+vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$\footnote{The incidence
+matrix of a graph $G$, usually denoted by $B$, is the $|V| \times |E|$ matrix such that $B_{i,j} =
+1$ if the node $v_i$ and edge $e_j$ are incident and 0 otherwise}, $A \in \Rbb^{|E| \times d}$ is
+the matrix whose each row is the corresponding $a_{uv}\onev$ vector, $\|\cdot\|_2$ denotes the
+Frobenius norm, $\|W\|_* =
 \sum_{i=1}^{\min(d,|E|)}\sigma_i(W)$ is the sum of the singular values of $W$ (called the nuclear
 norm or trace norm), and $\lambda \geq 0$ is a regularization parameter.\footnote{To make the
-optimal solution unique, we can use an additional Frobenius norm regularization on $W$.} The nuclear
-favors low-rank solutions as it is essentially an $L_1$ norm on the spectrum.
+optimal solution unique, we can use an additional Frobenius norm regularization on $W$.} The nuclear norm
+favors low-rank solutions as it is essentially an $L_1$ norm on the spectrum.\footnote{As mentioned
+in \autoref{sec:troll_related} about \autocite{OnlineCompletion17}, a tighter relaxation of the
+low-rank constraint is the max norm.}
+Both $\mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)$ and
+$\mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)$ are convex in $W$, with respective gradient
+\begin{align*}
+  \frac{\partial \mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)}{\partial W} &=
+  \frac{1}{|E|} S^T \\
+  \frac{\partial \mathcal{L}_{\mathrm{node}}^{\mathrm{mat}}(W)}{\partial W} &= \frac{-2}{|V|}
+  A^T \circ \left(\Big(\left(X-B\right)^T -A^T \circ \left(W C^T\right) \Big) C\right)
+\end{align*}
 Problem~\eqref{eq:fact_convex} can be solved using proximal gradient descent (requires singular
 value decomposition at each iteration) \autocite{Parikh2013a} or Frank-Wolfe (requires only to find
-the largest singular vector) \autocite{Jaggi2013a}.
+the largest singular vector) \autocite{Jaggi2013a}\stodo{look at the rest of the tutorial and
+comment on the difficulty of the LMO step}.
+\fi
 
-Alternatively, we can consider a nonconvex formulation where we make the low-rank decomposition of
-$W$ explicit. Given a rank $k\leq \min(d,|E|)$:
+We can avoid the rank regularization term (and thus simplify these projection issues) at the cost of
+convexity by making low-rank decomposition of $W$ explicit. Given a rank $k\leq \min(d,|E|)$:
 \begin{equation}
   \label{eq:fact_nonconvex}
-  \min_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad
-  \sum_{u,v \in E} {s_{uv}}^T w_{uv}.
+  \max_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad \tilde{h}(P, Q) =
+  \mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(PQ^T) -
+  \mu \mathcal{L}_{\mathrm{node}}^{\mathrm{mat}}(PQ^T)
 \end{equation}
 Problem~\eqref{eq:fact_nonconvex} can be solved via alternating optimization over $P$ and $Q$ using
-standard (projected) gradient descent algorithms.
+standard (projected) gradient descent algorithms, with the following partial derivatives:
+\begin{align*}
+  \frac{\partial \tilde{h}}{\partial P} &=
+  \frac{1}{|E|} S^T Q + \frac{2\mu}{|V|}
+  A^T \circ (((X-B)^T -A^T \circ (PQ^T )C^T )C)Q 
+  \\
+  \frac{\partial \tilde{h}}{\partial Q} &=
+  \frac{1}{|E|} S P + \frac{2\mu}{|V|}
+  A\circ (C^T (X-B-C(A\circ (QP^T ))))P.
+\end{align*}
 See \autocite[Section 6]{attributedSNE17} for a write up example of matrix optimization.
 
-Note however that this matrix formulation requires learning more parameters, as it each edge has a
-different, albeit made up of a small number of basis direction.  Impose sparsity on $Q$?
+Compared with \refeq{eq:edge_soft}, this matrix formulation requires learning more parameters, as it
+each edge has a different direction, albeit made up of a small number of basis direction.  Impose
+sparsity on $Q$?
 
-Max margin, replace the max by a difference of the currently assigned direction with the other
-(trade off parameter). At least I think I used it in synthetic data.
-
+A simple and natural baseline is to cluster the set of all similarity edge vectors $
+\theset{s_{uv}}{(u,v) \in E}$ using the $k$-means algorithm, where $k$ is the number of directions
+set in \autoref{p:edge_full}. Formally, given the graph $G=(V,E)$ and the node profiles $X$ as
+input, we order the edges from $e_1$ to $e_m$ and build the matrix $S \in \Rbb^{m\times d}$ whose
+\ith{} row is the similarity between the profiles of the endpoints of $e_i=(u,v)$, that is $s_{uv} =
+x_u \circ x_v$. Running $k$-means will thus partition $E$ into $k$ sets of edges, call them $E_1,
+\ldots, E_k$. The first drawback of that simplicity is that it does not solve \autoref{p:edge_full}.
+Indeed, the partition of $E$ does not provide the set of directions $\mathcal{D}_k = \{w_1, w_2,
+\ldots, w_k\} \in \dsphere$ we are looking for. A natural way of obtaining directions from that
+partition is to set $w_\ell = \frac{s_\ell}{\left\|s_\ell\right\|}$, where $s_\ell = \sum_{u,v \in
+E_\ell} s_{uv}$ is the sum of all the similarity vectors of the edge in $E_\ell$. Note however that
+this does not guarantee that we have assigned the best direction to every edge. We therefore propose
+the following heuristic, inspired by the Lloyd algorithm for $k$-means, but where the directions in
+$\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two steps
+\begin{enumerate}[(i), nosep]
+  \item create a new partition $\{E'_1, \ldots, E'_k\}$ by assigning every edge $(u,v)$ to the
+    direction $w$ maximizing its score ${s_{uv}}^T w$, that is $E'_\ell = \theset{(u,v) \in E}{
+    w_\ell = \argmax_{w_i \in \mathcal{D}_k} {s_{uv}}^T w_i}$, and
+  \item update the directions to make them optimal with respect to the edges currently assigned to
+    them, that is as previously, set $\mathcal{D}_k = \left\{ w_\ell = \frac{s_\ell}{\left\| s_\ell
+    \right\|}\right\}_{\ell=1}^k $, where $s_\ell = \sum_{u,v \in E'_\ell} s_{uv}$,
+\end{enumerate}
+until the edge assignment is stable or we reach a maximum number of iterations. By analogy with the
+$k$-means algorithm, obtaining convergence guarantees in the general case would be surprising, but in
+practice we expect that only a small number of iterations would be needed.
