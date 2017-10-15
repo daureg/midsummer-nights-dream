@@ -242,6 +242,22 @@ Using this fact, and averaging the two components of our objective function, we 
   - \frac{1}{|V|}\sum_{u\in V}
   \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2
 \end{equation}
+Note that in second term, because we do not know the edge assignment, we have to decide which of the
+$w_1, \ldots, w_k$ is $w_{uv}$ equal to. According to our definition of the goodness function, we
+want to let $w_{uv} = \argmax_{w_\ell \in \mathcal{D}_k} {s_{uv}}^T w_\ell$. However, the $\argmax$
+function is not convex and we thus use the same relaxation as before. Namely, by stacking all the
+vectors of $\mathcal{D}_k$ into a single vector $W$ of size $k\times d$, the relaxation is:
+$$ \begin{array}[t]{lrcl}
+  \mathcal{A} : & \Rbb^m & \longrightarrow & \Rbb^d \\
+      & (w_1,\ldots,w_k) & \longmapsto &
+  \sum_{i=1}^k \frac{\exp(\beta{s_{uv}}^T w_i)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_i)} w_i
+\end{array} $$
+This function has an explicit derivative, but it is rather costly to compute and in practice we
+found automatic differentiation~\autocite{autograd15} to be more efficient. While this modified
+objective function is now jointly convex in all its variables, the set $\dsphere$ is not. To ease
+the optimization procedure, we thus only impose the directions $w_\ell$ to lie within the unit ball
+and expect them to have norm close to one in order to maximize the dot product in the ${s_{uv}}^T
+w_\ell$ term.
 
 Another way to remove the $\max$ is to first seek one direction for every edge, that is to maximize
 $\sum_{u,v\in E} {s_{uv}}^T w_{uv}$. This objective can be written in matric form as $\tr(SW) =
@@ -380,16 +396,18 @@ the largest singular vector) \autocite{Jaggi2013a}\stodo{look at the rest of the
 comment on the difficulty of the LMO step}.
 \fi
 
-We can avoid the rank regularization term (and thus simplify these projection issues) at the cost of
-convexity by making low-rank decomposition of $W$ explicit. Given a rank $k\leq \min(d,|E|)$:
+We can avoid the rank regularization term altogether by making low-rank decomposition of $W$
+explicit, that by writing $W=PQ^T$ and optimizing over both $P$ and $Q$. However, this comes at cost
+of convexity. Indeed, given a rank $k\leq \min(d,|E|)$, the problem becomes, assuming $A$ and $B$
+are fixed:
 \begin{equation}
-  \label{eq:fact_nonconvex}
-  \max_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad \tilde{h}(P, Q) =
-  \mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(PQ^T) -
-  \mu \mathcal{L}_{\mathrm{node}}^{\mathrm{mat}}(PQ^T)
+  \label{eq:edge_PQ}
+  \min_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad \tilde{h}(P, Q) =
+  - \frop{S}{PQ^T} + \mu \frop{} \|X - B - C\left(A\circ QP^T \right)\|_F^2
 \end{equation}
-Problem~\eqref{eq:fact_nonconvex} can be solved via alternating optimization over $P$ and $Q$ using
-standard (projected) gradient descent algorithms, with the following partial derivatives:
+While \eqref{eq:fact_nonconvex} is not jointly convex in both $P$ and $Q$, it is convex in one of
+them while the other is fixed. Therefore it can be solved via alternating optimization over $P$ and
+$Q$ using standard (projected) gradient descent algorithms, with the following partial derivatives:
 \begin{align*}
   \frac{\partial \tilde{h}}{\partial P} &=
   \frac{1}{|E|} S^T Q + \frac{2\mu}{|V|}
@@ -399,11 +417,16 @@ standard (projected) gradient descent algorithms, with the following partial der
   \frac{1}{|E|} S P + \frac{2\mu}{|V|}
   A\circ (C^T (X-B-C(A\circ (QP^T ))))P.
 \end{align*}
-See \autocite[Section 6]{attributedSNE17} for a write up example of matrix optimization.
+Because the problem is not jointly convex, we are less concerned with the domains of the variables
+not being convex, as we anyway have no guarantee to find a global minimum. We also do not add a
+regularization term of the norm of the columns of $PQ^T$. Indeed, since $P\in\mathbb{M}^{d\times k}$
+and $Q\in\mathbb{M}^{|E|\times k}$, each column of the resulting $PQ^T$ is a linear combination of
+$k$ unit norm vectors of $P$ with weights whose square sum to $1$ and thus their norm is bounded by
+$\sqrt{k}$.
 
-Compared with \refeq{eq:edge_soft}, this matrix formulation requires learning more parameters, as it
-each edge has a different direction, albeit made up of a small number of basis direction.  Impose
-sparsity on $Q$?
+Compared with \refeq{eq:edge_soft}, these two matrix formulations require learning more parameters,
+as it each edge has a different direction, albeit made up of a small number of basis directions. In
+the second case, we could furthermore impose a sparsity constraint on $Q$.
 
 A simple and natural baseline is to cluster the set of all similarity edge vectors $
 \theset{s_{uv}}{(u,v) \in E}$ using the $k$-means algorithm, where $k$ is the number of directions
@@ -414,8 +437,7 @@ x_u \circ x_v$. Running $k$-means will thus partition $E$ into $k$ sets of edges
 \ldots, E_k$. The first drawback of that simplicity is that it does not solve \autoref{p:edge_full}.
 Indeed, the partition of $E$ does not provide the set of directions $\mathcal{D}_k = \{w_1, w_2,
 \ldots, w_k\} \in \dsphere$ we are looking for. A natural way of obtaining directions from that
-partition is to set $w_\ell = \frac{s_\ell}{\left\|s_\ell\right\|}$, where $s_\ell = \sum_{u,v \in
-E_\ell} s_{uv}$ is the sum of all the similarity vectors of the edge in $E_\ell$. Note however that
+partition is to set $w_\ell$ to be the normalized cluster center of $E_\ell$. Note however that
 this does not guarantee that we have assigned the best direction to every edge. We therefore propose
 the following heuristic, inspired by the Lloyd algorithm for $k$-means, but where the directions in
 $\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two steps
@@ -425,7 +447,8 @@ $\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two ste
     w_\ell = \argmax_{w_i \in \mathcal{D}_k} {s_{uv}}^T w_i}$, and
   \item update the directions to make them optimal with respect to the edges currently assigned to
     them, that is as previously, set $\mathcal{D}_k = \left\{ w_\ell = \frac{s_\ell}{\left\| s_\ell
-    \right\|}\right\}_{\ell=1}^k $, where $s_\ell = \sum_{u,v \in E'_\ell} s_{uv}$,
+    \right\|}\right\}_{\ell=1}^k $, where $s_\ell = \sum_{u,v \in E'_\ell} s_{uv}$ is the sum of all
+    the similarity vectors of the edge in $E'_\ell$,
 \end{enumerate}
 until the edge assignment is stable or we reach a maximum number of iterations. By analogy with the
 $k$-means algorithm, obtaining convergence guarantees in the general case would be surprising, but in
