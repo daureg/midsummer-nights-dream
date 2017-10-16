@@ -209,11 +209,23 @@ proportional to $w_{uv}$. Therefore, we subtract the term $\sum_{u\in V} \left|\
 We can also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
 different directions. The intuition is that when $d$ is large enough, users have to focus their
 energy and can only express their interest in a few number of dimensions. In other words, all the
-edges incident to $u$ can only be associated with one of $k_\mathrm{local}$ directions. This is
-difficult to incorporate directly in the optimization formulation\stodo{actually it's not that
-difficult}, as for certain value of
-$k_\mathrm{local}$, this is a \NPc{} graph colouring problem. Still, it can be seen as a learning
-bias and will be used to generate synthetic data.
+edges incident to $u$ can only be associated with one of $k_\mathrm{local}$ directions. For
+certain value of
+$k_\mathrm{local}$, this is a \NPc{} graph colouring problem and thus cannot necessarily be enforced
+exactly. Still, it can be seen as a learning bias and will be used to generate synthetic data.
+Furthermore, we can also express it as an optimization constraint. Specifically, suppose that for
+an edge $(u,v)$ associated with the direction $w_i \in \mathcal{D}_k$, we have a $k$-dimensional
+vector $y_{u,v}$ equal to $e_i$ (that is all zero except for the \ith{} component set to one). Let
+us stack all such vectors into a $|E| \times k$ matrix $Y$, and let $C \in \Rbb^{|V| \times |E|}$ be
+the incidence matrix of $G$\footnote{The incidence matrix of a graph $G$, usually denoted by $B$, is
+the $|V| \times |E|$ matrix such that $B_{i,j} = 1$ if the node $v_i$ and edge $e_j$ are incident
+and 0 otherwise.} and $c_u$ be its $u^{th}$ row. Then $Yc_u$ is a $k$-dimensional vector that counts
+how many times each direction is incident to node $u$. We thus want the $\ell_0$ norm of all $Yc_u$
+(\ie its number of non-zero component) to be upper bounded by $k_\mathrm{local}$. As previously,
+this is not convex but we can relax this constraint, as such sparsity inducing problem have been
+well studied~\autocite{sparseOptim12}. Namely, we let $y_{uv}$ be a softmax membership vector, that
+is we set $y_{uv,i} = \frac{\exp(\beta{s_{uv}}^T w_i)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_i)}$,
+and we replace the $\ell_0$ norm by a $\ell_1$ or even a $k$-support norm~\autocite{KsupportNorm12}.
 These two constraints can be combined, so that the profiles are close to a linear combination of a
 small number of directions.
 
@@ -289,9 +301,7 @@ the regularization parameter with an upper bound $\delta$ on the nuclear norm of
 
 At this stage, we could also add the node loss term, express in matric form as $\|X - B -
 C\left(A\circ W^T \right)\|_F^2$, where $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$
-stacked vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$\footnote{The
-  incidence matrix of a graph $G$, usually denoted by $B$, is the $|V| \times |E|$ matrix such that
-$B_{i,j} = 1$ if the node $v_i$ and edge $e_j$ are incident and 0 otherwise}, $A \in \Rbb^{|E|
+stacked vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$, $A \in \Rbb^{|E|
 \times d}$ is the matrix whose each row is the corresponding $a_{uv}\onev$ vector and $\|\cdot\|_F$
 denotes the Frobenius norm. Note that this term is jointly convex in $A$, $B$ and $W$.\footnote{As
 one can check that the inequality defining convexity holds for this function.} However, for the
