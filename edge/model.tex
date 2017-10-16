@@ -1,16 +1,16 @@
-\section{Settings and learning problem}
-\label{sec:edge_model}
+\section{Learning problem}
+\label{sec:edge_problem}
 
-As in the previous chapters, we are given an unweighted graph $G=(V,E)$\stodo{undirected?}. This
+As in the previous chapter, we are given an undirected, unweighted graph $G=(V,E)$. This
 time though, we also have side information in addition to the graph topology. Namely, each node $u$
 is associated with a $d$-dimensional feature vector $x_u \in \Rbb^d$. As an example, in a social
 network, $x_u$ would be the profile of user $u$, describing $u$'s demographics and preferences. We
-are also given a combination operator between feature vectors $s$ such that $s(x_u, x_v) = s_{uv}
-\in \Rbb^d$. Finally, we consider distinguished feature vectors $w_{uv}$\stodo{is it better to
-introduce $w$ with a single $\ell$ index, to emphasise that later, it will not be unique per edge?},
+are also given a combination operator $s$ between feature vectors, such that $s(x_u, x_v) = s_{uv}
+\in \Rbb^d$. Finally, we consider distinguished feature vectors $w_{uv}$,
 along which the combination $s_{uv}$ between two nodes $u$ and $v$ is evaluated. We call such
-$w_{uv}$ \emph{directions}, and constrain them to have unit norm. As we will discuss, this
-constraint can be seen as a way to couple the different dimensions of the profiles.
+$w_{uv}$ \emph{directions}, and constrain them to have unit norm\stodo{or bounded?}. As we will discuss, this
+constraint can be seen as a way to couple the different dimensions of the profiles%
+\stodo{don't remember what I meant here}.
 
 Depending on the application, and the semantic we ascribe to links between nodes, we can design and
 interpret the combination operator $s$ as a difference, a similarity or a distance. Likewise, we
@@ -22,14 +22,15 @@ $w_{uv}$ \emph{explains}, or describes, the connection between $u$ and $v$.
 \medskip
 
 We assume in the following that both the profiles and the directions are vectors with components in
-$[-1, 1]$. A natural choice for the operator $s$ is then the difference between the profile, that is
+$[-1, 1]$. A natural choice for the operator $s$ is then the difference between the profiles, that is
 $s_{uv} = x_u - x_v$. In that spirit, if $u$ and $v$ are close along a direction $w_{uv}$, we expect
 ${x_u}^T w_{uv}$ to be close to ${x_v}^T w_{uv}$, as measured by $|{x_u}^T w_{uv} - {x_v}^T
 w_{uv}|$. Because we prefer to work with smooth functions, we define the goodness to be $g(s_{uv},
 w_{uv}) = \left({s_{uv}}^T w_{uv} \right)^2$, and we want to minimize it with respect to $w_{uv}$.
-When ${x_u}_{;i} - {x_v}_{;i}$ is close to zero, the minimization and the fact that $w_{uv}$ is
+When on the \ith{} dimension ${x_u}_{;i} - {x_v}_{;i}$ is close to zero, the minimization objective
+and the fact that $w_{uv}$ is
 unit-norm impose that ${w_{uv}}_{;i}$ should be large. On the other hand, with this formulation,
-there is no way to set ${w_{uv}}_{;i}$ in order to \enquote{reward/favor} the fact that
+there is no way to set ${w_{uv}}_{;i}$ in order to \enquote{highlight} the fact that
 ${x_u}_{;i}$ and ${x_v}_{;i}$ are widely different.
 Whereas there might be situations where this is not a problem, as we discussed in the introduction,
 here we seek to model heterophilic interactions, at least along a subset of dimensions. Therefore, in
@@ -48,6 +49,7 @@ ${x_u}_{;i}$ or ${x_v}_{;i}$ is zero, denoting either an unimportant feature or 
 then the value of ${w_{uv}}_{;i}$ does not matter, and will be set to zero by the maximization
 procedure because of the unit norm constraint on $w_{uv}$.
 
+\iffalse
 \begin{aside}
 When $s$ is a distance, and therefore positive, we impose $w_{uv}\geq 0$. A link $(u,v)$ is then
 well explained by $w_{uv}$ when observed differences along this direction are small. More precisely,
@@ -63,6 +65,7 @@ observed similarity is high. Again, if $s$ is positive, it seems reasonable to i
 $w_{uv}\geq0$ (and if $s$ can be negative, then $w_{uv}$ should be in $[-1,1]$). One main advantage
 of similarities is maybe to avoid (or minimize) problems with missing values setting them to 0.
 \end{aside}
+\fi
 
 \medskip
 
@@ -86,48 +89,49 @@ finding and assigning the most informative directions to every edge of $G$
 \paragraph{Generalization of signed graphs}
 \label{par:generalization_of_signed_graphs}
 
-Here we show why \autoref{p:edge_full} can model signed graphs as a special case, namely with $k=2$.
+Here we show why \autoref{p:edge_full} can model signed graphs as a special case, namely with $k=2$
+and specifically crafted profiles.
 Remember the learning
 bias we introduced in the previous chapter \vpageref{text:cc_new_bias}: every node belongs to
 exactly one of the $K$ clusters available, is connected positively with the other nodes belonging to
 the same cluster, and is connected negatively with the nodes belonging to every other clusters. Now
 let the dimension of profiles be $d=K$ and the number of directions $k=2$. Moreover, we define the
-two directions vectors as $w_1 = \frac{\onev}{\sqrt{d}} = w^+$ and $w_2 = -w_+ = w_-$, where
+two direction vectors as $w_1 = \frac{\onev}{\sqrt{d}} = w^+$ and $w_2 = -w_+ = w_-$, where
 $\onev$ is the vector of dimension $d$ with only $1$ coordinates. Finally, for a node $u$ in
 cluster $i$, we assume its profile $x_u$ is set as follow: all component are equal to $-b$ except
-for the \ith{} one, which is equal to $a$, where $a$ and $b$ are constants we define now.
+for the \ith{} one, which is equal to $a$, where $a$ and $b$ are real constants we define now.
 
 First, because $x_u$ is a unit vector, we have that $a^2 + (K-1)b^2=1$, from which $a =
 \sqrt{1-(K-1)b^2}$ whenever $1-(K-1)b^2 \geq 0$, or equivalently $b \leq \frac{1}{\sqrt{K-1}}$.
-Next, we look at $\onev^T\left(x_u \circ x_v\right) = \onev^T m_{uv} = \frac{1}{\sqrt{d}}
-\sum_{i=1}^d m_{{uv}_i}$ for any edge $(u,v) \in E$. If $u$ and $v$ are in the same cluster, then
-$\sum_{i=1}^d m_{{uv}_i} = a^2 + (K-1)b^2 = 1$, implying that $w_+^T m_{uv} = \frac{1}{d} > w_-^T
-m_{uv} = -\frac{1}{d}$. Otherwise, $\sum_{i=1}^d m_{{uv}_i} = (K-2)b^2 - 2ab = (K-2)b^2 -
+Next, we look at $\left(x_u \circ x_v\right)^T \onev = {s_{uv}}^T \onev = \frac{1}{\sqrt{d}}
+\sum_{i=1}^d  {s_{uv}}_{;i}$ for any edge $(u,v) \in E$. If $u$ and $v$ are in the same cluster, then
+$\sum_{i=1}^d  {s_{uv}}_{;i} = a^2 + (K-1)b^2 = 1$, implying that ${s_{uv}}^T w_+ = \frac{1}{d} >
+{s_{uv}}^T w_- = -\frac{1}{d}$. Otherwise, $\sum_{i=1}^d  {s_{uv}}_{;i} = (K-2)b^2 - 2ab = (K-2)b^2 -
 2b\sqrt{1-(K-1)b^2} = f_K(b)$. By computing the derivative of $f_K$ with respect to $b$, we find
 that it reaches a minimum of $-\frac{1}{K-1}$ at $b = \frac{1}{\sqrt{K(K-1)}} \leq
-\frac{1}{\sqrt{K-1}}$. In this case, $w_+^T m_{uv} = -\frac{1}{(K-1) \sqrt{d}} < w_-^T m_{uv} =
+\frac{1}{\sqrt{K-1}}$. In this case, ${s_{uv}}^T w_+ = -\frac{1}{(K-1) \sqrt{d}} < {s_{uv}}^T w_- =
 \frac{1}{(K-1) \sqrt{d}}$. To maximize $\sum_{(u,v)\in E} \max_{1 \leq \ell \leq d} w_\ell^T
-m_{uv}$, we therefore assign $w_+$ to edges whose both endpoints belong to the same cluster, and
+s_{uv}$, we therefore assign $w_+$ to edges whose both endpoints belong to the same cluster, and
 $w_-$ to edges joining two different clusters.
 
 Moreover, given this assignment, we can show that $w_+$ and $w_-$ are the optimal directions, under
-the additional uniformity assumption that there are exactly $r$ edges within every cluster, and $s$
+the additional uniformity assumption that there are exactly $p$ edges within every cluster, and $q$
 edges between any two clusters. First, we define
 \begin{equation*}
-  m_{\mathrm{inner}} = \sum_{(u,v) \in E;\, \cluster(u)=\cluster(v)} m_{uv} \qquad \text{and} \qquad
-  m_{\mathrm{outer}} = \sum_{(u,v) \in E;\, \cluster(u)\neq \cluster(v)} m_{uv}
+  s_{\mathrm{inner}} = \sum_{(u,v) \in E;\, \cluster(u)=\cluster(v)} s_{uv} \qquad \text{and} \qquad
+  s_{\mathrm{outer}} = \sum_{(u,v) \in E;\, \cluster(u)\neq \cluster(v)} s_{uv}
 \end{equation*}
 to be the sum of all edge vectors within and between clusters respectively. By our choice of $a$ and
-$b$, we have that $m_{\mathrm{inner}} = r\onev$ and $m_{\mathrm{outer}} = -\frac{s}{2}\onev$. Now
+$b$, we have that $s_{\mathrm{inner}} = p\onev$ and $s_{\mathrm{outer}} = -\frac{q}{2}\onev$. Now
 recall that the solution of $\argmax_{w\in \dsphere} w^T c$ is $\frac{c}{||c||}$. Therefore, the
 best direction to assign to inner edges is indeed $w_+$, and so is $w_-$ to outer edges.
 
 \begin{aside}
-For inner edge vectors, $m_{uv}$ in cluster $i$ has $a^2$ as its \ith{} component, and $b^2$
-elsewhere. There are $r$ of them in cluster $i$, so summing over all clusters we get
-$m_{\mathrm{inner}} = r\left(a^2 + (K-1)b^2\right)\onev = r\onev$.
-For outer edge vectors, there are a few more steps. Consider the $s$ edges between $C_1$ and $C_2$,
-whose $m_{uv}$ is
+For inner edge vectors, $s_{uv}$ in cluster $i$ has $a^2$ as its \ith{} component, and $b^2$
+elsewhere. There are $p$ of them in cluster $i$, so summing over all clusters we get
+$s_{\mathrm{inner}} = p\left(a^2 + (K-1)b^2\right)\onev = p\onev$.
+For outer edge vectors, we first consider the $q$ edges between $C_1$ and $C_2$,
+whose $s_{uv}$ is
 $\begin{pmatrix}
   -ab \\
   -ab \\
@@ -135,7 +139,7 @@ $\begin{pmatrix}
   b^2 \\
   \vdots \\  
 \end{pmatrix}$. Likewise, between $C_1$ and $C_3$ we have
-$m_{uv}=\begin{pmatrix}
+$s_{uv}=\begin{pmatrix}
   -ab \\
   b^2 \\
   -ab \\
@@ -144,21 +148,21 @@ $m_{uv}=\begin{pmatrix}
 \end{pmatrix}$. We thus we see that the first component is always $-ab$, that there is another
 such term at the other cluster index, while the rest is $b^2$. Summing all the vectors incident to
 $C_1$, we get
-$s\begin{pmatrix}
+$q\begin{pmatrix}
   -ab(K-1) \\
   b^2(K-2) -ab \\
   b^2(K-2) -ab \\
   \vdots \\  
 \end{pmatrix}$. Similarly, the sum of all vectors incident to $C_2$ is
-$s\begin{pmatrix}
+$q\begin{pmatrix}
   b^2(K-2) -ab \\
   -ab(K-1) \\
   b^2(K-2) -ab \\
   \vdots \\  
 \end{pmatrix}$, and so on for every cluster $i$. Summing over all clusters and dividing by $2$ to
-avoid double counting, we get $m_{\mathrm{outer}} = \frac{s}{2}\left( (K-1)\left(b^2(K-2) -ab\right)
--ab(K-1) \right)\onev = \frac{s(K-1)}{2}\left(b^2(K-2) -2ab\right)\onev =
-\frac{s(K-1)}{2}f_K(b)\onev = -\frac{s(K-1)}{2} \frac{1}{K-1} \onev = -\frac{s}{2}\onev$.
+avoid double counting, we get $s_{\mathrm{outer}} = \frac{q}{2}\left( (K-1)\left(b^2(K-2) -ab\right)
+-ab(K-1) \right)\onev = \frac{q(K-1)}{2}\left(b^2(K-2) -2ab\right)\onev =
+\frac{q(K-1)}{2}f_K(b)\onev = -\frac{q(K-1)}{2} \frac{1}{K-1} \onev = -\frac{q}{2}\onev$.
 \end{aside}
 
 Granted, the situation where all the nodes of a cluster have exactly the same profile and where the
@@ -170,41 +174,36 @@ a balanced signed graphs, like our generative model of the first chapter.
 
 \bigskip
 
-At the other extreme of $k=2$, when $k=|E|$, the topology of the graph becomes irrelevant,
-as we can simply exploit the trivial
+At the other extreme of having only $k=2$ directions, when $k=|E|$, the topology of the graph
+becomes irrelevant, as we can simply exploit the trivial
 solution of having a single direction $w_{uv} = \frac{s_{uv}}{||s_{uv}||}$ for every edge $(u,v)$.
-More generally, as $k$ increases, we expect the value $\max_{\mathcal{D}_k} f(k)$ to increases as
+More generally, as $k$ increases, we expect the value $\max_{\mathcal{D}_k} f(k)$ to increase as
 well, at the cost of interpretability. There could be a principled approach to finding the
 \enquote{best} $k$, based on a information theoretical measure of the complexity of $\mathcal{D}_k$
 and the minimum description length principle~\autocite{grunwald2005tutorial}. However, in the
 interest of simplicity, in the following we focus on the formulation stated in
 \autoref{p:edge_full}, where $k$ is given. In practice, we further constrain $k$ to be small (say
 less than \np{10}). Within the multilayer framework, $k$ could also be seen as the number of
-underlying layers\stodo{elaborate on that connection}.
+underlying layers. To retain a fair level of interpretability, we deem appropriate to have $k$ not
+too large.
 
-\stodo{move that in the conclusion}
-\begin{aside}
-Generalizing the balance theory from signed graphs, we could imagine that in triangles or short
-cycles, only certain combinations of directions are valid (or at least desirable). As a nice side
-effect, this would likely require more innovative optimization algorithms. However, it sounds very
-application-dependant. Furthermore, in our current setting, we do not know in advance in the
-semantic of each direction, and we have no labeled edges. Therefore, it is not clear how those
-constraints would be specified or whether they can be learned, if applicable. 
-\end{aside}
-\stodo{Specification of constraints sounds related to network schema in \autocite[Definition
-3]{HINSurvey17}, except we have a single node type and are looking at higher order patter.}
-
-Another way to leverage the graph topology is to define local constraints at the node level. Since
-the beginning we considered that the user profiles were given, but from now on we further assume
-that they are normalized so that they are unit norm, just like directions. In practice, if nodes are
+In addition to assume that the input graph is the superposition of a small number of layers,
+another way to leverage the graph topology is to define local constraints at the node level. 
+Recall that we consider node profiles to be normalized and having unit norm. A practical
+justification is that if nodes are
 users of a social network and the profiles measure their activity across several domains, this
 allows to compare users with various level of total activity. One way to integrate that fact in
 our optimization formulation is to assume that profiles are linear combination of directions, that
 is $x_u = b_u + \sum_{v \in \nei(u)} a_{uv} w_{uv}$, where $a_{uv}$ are real coefficients and $b_u
 \in \Rbb^d$. Viewed in the other direction, this can be interpreted as follow: each time a node $u$
 connect to another node $v$ along a direction $w_{uv}$, it consume a part of its profile
-proportional to $w_{uv}$. Therefore, we subtract the term $\sum_{u\in V} \left|\left| x_u - b_u -
-\sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2$ to \eqref{eq:edge_full}.
+proportional to $w_{uv}$. Therefore, we subtract the term 
+\begin{equation}
+  \label{eq:edge_node_loss}
+  \mathcal{L}_{\mathrm{node}} = 
+  \sum_{u\in V} \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2
+\end{equation}
+from \eqref{eq:edge_full}.
 
 We can also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
 different directions. The intuition is that when $d$ is large enough, users have to focus their
@@ -229,16 +228,50 @@ and we replace the $\ell_0$ norm by a $\ell_1$ or even a $k$-support norm~\autoc
 These two constraints can be combined, so that the profiles are close to a linear combination of a
 small number of directions.
 
-% $\theset{(u,v) \in E}{v \in \nei(u)}$
+\section{Proposed approaches}
+\label{sec:edge_methods}
 
-\bigskip
+After having introduced \autoref{p:edge_full} and some additional constraints, we now present
+methods to solve it. We start with a naive baseline, and propose a post-processing to improve it.
+Then we describe a convex relaxation. Finally, we depart slightly from finding $k$ directions by
+considering a low-rank matrix formulation, where each edge is assigned a linear combination of a
+small number of base directions, paving the way to overlapping clustering.
 
-In order to make the optimization more tractable, we relax the formulation of \autoref{p:edge_full}
-by replacing the $\max$ inside the sum of \eqref{eq:edge_full}, either by a continuous approximation
-or by a low rank matrix approach.
+\subsection{\kmeans{} baseline and improvement}
+\label{sub:edge_baseline}
 
-One can check that given a set of numbers $S=\{a_1, a_2, \ldots, a_{|S|}\}$ and real number $\beta >
-0$, we have
+A simple and natural baseline is to cluster the set of all similarity edge vectors $
+\theset{s_{uv}}{(u,v) \in E}$ using the $k$-means algorithm, where $k$ is the number of directions
+set in \autoref{p:edge_full}. Formally, given the graph $G=(V,E)$ and the node profiles $X$ as
+input, we order the edges from $e_1$ to $e_m$ and build the matrix $S \in \Rbb^{m\times d}$ whose
+\ith{} row is the similarity between the profiles of the endpoints of $e_i=(u,v)$, that is $s_{uv} =
+x_u \circ x_v$. Running $k$-means will thus partition $E$ into $k$ sets of edges, call them $E_1,
+\ldots, E_k$. The first drawback of that simplicity is that it does not solve \autoref{p:edge_full}.
+Indeed, the partition of $E$ does not provide the set of directions $\mathcal{D}_k = \{w_1, w_2,
+\ldots, w_k\} \in \dsphere$ we are looking for. A natural way of obtaining directions from that
+partition is to set $w_\ell$ to be the normalized cluster center of $E_\ell$. Note however that
+this does not guarantee that we have assigned the best direction to every edge. We therefore propose
+the following heuristic, inspired by the Lloyd algorithm for $k$-means, but where the directions in
+$\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two steps
+\begin{enumerate}[(i), nosep]
+  \item create a new partition $\{E'_1, \ldots, E'_k\}$ by assigning every edge $(u,v)$ to the
+    direction $w$ maximizing its score ${s_{uv}}^T w$, that is $E'_\ell = \theset{(u,v) \in E}{
+    w_\ell = \argmax_{w_i \in \mathcal{D}_k} {s_{uv}}^T w_i}$, and
+  \item update the directions to make them optimal with respect to the edges currently assigned to
+    them, that is as previously, set $\mathcal{D}_k = \left\{ w_\ell = \frac{s_\ell}{\left\| s_\ell
+    \right\|}\right\}_{\ell=1}^k $, where $s_\ell = \sum_{u,v \in E'_\ell} s_{uv}$ is the sum of all
+    the similarity vectors of the edge in $E'_\ell$,
+\end{enumerate}
+until the edge assignment is stable or we reach a maximum number of iterations. By analogy with the
+$k$-means algorithm, obtaining convergence guarantees in the general case would be surprising, but in
+practice we expect that only a small number of iterations would be needed.
+
+\subsection{Vector optimization}
+\label{sub:edge_vector}
+
+The difficulty in optimizing directly \eqref{eq:edge_full} stem from the $\max$ operator, which we
+replace here by a convex relaxation. Indeed, one can check that given a set of numbers $S=\{a_1,
+a_2, \ldots, a_{|S|}\}$ and real number $\beta > 0$, we have
 \begin{equation*}
   \max_{a_i \in S} a_i = \lim_{\beta \rightarrow + \infty} \frac{1}{\beta}
   \log\left( \sum_{i=1}^{|S|} \exp{\beta a_i} \right)
@@ -271,10 +304,14 @@ the optimization procedure, we thus only impose the directions $w_\ell$ to lie w
 and expect them to have norm close to one in order to maximize the dot product in the ${s_{uv}}^T
 w_\ell$ term.
 
+\subsection{Matrix optimization}
+\label{sub:edge_matrix}
+
 Another way to remove the $\max$ is to first seek one direction for every edge, that is to maximize
 $\sum_{u,v\in E} {s_{uv}}^T w_{uv}$. This objective can be written in matric form as $\tr(SW) =
 \frop{S^T}{W}$, where $S \in \Rbb^{|E| \times d}$ is the $s_{uv}$ vectors for all edges stacked
-vertically and $W \in \Rbb^{d \times |E|}$ is the matrix of all directions stacked horizontally.
+vertically and $W \in \Rbb^{d \times |E|}$ is the matrix of all directions stacked horizontally
+and $\frop{A}{B} = \tr\left(A^T B\right)$ is the Frobenius inner product of two real matrices.
 More specifically, because of the unit norm constraint on directions, we look for $W$ in the set
 $\mathbb{M}^{d\times |E|}$ of $d\times |E|$ matrices with unit $\ell_2$ norm columns. To avoid the
 trivial solution of letting each direction $w_{uv}$ merely be $\frac{s_{uv}}{\|s_{uv}\|}$, we
@@ -288,7 +325,8 @@ equal to the number of non-zero singular value while the nuclear norm is essenti
 the spectrum of $W$. Therefore, as minimizing the $\ell_1$ enforce sparsity, minimizing the nuclear
 norm tends to make the rank smaller by ensuring the presence of zeros in the singular values of $W$.
 \footnote{As mentioned in \autoref{sec:troll_related} about \autocite{OnlineCompletion17}, a tighter
-relaxation of the low-rank constraint is the max norm, but is it convex?} This
+convex relaxation of the low-rank constraint is the max norm, but we do not pursue that venue
+further.} This
 results in the following optimization problem: \[\min_{W\in \mathbb{M}^{d\times |E|}} -\frop{S^T}{W}
 + \lambda \|W\|_*\,,\] where $\lambda$ is a regularization parameter. Since $\|\cdot\|_*$ is a norm, this
 objective function is convex (although the domain over which we optimize is not), but it does not
@@ -355,56 +393,7 @@ u v^T$ with $\|u\|_2 = 1 = \|v\|_2$~\autocite{Jaggi2013a}. By letting $u_1$ and 
 respectively the left and right vectors associated with the largest singular value of $S^T - 2\mu
 W$, the minimizer \enquote{$s$} we are looking for is therefore $\delta u_1 v_1^T$.
 
-\iffalse
-stacked horizontally in
-one matrix. Then we can directly minimize \eqref{eq:edge_full} while enforcing the matrix
-$W\in\mathbb{R}^{d\times |E|}$ of all directions to be low-rank, so that each $w_{uv}$ (given by the
-$(u-1)n+v$-th column of $W$) can be expressed as a linear combination of a small number of basis
-vectors. Formally, if $W$ has rank $k$, then there exists $P\in\mathbb{R}^{d\times k}$ and
-$Q\in\mathbb{R}^{|E|\times k}$ such that $W=PQ^T$ and $w_{uv} = Pq_{uv}^T$. $P$ defines $k$
-representative directions in $\Rbb^d$ while $Q$ gives, for each edge, the weights of each
-representative direction. Similar to what is done in spectral clustering, we then cluster the
-$q_{uv}$'s to obtain an edge labeling.
-%
-Denoting by $\mathbb{M}^{d\times |E|}$ the set of $d\times |E|$ matrices with unit $L_2$ norm
-columns, a convex formulation\stodo{justify the convexity later: $L_edge$ is linear and both
-$L_node$ and $\|W\|_*$ are norm and thus convex} of the problem is
-as follows:
-\begin{align}
-  \label{eq:fact_convex}
-  \max_{W\in\mathbb{M}^{d\times |E|}} h(W) &=
-  \mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W) -
-  \mu \mathcal{L}_{\mathrm{node}}^{\mathrm{mat}}(W) - \lambda \|W\|_* \\
-  &= \frac{1}{|E|} \tr\left(SW\right) -
-  \frac{\mu}{|V|} \|X - B - C\left(A\circ W^T \right)\|_2^2 - \lambda \|W\|_*
-  % \sum_{i,j \in E} {s_{uv}}^T w_{uv} + \lambda \|W\|_*,
-\end{align}
-where $S \in \Rbb^{|E| \times d}$ is the $s_{uv}$ vectors for all edges stacked vertically, $\mu
-\geq 0$ is a trade-off parameter, $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$ stacked
-vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$\footnote{The incidence
-matrix of a graph $G$, usually denoted by $B$, is the $|V| \times |E|$ matrix such that $B_{i,j} =
-1$ if the node $v_i$ and edge $e_j$ are incident and 0 otherwise}, $A \in \Rbb^{|E| \times d}$ is
-the matrix whose each row is the corresponding $a_{uv}\onev$ vector, $\|\cdot\|_2$ denotes the
-Frobenius norm, $\|W\|_* =
-\sum_{i=1}^{\min(d,|E|)}\sigma_i(W)$ is the sum of the singular values of $W$ (called the nuclear
-norm or trace norm), and $\lambda \geq 0$ is a regularization parameter.\footnote{To make the
-optimal solution unique, we can use an additional Frobenius norm regularization on $W$.} The nuclear norm
-favors low-rank solutions as it is essentially an $L_1$ norm on the spectrum.\footnote{As mentioned
-in \autoref{sec:troll_related} about \autocite{OnlineCompletion17}, a tighter relaxation of the
-low-rank constraint is the max norm.}
-Both $\mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)$ and
-$\mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)$ are convex in $W$, with respective gradient
-\begin{align*}
-  \frac{\partial \mathcal{L}_{\mathrm{edge}}^{\mathrm{mat}}(W)}{\partial W} &=
-  \frac{1}{|E|} S^T \\
-  \frac{\partial \mathcal{L}_{\mathrm{node}}^{\mathrm{mat}}(W)}{\partial W} &= \frac{-2}{|V|}
-  A^T \circ \left(\Big(\left(X-B\right)^T -A^T \circ \left(W C^T\right) \Big) C\right)
-\end{align*}
-Problem~\eqref{eq:fact_convex} can be solved using proximal gradient descent (requires singular
-value decomposition at each iteration) \autocite{Parikh2013a} or Frank-Wolfe (requires only to find
-the largest singular vector) \autocite{Jaggi2013a}\stodo{look at the rest of the tutorial and
-comment on the difficulty of the LMO step}.
-\fi
+\medskip
 
 We can avoid the rank regularization term altogether by making low-rank decomposition of $W$
 explicit, that by writing $W=PQ^T$ and optimizing over both $P$ and $Q$. However, this comes at cost
@@ -413,9 +402,9 @@ are fixed:
 \begin{equation}
   \label{eq:edge_PQ}
   \min_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad \tilde{h}(P, Q) =
-  - \frop{S}{PQ^T} + \mu \frop{} \|X - B - C\left(A\circ QP^T \right)\|_F^2
+  - \frop{S}{PQ^T} + \mu \|X - B - C\left(A\circ QP^T \right)\|_F^2
 \end{equation}
-While \eqref{eq:fact_nonconvex} is not jointly convex in both $P$ and $Q$, it is convex in one of
+While \eqref{eq:edge_PQ} is not jointly convex in both $P$ and $Q$, it is convex in one of
 them while the other is fixed. Therefore it can be solved via alternating optimization over $P$ and
 $Q$ using standard (projected) gradient descent algorithms, with the following partial derivatives:
 \begin{align*}
@@ -437,29 +426,3 @@ $\sqrt{k}$.
 Compared with \refeq{eq:edge_soft}, these two matrix formulations require learning more parameters,
 as it each edge has a different direction, albeit made up of a small number of basis directions. In
 the second case, we could furthermore impose a sparsity constraint on $Q$.
-
-A simple and natural baseline is to cluster the set of all similarity edge vectors $
-\theset{s_{uv}}{(u,v) \in E}$ using the $k$-means algorithm, where $k$ is the number of directions
-set in \autoref{p:edge_full}. Formally, given the graph $G=(V,E)$ and the node profiles $X$ as
-input, we order the edges from $e_1$ to $e_m$ and build the matrix $S \in \Rbb^{m\times d}$ whose
-\ith{} row is the similarity between the profiles of the endpoints of $e_i=(u,v)$, that is $s_{uv} =
-x_u \circ x_v$. Running $k$-means will thus partition $E$ into $k$ sets of edges, call them $E_1,
-\ldots, E_k$. The first drawback of that simplicity is that it does not solve \autoref{p:edge_full}.
-Indeed, the partition of $E$ does not provide the set of directions $\mathcal{D}_k = \{w_1, w_2,
-\ldots, w_k\} \in \dsphere$ we are looking for. A natural way of obtaining directions from that
-partition is to set $w_\ell$ to be the normalized cluster center of $E_\ell$. Note however that
-this does not guarantee that we have assigned the best direction to every edge. We therefore propose
-the following heuristic, inspired by the Lloyd algorithm for $k$-means, but where the directions in
-$\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two steps
-\begin{enumerate}[(i), nosep]
-  \item create a new partition $\{E'_1, \ldots, E'_k\}$ by assigning every edge $(u,v)$ to the
-    direction $w$ maximizing its score ${s_{uv}}^T w$, that is $E'_\ell = \theset{(u,v) \in E}{
-    w_\ell = \argmax_{w_i \in \mathcal{D}_k} {s_{uv}}^T w_i}$, and
-  \item update the directions to make them optimal with respect to the edges currently assigned to
-    them, that is as previously, set $\mathcal{D}_k = \left\{ w_\ell = \frac{s_\ell}{\left\| s_\ell
-    \right\|}\right\}_{\ell=1}^k $, where $s_\ell = \sum_{u,v \in E'_\ell} s_{uv}$ is the sum of all
-    the similarity vectors of the edge in $E'_\ell$,
-\end{enumerate}
-until the edge assignment is stable or we reach a maximum number of iterations. By analogy with the
-$k$-means algorithm, obtaining convergence guarantees in the general case would be surprising, but in
-practice we expect that only a small number of iterations would be needed.

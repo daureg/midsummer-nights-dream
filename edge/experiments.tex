@@ -141,8 +141,8 @@ randomness we will consider in the following.
 
 Now that we have a direction $w_{uv} \in \mathcal{D}_k$ assigned to every edge $(u,v)$, we want to
 find a set of user profiles $X=\{x_u\}_{u\in V}$ that maximize the edge score and minimize the node
-loss, defined respectively by equations \eqref{eq:edge_full}\stodo{not really} and \eqref{} in the
-previous section as:
+loss, defined respectively by equations \eqref{eq:edge_full} and
+\eqref{eq:edge_node_loss} in the previous section as:
 \begin{align*}
   \mathcal{L}_{\mathrm{edge}} &=
   \sum_{u,v \in E} \left(x_u \circ x_v\right)^T w_{uv} \quad \text{and} \\
