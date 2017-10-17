@@ -1,38 +1,68 @@
-The framework we proposed is agnostic to the question of the interplay between connection and
-linking attributes, although this is an interesting and active research question.
+\section{Conclusions}
+\label{sec:edge_conc}
 
-Homophily and Contagion Are Generically Confounded in Observational Social Network Studies
-Cosma Rohilla Shalizi, Andrew C. Thomas
-Sociological Methods \& Research
-Vol 40, Issue 2, pp. 211-239
-DOI: 10.1177/0049124111404820
+We could extend our approach to more general types of graphs and tasks:
 
-Digital Footprints: Opportunities and Challenges for Online Social Research
-Annual Review of Sociology
-Vol. 40:129-152 
-First published online as a Review in Advance on June 16, 2014
-\url{https://doi.org/10.1146/annurev-soc-071913-043145}
+\begin{itemize}[leftmargin=*]
 
-Here is what the “Digital Footprints” writes about the previous paper
-An important limitation is the difficulty distinguishing between homophily and contagion. Homophily
-refers to a variety of selection mechanisms by which a social tie is more likely between individuals
-with similar attributes and environmental exposures (McPherson et al.  2001). Contagion refers to
-influence mechanisms (e.g., imitation or peer pressure) by which traits diffuse along network edges.
-Homophily and contagion offer competing explanations for network autocorrelation, which refers to
-the greater similarity in the attributes of closely connected nodes. Based on simulated networks,
-Shalizi \& Thomas (2011, p. 216) conclude that “there is just no way to separate selection from
-influence observationally” (see also Manski 1993). This does not mean that observational studies
-using online networks are useless, but researchers need to refrain from assuming that the observed
-network autocorrelation reflects contagion effects and to acknowledge that the similarity between
-adjacent nodes may reflect the mutually reinforcing effects of influence and selection whose
-separate contributions may be impossible to tease apart.  For example, although Ugander et al.
-(2012) controlled for demographic similarity (sex, age, and nationality), there are countless other
-ways in which shared environments, affiliations, interests, and personality traits might cause two
-friends to join Facebook independently but not on the same day, making it look like the “early
-adopter” influenced the friend they invited who would have joined anyway.
+  \item First, as we mentioned earlier, \textbf{networks are dynamic} and evolve over time, with
+    nodes and edges constantly appearing and disappearing~\autocite{networkEvolution14}. Slicing
+    time into successive periods is one way to create edge types, one per period. For instance,
+    \textcite{TimedUSSenate10} study the \np{110} congresses of the US senate between the years 1789
+    and 2008, where \np{1884} individual Senators are linked by their voting similarity, and show
+    how it improves the detection of relevant communities. Beyond predicting the relative order of
+    links, it would also be interesting to include time into nodes similarity itself.
+    %
+    For instance, while the photo similarity between two Flickr users rises before they connect, it
+    later decreases if they have the same level of popularity, as both try to differentiate
+    themselves~\autocite{dynamicFlickr13}.
+    %
+    More generally, by defining our problem on a static snapshot of a graph, our model is agnostic
+    to the question of whether edges were created because of the similarity/dissimilarity of
+    the linked nodes' attributes or because attributes started to change after the edge creation.
+    This is traditionally framed as dichotomy between homophily and contagion, and is an active topic
+    of research in social networks analysis~\autocites{InfluenceVsHomo08}{ConfoundedHomophily11} as
+    noted by \textcite{OSNreview14}: \textquote{Homophily refers to a variety of selection
+    mechanisms by which a social tie is more likely between individuals with similar attributes and
+    environmental exposures~\autocite{Homophily01}. Contagion refers to influence mechanisms (\eg{}
+    imitation or peer pressure) by which traits diffuse along network edges. Homophily and contagion
+    offer competing explanations for network autocorrelation, which refers to the greater similarity
+    in the attributes of closely connected nodes.}
 
-Furthermore, we could also consider the role of time with dynamic networks. For instance, while the
-photo similarity between two Flickr users rises before they connect, it later decreases if they have
-the same level of popularity, as they try to differentiate themselves
-Zeng and Wei: Social Ties and User Content Generation: Evidence from Flickr, Information Systems
-Research 24(1), pp. 71–87
+  \item Another rich class of graphs were predicting edge types would be a challenging and rewarding
+    task is \textbf{multigraph}, which allow several edges between two nodes. It can also be seen as
+    the flattening of several graphs sharing the same nodeset, but where the provenance of each edge
+    would have been lost and need to be recover. With our original formulation of goodness as
+    ${s_{uv}}^T w_{uv}$, only one direction can achieve the higher score (discarding the rare case
+    of tie). One alternative we proposed was to let each $w_{uv}$ be a linear combination of a small
+    number of base directions, although experimentally it did not fit well our synthetic data.
+    Symmetrically, another idea could be to have more than one way to compute the similarity
+    $s_{uv}$ between two nodes.
+
+  \item Generalizing the balance theory from signed graphs, we could imagine that in triangles or
+    short cycles, only certain combinations of directions are valid (or at least desirable).
+    Interestingly, this would likely require different optimization algorithms, probably non convex.
+    However, while this is a general concept, its exact implementation might be
+    application-dependant. Furthermore, in our current setting, we do not know in advance in the
+    semantic of each direction, and we have no labeled edges. Therefore, it is not clear how those
+    constraints would be specified or whether they can be learned, if applicable. A limited solution
+    exists in the context of heterogeneous information networks, where in addition to having several
+    types of edges, there are also several types of nodes. Since not all type of node can be
+    connected with any type of edges, the possible connections are themselves represented as a meta
+    graph called the network schema~\autocite[Definition 3]{HINSurvey17}. This approach would need
+    to be extended to deal with higher order patterns.
+
+  \item Among tasks that could benefit from labeling the edge of complex networks, we mention two.
+    The first is \textbf{graph summarization} where the idea is to transmit a fraction of a large
+    graph plus additional information that can be used to reconstruct the original graph. Namely,
+    our goal here is to send only a few node profiles along with the edge directions, enabling the
+    missing profiles to be reconstructed from the known goodness values. Note that we spare
+    information regarding the profiles but still transmit the full topology. Therefore, this differs
+    from lossless schemes~\autocites{compressSN09}{compressSN12} that leverage typical edge locality
+    patterns to encode edges using as few bits as possible, or from lossy graph sketching
+    methods~\autocite{graphSketch12} discussed in \autoref{sub:gtx_state_of_the_art}, which preserve
+    spectral and topological properties of the original graph.
+    %
+    The second is \textbf{node embedding}, where every node $u$ is represented by a vector of size
+    $k$ containing the relative proportion of each direction with the edges incident to $u$.
+\end{itemize}
