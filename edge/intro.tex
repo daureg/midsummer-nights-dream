@@ -1,0 +1,121 @@
+In this chapter, we extend the problem of predicting edge types beyond the binary case.
+Furthermore, we assume that we are provided with node attributes in addition to the mere graph
+topology we used in the previous chapters. Our motivation is twofold: intrinsic and extrinsic.
+First, we want an interpretable model that, given two connected nodes, can explain why they are
+linked. This will lead to the use of linear models, for they are both easily amenable to
+interpretation and computationally efficient. Second, edge-labeled graphs are susceptible to further
+studies by existing networks analysis methods, as we will describe shortly. Thus, our method is a
+useful way of enriching data to extract new insights from it.
+
+As demonstrated by our prior extensive coverage, predicting edge signs is an interesting and
+challenging problem in its own right. Yet it is natural to extend and generalize it.  First, there
+are other edge binary classification problems that arise in graphs. For instance, predicting whether
+a link in a social network is strong or weak~\autocites{communityWeakTies14}{communityWeakTies17};
+predicting whether two authors in a citation network are advisor-advisee or regular
+coauthors~\autocite{Advisor10}; predicting whether two persons in a company network have a
+relationship of manager-subordinate or not~\autocite{Manager07}; predicting whether two proteins
+interact physically or genetically; or whether two neurons have a chemical or ionic link between
+them~\autocite{BioMultiplex15}.
+
+Second, and more generally, we are also interested in multiclass problems, within the context of
+multilayer graphs~\autocites{Kivela2014}{multiSurvey14}. While \textcite{Kivela2014} define an
+elaborate and highly expressive notion of multilayer graph, in this chapter we shall restrict
+ourselves to the following\footnote{Which is roughly corresponding to \emph{single aspect}
+\emph{node-aligned} multilayer graphs of \autocite{Kivela2014}.}:
+\begin{definition}[$k$-multilayer graph]
+  A $k$-multilayer graph $G$ is a pair $(V, \{E_1, \ldots, E_k \})$, where $V$ is a set of $n$ nodes
+  and each $E_i \subset V\times V$, $i \in \rangesk$ is a set of edges. We call the subgraph $G_i =
+  (V, E_i)$ the \ith{} layer of $G$ and it will be convenient to think of $G$ as the superposition
+  of its $k$ layers, so that by a slight abuse of notation we can write $ G = \bigcup_{i=1}^k G_i $.
+\end{definition}%\vspace{-0.25\baselineskip}\noindent%
+We naturally identify each layer with a type of relation, so that our classification problem is to
+decide to which layer a given edge belongs. Furthermore, we make the simplifying assumption that two
+nodes can be connected in at most one layer (\ie $\forall u,v \in V,\, (u,v)\in E_i \Rightarrow
+\forall j \neq i,\, (u,v) \notin E_j$), meaning that the resulting superposition of all layers does
+not turn into a multigraph. As mentioned in the introduction, such multigraphs can be used to model
+different relation types in networks related to social
+interactions~\autocites{Szell2010}{RecoFlickrMulti11}, bibliographical
+citation~\autocites{communityDBLPbyConf05}{articlesMultiSim11}, economic
+exchange~\autocites{ports3kindofships10}{worldTradeNetwork10} and biology~\autocite{bioLayerExp11}.
+This additional information on the nature of the relationships allow traditional graph tasks to be
+performed more precisely and with higher granularity, such as node ranking~\autocite{HRRanking13};
+node clustering \autocites[Section 2]{surveyAttributedClustering15}[Section 4.5.1]{Kivela2014} and
+the study of information spreading \autocite{SpreadingMultiSurvey15}. However, to produce such finer
+results, the methods we just referenced requires labeled that in many cases are not available,
+making our work rather useful. In the following table we give some examples of networks whose edges
+are currently unlabeled and why it would be beneficial to have them.
+
+\noindent\begin{tabulary}{\textwidth}{lLLLL}
+  \toprule
+  Source & Node & Edge & Node profiles & Possible edge meanings \\
+  \midrule
+  DBLP & author & citation & keyword count of their papers & \\
+  Github & developer & following & number of lines written in various programming languages & \\
+  Amazon & video game products & \enquote{frequently bought together} & price, genre, time of release, popularity and evaluation & \\
+  Wikipedia & article & internal link & category, length, edit history, bag of words & \\
+  Flickr & user & following & activity statistics, groups membership, count of photo tags & \\
+  Foursquare & venue & \enquote{frequently visited together} & location, popularity, category, the time distribution at which they are visited & \\
+  IMDB & movie & sharing actors & genre, release date and popularity & \\
+  Blablacar & driver or passenger & shared ride & experience, location, preferences, rating & \\
+  \bottomrule
+\end{tabulary}
+
+Besides predicting potentially more than two classes, the other difference with the setting of the
+previous chapters is that we now assume that nodes are associated with attributes, which we call
+\emph{profiles}. One could argue this makes our framework less general, for attributes are not
+always available, or may come with missing values. Another recent finding is that, despite a natural
+assumption, the nodes profiles in attributed graphs are not necessarily correlated with known ground
+truth communities~\autocite{FortunatoGroundTruth14}, casting further doubt on the usefulness of that
+extra information.
+This raises the question of why we cannot simply extend the troll/trust method of counting the type
+of edges incident to every node and learn a model from such features.
+A similar tension between relying solely on always available yet sparse topological information or
+leveraging possibly richer attributes information also exists in link
+prediction~\autocite{linkPredSurvey16}\stodo{What they actually write is \enquote{Topology-based
+techniques are more versatile than attribute-based methods since they are not domain specific} which
+sounds a bit unfair: only the attributes are domain specific, not necessarily the methods
+themselves}.
+% examples of using node attributes for link prediction, taken from that survey:
+% https://doi.org/10.1007/s11432-014-5237-y
+% - http://dl.acm.org/citation.cfm?id=2124378
+% - using graph kernel https://doi.org/10.1016/j.dss.2012.09.019
+% - matrix factorization “these latent features (learned from topology) may be combined with
+%   optional explicit features for nodes or edges, which yields better performance than using either
+%   type of feature exclusively.” https://doi.org/10.1007/978-3-642-23783-6_28
+However, the presence of profiles is motivated by the last fundamental difference with the previous
+problems. In this chapter, we do not have access to any direct supervision in the form of labels.
+Rather than a strict classification problem, we are thus faced with unsupervised clustering, guided
+by the information contained in node profiles. Note that contrary to the relation between \pcc{} and
+\esp{}, this time the objects we seek to cluster are edges and not nodes. Furthermore, we stress
+that the profiles crucially increases the interpretability of our models.
+
+A common learning bias in attributed graphs\stodo{better transition from attributes to homophily} is
+that nodes are connected together because they are similar, or as often said proverbially:
+\enquote{birds of a feather flock together}. Formally this is called the homophily
+principle~\autocite{Homophily01} and has been consistently verified, both in
+offline~\autocites{homoAttitude78}{homoEdu85} and online social
+networks~\autocites{homoSN09}{homoSN12}. While our every day life experience makes homophily not
+surprising in social networks, the same assortative patterns~\autocite{AssortativeMixing02} are
+present in other kinds of networks~\autocite{AssortativeMixing09}. Here though, we assume that links
+cannot only be explained by a global homophily along all attributes but rather by partial homophily,
+partial heterophily or even both. An example of this combination is balanced news
+diet~\autocite{balancedNews17}, where we try to connect users of a social network to prevent them
+from being locked in echo chambers. In that situation, a user $A$ might be more likely to listen to
+the opposite point of view of user $B$ about gun control if they both share common demographics and
+interests.
+
+After having motivated our problem of predicting multiple edge types in attributed graphs, we carry
+on by stating more formally the \ecp{} problem in \autoref{sec:edge_problem}. Namely, we define a
+similarity between nodes profiles and seek a small number of explanations (corresponding to edge
+types) achieving good scores as prescribed by a linear model. After explaining how this problem can
+model a situation closely resembling the case of signed graphs
+\vpageref{par:generalization_of_signed_graphs}, we introduce in \autoref{sec:edge_methods} several
+methods to solve it in practice. This ranges from tailoring the \kmeans{} algorithm to our goodness
+measure (\autoref{sub:edge_baseline}), to a convex relaxation of our objective function
+(\autoref{sub:edge_vector}) all the way to a richer and higher capacity matrix formulation allowing
+overlapping clustering of edges (\autoref{sub:edge_matrix}). Because finding publicly available real
+data with both node attributes and edge types proved difficult, we describe a synthetic model in
+\autoref{ssec:edge_synth} on which we perform extensive experiments. We then survey in
+\autoref{sec:edge_related} works that are related to the \ecp{}, while noting that very few address
+it directly. Finally, we suggest in \autoref{sec:edge_conc} several directions in which our model
+could be extended to handle more general classes of graphs.
