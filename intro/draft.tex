@@ -73,7 +73,7 @@ same post. Yet another possibility would be to study the same set of users acros
 networks~\autocite{mergingNetworks16}, in which case the edge type could denote some common
 combinations of connections (\eg Twitter+LinkedIn or Facebook+Instagram). In this thesis, we thus
 defend the following statement: \textbf{There exists efficient and accurate methods to predict edge
-type in complex networks, reyling either only on the graph topology or also on node metadata.}
+type in complex networks, relying either only on the graph topology or also on node metadata.}
 
 A first motivation for such methods is that by labeling all edges, we can split a complex networks
 in a superposition
@@ -100,7 +100,9 @@ generative model. This model naturally leads to two batch algorithms, one that p
 Bayes optimal predictor when the training set is dense enough, and one that approximate the maximum
 likelihood estimates through label propagation. Extensive experiments on synthetic and real datasets
 show that in addition to their sound theoretical foundations, our methods are competitive with the
-state of the art in predictive performance, while being more scalable. To illustrate this point, a
+state of the art in predictive performance, while being more scalable.
+\iffalse
+To illustrate this point, a
 short extract of our results is presented in \autoref{tab:troll}.
 
 \begin{table}[ptbh]
@@ -128,6 +130,7 @@ short extract of our results is presented in \autoref{tab:troll}.
     \bottomrule
   \end{tabular}
 \end{table}
+\fi
 
 \vspace{-\baselineskip}
 \paragraph{Active learning in undirected signed graphs}
@@ -161,6 +164,7 @@ where the learner is allowed to select its training labels in the most informati
 to ensure that for every edge we will predict, there will be a path in the tree as short as
 possible~\autocites{LowerBound95}{Abraham2012} from which we have queried all the signs. We call
 this structure \gtx{}, as it recursively build stars of stars. 
+\iffalse
 We present preliminary results showing that on certain
 kind of graphs, this indeed results in better predictive performance than a competitive baseline.
 Namely, we create synthetic graphs of growing size with the \lpa{} model~\autocite{Barabasi1999},
@@ -176,6 +180,7 @@ the signs \uar{}. As showed on \autoref{fig:gtx_xp_pasynthmcc}, \gtx{} always pr
     function of the number of nodes and of the fraction of signs who have been flipped from the
     hidden two-clustering.  \label{fig:gtx_xp_pasynthmcc}}
 \end{figure}
+\fi
 
 \vspace{-\baselineskip}
 \paragraph{Predicting more than two kinds of relations}
@@ -223,6 +228,7 @@ or cluster the profiles into a set of affine subspace of $\mathbb{R}^d$~\autocit
 Our approach is to seek a small number of vectors that, once assigned to every edge, best explain
 the graph (\ie maximize a score function between the vector assigned to an edge  and the profiles of
 this edge's endpoints).
+\iffalse
 From this initial formulation, we derive two optimization problems, and initially solve them on
 synthetic data, generated with a few natural topological constraints. We compared these solutions
 with the result of a baseline approach that simply clusters the pairwise profile vectors using
@@ -237,6 +243,7 @@ edge assignment more accurately than the $k$-means baseline.
   \np{600} generations of 7 random directions, comparing our \textsf{optim} method with the $k$-means
 baseline. \label{fig:edge}}
 \end{figure}
+\fi
 
 While our thesis is therefore primarily concerned with learning on graphs, instead of focusing on
 nodes (to predict their class, their cluster or to find their representation), we look at edges (\ie

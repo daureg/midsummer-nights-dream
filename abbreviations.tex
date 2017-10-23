@@ -33,6 +33,7 @@
 \newcommand{\Rbb}{\ensuremath{\mathbb{R}}}
 \newcommand{\onev}{\ensuremath{\bm{1}}}
 \newcommand{\dsphere}{\ensuremath{\bm{S}^d}}
+\newcommand{\rangesk}{\ensuremath{\llbracket k \rrbracket}}
 \newcommand{\shalf}{\ensuremath{\nicefrac{1}{2}}}
 \newcommand{\lhalf}{\ensuremath{\frac{1}{2}}}
 \newcommand{\cluster}{\ensuremath{\mathcal{C}}}
@@ -55,6 +56,8 @@
 \DeclareMathOperator{\degr}{deg}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\tr}{tr}
+\DeclareMathOperator*{\adj}{adj}
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
 \DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
 \newcommand{\rangek}{\ensuremath{\llbracket K \rrbracket}}
@@ -125,7 +128,7 @@
 \newcommand{\wh}{\widehat}
 \newcommand{\hdout}{\wh{d}_{\mathrm{out}}}
 \newcommand{\hdin}{\wh{d}_{\mathrm{in}}}
-\newcommand{\yhat}{\wh{y}}
+\newcommand{\yhat}{\ensuremath{\wh{y}}}
 
 \newcommand{\Nin}{\mathcal{E}_{\mathrm{in}}}
 \newcommand{\Nout}{\mathcal{E}_{\mathrm{out}}}
@@ -189,3 +192,29 @@
   right=.5em, colback=white, colframe=black!20!white, sharp corners, toprule=0pt, bottomrule=0pt,
   boxsep=0pt, breakable, notitle,]}%
 {\end{tcolorbox}}
+
+
+\newcommand{\frop}[2]{\ensuremath{\langle #1, #2 \rangle_\mathrm{F}}}
+\newcommand{\innerp}[2]{\ensuremath{\langle #1, #2 \rangle}}
+
+\newcommand{\smallk}{$k=5$}
+\newcommand{\default}{default}
+\newcommand{\largek}{$k=9,d=36$}
+\newcommand{\smallo}{$n_o=6$}
+\newcommand{\largeo}{$n_o=12$}
+\newcommand{\fdirs}{$k_{\mathrm{local}}=4$}
+\newcommand{\larged}{$d=77$}
+
+\newcommand{\kmeans}{\textsc{$k$-means}}  
+\newcommand{\lloyd}{\textsc{Lloyd}}   
+\newcommand{\combined}{\textsc{Combined}}
+\newcommand{\fwa}{\textsc{Frank--Wolfe}}     
+\newcommand{\pqt}{\textsc{Explicit}}     
+
+\newcommand{\efirst}[1]{\mathbf{\textcolor{brown}{#1}}}
+\newcommand{\efirstSig}[1]{\mathbf{\textcolor{brown}{{#1}}}}
+\newcommand{\esecond}[1]{\mathit{\textcolor{red}{#1}}}
+\newcommand{\esecondSig}[1]{\esecond{{#1}}}
+\newcommand{\spval}[2]{\ensuremath{{\scriptstyle(#1 \cdot 10^{#2})}}}
+\newcommand{\ecp}{\textsc{Edge Attributed Clustering}}
+\newcommand{\zerov}{\ensuremath{\bm{0}}}

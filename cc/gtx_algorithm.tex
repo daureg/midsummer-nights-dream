@@ -456,6 +456,7 @@ could be a good parameter to quantify the number of iterations needed. Indeed, t
 the length $p$ of its longest path from the root to a leaf. By a similar argument as the one used in
 the line case, it seems \gtx{} will terminate after $O(\log p)$ iterations.
 
+\iffalse
 While all $G_t$ are connected according to \autoref{lem:gtx_stay_connected}, it might happen during
 the execution of \extractStar{} that%
 \begin{marginfigure}
@@ -569,6 +570,7 @@ $2\Delta_t-1\leq\Delta_{t-1}$, or equivalently $\Delta_t \leq
      star, but there cannot be two adjacent singleton stars.}
    \label{fig:gtx_expand_path}
 \end{figure*}
+\fi
 
 \iffalse
 We would like to prove a similar result on the edges so that the overall complexity of the
