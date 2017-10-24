@@ -1,0 +1,32 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+  \begin{tikzpicture}[auto,vertex/.append style={inner sep=1pt},
+    ]
+    \tikzstyle{w1}=[red]
+    \tikzstyle{w2}=[Lime]
+    \tikzstyle{young}=[minimum size=6mm]
+    \tikzstyle{old}=[minimum size=12mm]
+    \tikzstyle{opneg}=[shape=rectangle ]
+    \tikzstyle{opneu}=[shape=circle]
+    \tikzstyle{oppos}=[shape=diamond]
+    \tikzstyle{compG}=[fill=Orange]
+    \tikzstyle{compF}=[fill=DodgerBlue!50!White]
+    \tikzstyle{compboth}=[left color=Orange, right color=DodgerBlue!50!White,fading speed=100]
+    \node[vertex,label={above:$u$},young, opneu,compG] (u) at (0, 0) {\male};
+    \node[vertex,label={above:$v$},young, oppos,compboth] (v) at (2, 0) {\male};
+    \node[vertex,label={below:$w$},old, oppos,compG] (w) at (0, -2) {\female};
+    \node[vertex,label={below:$x$},old, opneg,compboth] (x) at (2, -2) {\female};
+    \node[vertex,label={above:$y$},old, opneg,compF] (y) at (4, 0) {\male};
+    \node[vertex,label={below:$z$},young, oppos,compF] (z) at (4, -2) {\female};
+
+    \draw[edge,w1] (u) edge node[above] {$.083$} (v);
+    \draw[edge,w1] (u) edge node[right] {$.104$} (w);
+    \draw[edge,w2] (v) edge node[left] {$.077$} (x);
+    \draw[edge,w2] (v) edge node[above] {$.094$} (y);
+    \draw[edge,w1] (w) edge node[above] {$.061$} (x);
+    \draw[edge,w1] (x) edge node[left] {$.027$} (y);
+    \draw[edge,w2] (x) edge node[above] {$.092$} (z);
+    \draw[edge,w2] (y) edge node[left] {$.126$} (z);
+  \end{tikzpicture}
+\end{document}

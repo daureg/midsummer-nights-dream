@@ -1,47 +1,26 @@
-\section{Experimental analysis}
+\section{Synthetic experiments}
 \label{sec:edge_exp}
 
-We start by extracting from the conceptual discussion of the previous section the five methods we
-compare in our experiments. They all take as input an attributed graph, \ie{} $G=(V, E)$ and $X$.
-For evaluation purposes, we describe how to extract from their output a set of $k$ directions and an
-assignment $\yhat$ of every edge to one of these directions (that is $\yhat$ is a function from $E$
-to $\rangesk$ such that $\yhat_{uv}$ is the index of the direction assigned to the edge $(u,v)$).
-
-\begin{enumerate}[1.]
-
-  \item Our baseline is a \kmeans{} clustering of the normalized $s_{uv}$ edge similarity
-    vectors. This naturally provides a \yhat{} assignment, and the directions are the normalized
-    cluster centers.
-
-  \item Our first method is a \lloyd{}-like iterative refinement of the $k$-means solution, where we
-    alternatively reassign edges based on their score and recompute the directions to maximize those
-    scores.
-
-  \item Then we consider the \textsc{Combined} optimization of the two edge and node terms of
-    \eqref{eq:edge_full}, which directly provides a set of directions. The assignment is then simply
-    the direction that gives the highest goodness.
-
-  \item As for matrix methods, we first do a \textsc{Frank--Wolfe} maximization of
-    \eqref{eq:edge_FW} over the $\delta$-ball of the nuclear norm. Afterwards, we perform a
-    \kmeans{} clustering of its columns and use it as assignment, while the directions are again the
-    normalized cluster centers.
-
-  \item \textsc{Explicit} low-rank $PQ^T$ factorization, initialized with the solution of
-    \combined{} (that is we set $P_0 \in \mathbb{M}^{d\times k}$ to be the final directions found by
-    \combined{} and the rows of $Q_0 \in \mathbb{M}^{|E|\times k}$ to be equal to the corresponding
-    $e_{y_{uv}}$) and minimizing the same objective of \eqref{eq:edge_PQ}. We take the directions to
-    be the columns of the resulting $P$, and the assignment to be a \kmeans{} clustering of the rows
-    of $Q$.
+In the previous section, we introduced five methods to address \autoref{p:edge_full}, which we now
+compare in our experiments. Specifically, this includes:
+\begin{enumerate}[1.,nosep]
+\item the \kmeans{} baseline,
+\item our \lloyd{}-like iterative refinement,
+\item the \combined{} convex optimization of \eqref{eq:edge_soft},
+\item the \fwa{} convex optimization of \eqref{eq:edge_FW} and
+\item the \pqt{} explicit low-rank factorization, optimizing \eqref{eq:edge_PQ}.
 \end{enumerate}
+They all take as input a node-attributed graph, that is a pair $G=(V, E)$ and $X$.
+For evaluation purposes, we extract from their output a set of $k$ directions and an
+assignment of every edge to one of these directions.
+We try those five methods on data generated synthetically to fit our model described previously in
+\autoref{sub:edge_setting}, and study how they perform under various conditions.
 
-\subsection{Synthetic data}
-\label{ssec:edge_synth}
+% (that is $\yhat$ is a function from $E$
+% to $\rangesk$ such that $\yhat_{uv}$ is the index of the direction assigned to the edge $(u,v)$).
 
-We try those five methods on data generated synthetically to fit our model describe previously and
-study how they perform under various conditions.
-
-\paragraph{Generation}
-\label{par:edge_generation}
+\subsection{Generation}
+\label{sub:edge_generation}
 
 While there exists several methods to generate attributed graph with community
 structure~\autocites{Yang2013}{XuBayesian14}{Kataoka2016}, here we present the one we adopted for
@@ -60,7 +39,7 @@ multiple of $k$.} non-zero dimension that are disjoint. On the other hand, if fo
 then $5$ of the $d$ dimensions will have two directions with non-zero components on it. Those
 non-zero components are drawn \uar{} from $[-1, 1]$ and the each directions is then normalized. For
 instance, with $d=6$, $k=3$ and $n_o=2$, we could generate the following directions, where the dots
-represents non-zero numbers and the red ones are overlapping:
+represents non-zero numbers and the blue ones are overlapping:
 \vspace{-.5\baselineskip}
 \begin{center}
   \begin{tabular}{ccc}
@@ -71,13 +50,13 @@ represents non-zero numbers and the red ones are overlapping:
       \bullet \\
       0 \\
       0 \\
-      \textcolor{Red}{\bullet}
+      \textcolor{DodgerBlue}{\bullet}
     \end{pmatrix}$ &
     $\begin{pmatrix}
       0 \\
       \bullet \\
       0 \\
-      \textcolor{Red}{\bullet} \\
+      \textcolor{DodgerBlue}{\bullet} \\
       \bullet \\
       0
     \end{pmatrix}$ &
@@ -173,8 +152,8 @@ Finally, to minimize $\mathcal{L}_{\mathrm{node}}$, we iterate over the nodes an
 steps to minimize $\left|\left| x_u - \sum_{v\in\nei{u}} w_{uv}\right|\right|^2$, but only to the
 extent that $w_{uv}$ remains the direction with the largest score on the edge $u,v \in E$.
 
-\paragraph{Results}
-\label{par:edge_synth_results}
+\subsection{Results}
+\label{sub:edge_synth_results}
 
 In the following we generate one graph topology, along with palette assignment to nodes and
 direction assignment to edges. Then we generate a set of unit-norm directions,
