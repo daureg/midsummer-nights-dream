@@ -1,86 +1,82 @@
 \paragraph{Generalization of signed graphs}
 \label{par:generalization_of_signed_graphs}
 
-Here we show why \autoref{p:edge_full} can model signed graphs as a special case, namely with $k=2$
-and specifically crafted profiles.
-Remember the learning
-bias we introduced in the previous chapter \vpageref{text:cc_new_bias}: every node belongs to
-exactly one of the $K$ clusters available, is connected positively with the other nodes belonging to
-the same cluster, and is connected negatively with the nodes belonging to every other clusters. Now
-let the dimension of profiles be $d=K$ and the number of directions $k=2$. Moreover, we define the
-two direction vectors as $w_1 = \frac{\onev}{\sqrt{d}} = w_+$ and $w_2 = -w_+ = w_-$, where
-$\onev$ is the vector of dimension $d$ with only $1$ coordinates. Finally, for a node $u$ in
-cluster $i$, we assume its profile $x_u$ is set as follow: all component are equal to $-b$ except
-for the \ith{} one, which is equal to $a$, where $a$ and $b$ are real constants we define now.
+The learning bias of \autoref{chap:cc} implicitly defined an idealized \esp{} problem as:
+\begin{problem}[idealized \esp{}]
+  \label{p:edge_esp}
+  Given $n$ nodes belonging latently to $K$ groups, predict whether two nodes $u$ and $v$ belong to
+  the same group (that is $(u,v)$ is positive) or not (that is $(u,v)$ is negative).
+\end{problem}
+In \autoref{sec:gtx} we study in particular the important special case where $K=2$. Now consider an
+instance of \autoref{p:edge_full} where $k=2$, and where the profiles and edges are based on group
+membership. We show that the optimal solution of such an instance is exactly the solution of this
+idealized \esp{} problem on the same graph.
 
-First, because $x_u$ is a unit vector, we have that $a^2 + (K-1)b^2=1$, from which $a =
-\sqrt{1-(K-1)b^2}$ whenever $1-(K-1)b^2 \geq 0$, or equivalently $b \leq \frac{1}{\sqrt{K-1}}$.
-Next, we look at $\left(x_u \circ x_v\right)^T \onev = {s_{uv}}^T \onev = \frac{1}{\sqrt{d}}
-\sum_{i=1}^d  {s_{uv}}_{;i}$ for any edge $(u,v) \in E$. If $u$ and $v$ are in the same cluster, then
-$\sum_{i=1}^d  {s_{uv}}_{;i} = a^2 + (K-1)b^2 = 1$, implying that ${s_{uv}}^T w_+ = \frac{1}{d} >
-{s_{uv}}^T w_- = -\frac{1}{d}$. Otherwise, $\sum_{i=1}^d  {s_{uv}}_{;i} = (K-2)b^2 - 2ab = (K-2)b^2 -
-2b\sqrt{1-(K-1)b^2} = f_K(b)$. By computing the derivative of $f_K$ with respect to $b$, we find
-that it reaches a minimum of $-\frac{1}{K-1}$ at $b = \frac{1}{\sqrt{K(K-1)}} \leq
-\frac{1}{\sqrt{K-1}}$. In this case, ${s_{uv}}^T w_+ = -\frac{1}{(K-1) \sqrt{d}} < {s_{uv}}^T w_- =
-\frac{1}{(K-1) \sqrt{d}}$. To maximize $\sum_{(u,v)\in E} \max_{\ell \in \{1, 2\}} {s_{uv}}^T
-w_\ell$, we therefore assign $w_+$ to edges whose both endpoints belong to the same cluster, and
-$w_-$ to edges joining two different clusters.
-
-Moreover, given this assignment, we can show that $w_+$ and $w_-$ are the optimal directions, under
-the additional uniformity assumption that there are exactly $p$ edges within every cluster, and $q$
-edges between any two clusters. First, we define
+Let us first define this instance formally. Given a graph $G=(V,E)$, we partition the nodes in two
+groups $L$ and $R$. We then define the nodes profiles $X$ as follow. We first draw \uar{} a vector $p$
+from $\{-1, 1\}^d$, then let the profiles in $L$ be $\frac{p}{\sqrt{d}}$ and the
+profiles in $R$ be $-\frac{p}{\sqrt{d}}$. We call this instance $\mathcal{I} = (G, X, k=2)$. With
+this choice, we have
 \begin{equation*}
-  s_{\mathrm{inner}} = \sum_{(u,v) \in E;\, \cluster(u)=\cluster(v)} s_{uv} \qquad \text{and} \qquad
-  s_{\mathrm{outer}} = \sum_{(u,v) \in E;\, \cluster(u)\neq \cluster(v)} s_{uv}
+  s_{uv} =
+  \begin{cases}
+    \frac{\onev}{d} = s_{\mathrm{inner}} & \quad \text{if $u$ and $v$ are in the same group,} \\
+    -\frac{\onev}{d} = s_{\mathrm{outer}} & \quad \text{if $u$ and $v$ are in different groups.}
+  \end{cases}
 \end{equation*}
-to be the sum of all edge vectors within and between clusters respectively. By our choice of $a$ and
-$b$, we have that $s_{\mathrm{inner}} = p\onev$ and $s_{\mathrm{outer}} = -\frac{q}{2}\onev$. Now
-recall that the solution of $\argmax_{w\in \dsphere} w^T c$ is $\frac{c}{||c||}$. Therefore, the
-best direction to assign to inner edges is indeed $w_+$, and so is $w_-$ to outer edges.
+Let us denote by $m_i$ the number of edges that are internal to $L$ and $R$, and by $m_o = |E| -
+m_i$ the number of edges between $L$ and $R$.
+
+\begin{prop}
+  Let $\mathcal{D}_2 = \{w_1^\star, w_2^\star\}$ be an optimal solution of \autoref{p:edge_full} on the
+  instance $\mathcal{I}$. Then $\mathcal{D}_2$ provides the following optimal solution to
+  \autoref{p:edge_esp}: each every edge explained by $w_1^\star$ is predicted positive, and every
+  edge explained by $w_2^\star$ is predicted negative.
+\end{prop}
+\begin{proof}
+  Take any $w_1, w_2 \in \dsphere \times \dsphere$ such that $w_1 \neq w_2$. Assume without loss of
+  generality that $w_1 = \argmax_{w\in \{w_1, w_2\}} {s_{\mathrm{inner}}}^T w$. This implies that:
+  \begin{equation*}
+    {s_{\mathrm{inner}}}^T w_1 = \frac{1}{d}\sum_{i=1}^d {w_1}_{;i} >
+    \frac{1}{d}\sum_{i=1}^d {w_2}_{;i} = {s_{\mathrm{inner}}}^T w_2 \,.
+  \end{equation*}
+  In turn, we have that:
+  \begin{equation*}
+    {s_{\mathrm{outer}}}^T w_2 = -\frac{1}{d}\sum_{i=1}^d {w_2}_{;i} >
+    -\frac{1}{d}\sum_{i=1}^d {w_1}_{;i} = {s_{\mathrm{outer}}}^T w_1 \,.
+  \end{equation*}
+  We can thus rewrite the maximization objective \eqref{eq:edge_full} of \autoref{p:edge_full} as:
+  \begin{align}
+    \label{eq:edge_special}
+    \argmax_{w_1,w_2 \in \dsphere} & \quad \sum_{u,v \in E} \max_{w \in \{w_1, w_2\}} {s_{uv}}^T w = \\
+    \argmax_{w_1,w_2 \in \dsphere} & \quad
+    \sum_{\substack{u,v \in E\\ s_{uv} = s_{\mathrm{inner}}}} {s_{\mathrm{inner}}}^T w_1 +
+    \sum_{\substack{u,v \in E\\ s_{uv} = s_{\mathrm{outer}}}} {s_{\mathrm{outer}}}^T w_2 = \notag \\
+    \argmax_{w_1,w_2 \in \dsphere} & \quad m_i \frac{1}{d} \onev + m_o \frac{-1}{d} \onev \notag
+  \end{align}
+  One can check using Lagrange multipliers that for any $c \in \Rbb^n$, $\max_{w \in \dsphere} c^T w
+  = \frac{c}{\|c\|}$. The solution of \eqref{eq:edge_special} is therefore:
+  \begin{equation*}
+    w_1^\star = \frac{\onev}{\sqrt{d}} \qquad \text{and} \qquad w_2^\star = \frac{-\onev}{\sqrt{d}}
+  \end{equation*}
+  As claimed, the edges associated with $w_1^\star$ (respectively $w_2^\star$) are the edges that
+  are to be predicted positive (respectively negative) in \autoref{p:edge_esp}.
+\end{proof}
 
 \begin{aside}
-For inner edge vectors, $s_{uv}$ in cluster $i$ has $a^2$ as its \ith{} component, and $b^2$
-elsewhere. There are $p$ of them in cluster $i$, so summing over all clusters we get
-$s_{\mathrm{inner}} = p\left(a^2 + (K-1)b^2\right)\onev = p\onev$.
-For outer edge vectors, we first consider the $q$ edges between $C_1$ and $C_2$,
-whose $s_{uv}$ is
-$\begin{pmatrix}
-  -ab \\
-  -ab \\
-  b^2 \\
-  b^2 \\
-  \vdots \\  
-\end{pmatrix}$. Likewise, between $C_1$ and $C_3$ we have
-$s_{uv}=\begin{pmatrix}
-  -ab \\
-  b^2 \\
-  -ab \\
-  b^2 \\
-  \vdots \\  
-\end{pmatrix}$. We thus we see that the first component is always $-ab$, that there is another
-such term at the other cluster index, while the rest is $b^2$. Summing all the vectors incident to
-$C_1$, we get
-$q\begin{pmatrix}
-  -ab(K-1) \\
-  b^2(K-2) -ab \\
-  b^2(K-2) -ab \\
-  \vdots \\  
-\end{pmatrix}$. Similarly, the sum of all vectors incident to $C_2$ is
-$q\begin{pmatrix}
-  b^2(K-2) -ab \\
-  -ab(K-1) \\
-  b^2(K-2) -ab \\
-  \vdots \\  
-\end{pmatrix}$, and so on for every cluster $i$. Summing over all clusters and dividing by $2$ to
-avoid double counting, we get $s_{\mathrm{outer}} = \frac{q}{2}\left( (K-1)\left(b^2(K-2) -ab\right)
--ab(K-1) \right)\onev = \frac{q(K-1)}{2}\left(b^2(K-2) -2ab\right)\onev =
-\frac{q(K-1)}{2}f_K(b)\onev = -\frac{q(K-1)}{2} \frac{1}{K-1} \onev = -\frac{q}{2}\onev$.
+  It is natural to ask how this result can be extended to more than $K=2$ groups. The most natural
+  idea is to use one-hot encoding of the group membership as profiles, with additional negative
+  values as in the example of \autoref{fig:edge_exe}. Namely, set the profiles of the \ith{} group
+  as follow: all component are equal to $-b$ except for the \ith{} one, which is equal to $a$, where
+  $a$ and $b$ are real constants such that $a^2 + (K-1)b^2=1$. However, in that case, we check
+  numerically that $w_+ = \frac{\onev}{\sqrt{d}}$ and $w_- = \frac{-\onev}{\sqrt{d}}$ is the not the
+  optimal solution, and that a solution achieving a larger objective function value does not cluster
+  the edges between inner and outer.
+
+  The next thing I tried was to use the approach described later in \autoref{sub:edge_generation} in
+  order to optimize the profiles of a complete graphs with $K$ groups, given $w_+$, $w_-$ and the
+  inner/outer edges assignment. As one could expect from the symmetry of the problem, all the nodes
+  in the same group have the same profile. However, there are no clear pattern in those profile, and
+  once again there exists better solutions than $\{w_+, w_-\}$, which partition the edges in two
+  roughly balanced sets.
 \end{aside}
-
-Granted, the situation where all the nodes of a cluster have exactly the same profile and where the
-connections are so regular is highly idealized. Moreover, we did not formally prove that there is
-not another assignment (with different direction vectors) that would give a better objective
-value\footnote{Although given the symmetry of the problem, that would be surprising.}. Our point is
-rather that profiles and directions can be seen as a \enquote{latent} explanation for the signs in
-a balanced signed graphs, like our generative model of the first chapter.
-
