@@ -52,7 +52,7 @@ m_i$ the number of edges between $L$ and $R$.
     \argmax_{w_1,w_2 \in \dsphere} & \quad
     \sum_{\substack{u,v \in E\\ s_{uv} = s_{\mathrm{inner}}}} {s_{\mathrm{inner}}}^T w_1 +
     \sum_{\substack{u,v \in E\\ s_{uv} = s_{\mathrm{outer}}}} {s_{\mathrm{outer}}}^T w_2 = \notag \\
-    \argmax_{w_1,w_2 \in \dsphere} & \quad m_i \frac{1}{d} \onev + m_o \frac{-1}{d} \onev \notag
+    \argmax_{w_1,w_2 \in \dsphere} & \quad m_i {\frac{\onev}{d}}^T w_1  + m_o {\frac{-\onev}{d}} ^T w_2 \notag
   \end{align}
   One can check using Lagrange multipliers that for any $c \in \Rbb^n$, $\max_{w \in \dsphere} c^T w
   = \frac{c}{\|c\|}$. The solution of \eqref{eq:edge_special} is therefore:
@@ -71,7 +71,7 @@ m_i$ the number of edges between $L$ and $R$.
   $a$ and $b$ are real constants such that $a^2 + (K-1)b^2=1$. However, in that case, we check
   numerically that $w_+ = \frac{\onev}{\sqrt{d}}$ and $w_- = \frac{-\onev}{\sqrt{d}}$ is the not the
   optimal solution, and that a solution achieving a larger objective function value does not cluster
-  the edges between inner and outer.
+  the edges between inner and outer groups.
 
   The next thing I tried was to use the approach described later in \autoref{sub:edge_generation} in
   order to optimize the profiles of a complete graphs with $K$ groups, given $w_+$, $w_-$ and the

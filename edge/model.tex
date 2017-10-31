@@ -3,9 +3,9 @@
 
 We start by introducing some notations and terminology about edge types in node-attributed graphs.
 Then we present two options to model the interactions between nodes and the role of attributes in
-\enquote{explaining} edges (\autoref{sub:edge_setting}). Choosing of these two options leads us to
+\enquote{explaining} edges (\autoref{sub:edge_setting}). Choosing one of these two options leads us to
 formulate the \ecp{} problem in \autoref{sub:edge_constraints}. We then describe additional
-constraints to take into account the topology of the graph. Finally we elaborate on the relation
+constraints allowing us to take into account the topology of the graph. Finally, we elaborate on the relation
 between \ecp{} and \esp{} in signed graphs.
 
 \subsection{Setting and modelling}
@@ -23,7 +23,7 @@ While being exactly of norm one is not primordial, the role of bounding the norm
 (\ie{} having $\sum_{i=1}^d {w_{uv}}_{;i}^2 \leq B^2$) is to tie the $d$ dimensions together.
 Without such a constraint, we could simply study each dimension separately, whereas this bound
 adds a coupling across different attributes, since increasing the weight of an attribute mechanically
-affects the others.
+affects the weights of the other attributes.
 
 Depending on the application, and the semantic we ascribe to links between nodes, we can design and
 interpret the combination operator $s$ as a difference, a similarity or a distance. Likewise, we
@@ -96,7 +96,7 @@ of similarities is maybe to avoid (or minimize) problems with missing values set
 This second choice of $s$ and $g$ is indeed more flexible, for it encompasses all cases of
 homophily, indifference and heterophily. Furthermore, since the profiles are given, the resulting
 $s_{uv}$ can be seen as constants, meaning that $g$ is linear and therefore interpretable. Finally,
-it also supports categorical data. We shall demonstrate all these features on a small scale example,
+it also supports categorical data. We shall demonstrate all these features on a small example,
 but we first define formally our problem.
 
 \subsection{Learning problem and additional constraints}
@@ -123,18 +123,19 @@ finding and assigning the most informative directions to every edge of $G$
 
 In \autoref{fig:edge_exe}, we present a small instance of the \ecp{} problem, where we are given the
 graph shown in \autoref{fig:edge_exe_graph}, whose node attributes are listed
-\autoref{tab:edge_exe}. The first two attributes are categorical, denoting the company employing
+in Table~\ref{tab:edge_exe}. The first two attributes are categorical, denoting the company employing
 each user, either \textsf{G} or \textsf{F}. Instead of a classic binary one-hot encoding, we
 additionally use $-1$ to denote that a user had been employed by a given company. \textsf{Gender} is
 encoded as presented earlier, and we also apply a pre processing to transform \textsf{age} between
 $-1$ and $1$. Finally, \textsf{opinion} represents the view of former \textsf{F} employees about a
-societal issue, with $0$ denoting a neutral position. In \autoref{tab:edge_exe}, we also show two
+societal issue, with $0$ denoting a neutral position. In Table~\ref{tab:edge_exe}, we also show two
 directions that explain the connections in the graph $G$. The first covers being of the same age and
 same companies, especially at \textsf{G}, while the second directions covers former employees of
 \textsf{F} having different \textsf{age} and \textsf{opinion}. Not only are the results
 interpretable as claimed before, but we can also assess the strength of each explanation, using
 their goodness. For instance, we see that the edge between $x$ and $y$ has a low score, because
-those two users have indeed the same \textsf{age} and \textsf{opinion}.
+although those two users have the same \textsf{age} and used to work at \textsf{F}, they do not
+share a position at \textsf{G}.
 
 \begin{figure*}[htpb]
   % \centering
@@ -203,9 +204,9 @@ users of a social network and the profiles measure their activity across several
 allows to compare users with various level of total activity. Furthermore, we assume that profiles
 are linear combination of directions, that
 is $x_u = b_u + \sum_{v \in \nei(u)} a_{uv} w_{uv}$, where $a_{uv}$ are real weights and $b_u
-\in \Rbb^d$ is the bias vector of $u$, its inherent profile take in isolation.
+\in \Rbb^d$ is the bias vector of $u$, \ie{} its inherent profile taken in isolation.
 Viewed in the other direction, this can be interpreted as follow: each time a node $u$
-connect to another node $v$ along a direction $w_{uv}$, it \enquote{consumes} a part of its profile
+connects to another node $v$ along a direction $w_{uv}$, it \enquote{consumes} a part of its profile
 proportional to $w_{uv}$. Therefore, we subtract the term
 \begin{equation}
   \label{eq:edge_node_loss}
@@ -214,7 +215,7 @@ proportional to $w_{uv}$. Therefore, we subtract the term
 \end{equation}
 from \eqref{eq:edge_full}.
 
-\medskip
+\bigskip
 
 We also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
 different directions. The intuition is that when $d$ is large enough, users have to focus their
@@ -234,17 +235,17 @@ how many times each direction is incident to node $u$. We thus want the $\ell_0$
 (\ie the number of its non-zero component) to be upper bounded by $k_\mathrm{local}$.
 This is not a convex constraint but we can relax it, for such sparsity inducing problems have been
 well studied~\autocite{sparseOptim12}. Namely, we let $y_{uv}$ be a softmax membership
-$k$-dimensional vector, that is we set $\forall i \in \rangesk\, y_{uv,i} =
+$k$-dimensional vector, that is we set $\forall i \in \rangesk\,, y_{uv,i} =
 \frac{\exp(\beta{s_{uv}}^T w_i)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_j)} $, with $\beta>0$ a large
 positive constant.  And we replace the $\ell_0$ norm by a $\ell_1$ norm (or even a $k$-support
-norm~\autocite{KsupportNorm12}), yielding the following $\mathcal{L}_{\mathrm{local}}$ to be
+norm~\autocite{KsupportNorm12}), yielding the following $\mathcal{L}_{\mathrm{local}}$ term to be
 minimized:
 \begin{equation}
   \label{eq:edge_local_loss}
   \mathcal{L}_{\mathrm{local}} =
   \sum_{u \in V} \left\| \sum_{v \in \nei(u)} y_{uv} \right\|_1 =
-  \sum_{u \in V} \sum_{\ell = 1}^k \sum_{v \in \nei(u)}
-  \frac{\exp(\beta{s_{uv}}^T w_\ell)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_j)}
+  \sum_{u \in V} \left( \sum_{i = 1}^k \sum_{v \in \nei(u)}
+  \frac{\exp(\beta{s_{uv}}^T w_i)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_j)} \right)
 \end{equation}
 
 These two constraints can be combined, so that the profiles are close to a linear combination of a
@@ -275,7 +276,7 @@ Indeed, the partition of $E$ does not provide the set of directions $\mathcal{D}
 \ldots, w_k\} \in \dsphere$ we are looking for. A natural way of obtaining directions from that
 partition is to set $w_\ell$ to be the normalized cluster center of $E_\ell$. We refer to this
 method as \kmeans{}, and assuming it requires $T$ iterations to converge, it has a linear complexity
-of $O(T|E|)$.
+of $O(Td|E|)$.
 \iffalse
 \begin{center}
   \rule{\textwidth}{.3pt}
@@ -308,7 +309,7 @@ $\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two ste
 until the edge assignment is stable or we reach a maximum number of iterations. By analogy with the
 $k$-means algorithm, obtaining convergence guarantees in the general case would be surprising, but in
 practice we expect that only a small number $T$ of iterations would be needed. We call this method
-\lloyd{} and note it also has a linear complexity of $O(T|E|)$.
+\lloyd{} and note it also has a linear complexity of $O(Td|E|)$.
 
 \subsection{Convex relaxation}
 \label{sub:edge_vector}
@@ -350,7 +351,10 @@ objective function \eqref{eq:edge_soft_early} is now jointly convex in all its v
 $\dsphere$ is not. To ease
 the optimization procedure, we thus only impose the directions $w_\ell$ to lie within the unit ball
 and expect them to have norm close to one in order to maximize the dot product in the ${s_{uv}}^T
-w_\ell$ term. A further simplification is that while \eqref{eq:edge_soft_early} requires to optimize
+w_\ell$ term\footnote{Indeed, since the first term is convex, its maximum can only be reach at the
+boundary of the feasible domain~\autocite[Theorem 32.1]{convexAnalysis70}. However, we are also
+subtracting another convex term and the resulting function is therefore more complicated.}.
+A further simplification is that while \eqref{eq:edge_soft_early} requires to optimize
 $kd + |E| + |V|d$ parameters, we fix $a_{uv} = 1$ and $b_u = \onev$ for all edges and nodes in order
 to be independent of the size of the graph. The final problem solved by our \combined{} method using
 (full) projected gradient descent is therefore:
@@ -368,11 +372,11 @@ to be independent of the size of the graph. The final problem solved by our \com
 
 Besides relaxing the $\max$ operator from \eqref{eq:edge_full}, another solution to remove it would
 be to increase $k$ to be equal to $E$. As we already mentioned, this makes the problem trivial. To
-avoid this, we add the constraint that all those $|E|$ directions are linear combination of a small
+avoid this, we add the constraint that all those $|E|$ directions are linear combinations of a small
 number $k$ of basis directions. In order to formulate this more clearly, we rewrite the previous
-objectives with matrices. We first show this can express in a form that is amenable to the
+objectives with matrices. We first show this can be expressed in a form that is amenable to the
 Frank--Wolfe algorithm. Then we take the alternative road of explicit low-rank matrix factorization,
-and we conclude by commenting on these approach.
+and we conclude by commenting on these approaches.
 
 \subsubsection{\fwa{} method}
 \label{ssub:edge_frank_wolfe}
@@ -407,7 +411,7 @@ the regularization parameter with an upper bound $\delta$ on the nuclear norm of
   \min_{\substack{W\in \mathbb{M}^{d\times |E|} \\ \|W\|_* \leq \delta}} -\frop{S^T}{W}\,.
 \end{equation*}
 
-At this stage, we could also add the node loss term \eqref{eq:edge_node_loss}, express in matricial
+At this stage, we could also add the node loss term \eqref{eq:edge_node_loss}, expressed in matricial
 form as $\|X - B -
 C\left(A\circ W^T \right)\|_F^2$, where $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$
 stacked vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$, $A \in \Rbb^{|E|
@@ -441,7 +445,7 @@ $W$ satisfies $\|W_{:,i}\|_2 \leq \delta\sqrt{d}$.
   Combined with $u_l$ being unit norm, we conclude that $\|W_{:,i}\|_2 \leq \delta\sqrt{d}$.
 \end{proof}
 However, setting $\delta = \nicefrac{1}{\sqrt{d}}$ is too stringent in high dimension, and because
-this inequality is rather loose, it will likely results in very small columns norm. Instead of
+this inequality is rather loose, it will likely results in very small column norms. Instead of
 relying solely on the nuclear norm constraint, we therefore add an additional regularization term
 equal to $\mu \sum_{i=1}^{|E|} \|W_{:,i}\|_2 = \mu \frop{W}{W}$. Our final convex formulation is
 then:
@@ -481,7 +485,7 @@ that $W = U \Sigma V^T$ and let $P = U \in \mathbb{M}^{d\times r}$ and $Q^T = \S
 PR^{-1} RQ^T$. Thus we look for a matrix $R$ that makes the columns of $RQ^T$ as close as possible
 of having unit $\ell_2$-norm, that is $R = \min_{R \in \Rbb^{r \times r}} \sum_{i=1}^E \left| \left\|
 {RQ^T}_{:,i} \right\|_2^2 - 1 \right|$. Finally, as before,  we cluster the columns of $RQ^T$ using
-$k$-means, and use the columns of $PR^{-1}$ as basis directions, noting there are not
+$k$-means, and use the columns of $PR^{-1}$ as basis directions, noting they are not
 necessarily unit norm anymore.
 
 \subsubsection{\pqt{} low rank factorization}
@@ -516,7 +520,7 @@ $k$ unit norm vectors of $P$ with weights whose square sum to $1$ and thus their
 $\sqrt{k}$. As opposed to all the previous methods, computing the full gradient is not linear in the
 number of edges. Indeed, computing the product $S^T Q$ requires $O(|E|^\omega)$ arithmetic
 operations, where $\omega \geq 2$\footnote{$\omega$ is the optimal exponent of matrix multiplication
-algorithm.}. This could be alleviate by using stochastic gradient descent. Finally, to obtain a
+algorithm.}. This could be mitigated by using stochastic gradient descent. Finally, to obtain a
 solution of the \ecp{} \autoref{p:edge_full}, we take the directions to be the columns of the
 resulting $P$, and the assignment to be a $k$-means clustering of the rows of $Q$.
 
@@ -525,7 +529,7 @@ resulting $P$, and the assignment to be a $k$-means clustering of the rows of $Q
 While the \pqt{} formulation is not convex, in practice we initialize it with the solution from
 \combined{} and it thus converge after few iterations. Namely, we set $P_0 \in \mathbb{M}^{d\times
 k}$ to be the final directions found by \combined{} and the rows of $Q_0 \in \mathbb{M}^{|E|\times
-k}$ to be equal to the corresponding $e_{yhat_{uv}}$\stodo{notation}. Furthermore, in the projection
+k}$ to be equal to the corresponding $e_{\yhat_{uv}}$\stodo{notation}. Furthermore, in the projection
 step of the $Q$ variable, we actually ensure that all the entries of $Q$ are positive, which makes
 them easier to  interpret as weights for the basis directions of $P$. This is something that we
 cannot guarantee on the decomposition of the matrix $W$ obtained by the \fwa{} method. On the other
@@ -538,5 +542,5 @@ edge has a different direction, albeit made up of a small number of basis direct
 \pqt{}, we could furthermore impose a sparsity constraint on the columns of $Q$ to reduces the
 number of coefficient to learn. Yet this additional complexity has the advantage of allowing
 overlapping clustering of the edges. This is useful in cases where two nodes have a relationship
-that is best described by a combination of the $k$ base directions. Moreover, in the case of \fwa{}
+that is best described by a combination of the $k$ base directions. Moreover, in the case of \fwa{},
 this additional flexibility comes with no increase in computational cost.
