@@ -15,5 +15,14 @@ previous \dssn{} datasets and remove the edge direction. As mentioned earlier, f
 nodes there are reciprocal edges of different signs, in which case we pick a sign arbitrarily. Given
 those undirected graphs, we orient them using the approach described above and compare our method
 with the \complowrank{} approach ran directly on the undirected graphs. This is a fair comparison,
-for \complowrank{} is designed to works solely on undirected graphs.\Todo{run the undirected
-experiments.}
+for \complowrank{} is designed to works solely on undirected graphs.
+
+As we can see in \autoref{tab:bias_exp_undir}, our methods perform worse than when running on the
+original directed graphs. Looking at \uslpropGsec{} on a 15\% training set as an example, we observe
+that the MCC decreases by one (\kiw{}) to almost ten (\epi{}) points. On the other hand, the
+\complowrank{} seems to perform better. Recall however that because it is an undirected method in
+the first place and because we roughly double the number of signed edges, a 15\% training size means
+the algorithm gets to observe more signs and therefore perform better. This small experiment thereby
+shows that although the performance remains decent, not having direction information hurt our bias.
+
+\input{bias_exp_undir}
