@@ -2,7 +2,7 @@ In this chapter, we extend the problem of predicting edge types beyond the binar
 Furthermore, we assume that we are provided with node attributes in addition to the mere graph
 topology we used in the previous chapters. Our motivation is twofold: intrinsic and extrinsic.
 First, we want an interpretable model that, given two connected nodes, can explain why they are
-linked. This will lead to the use of linear models, for they are both easily amenable to
+linked. This lead us to use a linear model, for it is both easily amenable to
 interpretation and computationally efficient. Second, edge-labeled graphs are susceptible to further
 studies by existing networks analysis methods, as we will describe shortly. Thus, our method is a
 useful way of enriching data to extract new insights from it.
@@ -20,11 +20,11 @@ them~\autocite{BioMultiplex15}.
 Second, and more generally, we are also interested in multiclass problems, within the context of
 multilayer graphs~\autocites{Kivela2014}{multiSurvey14}. While \textcite{Kivela2014} define an
 elaborate and highly expressive notion of multilayer graph, in this chapter we shall restrict
-ourselves to the following\footnote{Which is roughly corresponding to \emph{single aspect}
-\emph{node-aligned} multilayer graphs of \autocite{Kivela2014}.}:
+ourselves to the following\footnote{Which roughly corresponds to the \emph{single aspect},
+\emph{node-aligned} multilayer graph of \autocite{Kivela2014}.}:
 \begin{definition}[$k$-multilayer graph]
   A $k$-multilayer graph $G$ is a pair $(V, \{E_1, \ldots, E_k \})$, where $V$ is a set of $n$ nodes
-  and each $E_i \subset V\times V$, $i \in \rangesk$ is a set of edges. We call the subgraph $G_i =
+  and each $E_i \subset V\times V$ is a set of edges, for $i \in \rangesk$. We call the subgraph $G_i =
   (V, E_i)$ the \ith{} layer of $G$ and it will be convenient to think of $G$ as the superposition
   of its $k$ layers, so that by a slight abuse of notation we can write $ G = \bigcup_{i=1}^k G_i $.
 \end{definition}%\vspace{-0.25\baselineskip}\noindent%
@@ -38,28 +38,50 @@ interactions~\autocites{Szell2010}{RecoFlickrMulti11}, bibliographical
 citation~\autocites{communityDBLPbyConf05}{articlesMultiSim11}, economic
 exchange~\autocites{ports3kindofships10}{worldTradeNetwork10} and biology~\autocite{bioLayerExp11}.
 This additional information on the nature of the relationships allow traditional graph tasks to be
-performed more precisely and with higher granularity, such as node ranking~\autocite{HRRanking13};
+performed more precisely and with higher granularity. Consider for instance node ranking~\autocite{HRRanking13};
 node clustering \autocites[Section 2]{surveyAttributedClustering15}[Section 4.5.1]{Kivela2014} and
 the study of information spreading \autocite{SpreadingMultiSurvey15}. However, to produce such finer
-results, the methods we just referenced requires labeled that in many cases are not available,
-making our work rather useful. In the following table we give some examples of networks whose edges
-are currently unlabeled and why it would be beneficial to have them.
+results, the methods we just referenced require labeled edges that in many cases are not available,
+thus justifying the usefulness of our work. Indeed, in \autoref{tab:edge_apps}, we give some examples of
+networks whose edges are currently unlabeled and what type of relations they could possibly denotes.
+In other words, given a small list of possible reasons in terms of attributes and two nodes, why are
+they connected?
 
-\noindent\begin{tabulary}{\textwidth}{lLLLL}
-  \toprule
-  Source & Node & Edge & Node profiles & Possible edge meanings \\
-  \midrule
-  DBLP & author & citation & keyword count of their papers & \\
-  Github & developer & following & number of lines written in various programming languages & \\
-  Amazon & video game products & \enquote{frequently bought together} & price, genre, time of release, popularity and evaluation & \\
-  Wikipedia & article & internal link & category, length, edit history, bag of words & \\
-  Flickr & user & following & activity statistics, groups membership, count of photo tags & \\
-  Foursquare & venue & \enquote{frequently visited together} & location, popularity, category, the time distribution at which they are visited & \\
-  IMDB & movie & sharing actors & genre, release date and popularity & \\
-  Blablacar & driver or passenger & shared ride & experience, location, preferences, rating & \\
-  \bottomrule
-\end{tabulary}
+\setlength{\fullpage}{\textwidth+\marginparsep+\marginparwidth}
+\begin{table}[h]
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \centering
+  \caption{Real attributed graphs that we have collected or are easily accessible. Unfortunately,
+    none of them comes with known edge types, which implies the last column is merely speculation.
+  \label{tab:edge_apps}}
+  {\renewcommand{\arraystretch}{0.95}%
+  \begin{tabulary}{\fullpage}{lLLLL}
+    \toprule
+    {Source} & {Node} & {Edge} & {Node profiles} & {Possible edge meanings} \\
+    \midrule
+    DBLP & author & citation & keyword count of their papers & scientific topic \\
+    Github & developer & following & popularity, number of lines written in various programming languages &
+    common hobby, involvement in the same open source project, same
+    workplace, famous role model \\
+    Amazon & video game products & \enquote{frequently bought together} & price, genre, time of release, popularity and evaluation &
+    part of a series, cheap bundle, same genre and level of satisfaction \\
+    Wikipedia & article & internal link & category, length, edit history, bag of words &
+    generalization, specialization, organisation \\
+    Flickr & user & following & activity statistics, groups membership, count of photo tags &
+    geography, same tags distribution, famous role model,  \\ 
+    Foursquare & venue & \enquote{frequently visited together} & location, popularity, category, the time distribution at which they are visited &
+    closeness, part of a \enquote{series} (\eg{} movie theater $\rightarrow$ restaurant $\rightarrow$
+    bar $\rightarrow$ club) \\
+    IMDB & movie & sharing actors & genre, release date and popularity &
+    part of a series, common theme, same time period and genre \\
+    BlaBlaCar & driver or passenger & shared ride & experience, location, preferences, rating &
+    geography, professional, leisure \\
+    \bottomrule
+  \end{tabulary}}
+\end{table}
 
+\medskip
 Besides predicting potentially more than two classes, the other difference with the setting of the
 previous chapters is that we now assume that nodes are associated with attributes, which we call
 \emph{profiles}. One could argue this makes our framework less general, for attributes are not
@@ -89,7 +111,8 @@ by the information contained in node profiles. Note that contrary to the relatio
 \esp{}, this time the objects we seek to cluster are edges and not nodes. Furthermore, we stress
 that the profiles crucially increases the interpretability of our models.
 
-A common learning bias in attributed graphs\stodo{better transition from attributes to homophily} is
+It would be tempting to assume that nodes are connected because they share the same attributes.
+Indeed, a common learning bias in graphs is
 that nodes are connected together because they are similar, or as often said proverbially:
 \enquote{birds of a feather flock together}. Formally this is called the homophily
 principle~\autocite{Homophily01} and has been consistently verified, both in
@@ -98,24 +121,27 @@ networks~\autocites{homoSN09}{homoSN12}. While our every day life experience mak
 surprising in social networks, the same assortative patterns~\autocite{AssortativeMixing02} are
 present in other kinds of networks~\autocite{AssortativeMixing09}. Here though, we assume that links
 cannot only be explained by a global homophily along all attributes but rather by partial homophily,
-partial heterophily or even both. An example of this combination is balanced news
-diet~\autocite{balancedNews17}, where we try to connect users of a social network to prevent them
-from being locked in echo chambers. In that situation, a user $A$ might be more likely to listen to
+partial heterophily or even both. An example of this combination is the balanced news
+diet problem~\autocite{balancedNews17}, where we try to connect users of a social network to prevent them
+from being locked into topical echo chambers. In that situation, a user $A$ might be more likely to listen to
 the opposite point of view of user $B$ about gun control if they both share common demographics and
-interests.
+interests. This suggests, as we make it formal in the next section, that node attributes can include
+polarized opinions, \ie{} both positive and negative numerical values.
+
+\medskip
 
 After having motivated our problem of predicting multiple edge types in attributed graphs, we carry
 on by stating more formally the \ecp{} problem in \autoref{sec:edge_problem}. Namely, we define a
 similarity between nodes profiles and seek a small number of explanations (corresponding to edge
-types) achieving good scores as prescribed by a linear model. After explaining how this problem can
-model a situation closely resembling the case of signed graphs
+types) achieving good scores as prescribed by a linear model. After explaining how this problem relates
+to the \esp{} problem on 2-clusters signed graphs
 \vpageref{par:generalization_of_signed_graphs}, we introduce in \autoref{sec:edge_methods} several
 methods to solve it in practice. This ranges from tailoring the \kmeans{} algorithm to our goodness
 measure (\autoref{sub:edge_baseline}), to a convex relaxation of our objective function
-(\autoref{sub:edge_vector}) all the way to a richer and higher capacity matrix formulation allowing
+(\autoref{sub:edge_vector}) all the way through a richer and higher capacity matrix formulation allowing
 overlapping clustering of edges (\autoref{sub:edge_matrix}). Because finding publicly available real
 data with both node attributes and edge types proved difficult, we describe a synthetic model in
-\autoref{ssec:edge_synth} on which we perform extensive experiments. We then survey in
+\autoref{ssec:edge_exp}, on which we perform extensive experiments. We then survey in
 \autoref{sec:edge_related} works that are related to the \ecp{}, while noting that very few address
 it directly. Finally, we suggest in \autoref{sec:edge_conc} several directions in which our model
 could be extended to handle more general classes of graphs.
