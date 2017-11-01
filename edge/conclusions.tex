@@ -9,7 +9,7 @@ We could extend our approach to more general types of graphs and tasks:
     nodes and edges constantly appearing and disappearing~\autocite{networkEvolution14}. Slicing
     time into successive periods is one way to create edge types, one per period. For instance,
     \textcite{TimedUSSenate10} study the \np{110} congresses of the US senate between the years 1789
-    and 2008, where \np{1884} individual Senators are linked by their voting similarity, and show
+    and 2008, where \np{1884} individual Senators are linked by their voting similarity. They show
     how it improves the detection of relevant communities. Beyond predicting the relative order of
     links, it would also be interesting to include time into nodes similarity itself.
     %
@@ -51,7 +51,9 @@ We could extend our approach to more general types of graphs and tasks:
     types of edges, there are also several types of nodes. Since not all type of node can be
     connected with any type of edges, the possible connections are themselves represented as a meta
     graph called the network schema~\autocite[Definition 3]{HINSurvey17}. This approach would need
-    to be extended to deal with higher order patterns.
+    to be extended to deal with higher order patterns, for instance in a manner reminiscent of
+    composition of paths in multilayer graphs~\autocites{metapath11}[Section
+    4.2]{KnowledgeGraphSurvey17}.
 
   \item Among tasks that could benefit from labeling the edge of complex networks, we mention two.
     The first is \textbf{graph summarization} where the idea is to transmit a fraction of a large
