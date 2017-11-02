@@ -502,7 +502,8 @@ are fixed:
 \end{equation}
 While \eqref{eq:edge_PQ} is not jointly convex in both $P$ and $Q$, it is convex in one of
 them when the other is fixed. Therefore it can be solved via alternating optimization over $P$ and
-$Q$ using standard (projected) gradient descent algorithms, with the following partial derivatives:
+$Q$~\autocite{AlternatingOptim02} using standard (projected) gradient descent algorithms, with the
+following partial derivatives:
 \begin{align*}
   \frac{\partial \tilde{h}}{\partial P} &=
   \frac{1}{|E|} S^T Q + \frac{2\mu}{|V|}
