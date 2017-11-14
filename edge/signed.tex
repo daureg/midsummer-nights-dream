@@ -1,7 +1,7 @@
-\paragraph{Generalization of signed graphs}
+\paragraph{Connection with signed graphs}
 \label{par:generalization_of_signed_graphs}
 
-The learning bias of \autoref{chap:cc} implicitly defined an idealized \esp{} problem as:
+The learning bias of \autoref{sub:bias_balance} implicitly defined an idealized \esp{} problem as:
 \begin{problem}[idealized \esp{}]
   \label{p:edge_esp}
   Given $n$ nodes belonging latently to $K$ groups, predict whether two nodes $u$ and $v$ belong to
@@ -9,11 +9,11 @@ The learning bias of \autoref{chap:cc} implicitly defined an idealized \esp{} pr
 \end{problem}
 In \autoref{sec:gtx} we study in particular the important special case where $K=2$. Now consider an
 instance of \autoref{p:edge_full} where $k=2$, and where the profiles and edges are based on group
-membership. We show that the optimal solution of such an instance is exactly the solution of this
-idealized \esp{} problem on the same graph.
+membership. We now check that the optimal solution of such an instance is consistent with the
+solution of this idealized \esp{} problem on the same graph.
 
-Let us first define this instance formally. Given a graph $G=(V,E)$, we partition the nodes in two
-groups $L$ and $R$. We then define the nodes profiles $X$ as follow. We first draw \uar{} a vector $p$
+Let us first define this instance formally. Given a graph $G=(V,E)$, call the $K=2$ groups of
+\autoref{p:edge_esp} $L$ and $R$. We then define the nodes profiles $X$ as follow. We first draw \uar{} a vector $p$
 from $\{-1, 1\}^d$, then let the profiles in $L$ be $\frac{p}{\sqrt{d}}$ and the
 profiles in $R$ be $-\frac{p}{\sqrt{d}}$. We call this instance $\mathcal{I} = (G, X, k=2)$. With
 this choice, we have
@@ -29,7 +29,7 @@ m_i$ the number of edges between $L$ and $R$.
 
 \begin{prop}
   Let $\mathcal{D}_2 = \{w_1^\star, w_2^\star\}$ be an optimal solution of \autoref{p:edge_full} on the
-  instance $\mathcal{I}$. Then $\mathcal{D}_2$ provides the following optimal solution to
+  instance $\mathcal{I}$. Then $\mathcal{D}_2$ provides the following solution to
   \autoref{p:edge_esp}: each every edge explained by $w_1^\star$ is predicted positive, and every
   edge explained by $w_2^\star$ is predicted negative.
 \end{prop}
@@ -63,6 +63,21 @@ m_i$ the number of edges between $L$ and $R$.
   are to be predicted positive (respectively negative) in \autoref{p:edge_esp}.
 \end{proof}
 
+This is nothing more than a sanity check, as the profiles explicitly encode the membership of each
+node to one of the two groups. Indeed, the proof makes no use of the dimension $d$ of the profiles,
+so that $d=1$ would be enough. Slightly more interesting is the case were those profiles are set up
+as before, but perturbed \uar{}. Namely, the sign of each coordinate is changed with probability $p
+< \shalf$. One can then check that
+\begin{equation*}
+  \E \left[ s_{\mathrm{inner}} \right] = \frac{(1-2p)^2}{d} \onev =
+  -\E \left[ s_{\mathrm{inner}} \right] 
+\end{equation*}
+and that furthermore, the variance of each component is $\frac{8(p-p^2) - 16(p-p^2)^2}{d^2}$. While
+the previous $\{w_1^\star, w_2^\star\}$ solution is now only optimal in expectation, we see that the
+variance decrease quadratically with the dimension of the profiles. In practice we thus expect this
+solution to be very close to the optimal. Intuitively this can be seen as taking the majority of $d$
+votes on whether each node belongs to one group or the other.
+
 \begin{aside}
   It is natural to ask how this result can be extended to more than $K=2$ groups. The most natural
   idea is to use one-hot encoding of the group membership as profiles, with additional negative
@@ -72,16 +87,4 @@ m_i$ the number of edges between $L$ and $R$.
   numerically that $w_+ = \frac{\onev}{\sqrt{d}}$ and $w_- = \frac{-\onev}{\sqrt{d}}$ is the not the
   optimal solution, and that a solution achieving a larger objective function value does not cluster
   the edges between inner and outer groups.
-
-  The next thing I tried was to use the approach described later in \autoref{sub:edge_generation} in
-  order to optimize the profiles of a complete graphs with $K$ groups, given $w_+$, $w_-$ and the
-  inner/outer edges assignment. As one could expect from the symmetry of the problem, all the nodes
-  in the same group have the same profile. However, there are no clear pattern in those profile, and
-  once again there exists better solutions than $\{w_+, w_-\}$, which partition the edges in two
-  roughly balanced sets.
 \end{aside}
-
-Unpublished paper from CMU, give a link between edge types and k-CC: the inner and outer edge
-vectors are given, and assumed to be drawn from two different distributions. The goal is to recover
-the planted node partition using maximum likelihood estimation, which in this case can be formulated
-as \mind{} \pcc{} problem~\autocite{Barnes2016a}

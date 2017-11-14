@@ -11,93 +11,122 @@ between \ecp{} and \esp{} in signed graphs.
 \subsection{Setting and modelling}
 \label{sub:edge_setting}
 
-As in the previous chapter, we are given an undirected, unweighted graph $G=(V,E)$. This
-time though, we also have side information in addition to the graph topology. Namely, each node $u$
-is associated with a $d$-dimensional feature vector $x_u \in \Rbb^d$. As an example, in a social
-network, $x_u$ would be the profile of user $u$, describing $u$'s demographics and preferences. We
-are also given a combination operator $s$ between feature vectors, such that $s(x_u, x_v) = s_{uv}
-\in \Rbb^d$. Finally, we consider distinguished feature vectors $w_{uv}$,
-along which the combination $s_{uv}$ between two nodes $u$ and $v$ is evaluated. We call such
-$w_{uv}$ \emph{directions}, and constrain them to have unit norm.
-While being exactly of norm one is not primordial, the role of bounding the norm of the directions
-(\ie{} having $\sum_{i=1}^d {w_{uv}}_{;i}^2 \leq B^2$) is to tie the $d$ dimensions together.
-Without such a constraint, we could simply study each dimension separately, whereas this bound
-adds a coupling across different attributes, since increasing the weight of an attribute mechanically
+Like we wrote in the introduction, to classify edges, we make use of both the topology of the graph
+and the attributes of its nodes. Namely, we are given an undirected, unweighted graph $G=(V,E)$.  We
+also have side information in addition to the graph topology. It takes the form, for every node $u$,
+of a $d$-dimensional feature vector $x_u \in \Rbb^d$ that we call the \emph{profile} of $u$.
+Because we want to model heterophily, we more explicitly have that $x_u \in [-1, 1]^d$. To justify
+this statement, let us take the example of encoding the gender of a user in a social network,
+assuming there is only two values possible: male and female. Traditionally, this attribute would be
+set to $1$ if the user is female and $0$ otherwise. Instead, we use $+1$ and $-1$, to clearly
+emphasize the difference between the two values. The same is valid for continuous variables. For
+instance, an attribute could range from $-1$ to $+1$ to represent the ideological stance of a user
+on the conservative/liberal scale~\autocite{newsBias15}.\footnote{Note of course that in both cases,
+negative values do not represent a judgement but are merely a reversible mathematical convenience.}
+This applies even to non diverging positive quantities such as age, which can be projected to $[-1,
+1]$ using pre-processing like standardization or $z$-score.
+
+Stacking all these node profiles in a $|V| \times d$ matrix $X$, our input so far is $(G, X)$. As it
+is standard in classification problem, we are also given the number of edge types
+$k$.\footnote{Because our problem is essentially unsupervised, assuming that we are given $k$ is a
+simplification, on which we elaborate \vpageref{par:edge_choose_k}.} Moreover, recall that we do not
+merely want to classify edges into type, but also provide an explanation of why two nodes are
+connected. This requires the introduction of three further concepts:
+\begin{inparaenum}[1)]
+\item how to represent a connection (\ie{} an edge),
+\item how to represent an edge's explanation, and
+\item how to evaluate which explanation is the best.
+\end{inparaenum}
+We now present our modelling choice:
+
+\begin{enumerate}[1),nosep,leftmargin=*]
+  \item We naturally describe an edge $(u,v)$ through the profiles of its endpoints. More precisely,
+    we combine $x_u$ and $x_v$ by an operator $s$ defined as:
+    \begin{equation*}
+      s(u, v) = x_u \circ x_v = s_{uv} \in \Rbb^d \, ,
+    \end{equation*}
+    where $\circ$ stands for the Hadamard (or component wise) product. As showed in
+    \begin{marginfigure}
+      % \small
+      \captionsetup{font=small,type=table}
+      \captionof{table}{We show the effect of the Hadamard product in combining information from two
+        users $u$ and $v$. Instead of actual numbers, in this table we use $+$ to denote a large
+        positive value, $-$ to denote a large negative value, $0$ to denote a small absolute value
+        and $\star$ to denote an arbitrary value.
+      \label{tab:edge_sim}}
+      \begin{tabular}{ccc}
+        \toprule
+        ${x_u}_{;i}$ & ${x_v}_{;i}$ & ${s_{uv}}_{;i}$ \\
+        \midrule
+        $+$          & $+$          & $+$             \\
+        $-$          & $-$          & $+$             \\
+        $+$          & $-$          & $-$             \\
+        $0$          & $\star$      & $0$             \\
+        \bottomrule
+      \end{tabular}
+    \end{marginfigure}
+    \autoref{tab:edge_sim}, for each dimension $i \in \rangesd$, the $s_{uv}$ holds a value
+    indicating whether the profiles of $u$ and $v$ agree, disagree or are indifferent along that
+    dimension.
+  \item The $k$ explanations take the form of bounded norm vectors $\mathcal{D}_k = \{w_1, w_2,
+    \ldots, w_k\} \subset \dball$, where $\dball$ is the $\ell_2$-unit ball of $\Rbb^d$. We call such a
+    vector $w_\ell$, for $\ell \in \rangesk$, a \emph{direction}. As we shall explain more formally
+    later on, those directions are exactly the parameters learned while solving our problem.
+  \item Given an edge $(u,v)$, all the $k$ directions $\{w_1, w_2, \ldots, w_k\}$ provide a possible
+    explanation of why $u$ and $v$ are connected. We score these explanations by assigning them a
+    \emph{goodness} of explanation\footnote{Whereas the name is inspired by the concept of
+    \emph{goodness of fit}, there is no formal relation.} defined as:
+    \begin{equation*}
+      g(s_{uv}, w_\ell) = {s_{uv}}^T w_\ell \, .
+    \end{equation*}
+    As the $w$ notation hints, a direction can be interpreted as a set of weights. These weights
+    indicates to which extent each attribute contributes to the connection, according to that
+    direction. For a given set of directions $\mathcal{D}_k$, the classification of edges is
+    naturally performed by the following operator $\mathcal{E}$, returning the index of the
+    direction with the maximal goodness:
+    \begin{equation*}
+      \begin{array}[t]{lrcl}
+        \mathcal{E} : & E \times \left( \Rbb^d \times \ldots \times \Rbb^d \right)
+                      & \longrightarrow & \rangesk \\
+                      & (u,v), \mathcal{D}_k & \longmapsto
+                      & \argmax_{\ell \in \rangesk} g(s_{uv}, w_\ell)
+      \end{array}
+    \end{equation*}
+    Because it will be clear from context, we lighten the notation and simply write $\mathcal{E}(u,
+    v)$ instead of $\mathcal{E}\left((u, v), \mathcal{D}_k \right)$.
+\end{enumerate}
+
+This choice of $s$ and $g$ enjoy two interesting properties. First, it encompasses all cases of
+homophily, indifference and heterophily. For instance, given $x_u = \begin{pmatrix} 1 & 0 & -1
+\end{pmatrix}^T$ and $x_v = \begin{pmatrix} -1 & 1 & -1 \end{pmatrix}^T$, the direction $w =
+\begin{pmatrix} -\nicefrac{1}{\sqrt{2}} & 0 & \nicefrac{1}{\sqrt{2}} \end{pmatrix}^T \in \dball$
+achieves the maximal goodness. In doing so, it highlights that $u$ and $v$ disagree on the first
+component (\ie{} heterophily), agree on the last component (\ie{} homophily) and that the middle
+component is irrelevant (\ie{} indifference). This also shows that, second, given the linear nature
+of the goodness $g$ once $s_{uv}$ has been computed, it provides interpretable explanation of why
+two nodes are connected.
+
+Those two properties of $s$ and $g$ should not be taken for granted. Indeed, 
+a natural choice for the operator $s$ is the difference between the profiles, that is
+$s_{uv} = x_u - x_v$. In that spirit, if $u$ and $v$ are close along a direction $w_\ell$, we expect
+${x_u}^T w_\ell$ to be close to ${x_v}^T w_\ell$, as measured by $|{x_u}^T w_\ell - {x_v}^T
+w_\ell|$. And because it is easier to deal with smooth functions, we define the goodness to be $g(s_{uv},
+w_\ell) = -\left({s_{uv}}^T w_\ell \right)^2$, where the minus preserve the semantic than the
+\enquote{better} the direction $w_\ell$, the larger the goodness. However, with this formulation,
+there is no way to set ${w_\ell}_{;i}$ in order to \enquote{highlight} the fact that ${x_u}_{;i}$
+and ${x_v}_{;i}$ are widely different. Furthermore, the square in the goodness expression loses the
+linearity.
+
+We conclude with a last comment on the norm of the directions. While being exactly of norm one is
+not primordial, the role of bounding the norm of the directions (\ie{} having $\sum_{i=1}^d
+{w_\ell}_{;i}^2 \leq B^2$) is to tie the $d$ dimensions together. Without such a constraint, and we
+our choice of $s$ and $g$, we could simply study each dimension separately, whereas this bound adds
+a coupling across different attributes, since increasing the weight of an attribute mechanically
 affects the weights of the other attributes.
-
-Depending on the application, and the semantic we ascribe to links between nodes, we can design and
-interpret the combination operator $s$ as a difference, a similarity or a distance. Likewise, we
-also have some freedom in defining how $s_{uv}$ and $w_{uv}$ are combined to assign a single real
-value $g(s_{uv}, w_{uv})$ to the edge $(u,v)$. Let us call $g(w_{uv}, s_{uv})$ the \emph{goodness}
-of $w_{uv}$ with respect to the edge $(u,v)$. We view this value as how adequately the direction
-$w_{uv}$ \emph{explains}, or describes, the connection between $u$ and $v$.
-
-\medskip
-
-As written in the introduction, because we are interested in (partial) heterophilic links, we assume
-in the following that both the profiles and the directions are vectors with components in $[-1, 1]$.
-Let us take the example of encoding the gender of a user in a social network, assuming there is only
-two values possible: male and female. Traditionally, this attribute would be set to $1$ if the user
-is female and $0$ otherwise. Instead, we use $+1$ and $-1$, to clearly emphasize the difference
-between the two values. The same is valid for continuous variables. For instance, an attribute could
-range from $-1$ to $+1$ to represent the ideological stance of a user on the conservative/liberal
-scale~\autocite{newsBias15}.\footnote{Note of course that in both cases, negative values do not
-represent a judgement but are merely a reversible mathematical convenience.} This applies even to
-non diverging positive quantities such as age, which can be projected to $[-1, 1]$ using
-pre-processing such as standardization or $z$-score.
-
-A natural choice for the operator $s$ is then the difference between the profiles, that is
-$s_{uv} = x_u - x_v$. In that spirit, if $u$ and $v$ are close along a direction $w_{uv}$, we expect
-${x_u}^T w_{uv}$ to be close to ${x_v}^T w_{uv}$, as measured by $|{x_u}^T w_{uv} - {x_v}^T
-w_{uv}|$. Because we prefer to work with smooth functions, we define the goodness to be $g(s_{uv},
-w_{uv}) = \left({s_{uv}}^T w_{uv} \right)^2$, and we want to minimize it with respect to $w_{uv}$.
-When, on the \ith{} dimension, ${x_u}_{;i} - {x_v}_{;i}$ is close to zero, the minimization objective
-and the fact that $w_{uv}$ is
-unit-norm impose that ${w_{uv}}_{;i}$ should be large. On the other hand, with this formulation,
-there is no way to set ${w_{uv}}_{;i}$ in order to \enquote{highlight} the fact that
-${x_u}_{;i}$ and ${x_v}_{;i}$ are widely different.
-There might be situations where this is not a problem. But again,
-here we seek to model heterophilic interactions, at least along a subset of dimensions. Therefore,
-we now introduce a more flexible approach.
-
-Namely, we define $s$ to be the Hadamard (or component wise) product: $s_{uv} = x_u \circ x_v$, and
-$g$ to be the dot product: $g(s_{uv}, w_{uv}) = {s_{uv}}^T w_{uv}$. The goodness of a direction $w$
-for a given edge can thus be seen as a weighted sum of the per component similarity of $u$ and $v$
-profiles. Therefore, it must be maximized with respect to $w_{uv}$. For a given component $i$, when
-both ${x_u}_{;i}$ and ${x_v}_{;i}$ are large and of the same sign (that is close to either $+1$ or
-$-1$), we see that $u$ and $v$ agree on the \ith{} dimension, and ${w_{uv}}_{;i}$ must accordingly
-be a large positive value. On the other hand, when ${x_u}_{;i}$ and ${x_v}_{;i}$ are both large but
-of different signs (\eg ${x_u}_{;i} = +1$ and ${x_v}_{;i} = -1$), $u$ and $v$ strongly disagree on
-the \ith{} dimension, requiring in a large negative value for ${w_{uv}}_{;i}$.  Finally, if one of
-${x_u}_{;i}$ or ${x_v}_{;i}$ is zero, denoting either an unimportant feature or a missing value,
-then the value of ${w_{uv}}_{;i}$ does not matter, and will be set to zero by the maximization
-procedure because of the unit norm constraint on $w_{uv}$.
-
-\iffalse
-\begin{aside}
-When $s$ is a distance, and therefore positive, we impose $w_{uv}\geq 0$. A link $(u,v)$ is then
-well explained by $w_{uv}$ when observed differences along this direction are small. More precisely,
-when the quantity ${s_{uv}}^T w_{uv}$ is close to zero. Because $w_{uv}$ is unit norm, the \ith{}
-component of $w_{uv}$ should be large when the \ith{} feature of $x_u$ and $x_v$ are close. Hence, a
-null value for a component $i$ of $s_{uv}$ should not mean anything else than $u$ and $v$ share a
-known and similar feature $i$ (\eg{} the unknown value should be different from $0$). When $s$ is
-the difference $x_u - x_v$, it can be negative and the same reasoning can be applied, but with
-$w_{uv}\in [-1,1]^d$ and a link value of $\left({s_{uv}}^T w_{uv}\right)^2$.
-
-An alternative is to consider that the combination is a similarity. Links are created when the
-observed similarity is high. Again, if $s$ is positive, it seems reasonable to impose that
-$w_{uv}\geq0$ (and if $s$ can be negative, then $w_{uv}$ should be in $[-1,1]$). One main advantage
-of similarities is maybe to avoid (or minimize) problems with missing values setting them to 0.
-\end{aside}
-\fi
-
-\medskip
-
-This second choice of $s$ and $g$ is indeed more flexible, for it encompasses all cases of
-homophily, indifference and heterophily. Furthermore, since the profiles are given, the resulting
-$s_{uv}$ can be seen as constants, meaning that $g$ is linear and therefore interpretable. Finally,
-it also supports categorical data. We shall demonstrate all these features on a small example,
-but we first define formally our problem.
+For consistency, we also consider node profiles to be normalized and having unit norm. A further
+practical justification is that if nodes are users of a social network and the profiles measure
+their activity across several domains, this allows to compare users with various level of total
+activity.
 
 \subsection{Learning problem and additional constraints}
 \label{sub:edge_constraints}
@@ -105,18 +134,19 @@ but we first define formally our problem.
 \paragraph{Problem definition}
 
 With working definitions of $s$ and $g$ at hand, we now formally write down the problem of
-finding and assigning the most informative directions to every edge of $G$
+finding the directions maximizing the goodness of the graph.
 \begin{problem}[\ecp{}]
   \label{p:edge_full}
   Given a graph $G=(V, E)$, node profiles $X\in [-1, 1]^{n\times d}$ and an integer $k \in \Nbb$,
-  find a set of $k$ unit-norm directions $\mathcal{D}_k = \{w_1, w_2, \ldots, w_k\} \in \dsphere$
+  find a set of $k$ norm-bounded directions $\mathcal{D}_k = \{w_1, w_2, \ldots, w_k\} \in \dball$
   and associate to every edge of $E$ the direction with the maximal goodness. Formally, solve
   \begin{equation}
     \label{eq:edge_full}
-    \argmax_{w_1,\ldots,w_k \in \dsphere}
-    \sum_{u,v \in E} \max_{\ell \in \rangesk} g(s_{uv}, w_{\ell})
+    \argmax_{\mathcal{D}_k = \{w_1,\ldots,w_k\} \subset \dball}
+    \sum_{u,v \in E}  g(s_{uv}, w_{\mathcal{E}(u,v)})
   \end{equation}
-  where $s_{uv} = x_u \circ x_v$ and $g(s_{uv}, w_{\ell}) = {s_{uv}}^T w_{\ell}$.
+  where $s_{uv} = x_u \circ x_v$, $g(s_{uv}, w_{\ell}) = {s_{uv}}^T w_{\ell}$ and $\mathcal{E}(u,v)
+  = \argmax_{\ell \in \rangesk} g(s_{uv}, w_\ell)$.
 \end{problem}
 
 \paragraph{Example}
@@ -134,8 +164,8 @@ same companies, especially at \textsf{G}, while the second directions covers for
 \textsf{F} having different \textsf{age} and \textsf{opinion}. Not only are the results
 interpretable as claimed before, but we can also assess the strength of each explanation, using
 their goodness. For instance, we see that the edge between $x$ and $y$ has a low score, because
-although those two users have the same \textsf{age} and used to work at \textsf{F}, they do not
-share a position at \textsf{G}.
+although those two users have the same \textsf{age} and used to work at \textsf{F}, not both of them
+works at \textsf{G}.
 
 \begin{figure*}[htpb]
   % \centering
@@ -154,7 +184,7 @@ share a position at \textsf{G}.
     \small
     \begin{tabular}{lrrrrr}
       \toprule
-      {}    & G   & F    & gender & age    & opinion \\
+      {} & \textsf{G} & \textsf{F} & \textsf{gender} & \textsf{age} & \textsf{opinion} \\
       \midrule
       $u$   &  $+1$ &   $0$ &   $-1$ &  $-0.8$ &     $0$ \\
       $v$   &  $+1$ &  $-1$ &   $-1$ &  $-0.7$ &    $+1$ \\
@@ -167,8 +197,10 @@ share a position at \textsf{G}.
       $w_2$ &  $0$  &  $+4$ &    $0$ &    $-2$ &    $-4$ \\
       \bottomrule
     \end{tabular}
-    \caption{The numerical attributes of the six nodes. They are followed by the (non normalized)
-    two directions $w_1$ and $w_2$.} \label{tab:edge_exe}
+    \caption{The numerical attributes of the six nodes. All are categorical encoded with a ternary
+      scheme, except for \textsf{age}, which has been transformed to fit in $[-1, 1]$.
+      They are followed by the (non normalized) two directions $w_1$ and $w_2$.}
+      \label{tab:edge_exe}
   \end{subfigure}
   \caption{A small instance of \ecp{} and an handcrafted solution, albeit non-optimal.}
   \label{fig:edge_exe}
@@ -198,26 +230,30 @@ too large.
 
 In addition to assume that the input graph is the superposition of a small number of layers,
 another way to leverage the graph topology is to define local constraints at the node level.
-For that we will consider node profiles to be normalized and having unit norm. A practical
-justification is that if nodes are
-users of a social network and the profiles measure their activity across several domains, this
-allows to compare users with various level of total activity. Furthermore, we assume that profiles
-are linear combination of directions, that
-is $x_u = b_u + \sum_{v \in \nei(u)} a_{uv} w_{uv}$, where $a_{uv}$ are real weights and $b_u
-\in \Rbb^d$ is the bias vector of $u$, \ie{} its inherent profile taken in isolation.
-Viewed in the other direction, this can be interpreted as follow: each time a node $u$
-connects to another node $v$ along a direction $w_{uv}$, it \enquote{consumes} a part of its profile
-proportional to $w_{uv}$. Therefore, we subtract the term
+Indeed, one of our motivation is that it is not enough to look at edges in isolation, but rather we
+expect the connections of one node to influence the connections of its neighbors. We now present two
+of these local, node-level constraints. 
+
+First, if a graph was to perfectly follow our model, every edge $(u,v)$ would be maximally explained
+by one of the $k$ directions. This would happen if the profiles of $u$ and $v$ were collinear with
+this direction, up to sign reversal. When considering several edges, we could imagine that the nodes
+profiles result from the following process. Two nodes $u$ and $v$ establish a connection by first
+picking a direction $w_\ell \in \mathcal{D}_k$ and add to their base vector $b_u$ and $b_v \in
+\Rbb^d$ a fraction $a_{uv} > 0$ of $w_\ell$. We therefore subtract the following term
 \begin{equation}
   \label{eq:edge_node_loss}
   \mathcal{L}_{\mathrm{node}} =
-  \sum_{u\in V} \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2_2
+  \sum_{u\in V} \left|\left| x_u - b_u -
+  \sum_{v \in \nei(u)} a_{uv} w_{\mathcal{E}(u,v)} \right|\right|^2_2
 \end{equation}
-from \eqref{eq:edge_full}.
+from \eqref{eq:edge_full}. The cost we pay is introducing the extra parameters $\{a_{uv}\}_{uv \in
+E}$ and $\{b_u\}_{u \in V}$ to be learned, but we will see in the next section how to handle that in
+practice. On the other hand, it has two advantages. First, this is another way, besides goodness, in
+which the (given) profiles provide prior information about the (unknown) directions, and thus
+restrain the search space. Second, this makes the directions dependent of the topology of the graph,
+by coupling them with the neighborhood of each node.
 
-\bigskip
-
-We also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
+Second, we also make the assumption that each node $u$ is only involved in $k_\mathrm{local} < k$
 different directions. The intuition is that when $d$ is large enough, users have to focus their
 energy and can only express their interest in a few number of dimensions. In other words, all the
 edges incident to $u$ can only be associated with one of $k_\mathrm{local}$ directions. For
@@ -235,8 +271,11 @@ how many times each direction is incident to node $u$. We thus want the $\ell_0$
 (\ie the number of its non-zero component) to be upper bounded by $k_\mathrm{local}$.
 This is not a convex constraint but we can relax it, for such sparsity inducing problems have been
 well studied~\autocite{sparseOptim12}. Namely, we let $y_{uv}$ be a softmax membership
-$k$-dimensional vector, that is we set $\forall i \in \rangesk\,, y_{uv,i} =
-\frac{\exp(\beta{s_{uv}}^T w_i)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_j)} $, with $\beta>0$ a large
+$k$-dimensional vector, that is we set, $\forall i \in \rangesk$,
+\begin{equation*}
+  y_{uv,i} = \frac{\exp(\beta g(s_{uv}, w_i))}{\sum_{j=1}^k \exp(\beta g(s_{uv}, w_j))}\,,
+\end{equation*}
+with $\beta>0$ a large
 positive constant.  And we replace the $\ell_0$ norm by a $\ell_1$ norm (or even a $k$-support
 norm~\autocite{KsupportNorm12}), yielding the following $\mathcal{L}_{\mathrm{local}}$ term to be
 minimized:
@@ -245,22 +284,39 @@ minimized:
   \mathcal{L}_{\mathrm{local}} =
   \sum_{u \in V} \left\| \sum_{v \in \nei(u)} y_{uv} \right\|_1 =
   \sum_{u \in V} \left( \sum_{i = 1}^k \sum_{v \in \nei(u)}
-  \frac{\exp(\beta{s_{uv}}^T w_i)}{\sum_{j=1}^k \exp(\beta {s_{uv}}^T w_j)} \right)
+  \frac{\exp(\beta g(s_{uv}, w_i))}{\sum_{j=1}^k \exp(\beta g(s_{uv}, w_j))} \right)
 \end{equation}
-
-These two constraints can be combined, so that the profiles are close to a linear combination of a
-small number of directions.
+It is reasonable to further expect that two neighboring nodes share one common direction among their
+$k_\mathrm{local}$ ones. One way to ensure this condition is to imagine that the set of allowed
+$k_\mathrm{local}$ directions changes smoothly over the graph. This property depends of the
+topology, as we can see by considering two extreme cases: a line and a complete graph. On the line,
+once a node has picked two allowed directions from its two neighbors, the remaining ones can be
+chosen arbitrarily. On the complete graph on the other hand, this choice is must more constrained.
 
 \input{signed}
 
 \section{Proposed approaches}
 \label{sec:edge_methods}
 
-After having introduced \autoref{p:edge_full} and some additional constraints, we now present
-methods to solve it. We start with a naive baseline, and propose a post-processing to improve it.
-Then we describe a convex relaxation. Finally, we depart slightly from finding $k$ directions by
+We now introduce the five methods solving \autoref{p:edge_full} that we will experimentally compare
+in the next section. Recall that given a graph topology $(V, E)$ and node profiles $X$, we first
+build the edges representation $\mathcal{S} = \{s_{uv}\}_{(u,v) \in E}$ and then look for $k$
+bounded directions that maximize the total goodness of the graph, possibly under topological
+constraints. We start with a straightforward baseline, which simply performs a \newline
+\hspace*{14pt} 1) \kmeans{} clustering of $\mathcal{S}$, \newline
+and propose a post-processing to improve it, plugging our custom goodness metric into the existing
+\newline \hspace*{14pt} 2) \lloyd{} algorithm for clustering. \newline
+Because these two methods consider each edge in isolation with no regard for the topology, we then
+describe a convex relaxation of the objective in equation \eqref{eq:edge_full}, which is further
+\newline \hspace*{14pt} 3) \combined{} with the node constraint of equation
+\eqref{eq:edge_node_loss}. \newline
+Finally, we depart slightly from finding $k$ directions by
 considering a low-rank matrix formulation, where each edge is assigned a linear combination of a
-small number of base directions, paving the way to overlapping clustering.
+small number of base directions, paving the way to overlapping clustering. More precisely, we
+give a convex formulation of that objective that can be solved by a \newline
+\hspace*{14pt} 4) \fwa{} algorithm, \newline
+as well an alternating optimization method, where we make the low-rank factorization \newline
+\hspace*{14pt} 5) \pqt{}.
 
 \subsection{\kmeans{} baseline and improvement}
 \label{sub:edge_baseline}
@@ -268,7 +324,7 @@ small number of base directions, paving the way to overlapping clustering.
 A simple and natural baseline is to cluster the set of all similarity edge vectors $
 \theset{s_{uv}}{(u,v) \in E}$ using the $k$-means algorithm, where $k$ is the number of directions
 set in \autoref{p:edge_full}. Formally, given the graph $G=(V,E)$ and the node profiles $X$ as
-input, we order the edges from $e_1$ to $e_m$. Then we build the matrix $S \in \Rbb^{m\times d}$, whose
+input, we order the edges from $e_1$ to $e_m$. Then we build the matrix $S \in \Rbb^{|E|\times d}$, whose
 \ith{} row is the similarity $s_{uv} = x_u \circ x_v$ between the profiles of the endpoints of $e_i=(u,v)$.
 Running $k$-means on the rows of $S$ will thus partition $E$ into $k$ sets of edges, call them $E_1,
 \ldots, E_k$. A drawback of that simplicity is that it does not solve \autoref{p:edge_full}.
@@ -311,18 +367,30 @@ $k$-means algorithm, obtaining convergence guarantees in the general case would 
 practice we expect that only a small number $T$ of iterations would be needed. We call this method
 \lloyd{} and note it also has a linear complexity of $O(Td|E|)$.
 
+In both cases, those methods do not take the topology of the graph into account, motivating the
+following approaches.
+
 \subsection{Convex relaxation}
 \label{sub:edge_vector}
 
-The difficulty in optimizing directly \eqref{eq:edge_full} stems from the inner $\max$ operator, which we
+By unrolling the operator $\mathcal{E}$ in \eqref{eq:edge_full}, we can rewrite our optimization
+objective as
+\begin{equation}
+  \label{eq:edge_unroll}
+  \argmax_{\mathcal{D}_k = \{w_1,\ldots,w_k\} \subset \dball}
+  \sum_{u,v \in E}  \max_{\ell \in \rangesk} g(s_{uv}, w_\ell)
+\end{equation}
+The difficulty in optimizing directly \eqref{eq:edge_unroll} stems from the inner $\max$ operator, which we
 replace here by a convex relaxation. Indeed, one can check that given a set of numbers $S=\{a_1,
 a_2, \ldots, a_{|S|}\}$ and real number $\beta > 0$, we have
 \begin{equation*}
   \max_{a_i \in S} a_i = \lim_{\beta \rightarrow + \infty} \frac{1}{\beta}
   \log\left( \sum_{i=1}^{|S|} \exp{(\beta a_i)} \right)
 \end{equation*}
-Using this fact, and averaging the two components of our objective function, we can rewrite
-\eqref{eq:edge_full} as:
+  \label{}
+Using this fact, and dividing the goodness term and the $\mathcal{L}_{\mathrm{node}}$ term of
+\eqref{eq:edge_node_loss} respectively by the number of edges and nodes so that they have comparable
+magnitude, we now have the following objective:
 \begin{equation}
   \label{eq:edge_soft_early}
   \argmax_{{\substack{w_1,\ldots,w_k \in \dsphere,\\
@@ -330,12 +398,12 @@ Using this fact, and averaging the two components of our objective function, we 
   \frac{1}{|E|\beta} \sum_{u,v\in E}
   \log\Bigl(\sum_{\ell=1}^k\exp\left(\beta {s_{uv}}^T w_\ell \right)\Bigr)
   - \frac{\mu}{|V|}\sum_{u\in V}
-  \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2,
+  \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{\mathcal{E}(u,v)} \right|\right|^2,
 \end{equation}
 where $\mu > 0$ is a trade-off parameter.
-Note that in the second term, because we do not know the edge assignment, we have to decide which of the
-$w_1, \ldots, w_k$ is $w_{uv}$ equal to. According to our definition of the goodness function, we
-want to let $w_{uv} = \argmax_{w_\ell \in \mathcal{D}_k} {s_{uv}}^T w_\ell$. However, the $\argmax$
+
+Note that in the second term, $w_{\mathcal{E}(u,v)} = \argmax_{w_\ell \in \mathcal{D}_k} {s_{uv}}^T
+w_\ell$. However, the $\argmax$
 function is again not convex and we thus use the same relaxation as before. Namely, this relaxation
 $\mathcal{A}$ takes as input a $k$-tuple of directions and return their sum weighted by the softmax
 function as follow:
@@ -346,16 +414,17 @@ $$ \begin{array}[t]{lrcl}
 \end{array} $$
 This function has an explicit derivative with respect to any $w_i$, but it is rather costly to
 compute and in practice we
-found automatic differentiation~\autocite{autograd15} to be more efficient. Whereas the modified
-objective function \eqref{eq:edge_soft_early} is now jointly convex in all its variables, the set
-$\dsphere$ is not. To ease
+found automatic differentiation~\autocite{autograd15} to be more efficient.
+
+We make two further simplifications. First, notice that the set $\dsphere \times \ldots \times
+\dsphere$ is not convex. To ease
 the optimization procedure, we thus only impose the directions $w_\ell$ to lie within the unit ball
 and expect them to have norm close to one in order to maximize the dot product in the ${s_{uv}}^T
 w_\ell$ term\footnote{Indeed, since the first term is convex, its maximum can only be reach at the
 boundary of the feasible domain~\autocite[Theorem 32.1]{convexAnalysis70}. However, we are also
 subtracting another convex term and the resulting function is therefore more complicated.}.
-A further simplification is that while \eqref{eq:edge_soft_early} requires to optimize
-$kd + |E| + |V|d$ parameters, we fix $a_{uv} = 1$ and $b_u = \onev$ for all edges and nodes in order
+Second, while \eqref{eq:edge_soft_early} requires to optimize
+$kd + |E| + |V|d$ parameters, we fix $a_{uv} = \deg(u)$ and $b_u = \zerov$ for all edges and nodes in order
 to be independent of the size of the graph. The final problem solved by our \combined{} method using
 (full) projected gradient descent is therefore:
 \begin{equation}
@@ -363,15 +432,15 @@ to be independent of the size of the graph. The final problem solved by our \com
 \!  \argmax_{w_1,\ldots,w_k \in \dball}
   \frac{1}{|E|\beta} \sum_{u,v\in E}\!
   \log\Bigl(\sum_{\ell=1}^k\exp\left(\beta {s_{uv}}^T w_\ell \right)\Bigr)
-  - \frac{\mu}{|V|}\sum_{u\in V}
-  \left|\left| x_u  - \sum_{v \in \nei(u)}\!\! \mathcal{A}(w_1,\ldots,w_k) \right|\right|^2
+  - \frac{\mu}{|V|}\sum_{u\in V} \left|\left| x_u  - \frac{1}{\deg(u)}
+  \sum_{v \in \nei(u)}\!\! \mathcal{A}(w_1,\ldots,w_k) \right|\right|^2
 \end{equation}
 
 \subsection{Matrix optimization}
 \label{sub:edge_matrix}
 
 Besides relaxing the $\max$ operator from \eqref{eq:edge_full}, another solution to remove it would
-be to increase $k$ to be equal to $E$. As we already mentioned, this makes the problem trivial. To
+be to increase $k$ to be equal to $|E|$. As we already mentioned, this makes the problem trivial. To
 avoid this, we add the constraint that all those $|E|$ directions are linear combinations of a small
 number $k$ of basis directions. In order to formulate this more clearly, we rewrite the previous
 objectives with matrices. We first show this can be expressed in a form that is amenable to the
@@ -411,15 +480,6 @@ the regularization parameter with an upper bound $\delta$ on the nuclear norm of
   \min_{\substack{W\in \mathbb{M}^{d\times |E|} \\ \|W\|_* \leq \delta}} -\frop{S^T}{W}\,.
 \end{equation*}
 
-At this stage, we could also add the node loss term \eqref{eq:edge_node_loss}, expressed in matricial
-form as $\|X - B -
-C\left(A\circ W^T \right)\|_F^2$, where $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$
-stacked vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$, $A \in \Rbb^{|E|
-\times d}$ is the matrix whose each row is the corresponding $a_{uv}\onev$ vector and $\|\cdot\|_F$
-denotes the Frobenius norm. Note that this term is jointly convex in $A$, $B$ and $W$.\footnote{As
-one can check that the inequality defining convexity holds for this function.} However, for the
-clarity of exposition, we refrain to do so for now.
-
 The remaining issue is that $W\in \mathbb{M}^{d\times |E|}$ is not a convex constraint. As in the
 previous formulation, we thus relax it by simply imposing that the $\ell_2$ norm of the columns of
 $W$ are not too large. In fact, we already have a bound on these column norms, because of the
@@ -447,7 +507,7 @@ $W$ satisfies $\|W_{:,i}\|_2 \leq \delta\sqrt{d}$.
 However, setting $\delta = \nicefrac{1}{\sqrt{d}}$ is too stringent in high dimension, and because
 this inequality is rather loose, it will likely results in very small column norms. Instead of
 relying solely on the nuclear norm constraint, we therefore add an additional regularization term
-equal to $\mu \sum_{i=1}^{|E|} \|W_{:,i}\|_2 = \mu \frop{W}{W}$. Our final convex formulation is
+equal to $\mu \sum_{i=1}^{|E|} \|W_{:,i}\|_2^2 = \mu \frop{W}{W}$. Our final convex formulation is
 then:
 \begin{equation}
   \label{eq:edge_FW}
@@ -498,19 +558,28 @@ are fixed:
 \begin{equation}
   \label{eq:edge_PQ}
   \min_{P\in\mathbb{M}^{d\times k}, Q\in\mathbb{M}^{|E|\times k}} \quad \tilde{h}(P, Q) =
-  - \frop{S}{PQ^T} + \mu \|X - B - C\left(A\circ QP^T \right)\|_F^2
+  - \frop{S^T}{PQ^T} + \mu \|X - B - C\left(A\circ QP^T \right)\|_F^2
 \end{equation}
+
+The second term corresponds to the node loss term of equation \eqref{eq:edge_node_loss}, expressed
+in matricial form as $\|X - B -
+C\left(A\circ W^T \right)\|_F^2$, where $B\in \Rbb^{|V| \times d}$ is the node bias vectors $b_u$
+stacked vertically, $C \in \Rbb^{|V| \times |E|}$ is the incidence matrix of $G$, $A \in \Rbb^{|E|
+\times d}$ is the matrix whose each row is the corresponding $a_{uv}\onev$ vector and $\|\cdot\|_F$
+denotes the Frobenius norm. As previously, we set $B=0$ and the rows of $A$ to be one over the
+degree of the node at the origin of the corresponding edge.
+
 While \eqref{eq:edge_PQ} is not jointly convex in both $P$ and $Q$, it is convex in one of
 them when the other is fixed. Therefore it can be solved via alternating optimization over $P$ and
 $Q$~\autocite{AlternatingOptim02} using standard (projected) gradient descent algorithms, with the
 following partial derivatives:
 \begin{align*}
   \frac{\partial \tilde{h}}{\partial P} &=
-  \frac{1}{|E|} S^T Q + \frac{2\mu}{|V|}
+  S^T Q + 2\mu
   A^T \circ (((X-B)^T -A^T \circ (PQ^T )C^T )C)Q 
   \\
   \frac{\partial \tilde{h}}{\partial Q} &=
-  \frac{1}{|E|} S P + \frac{2\mu}{|V|}
+  S P + 2\mu
   A\circ (C^T (X-B-C(A\circ (QP^T ))))P.
 \end{align*}
 Because the problem is not jointly convex, we are less concerned with the domains of the variables
@@ -520,8 +589,8 @@ and $Q\in\mathbb{M}^{|E|\times k}$, each column of the resulting $PQ^T$ is a lin
 $k$ unit norm vectors of $P$ with weights whose square sum to $1$ and thus their norm is bounded by
 $\sqrt{k}$. As opposed to all the previous methods, computing the full gradient is not linear in the
 number of edges. Indeed, computing the product $S^T Q$ requires $O(|E|^\omega)$ arithmetic
-operations, where $\omega \geq 2$\footnote{$\omega$ is the optimal exponent of matrix multiplication
-algorithm.}. This could be mitigated by using stochastic gradient descent. Finally, to obtain a
+operations, where $\omega \geq 2$ is the optimal exponent of matrix multiplication
+algorithm. This could be mitigated by using stochastic gradient descent. Finally, to obtain a
 solution of the \ecp{} \autoref{p:edge_full}, we take the directions to be the columns of the
 resulting $P$, and the assignment to be a $k$-means clustering of the rows of $Q$.
 
@@ -530,7 +599,7 @@ resulting $P$, and the assignment to be a $k$-means clustering of the rows of $Q
 While the \pqt{} formulation is not convex, in practice we initialize it with the solution from
 \combined{} and it thus converge after few iterations. Namely, we set $P_0 \in \mathbb{M}^{d\times
 k}$ to be the final directions found by \combined{} and the rows of $Q_0 \in \mathbb{M}^{|E|\times
-k}$ to be equal to the corresponding $e_{\yhat_{uv}}$\stodo{notation}. Furthermore, in the projection
+k}$ to be equal to the corresponding $e_{\mathcal{E}(u,v)}$. Furthermore, in the projection
 step of the $Q$ variable, we actually ensure that all the entries of $Q$ are positive, which makes
 them easier to  interpret as weights for the basis directions of $P$. This is something that we
 cannot guarantee on the decomposition of the matrix $W$ obtained by the \fwa{} method. On the other

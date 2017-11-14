@@ -6,7 +6,7 @@ compare in our experiments. Specifically, this includes:
 \begin{enumerate}[1.,nosep]
 \item the \kmeans{} baseline,
 \item our \lloyd{}-like iterative refinement,
-\item the \combined{} convex optimization of \eqref{eq:edge_soft},
+\item the \combined{} optimization of the two terms in \eqref{eq:edge_soft},
 \item the \fwa{} convex optimization of \eqref{eq:edge_FW} and
 \item the \pqt{} explicit low-rank factorization, optimizing \eqref{eq:edge_PQ}.
 \end{enumerate}
@@ -16,67 +16,55 @@ assignment of every edge to one of these directions.
 We try those five methods on data generated synthetically to fit our model described previously in
 \autoref{sub:edge_setting}, and study how they perform under various conditions.
 
-% (that is $\yhat$ is a function from $E$
-% to $\rangesk$ such that $\yhat_{uv}$ is the index of the direction assigned to the edge $(u,v)$).
-
-\subsection{Generation}
+\subsection{Data generation}
 \label{sub:edge_generation}
 
 While there exists several methods to generate attributed graph with community
 structure~\autocites{Yang2013}{XuBayesian14}{Kataoka2016}, here we present the one we adopted for
 our initial experiments, as it is specifically tailored to the model introduced in \autoref{sub:edge_setting}.
-Given a number of directions $k$, a maximum number $k_\mathrm{local}$ of directions
-incident to each node, the dimension of profiles $d$ and a number of node $n$, it return a graph
-$G=(V,E)$, a profile matrix $X\in \Rbb^{n\times d}$, a set of $k$ directions $\mathcal{D}_k$ and an
-assignment from every edge $(u,v)$ to a direction $w_{uv} \in \mathcal{D}_k$ such that in most
-cases, $\forall w_\ell \in \mathcal{D}_k \setminus \{w_{uv}\}\,, {s_{uv}}^T w_{uv} \geq  {s_{uv}}^T
-w_\ell$.
+It takes the following parameters as input:
+\begin{itemize}[nosep]
+  \item the number of nodes $n$,
+  \item the dimension of their profiles $d$,
+  \item the total number of directions $k$,
+  \item the maximum number $k_\mathrm{local}$ of directions incident to each node, and
+  \item an integer $n_o$ controlling to which extent two distinct directions explain common dimensions.
+\end{itemize}
+It then returns:
+\begin{itemize}[nosep]
+  \item a graph topology $G=(V,E)$,
+  \item a profile matrix $X\in \Rbb^{n\times d}$,
+  \item a set of $k$ directions $\mathcal{D}_k \subset \dball$, and
+  \item an assignment from every edge $(u,v)$ to a direction index $y_{uv} \in \rangesk$ such that in
+    most cases, $\mathcal{E}(u,v) = y_{uv}$. In other words, the direction assigned to $(u,v)$ is
+    indeed the one achieving maximum goodness. We will explain later why this is not always the
+    case.
+\end{itemize}
+Our methods essentially proceeds as follow:
+\begin{enumerate}[1),nosep]
+  \item We create an appropriate number of small Erdős-Rényi subgraphs and assign to each node a set of
+    $k_\mathrm{local}$ directions such that most pairs of adjacent nodes have at least one
+    directions in common (as we motivated after having introduced equation \eqref{eq:edge_local_loss}
+    \vpageref{eq:edge_local_loss}).
+  \item We connect the blocks by several pairs of nodes having one direction in common, and pick for
+    each edge $(u,v)$ a direction index $y_{uv} \in \rangesk$ among the ones shared by its endpoint.
+  \item We draw the $k$ directions at random, ensuring they respect the parameter $n_o$.
+  \item Finally, we optimize the profiles so as to simultaneously maximize the edges goodness,
+    minimize the term $\mathcal{L}_{\mathrm{node}}$ of equation \eqref{eq:edge_node_loss} and
+    enforces as much as possible that for every edge $(u,v) \in E$, $\mathcal{E}(u,v) = y_{uv}$.
+\end{enumerate}
+Steps 1 and 2 generate a graph topology $(V, E)$, while steps 3 and 4 generates directions and
+profiles $(\mathcal{D_k}, X)$. Note however that step 3 is independent of the steps 1 and 2, while
+step 4 is dependent of all the previous steps.
+We now describe each of these steps in more details.
 
-We first generate the $k$ unit-norm directions $\mathcal{D}_k=\{w_1, \ldots, w_k\}$, independently
-of the graph. Furthermore, we control the number of coordinates $n_o$ that overlap with each other.
-That is, when $n_o = 0$, each direction has exactly \nicefrac{k}{d} non-zero dimension that are
-disjoint.\footnote{We choose $d$ to be a multiple of $k$.} On the other hand, if for instance $n_o=5$,
-then $5$ of the $d$ dimensions will have two directions with non-zero components on it. Those
-non-zero components are drawn \uar{} from $[-1, 1]$ and the each directions is then normalized. For
-instance, with $d=6$, $k=3$ and $n_o=2$, we could generate the following directions, where the dots
-represents non-zero numbers and the blue ones are overlapping:
-\vspace{-.5\baselineskip}
-\begin{center}
-  \begin{tabular}{ccc}
-    $w_1$ & $w_2$ & $w_3$ \\
-    $\begin{pmatrix}
-      \bullet \\
-      0 \\
-      \bullet \\
-      0 \\
-      0 \\
-      \textcolor{DodgerBlue}{\bullet}
-    \end{pmatrix}$ &
-    $\begin{pmatrix}
-      0 \\
-      \bullet \\
-      0 \\
-      \textcolor{DodgerBlue}{\bullet} \\
-      \bullet \\
-      0
-    \end{pmatrix}$ &
-    $\begin{pmatrix}
-      0 \\
-      0 \\
-      0 \\
-      \bullet \\
-      0 \\
-      \bullet
-    \end{pmatrix}$
-  \end{tabular}
-\end{center}
-
-The next step is to create the graph topology, which we do by assembling small Erdős-Rényi
-subgraphs~\autocites{erdos1959random}{gilbertRG59} that we call \emph{blocks}. Furthermore, driven
-by the topological constraint approximated by \eqref{eq:edge_local_loss} mentioned earlier, we
+\begin{enumerate}[1),leftmargin=*]
+\item
+We first create small Erdős-Rényi
+subgraphs~\autocites{erdos1959random}{gilbertRG59} that we call \emph{blocks}. Then we
 assign to each node a $k_\mathrm{local}$-tuple of
-directions such that two adjacent nodes have \emph{at least} one common direction that can later be
-assigned to the edge between them. For convenience, let us first identify directions with colors and
+directions such that two adjacent nodes have \emph{at least} one direction in common.
+For convenience, let us first identify directions with colors and
 thus call such a $k_\mathrm{local}$-tuple of directions a \emph{palette}. For a given palette $p$,
 we call adjacent palettes, denoted $\adj(p)$, all the palettes different from $p$\footnote{We ruled
 out $p$ being adjacent to itself to avoid the trivial solution of all nodes being assigned the same
@@ -91,91 +79,170 @@ contain a $1$ (respectively $2$), which is not possible (because two connected n
 same palette). On the other hand, if we assign $(1,3)$ to the second, the third node can only have
 $(2,3)$, meaning the fourth node has again no palette available. The same situation arises with $(1,4)$ and
 $(2,4)$ respectively.} we now describe a simple heuristic. It performs a breath first visit of a subgraph,
-starting from a random node. Upon visiting an uncolored node $u$, it builds the intersection $P$ of
-all the adjacent palettes of the palette of its colored neighbors (\ie{} $P=\bigcap_{v\in \nei(u)}
-\adj(p_v)$). Then it selects \uar{} a palette from $P$, or an arbitrary palette if $P$ is empty (see
-\begin{marginfigure}
+starting from a random node. Upon visiting an uncolored node $u$, it builds a set $P$ of palette
+respecting the colouring constraint. Namely, for every colored neighbor $v$ of $u$, it retrieves the
+adjacen palettes of $v$'s palette and builds their intersection:
+\begin{equation*}
+  P=\bigcap_{v\in \nei(u)} \adj(p_v)\,.
+\end{equation*}
+Then it selects \uar{} a palette from $P$, or an arbitrary palette if $P$ is empty: see
+\autoref{fig:edge_palette} for a small illustration. Once all nodes have been colored, we count the
+number of edges that are colorless. We repeat this procedure, keeping track of the palettes assignment
+minimizing the number of colorless edges.
+
+\item
+Once we colored the nodes of every block, we look at pair
+of blocks, build a list of all edges between blocks that are not colorless and sample from it to
+connect blocks. The last step is to a assign a color $y_{uv}$ to each edge $(u,v)$ from the shared color of its
+endpoint (or an arbitrary color for colorless edges). We note that this is reminiscent of the stochastic
+block model, although the probabilities of edges between blocks are not uniform, for they depend of
+the palette assigned to every node.
+\begin{figure}[bht]
   \centering
-  \includegraphics[width=\textwidth]{tikz/edge_palette_tikz.pdf}
+  \includegraphics[width=0.4\textwidth]{tikz/edge_palette_tikz.pdf}
   \caption{A small example of the node palette assignment, with $k=4$ colors (blue, green, red and
-    orange) and palette of size $k_\mathrm{local}=3$. We assume nodes $1$ and $2$ have already been
+    orange) and palettes of size $k_\mathrm{local}=3$. We assume nodes $1$ and $2$ have already been
     visited, and got assigned the palette $(\text{blue, green, red})$ and $(\text{blue, green,
-    orange})$ respectively. Moreover, we are currently at $3$ while $4$ is yet uncolored. In that
-    case, there are two possible palettes for $3$. If we select $(\text{green, red, orange})$, a
+    orange})$ respectively. Moreover, we are currently visiting node $3$ while node $4$ is yet uncolored. In that
+    case, there are two possible palettes for node $3$. If we select $(\text{green, red, orange})$, a
     possible color assignment for the edges $(1,2)$, $(1, 3)$ and $(2, 3)$ is respectively blue,
     red, and green.
   \label{fig:edge_palette}}
-\end{marginfigure}
-\autoref{fig:edge_palette} for a small illustration). Once all nodes have been colored, we count the
-number of edges that are colorless. We repeat this procedure, keeping track of the palettes assignment
-minimizing the number of colorless edges. Once we colored the nodes of every block, we look at pair
-of blocks, build a list of all edges between blocks that are not colorless and sample from it to
-connect blocks. The last step is to a assign a color to each edge from the shared color of its
-endpoint (or an arbitrary color for colorless edges). Note this is reminiscent of the stochastic
-block model, although the probabilities of edges between blocks are not uniform anymore.
+\end{figure}
 
-The directions $\mathcal{D}_k$, and the graph $G$ along its edge assignment are the two sources of
-randomness we will consider in the following.
+  \item 
+We then generate $k$ sparse, unit-norm directions $\mathcal{D}_k=\{w_1, \ldots, w_k\}$,
+independently of the graph. An underlying assumption of our model is that each direction should
+provide an explanation of why two nodes are connected that is markedly different from the
+explanation of another direction. A way to achieve that is to create directions with only a few
+non-zeros components, and ensure that the non-zero components of one direction do not appear at the
+same position as the non-zero components of another direction. Therefore, we control through $n_o$
+the number of dimensions where more than one non-zero component exists across the $k$ directions.
+That is, when $n_o = 0$, each direction has exactly \nicefrac{k}{d} non-zero components that are
+disjoint.\footnote{We choose $d$ to be a multiple of $k$.} On the other hand, if for instance $n_o=5$,
+then $5$ of the $d$ dimensions will have two directions with non-zero components on it. Those
+non-zero components are drawn \uar{} from $[-1, 1]$ and each direction is then normalized. For
+instance, with $d=6$, $k=3$ and $n_o=2$, we could generate the following directions, where the blue
+non-zero components are \enquote{overlapping} with the black ones:
+% \vspace{-.5\baselineskip}
 
-\bigskip
+\begin{center}
+  \begin{tabular}{ccc}
+    $w_1$ & $w_2$ & $w_3$ \\
+    $\begin{pmatrix}
+      \phantom{-}0.729 \\
+      0    \\
+      0    \\
+      0    \\
+      \phantom{-}\textcolor{DodgerBlue}{0.450} \\
+      -0.516 \\
+    \end{pmatrix}$ &
+    $\begin{pmatrix}
+      0    \\
+      0    \\
+      \textcolor{DodgerBlue}{-0.483} \\
+      -0.533 \\
+      \phantom{-}0.694 \\
+      0    \\
+    \end{pmatrix}$ &
+    $\begin{pmatrix}
+      0    \\
+      -0.639 \\
+      -0.769 \\
+      0    \\
+      0    \\
+      0    \\
+    \end{pmatrix}$
+  \end{tabular}
+\end{center}
 
-Now that we have a direction $w_{uv} \in \mathcal{D}_k$ assigned to every edge $(u,v)$, we want to
-find a set of user profiles $X=\{x_u\}_{u\in V}$ that maximize the edge score and minimize the node
-loss, defined respectively by equations \eqref{eq:edge_full} and
-\eqref{eq:edge_node_loss} in \autoref{sec:edge_problem} as:
+\item
+Returning to directions instead of colors, we have a direction $w_{y_{uv}} \in \mathcal{D}_k$
+assigned to every edge $(u,v)$. For simplicity, in that paragraph, we will let $w_{uv} = w_{y_{uv}}$.
+The final step in generating our node-attributed graph is to
+find a set of user profiles $X=\{x_u\}_{u\in V}$ that maximize the edge goodness and minimize the node
+loss term, defined respectively as:
 \begin{align*}
   \mathcal{L}_{\mathrm{edge}} &=
-  \sum_{u,v \in E} \left(x_u \circ x_v\right)^T w_{uv} \quad \text{and} \\
+  \sum_{u,v \in E} {s_{uv}}^T w_{uv} \quad \text{and} \\
   \mathcal{L}_{\mathrm{node}} &=
   \sum_{u\in V} \left|\left| x_u - b_u - \sum_{v \in \nei(u)} a_{uv} w_{uv} \right|\right|^2\,,
 \end{align*}
-where for simplicity, we fix $b_u = \zerov$ and $a_{uv} = 1$. Furthermore, to ensure that the
-assigned direction of any edge $(u,v)$ achieve a better score than the other directions (that is
-$\forall w_\ell \in \mathcal{D}_k \setminus \{w_{uv}\}\,, {s_{uv}}^T w_{uv} \geq  {s_{uv}}^T
-w_\ell$) we also minimize a cross-entropy loss commonly used in non-binary classification
-problem~\autocite[Section 4.3.4]{PRML06}.  Specifically, recall that the goodness of direction
-$w_\ell$ for the edge $(u,v)$ is $g(s_{uv}, w_{uv})$. If we denote by $p_{uv,\ell} = \frac{\exp
+where for simplicity, we fix as before $b_u = \zerov$ and $a_{uv} = \frac{1}{\deg(u)}$. Furthermore, to ensure that the
+direction assigned to any edge $(u,v)$ achieves a higher goodness than the other directions (that is
+$\forall w_\ell \in \mathcal{D}_k \setminus \{w_{uv}\}\,, g(s_{uv}, w_{uv}) \geq  g(s_{uv},
+w_\ell)$), we also minimize a cross-entropy loss commonly used in non-binary classification
+problem~\autocite[Section 4.3.4]{PRML06}.  Specifically, denoting by $p_{uv,\ell} = \frac{\exp
 \left( g(s_{uv}, w_{uv}) \right)}{\sum_{\ell=1}^k \exp \left( g(s_{uv}, w_\ell) \right)}$ the
 softmax \enquote{probability} of $s_{uv}$ being explained by direction $\ell$, the cross-entropy
-loss is defined by
+loss is defined by:
 \begin{equation}
   \label{eq:edge_cross}
   \mathcal{L}_{\mathrm{cross-entropy}} = -\sum_{u,v \in E} \sum_{l=1}^k
-  \Ind{w_{uv} = w_\ell} p_{uv,\ell}
+  \Ind{w_{uv} = w_\ell} p_{uv,\ell}\,.
 \end{equation}
 
-In practice, we first minimize $\lambda \mathcal{L}_{\mathrm{cross-entropy}} -
-\mathcal{L}_{\mathrm{edge}}$ with respect to $X$ using the Adam algorithm~\autocite{Adam15} and
+In practice, we first minimize
+\begin{equation}
+  \label{eq:edge_cross_edge}
+  \lambda \mathcal{L}_{\mathrm{cross-entropy}} - \mathcal{L}_{\mathrm{edge}}
+\end{equation}
+with respect to $X$ using the Adam algorithm~\autocite{Adam15} and
 automatic differentiation~\autocite{autograd15}\footnote{Both being implemented by the Pytorch
 package: \url{http://pytorch.org/}.}, projecting the current iterate back to the set of
 matrix with unit $L_2$ norm columns $\mathbb{M}^{n\times d}$ at each step.
 
 Finally, to minimize $\mathcal{L}_{\mathrm{node}}$, we iterate over the nodes and take some gradient
-steps to minimize $\left|\left| x_u - \sum_{v\in\nei{u}} w_{uv}\right|\right|^2$, but only to the
-extent that $w_{uv}$ remains the direction with the largest score on the edge $u,v \in E$.
+steps to minimize $\left|\left| x_u - \frac{1}{\deg(u)} \sum_{v\in\nei{u}} w_{uv}\right|\right|^2$, but only to the
+extent that $w_{uv}$ remains the direction with the highest goodness on the edge $(u,v) \in E$.
+\end{enumerate}
 
 \subsection{Results}
 \label{sub:edge_synth_results}
 
-In the following we generate one graph topology, along with palette assignment to nodes and
-direction assignment to edges. Then we generate a set of unit-norm directions,
-parametrized by four numbers (and their default value): $k=7$, $d=35$, $n_o=0$ and
-$k_{\mathrm{local}}=3$. To account for the randomness of this generation process, we repeat our
-measurement over 200 such $\mathcal{D}_k$. On the other hand, we verify experimentally that
+In this section, we start by describing how we generate test instances of \autoref{p:edge_full} for
+the five methods we want to compare.  Then we present two evaluation measures: how well those
+methods classify edges, and how well they recover known directions. We use the first measure to
+comment on the quality of the generated instances. Finally we present the results of the five
+methods in \autoref{tab:edge_Wvaries_nami} and \autoref{tab:edge_Wvaries_dst}.
+% - describe how we generate instances
+% - present our two evaluation measures how well we classify edges and how well we recover known direction
+% - comment on their quality (but this requires AMI…)
+% - comparison of the 5 methods
+
+Our test instances are generated as follow. We first choose $n=500$, and generate once a graph
+topology with directions assigned to all edges according to steps 1 and 2. This results in a graph
+$G$ with roughly $\np{1350}$ edges. We then generate the directions $\mathcal{D}_k$ according to
+step 3 and the following choice of parameters: $d=35$, $k=7$, $k_{\mathrm{local}}=3$ and $n_o=0$.
+Finally, we create the profiles $X$ as described in step 4.
+To account for the randomness of this generation process, we repeat our
+measurement over \np{200} such generation of $\mathcal{D}_k$ and $X$. On the other hand, we verify experimentally that
 generating various graphs while keeping $\mathcal{D}_k$ fixed gives the same results, hence we will
 not report them in the main text.
+
+In the rest of this section, we will refer to the set of parameters $d=35$, $k=7$,
+$k_{\mathrm{local}}=3$ and $n_o=0$ as the \emph{default} configuration.
 We also try other configurations to study the parameter sensibility of our methods. Specifically, we
 experiment with less directions ($k=5$) or more directions ($k=9, d=36$)\footnote{We add one
 dimension to ensure that $d$ remains a multiple of $k$.}, with two higher levels of overlap between
 the directions ($n_o=6$ and $n_o=12$), with more directions per node ($k_{\mathrm{local}}=4$) and in
 larger dimension ($d=77$).
 
-After having assigned a single direction to every edge and generated the user profiles, we can
-measure how the assignment and the profiles match, in the sense that the assigned direction of every
-edge is the one with the largest goodness. Indeed, recall we predict the
-direction of an edge $(u,v)$ as $\argmax_{\ell \in \rangesk} g(s_{uv}, w_\ell) = {s_{uv}}^T w_\ell$.
-However, in the following, we do not evaluate such predictions using accuracy. Indeed, while the
-methods we evaluate all assign one among $k$ directions to every edge, there is no guarantee those
+\medskip
+% After having assigned a single direction to every edge and generated the user profiles, we can
+% measure how the assignment and the profiles match, in the sense that the assigned direction of every
+% edge is the one with the largest goodness. Indeed, recall we predict the
+% direction of an edge $(u,v)$ as $\mathcal{E}(u,v) = \argmax_{\ell \in \rangesk} g(s_{uv}, w_\ell)$.
+% To do so, we however do not rely on the accuracy measure.
+
+Let us now describe how we evaluate the results of our methods on such instances. As said at the
+beginning of this section, we extract from the output of each method a set $\mathcal{\wh{D}}_k =
+\{\wh{w}_1, \ldots, \wh{w}_k\}$ of $k$ directions, and assign a 
+direction to an edge $(u,v)$ as $\mathcal{E}(u,v) = \argmax_{\ell \in \rangesk} g(s_{uv}, \wh{w}_\ell)$.
+Recall that during the second of the step of the instance generation, we assign a direction index
+$y_{uv}$ to every edge.
+However, we cannot simply evaluate our predictions by simply comparing $\mathcal{E}(u,v)$ and
+$y_{uv}$. Indeed, here is no guarantee that the $\mathcal{\wh{D}}_k$
 directions are recovered in the same order as they were generated. In case of strong disagreement
 between the predictions and ground truth labels, it might additionally be difficult to find a
 permutation to conciliate them.  Therefore, we see the problem as a clustering one with known ground
@@ -185,28 +252,7 @@ invariant to the shape of clusters and it is bounded between $0$ and $1$, where 
 indicates perfect correlation with the ground truth labels and $0$ indicates perfect independence
 with the ground truth labels.
 
-First, as we can see in the table at the end of this paragraph, in the \default{} configuration, we do not always
-generate user profiles leading to a perfect assignment of edge according to their goodness. In
-general this is not always possible. Consider a $k$-regular subgraph, where the $k$ edges incident
-to every node are each assigned a different directions. By symmetry, it is impossible to find node
-profiles that would achieve maximum goodness for all the edges. This is partly what motivated the
-$k_{\mathrm{local}}$ local constraint. Even so, and more pragmatically, whereas those AMI scores
-could be made higher by increasing the coefficient $\lambda$ in~\eqref{eq:edge_cross}, this would
-imply a lower edge goodness. Even with our choice, only a few percent of the edges have a mismatch
-between the directions we assigned them and the one with the largest goodness. Note also that
-depending of the parameters of the generation, the AMI is not the same. Therefore, in the following,
-we divide all the AMI scores by this natural score, in order to obtain a normalized measure.
-\newline\vspace{.8\baselineskip}\noindent%
-\begin{tabular}{lccccccc}
-  \toprule
-  {}  & {\smallk{}}    & {\default{}}   & {\largek{}}    & {\smallo{}}    & {\largeo{}}    & {\fdirs{}}     & {\larged{}}    \\
-  \midrule
-  AMI & $.925 \pm .03$ & $.922 \pm .03$ & $.905 \pm .02$ & $.880 \pm .04$ & $.874 \pm .05$ & $.893 \pm .03$ & $.973 \pm .01$ \\
-  \bottomrule
-\end{tabular}
-\vspace{.5\baselineskip}
-
-Besides this normalized AMI, we also measure how far the recovered directions $\mathcal{\wh{D}}_k$
+Besides the AMI score, we also measure how far the recovered directions $\mathcal{\wh{D}}_k$
 are from the actual ones, generated initially. More precisely, we associate each vector $w_\ell \in
 \mathcal{D}_k$ with the closest one in $\mathcal{\wh{D}}_k$ and report the average $\ell_2$ distance
 between the two elements of these $k$ pairs, that is
@@ -214,6 +260,40 @@ between the two elements of these $k$ pairs, that is
   d(\mathcal{D}_k, \mathcal{\wh{D}}_k) =
   \frac{1}{k} \sum_{\ell \in \rangesk} \min_{w'_i \in \mathcal{\wh{D}}_k} \| w_\ell - w'_i \|_2
 \end{equation*}
+
+\medskip
+
+Before moving to the results, let us first note that,
+in the \default{} configuration, we do not always
+generate user profiles leading to a perfect assignment of edge according to their goodness. This can
+be seen in \autoref{tab:edge_badami}. In
+general, this is not always possible. Consider a $k$-regular subgraph, where the $k$ edges incident
+to every node are each assigned a different directions. By symmetry, it is impossible to find node
+profiles that would achieve maximum goodness for all the edges. This is partly what motivated the
+$k_{\mathrm{local}}$ local constraint. Even so, and more pragmatically, whereas those AMI scores
+could be made higher by increasing the coefficient $\lambda$ in~\eqref{eq:edge_cross_edge}, this would
+imply a lower edge goodness. With our choice of $\lambda$, only a few percent of the edges have a mismatch
+between the directions we assigned them and the one with the largest goodness. Note also that
+depending of the parameters of the generation, the AMI is not the same. Therefore, in the following,
+we divide all the AMI scores by this natural score, in order to obtain a \enquote{standardized} measure.
+% \newline\vspace{1\baselineskip}\noindent%
+
+\begin{table}[htb]
+  \centering
+  \small
+  \caption{The degree to which the edge assignment of step 2 agree with the directions and profiles
+    of steps 3 and 4. This is measured by the AMI between the assignment $\{y_{uv}\}_{uv \in E}$ and
+    what maximal goodness would assign, \ie{} $\{\mathcal{E}(u,v)\}_{uv \in E}$. We report the
+    average AMI and standard deviation over 200 generations of $\mathcal{D}_k$, for different
+    configurations.  \label{tab:edge_badami}}
+\begin{tabular}{lccccccc}
+  \toprule
+  {$\mathcal{D}_k$ parameters}  & {\default{}}   & {\smallk{}}    & {\largek{}}    & {\smallo{}}    & {\largeo{}}    & {\fdirs{}}     & {\larged{}}    \\
+  \midrule
+  AMI & $.922 \pm .03$ & $.925 \pm .03$ & $.905 \pm .02$ & $.880 \pm .04$ & $.874 \pm .05$ & $.893 \pm .03$ & $.973 \pm .01$ \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 As showed in \autoref{tab:edge_Wvaries_nami}, \combined{} is always the best method and, excluding
 \pqt{} for now, the \lloyd{} heuristic is second except in one case, while \kmeans{} is third. Note
@@ -235,8 +315,8 @@ their overlap, there is not consistent evidence of that.
   \centering
   % \setlength{\tabcolsep}{3pt}
   \small
-  \caption{Normalized AMI of 5 methods, when generating directions with 7 configurations. For each
-    configuration, we generate directions 200 times, and report the mean normalized AMI along with
+  \caption{Standardized AMI of 5 methods, when generating directions with 7 configurations. For each
+    configuration, we generate directions 200 times, and report the mean standardized AMI along with
     the standard deviation. Among the first three methods (that do not use matrix formulation), we
     highlight the best one in \textbf{\textcolor{brown}{bold brown}} and the second best one in
     \textit{\textcolor{red}{italic red}}. When the difference between a score and the next best one
@@ -246,10 +326,10 @@ their overlap, there is not consistent evidence of that.
   \label{tab:edge_Wvaries_nami}}
   \begin{tabular}{llll|ll}
     \toprule
-    {} &         \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &  \thead{\fwa{}} &  \thead{\pqt{}} \\
+    \thead{$\mathcal{D}_k$ parameters} &         \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &  \thead{\fwa{}} &  \thead{\pqt{}} \\
     \midrule
-    {\smallk{}}  &            $.836 \pm .08$ &                          $\esecond{.838 \pm .07}$ &  $\efirstSig{.875 \pm .06}\,\,\spval{2.17}{-58}$ &  $.213 \pm .11$ &  $.875 \pm .06$ \\
     {\default{}} &            $.818 \pm .06$ &  $\esecondSig{.873 \pm .05}\,\,\spval{1.25}{-63}$ &  $\efirstSig{.893 \pm .04}\,\,\spval{5.68}{-33}$ &  $.381 \pm .05$ &  $.893 \pm .04$ \\
+    {\smallk{}}  &            $.836 \pm .08$ &                          $\esecond{.838 \pm .07}$ &  $\efirstSig{.875 \pm .06}\,\,\spval{2.17}{-58}$ &  $.213 \pm .11$ &  $.875 \pm .06$ \\
     {\largek{}}  &            $.803 \pm .04$ &  $\esecondSig{.881 \pm .04}\,\,\spval{2.66}{-94}$ &  $\efirstSig{.894 \pm .04}\,\,\spval{8.98}{-17}$ &  $.421 \pm .04$ &  $.894 \pm .04$ \\
     {\smallo{}}  &            $.813 \pm .07$ &   $\esecondSig{.824 \pm .06}\,\,\spval{7.57}{-6}$ &  $\efirstSig{.856 \pm .06}\,\,\spval{2.99}{-57}$ &  $.378 \pm .05$ &  $.855 \pm .06$ \\
     {\largeo{}}  &  $\esecond{.827 \pm .07}$ &                                    $.823 \pm .06$ &  $\efirstSig{.852 \pm .06}\,\,\spval{1.90}{-25}$ &  $.370 \pm .06$ &  $.851 \pm .06$ \\
@@ -280,10 +360,10 @@ their directions are clearly different.
   \label{tab:edge_Wvaries_dst}}
     \begin{tabular}{llll|ll}
       \toprule
-      {} &                                 \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &   \thead{\fwa{}} &  \thead{\pqt{}} \\
+      \thead{$\mathcal{D}_k$ parameters} &                                 \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &   \thead{\fwa{}} &  \thead{\pqt{}} \\
       \midrule
-      {\smallk{}}  &  $\esecondSig{.581 \pm .08}\,\,\spval{4.78}{-30}$ &                                    $.606 \pm .09$ &  $\efirstSig{.560 \pm .05}\,\,\spval{8.07}{-24}$ &  $1.007 \pm .05$ &  $.633 \pm .06$ \\
       {\default{}} &                                    $.533 \pm .08$ &   $\esecondSig{.528 \pm .09}\,\,\spval{9.61}{-4}$ &   $\efirstSig{.516 \pm .06}\,\,\spval{4.95}{-5}$ &   $.877 \pm .05$ &  $.564 \pm .06$ \\
+      {\smallk{}}  &  $\esecondSig{.581 \pm .08}\,\,\spval{4.78}{-30}$ &                                    $.606 \pm .09$ &  $\efirstSig{.560 \pm .05}\,\,\spval{8.07}{-24}$ &  $1.007 \pm .05$ &  $.633 \pm .06$ \\
       {\largek{}}  &                                    $.541 \pm .07$ &  $\esecondSig{.521 \pm .07}\,\,\spval{5.08}{-23}$ &                          $\efirst{.520 \pm .05}$ &   $.811 \pm .06$ &  $.551 \pm .06$ \\
       {\smallo{}}  &  $\esecondSig{.554 \pm .08}\,\,\spval{2.74}{-52}$ &                                    $.589 \pm .08$ &  $\efirstSig{.538 \pm .05}\,\,\spval{2.38}{-12}$ &   $.908 \pm .05$ &  $.596 \pm .07$ \\
       {\largeo{}}  &  $\esecondSig{.554 \pm .09}\,\,\spval{1.50}{-58}$ &                                    $.595 \pm .08$ &   $\efirstSig{.545 \pm .06}\,\,\spval{4.08}{-5}$ &   $.935 \pm .05$ &  $.604 \pm .08$ \\
@@ -293,6 +373,7 @@ their directions are clearly different.
     \end{tabular}
 \end{table}
 
+\iffalse
 \begin{aside}
 
 % \begin{table}[hbt]
@@ -348,3 +429,4 @@ their directions are clearly different.
 \end{center}
 
 \end{aside}
+\fi
