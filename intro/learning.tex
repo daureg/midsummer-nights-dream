@@ -1,0 +1,62 @@
+The birth of graph theory in 1736 is credited to \textcite{euler1741} for his elegant solution of
+the Seven Bridges of Königsberg
+problem\footnote{\url{https://en.wikipedia.org/wiki/Seven_Bridges_of_Königsberg}}. Since then,
+it has been a very active branch of mathematics ~\autocite{biggs1976graph}. Indeed, it provides a
+conceptually simple yet immensely rich framework to model phenomena where entities are connected
+with each other~\autocite{ComplexNetworksApp11}. Coupled with the increasing availability of large
+amount of relational data, learning on graphs has recently spurred a lot of interest across various
+lines of research, with tangible benefits: 
+
+\begin{description}[leftmargin=*]
+
+  \item[community detection~\autocite{FortunatoSurvey10}] The goal is to cluster nodes in tightly
+    connected groups that are loosely connected with the rest of the graph. This allows for a better
+    understanding of the graph organization, and present a higher level view than looking at
+    individual nodes relationships. For instance, it has been used to identify proteins functional
+    groups~\autocite{clusterBio03} or see how different scientific fields relate based on
+    publication data~\autocite{clusterScience08}.
+
+  \item[semi-supervised learning~\autocites{SSL06}{graphSSL14}] In addition to labeled data,
+    the learner is also provided with unlabeled data at training time, and its goal is to classify
+    nodes. Connecting similar instances allow propagating information along the graph. This has
+    found applications in classifying text documents~\autocite{sslText09} or aligning categories and
+    relations across multiple knowledge bases~\autocite{sslKB13}.
+
+  % \item node classification~\autocite{nodeClassif11} Idem
+    % could add visualisation (Roberto Tamassia. 2013. Handbook of Graph Drawing and Visualization.
+    % CRC Press.) but it's not exactly learning
+
+  \item[node embedding~\autocite{representationLearning17}] The goal is to find a low dimensional
+    representation of the nodes, based on their structural patterns. This usually performed in an
+    unsupervised way, although it is also possible to include problem supervision when available.
+    Such representation can then be used in downstream tasks, for instance
+    visualization~\autocite{LINE15} or the aforementioned node classification, even in the inductive
+    setting where new nodes can join the graph after training~\autocite{inductiveRepresentation17}.
+
+  \item[link prediction~\autocite{linkPredSurvey16}] Given a snapshot of the graph at time $t$, the
+    goal of link prediction is to return a set of links that do not exist at time $t$ but will be
+    created by time $t+\Delta_t$. Most methods are based on the assumption that link creation is
+    driven by node similarity. It has been successfully applied to inferring potential interactions
+    between proteins without expensive experiments~\autocite{linkPredBio06} and uncovering hidden
+    associations in criminal networks~\autocite{linkPredCrime08}.
+
+  \item[information and influence propagation~\autocite{infmax13}] The study of processes by which
+    content is spread across networks, and how such processes can be influenced to speed them up or
+    slow them down. Two representative applications are selecting the best seeds in a social network
+    to promote a viral marketing campaign~\autocite{infmaxKempe15} and containing more effectively
+    the diffusion of actual biological viruses~\autocite{influenceBio13}.
+
+  \item[network evolution~\autocite{networkEvolution14}] These methods focus on the mechanisms and
+    consequences of the growth of networks, as well as how to keep the results of some data mining
+    algorithms up to date and relevant. Monitoring the changes in the interactions of proteins
+    can indeed be used as an early indicator for some kind of diabetes~\autocite{evolBio10}.
+    Furthermore, sudden changes in a network of computers are usually worth investigating, for they
+    might signal external attacks~\autocite{evolSecurity04}.
+
+\end{description}
+
+This list of graph learning problems and their applications to real world scenario is incomplete.
+Yet it already demonstrates the impact of inferring patterns in relational data over many aspects of
+our lives. However, we argue that more can be done. Indeed, all the methods presented above only
+consider graphs with a single type of edge and where nodes are connected because based on some
+domain-dependant notion of similarity.
