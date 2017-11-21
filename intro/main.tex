@@ -3,18 +3,18 @@ simplicity and flexibility of this formalism, graphs are ubiquitous and have bee
 fields. To make the rest of our explanations more concrete, we now give three examples of graphs
 that we consider later on.
 \begin{enumerate}[nosep]%,leftmargin=*]
-  \item In a social network\footnote{In the rest of this thesis, we use the terms \emph{graph} and
-    \emph{network} interchangeably.}, the nodes of the graph are human users, and relationships
-    between nodes denote interactions between the corresponding users. One social network we study
-    in \autoref{chap:troll} summarizes the connections between the editors of \wik{}. These editors
-    can be promoted to administrators after a vote from their peers. An edge \euv{} in this network
-    means that user $u$ has voted on the possible promotion of $v$.
-  \item In computer vision, we can represent an image as a graph. Each pixel is a node, and those
-    nodes are connected to four neighbors, namely the adjacent pixel from the top, bottom, left and
-    right sides.
-  \item In e-commerce, we can consider a co-purchase network. Nodes are products being sold on a
-    website, and two nodes are connected if the corresponding products are frequently bought
-    together by customers, for instance a phone and a memory card.
+\item In a social network\footnote{In the rest of this thesis, we use the terms \emph{graph} and
+\emph{network} interchangeably.}, the nodes of the graph are human users, and relationships
+between nodes denote interactions between the corresponding users. One social network we study
+in \autoref{chap:troll} summarizes the connections between the editors of \wik{}. These editors
+can be promoted to administrators after a vote from their peers. An edge \euv{} in this network
+means that user $u$ has voted on the possible promotion of $v$.
+\item In computer vision, we can represent an image as a graph. Each pixel is a node, and those
+nodes are connected to four neighbors, namely the adjacent pixel from the top, bottom, left and
+right sides.
+\item In e-commerce, we can consider a co-purchase network. Nodes are products being sold on a
+website, and two nodes are connected if the corresponding products are frequently bought
+together by customers, for instance a phone and a memory card.
 \end{enumerate}
 
 Not only are there graphs in many domains, but the progress of technology in the last few decades
@@ -26,23 +26,36 @@ best propagate information within a graph. We describe in more details these pos
 others in \autoref{sec:learning_in_graphs}. By doing so, our goal is to illustrate the wide
 potential of \emph{learning in graphs}.
 
+\medskip
+
 At this point of the discussion though, we have only considered the most common and simple kind of
-graph, one representing a single type of relation between nodes. However, in many situations, nodes
-have more than one type of relation among each other. As a case in point, let us look again at our
+graph, one representing a single type of relation between nodes. However, in many situations, there
+are two dimensions along which graphs exhibit more complexity. First, nodes have more than one type
+of relation among each other. Second, two nodes are not only connected because of their global
+similarity but also for more nuanced reasons. As a case in point, let us look again at our
 three examples. In the \wik{} network, a vote can support the promotion or oppose it. This
 additional information enrich our understanding of the relationships between the nodes in the graph.
+It also points out that two editors can be connected because they share a common topic of interest,
+but come from different socio-economic backgrounds and therefore cannot agree on this topic.
 Likewise in an image, an edge between two pixels is positive if the two pixels belong to the same
-object (say a car or a building) and negative otherwise. Such information could be used to segment
-the image. In the co-purchase network, there is even more than two types of relation. Assuming the
+object (say a car or a building) and negative otherwise. This information could be used to segment
+the image. In the co-purchase network, there are even more than two types of relation. Assuming the
 products are movies, two movies can be frequently bought together because they are part of a series
-(like Star Wars), because they have the same director, because they receive the same prestigious
-awards in different years, and so on. In \autoref{sec:edge_semantics}, we give additional examples
-of so-called \emph{complex networks}, where edges have different \emph{semantics}, or types. As
-showed in our examples, we distinguish between two cases. The first is when there are two types of
+(like Star Wars), because they have the same director but different gender, because they receive the
+same prestigious awards in different years, and so on. The second type of relation (\enquote{same
+director} and \enquote{different gender}) is actually an example of a mixed relation, for it mixes
+similarity and dissimilarity.
+
+We call \emph{complex networks} graphs where edges have different \emph{semantics}, or types, and
+where connections are explained by more than simple global similarity. In
+\autoref{sec:edge_semantics}, we give additional examples of such complex networks. As
+showed in our three previous examples, we distinguish between two cases. The first is when there are two types of
 edge having opposite semantics. Such graphs are called \emph{signed graphs} and have been
 extensively studied since the fifties, for we shall see they have many applications. The second case
 is when there are more than two types of edge. Such graphs have also been studied for a long time
 under different names and we refer to them as \emph{multilayer graphs}.
+
+\medskip
 
 It is natural to expect that we can extract finer insights from graphs with edge semantics. However,
 in many cases, the information about edge types is not available. We therefore present in
@@ -52,21 +65,23 @@ every edge. This problem can take several forms depending of what information is
 First, the graph may be directed or undirected. Second, there might be two edge types (in the case of
 signed graphs) or more (for general multilayer graphs). Third, the problem can be supervised or not.
 In the supervised setting, we are provided with labels for some of the edges. In the unsupervised
-setting, there is no label. We thus make the additional assumption that we observe the
-\emph{attributes} of the nodes. Once again, we return to our three examples to illustrate what are
-those attributes. In the \wik{} graph, we could have for each user data about age, experience and
+setting, there is no label at all. We thus make the additional assumption that we observe some
+\emph{attributes} of the nodes. Once again, we return to our three examples to illustrate what
+those attributes can be. In the \wik{} graph, we could have for each user data about age, experience and
 area of expertise. In an image, each pixel is associated with a color, along with higher order
-visual features. Each product of a co-purchase network comes with information about \eg{}, its price,
+visual features. Each product of a co-purchase network comes with information about, \eg{}, its price,
 popularity, category and availability. In the absence of label, our intuition is that these
 attributes can inform us about the type of edge between nodes. 
+
+\medskip
 
 We list in \autoref{sec:outline} three concrete instantiations of this general problem that we
 consider in this thesis. Our solutions to these three problems offer evidence in the defense of our
 thesis statement:
 \begin{quote}
-  \bf
-  There exists efficient and accurate methods to predict edge type in complex networks, relying
-  only on the graph topology or also on node attributes.
+\bf
+There exists efficient and accurate methods to predict edge type in complex networks, relying
+only on the graph topology or also on node attributes.
 \end{quote}
 
 \section{Learning in graphs}
