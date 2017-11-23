@@ -1,8 +1,9 @@
 %TODO turn those items into paragraphs?
-\begin{description}
-   \item[Computer Vision]
+% \begin{description}[leftmargin=*]
+   \paragraph{Computer Vision}
       The ubiquitous task of segmenting an image into homogeneous regions is a prerequisite for many
-      further processing, and can be tackled with \pcc{}. For instance, to segment cell in
+      further processing. As we mentioned earlier in one example, building a signed graph can help,
+      although it might be costly to do it at the pixel level. For instance, to segment cell in
       microscopy imagery, \textcite{CellSeg14} first use generic image features to classify pixel in
       belonging to region boundaries or not. Then, they extract small scale regions called
       superpixels. After building the adjacency graph of these superpixels, they assigned edge
@@ -35,23 +36,28 @@
       (called zones), in which local processing is performed. This is beneficial since the
       complexity of these local methods can be adapted to the difficulty of each zone.
 
-   \item[Natural Language Processing] 
+      \paragraph{Natural Language Processing} 
       Coreference resolution is the task of finding all expressions that refer to the same entity in
       a text. Like image segmentation, it is a preprocessing step that can later be used in document
-      summarization, question answering, and information extraction. \Textcite[Section
-      2.3]{graphicalCoreference04} tackle coreference resolution by using an undirected graphical
+      summarization, question answering, and information extraction. Furthermore, in that case, it
+      is also natural to build a graph of words. One then add negative edges between words that
+      cannot refer to the same entity (for instance because they are of different gender) and
+      positive edges between words with linguistic cues indicating they might refer to the same
+      entity. 
+      \Textcite[Section
+      2.3]{graphicalCoreference04} instead tackle coreference resolution by using an undirected graphical
       model on which performing inference is equivalent to \pcc{}. On small scale instances,
-      \textcite{Elsner2009} first obtain an upper bound of the optimal solution by solving a SDP
+      \textcite{Elsner2009} use the signed graph procedure outlined above. They first obtain an
+      upper bound of the optimal solution by solving a SDP
       relaxation of the problem. They then compare various heuristics and show that best performing
       ones are within few percents of the optimum, provided they are followed by a local search
       step, such as the Best One Element Move~\autocite{Gionis2007}. Further NLP tasks amenable to
-      \pcc{} formulation are referenced in their paper. Another possible task would be 
-      to cluster words based on distributional embedding vector while adding antonym
-      constraints~\autocite{SignedWordRatings}, although the authors of that paper choose to use
-      signed spectral clustering.
+      a signed graph representation are referenced in their paper. Another task is
+      to cluster words based on distributional embedding vectors while adding antonym
+      constraints~\autocite{SignedWordRatings}.
 
-   \item[Biology]
-      Clustering tasks also abounds in Biology.
+      \paragraph{Biology}
+      Signed graphs are also abundant in Biology.
       A typical input is a similarity matrix between genes expression level in various experimental conditions
       and the goal is to cluster those genes into groups which react similarly. \Textcite[Section
       4]{Ben-Dor99} gives three examples: 112 genes involved in the rat central nervous system, 1246
@@ -78,8 +84,8 @@
       modifying the concentration of one gene will have a predictable effect, even ignoring the
       precise kinematics of the chemical reactions involved. Their goal is to find the minimum
       number of edges to remove in order to decompose a dynamics system into a collection of
-      monotone system. This corresponds to the \mind{} problem and allows to study
-      the complete system more easily. Many more applications of \mind{} on weighted complete graphs
+      monotone system. This allows to study
+      the complete system more easily. More applications of weighted complete signed graphs in biology
       are presented in~\autocite[Section 6]{clusterEditSurvey13}.
       % Finding the 3D shapes of chromosome given pairwise contact frequencies of different regions
       % \url{https://doi.org/10.1145/3107411.3108216}
@@ -90,11 +96,10 @@
       % decompose the graph into “monotone subsystems”, which exhibit stable behavior and thus allow a
       % better understanding of the dynamics of a system.}\autocite{monotoneBiology07}
 
-   \item[Network science]
-      As mentioned in the first Chapter, one early use of signed graphs was to model social
-      interactions and given the large body of work on community
-      detection~\autocite{FortunatoSurvey10}, it is therefore not surprising that \pcc{} has been
-      used to study such networks. For instance, one can extract all the votes of the members of a
+      \paragraph{Network science}
+      One early use of signed graphs was to model social
+      interactions~\autocites{harary1953}{HeiderBook58}. Here we present
+      some recent references. For instance, one can extract all the votes of the members of a
       political parliament and form a graph whose nodes are politicians and edge weights quantify how
       much they agree or disagree on various issues they have been voting on. This can be used to
       study various social science questions such as loyalty, leadership, coalitions, political
@@ -106,18 +111,17 @@
       of Civilizations} book. Another source of data is the vote on resolutions during the United
       Nations General Assembly~\autocite{CommunityUN12}. Finally, one can also study how to exploit
       the information contained within the negative links to enhance the visualization of social
-      networks~\autocites{Luca10}{drawingSignedGraphs11}. Note however that those four last papers
-      not explicitly use a \pcc{} formulation.
+      networks~\autocites{Luca10}{drawingSignedGraphs11}.
 
-   \item[Others]
+      \paragraph{Others}
       \begin{itemize}[leftmargin=*]
 	 \item
 	    Deduplication, also called duplicate detection or entity resolution, is the process
 	    of identifying objects from a real-world, noisy database that refer to the same entity.
 	    On a high level, a solution to this problem is to build a graph of all the available
-	    objects, define a similarity between them and run a \pcc{} algorithm. This was indeed
-	    this kind of problems at Whizbang! Labs that partly motivated one of the early \pcc{}
-	    paper~\autocite{Bansal2002}. The main challenge
+	    objects, define a similarity between them and run a \pcc{} algorithm.
+	    % This was indeed this kind of problems at Whizbang! Labs that partly motivated one of the early \pcc{} paper~\autocite{Bansal2002}.
+	    The main challenge
 	    thus lies in devising an appropriate similarity measure, given that object can have very
 	    different features from one database to another. \Textcite{LargeScaleDeDup09} propose a
 	    declarative language, expressing both hard constraints (that have to be satisfied) and
@@ -135,5 +139,15 @@
 	    two shifters next to some specific shape must be in opposite phase and two shifters
 	    separated by less than a specified distance must be of the same phase, the authors look
 	    for a two-clustering of the nodes that will minimize the number of disagreements.
+	 \item In finance, one can represent an investment portfolio as a signed
+	    graph~\autocite{portfolio02}. Each node is a security, and the edge between two
+	    securities is weighted by their correlation, which can be negative. For instance, a
+	    graph with only positive edges is speculative, as all the securities move in the same
+	    direction, either up or down. On the other hand, if the securities can be partitioned in
+	    groups without disagreement, the risk is limited, for two clusters will move in opposite
+	    directions, providing the investors with a hedging guarantee.
+	 \item In wireless networks, signed graphs can be used to solve optimization problems
+	    involved in determining energy-saving routes~\autocite{signedRouting12} or to exchange
+	    cryptographic keys in a secure and efficient manner~\autocite{signedKey17}.
       \end{itemize}
-\end{description}
+% \end{description}

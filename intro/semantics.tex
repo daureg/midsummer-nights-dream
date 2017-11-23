@@ -1,0 +1,34 @@
+The three graphs we described in the introduction are examples of what we call complex networks.
+Such graphs have more than one type of edge, and edges are not explained by mere global node
+similarity. The point of this section is to illustrate that this notion is not simply a mathematical
+variation of a \enquote{simple} graph, where the adjacency matrix would take values in $\{-1, 0, 1\}$ or
+$\{0, 1, \ldots, k\}$ instead of $\{0, 1\}$. Rather, we reviews many applications in various domains
+where complex networks are the right model to represent rich networked data. First, we showcase many
+uses of signed networks. In that case, we do not insist on the fact that similarity is not the only
+driver of node connections, for it is implicit that negative edges actually denote dissimilarity.
+Second, we present multilayer graphs, that is graphs with more than two types of edges. When
+applicable, we highlight how the connections in such graphs indeed rely on a nuanced similarity or
+dissimilarity across some of the nodes attributes.
+
+To elaborate on this last point, our hypothesis is that connections in complex networks are the
+results of both partial homophily (that is, nodes are connected when they are similar on a subset of
+the attributes) and partial heterophily (that is, nodes are connected when they are dissimilar on a
+subset of the attributes). As examples of the latter, think of dating websites ---where most users
+are linked with users of the opposite gender~\autocites{homophilyMyspace09}{Tinder16}; diffusing
+innovations ---where meeting people with different backgrounds and point of views is crucial to
+favor diversity and creativity~\autocite{rogers2003diffusion}; and online news consumption ---where
+connecting people from different sides of the political spectrum helps to avoid echo chambers and
+fuel a democratic debate~\autocite{balancedNews17}.
+
+\subsection{Signed graphs}
+\label{sub:intro_signed_graphs}
+
+In this section, we present a list of signed graph usages, sorted by domains. Many of those signed
+graphs are the input of some clustering algorithms. In the context of signed graph, the clustering
+task can be captured by the \pcc{} problem. We provide a thorough overview of this problem in
+\autoref{chap:cc}. Here we simply give a broad, informal definition. The objective in \pcc{} is to
+cluster the nodes of a signed graph in a way that minimizes the number of positive edges across
+clusters and the number of negative edges within clusters. Such edges are called disagreements.
+
+\input{use_of_sign_graphs.tex}
+
