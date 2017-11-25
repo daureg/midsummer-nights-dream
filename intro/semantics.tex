@@ -32,3 +32,67 @@ clusters and the number of negative edges within clusters. Such edges are called
 
 \input{use_of_sign_graphs.tex}
 
+\subsection{Multilayer graphs}
+\label{sub:intro_multilayer_graphs}
+
+Besides signed graphs, in this thesis we also consider at multilayer
+graphs~\autocites{Kivela2014}{multiSurvey14}. Those are graphs with $k$ edge types, and the name
+refer to the fact we can see them as the superposition of the $k$ subgraphs induced by each edge
+type. Even when $k=2$, we make a distinction between signed graphs and multilayer graphs. In signed
+graphs, the two types of edge have reverse semantic, whereas in a 2-layers graph, they simply
+denotes two possible interaction, for instance advisor-advisee or regular coauthors relation in a
+citation network~\autocite{Advisor10}. In general though, we focus on cases where $k$ is larger than
+$2$, and not larger than a few dozen in order to preserve interpretability.
+Like signed graphs, these multilayer graphs are versatile enough to be used in many fields.
+
+\paragraph{Social networks} \Textcite{Szell2010} model the interactions of the players of
+\emph{Pardus}, a massively multilayer online game. These players can be friend or enemy, send
+private messages, trade resources, attack each other and set a bounty on the head of another
+players. These six types of interactions are either positive or negative, but their nuances cannot
+simply by explained by global similarity and dissimilarity. Another examples are the users of the
+photo sharing website Flickr.  They can interact in eleven ways, either directly or through
+comments, shared tags, groups membership and so on~\autocite{RecoFlickrMulti11}. Again, while being
+part of a common group denote shared interests between two users, overall they must also differs in
+some other attributes (for instance location) in order to bring diversity to this groups.
+
+\paragraph{Citation networks} In these networks, nodes are research papers or authors, and edges
+typically connect two nodes whenever one cites the other. For instance, using the DBLP dataset,
+\textcite{communityDBLPbyConf05} connect two authors if they have co-authored a paper in one the
+\np{1000} conferences appearing in the data. One can then consider that the resulting graph was
+obtained as the superposition of these \np{1000} subgraphs. Besides direct citations,
+\textcite{articlesMultiSim11} consider four others reasons to connect \np{5000} SIAM papers, based
+on their similarity in terms of abstract words, title words, keywords and authors.
+
+\paragraph{Economic networks} In our ever increasingly globalized economy, entities around the world
+are getting more and more tightly connected. However, it would be overly simplistic to consider
+there is only kind of link between entities. For something seemingly as simple as the connections
+between the largest \np{951} ports, one must already noticed that these connections can be
+implemented by any combinations of three kinds of ships: bulk dry carriers, container ships and oil
+tankers~\autocite{ports3kindofships10}. Likewise, the 162 countries of the International Trade
+Network are connected by 96 kinds of commodities they can exchange~\autocite{worldTradeNetwork10}.
+Finally, \textcite{KantPeace15} studies international relations through the lens of Kant three
+folded program for peace,  based on democracy, economic dependence and supra national governance.
+They build the graph of all countries and connect them in three layers. All democracies form a
+clique in the first layer, countries are connected with weights proportional to the amount of yearly
+trade in the second layer and with weights proportional to the number of international organisations
+they belong to together in the third layer. While the essence of commerce is to exploit differential
+between the partners involved (\ie{} heterophily), trade (and in the last example participating in
+common institution) intensity also involve geographical, historical and cultural ties (\ie{}
+homophily).
+
+\paragraph{Biological networks} The interactions in biology also take several forms and studying
+them as a whole has proved fruitful. One example is a genes co-expression network, where each
+connection was tested under 130 different experimental conditions, providing as many
+layers~\autocite{bioLayerExp11}.
+Multilayer graphs are also a relevant way to represent ecological
+networks~\autocite{EcologyMultiReview17}. For instance, \textcite{EcoChile15} build the graph of
+more than 100 species living on the Chilean
+coast\footnote{\url{http://app.mappr.io/play/chile-marine-intertidal-network}} and divide their
+interactions in three categories: trophic (that is one specie eats another one), positive
+non-trophic (\eg{} refuge providing) and negative non-trophic (\eg{} competition for shared
+resources).
+Finally, in neuroscience, multilayer graphs have recently emerged as a useful tool to better
+understand the human brain~\autocite{Neuroscience16}. The nodes of such graphs are neurons, and the
+edges can be labeled in various ways: some correspond to actual physical links while others are
+functional ---\ie{} neurons responding in the same way to external stimuli, some are present in
+healthy subject and others in patient cohort, some are acquired through MRI and others by EEG.
