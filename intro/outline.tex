@@ -1,0 +1,33 @@
+The contributions of this thesis are organized as follow:
+
+\begin{itemize}
+
+  \item We start in \autoref{chap:troll} by addressing the \esp{} problem in \dssn{}. Our goal is to
+    design a method that is scalable, principled and accurate. For that, we start by introducing a
+    generative model for signs, and derive approximations of the optimal Bayes predictor or the
+    maximum likelihood predictor. We confirm the theoretical soundness of these approaches by
+    performing extensive synthetic and real world experiments. Finally, we are also the first to our
+    knowledge to give an online algorithm for the \esp{} problem on directed graphs. This chapter is
+    based on an existing publication~\autocite{trollSign17}.
+
+  \item We then move from directed to undirected signed graphs, and explain in \autoref{chap:cc} why
+    this requires another learning bias. Namely, we assume that the nodes belong to $k$ groups, and
+    that the sign between two nodes is positive when both nodes belong to the same group, negative
+    otherwise. We describe how this new bias is related to the \pcc{} problem, and present a
+    thorough overview of existing approaches. Finally, we provide the first implementation of an
+    existing spanner construction~\autocite{gtxFabio}, and give a preview of its performance on
+    synthetic and real signed graphs.
+
+ \item In \autoref{chap:vector}, we consider the \ecp{} problem on multilayer graphs with node
+   attributes. Our approach is to seek a small number of vectors that, once assigned to every edge,
+   best explain the graph (\ie{} maximize a score function between the vector assigned to an edge
+   and the profiles of this edge's endpoints). From this initial formulation, we derive two
+   optimization problems, and initially solve them on synthetic data, generated with a few natural
+   topological constraints. We compared these solutions with the result of a baseline approach that
+   simply clusters the pairwise profile vectors using $k$-means.
+
+  \item Finally, reflecting on our treatment of the three previous problems, we discuss in
+    \autoref{chap:conclusion} other settings and methods that might extend the problem of
+    characterizing edges in complex networks beyond the frame of this thesis.
+
+\end{itemize}
