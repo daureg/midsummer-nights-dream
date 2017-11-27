@@ -14,9 +14,9 @@ edges is an interesting problem, especially in the following three situations:
     assuming the answers do not contain any noise. At the scale of Facebook, this would require
     asking hundred of questions to each user on average, which is quite time consuming. Furthermore,
     it would also cost marketing resource to convince users this is beneficial for them, and
-    engineering time to ensure this information remain confidential. Likewise in a biological
+    engineering time to ensure this information remain confidential. Likewise, in a biological
     network, determining whether two proteins interact positively or negatively with each other is
-    achieves by a lab experiment, which requires time and material.
+    achieved by a lab experiment, which requires time and material.
 
   \item All edges are already labeled, perfectly and without any cost, but the number $k$ of edge
     types is very large. Indeed, we have seen examples where they are hundreds or even thousands of
@@ -57,20 +57,20 @@ in the next section.
 
 The modern formulation of the \esp{} on directed graphs can be attributed to
 \textcite{Leskovec2010}. Their idea is to compute local features of the nodes based on the training
-labels. Such features include variation on the node degree, for instance the number of positive
+labels. Such features include variations on the node degree, such as the number of positive
 outgoing edges or the number of negative incoming edges. These node features are combined into edge
 features, and a supervised classification algorithm is trained. Several works have devised
 additional features~\autocites{Bayesian15}{Yuan2017}, most notably based on scoring the nodes in a
 Page Rank fashion~\autocites{traag2010exponential}{shahriari2014ranking}{wu2016troll}. These methods
 are accurate, fast ---for they are local, and interpretable ---for the features are hand crafted.
 The drawback is that this feature engineering is done mostly in an ad hoc way. On the other hand, it
-is also possible to look at the problem from a global point of view. Namely, by completing the
+is also possible to look at the problem from a global point of view, by completing the
 signed adjacency matrix through low rank
 factorization~\autocites{LowRankCompletion14}{OnlineCompletion17}. These methods are also accurate
 and bypass feature engineering, but by nature, they require careful algorithms to scale with larger
 networks. Finally, during the writing of this manuscript, several papers have been published, which
 use embedding of the nodes in a low dimensional space, based on the training
-label~\autocites{SIGNet17}{SNE17}. This also avoids feature engineering but is global in nature and
+labels~\autocites{SIGNet17}{SNE17}. This also avoids feature engineering but is global in nature and
 not so interpretable.
 
 One way to solve the problem on undirected graphs would be to apply the previous methods, having
@@ -103,7 +103,7 @@ immediate how such methods, generally based on generative models, could be adapt
 Direct approaches to classify edges have been proposed, based on graphical
 models~\autocite{graphicalModelTies11}, nearest neighbors with a customized
 distance~\autocite{Aggarwal2016a} and edge embedding in knowledge graphs~\autocite{transE13}. Yet
-they all rely on having training label as supervision. A simple unsupervised method is to cluster
+they all rely on having training labels as supervision. A simple unsupervised method is to cluster
 the line graph of the input graph~\autocite{LineGraph09}, but this does not take advantage of
 attributes. Another method uses topological features~\autocite{ahmed2017roles} but is rather complex
 and thus not very interpretable. If we further assume that each edge type is associated with an
