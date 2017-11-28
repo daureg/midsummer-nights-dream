@@ -17,7 +17,7 @@ So far we focused on \pcc{} in its rawest form, that is solving the \mind{} and 
 in the case where the general binary-labeled graph is known in advance. We will now see first some
 special cases, namely when the weights obey the triangle inequality (to solve \msc{}) or when the
 graph is bipartite and then move to variants. We will consider more general objectives, when the
-edges are labeled categorically instead of binary, when nodes can belong simultaneously to several
+edge labels are categorical instead of binary, when nodes can belong simultaneously to several
 clusters or when we optimize local objectives per nodes instead of global ones. Finally we will also look at
 clustering in signed graphs in general, using spectral methods or heuristics from the community
 detection literature.
@@ -45,7 +45,7 @@ objects in different clusters, thus representing a kind of distance in the space
 first show by \textcite{EarlyConsensusClustering03} , finding the optimal clustering is therefore
 an instance of \pcc{} where the weights obey the triangular inequality. \textcite{Gionis2007} give a
 deterministic $3$-approximation using the \regionGrow{} method. Later \textcite{Bonizzoni2008} show that
-the minimization version is \APXh{}, even when the input is made of three clusterings and give a
+the minimization version is \APXh{}, even when the input is made of only three clusterings and give a
 combinatorial $\nicefrac{4}{5}$-approximation for the maximization problem. Experimental evaluations are
 conducted by \textcite{Bertolacci07} and \textcite{Filkov08}. The former describe a scalable
 approach that first samples a small portion of the data, runs a (potentially computationally
@@ -87,8 +87,8 @@ present a modification of the \ccpivot{} algorithm that pick edges instead of no
 grow clusters by adding monochromatic triangles. This gives an approximation factor of six times the
 maximum degree of the graph. They also present a method when the number $k$ of clusters is fixed
 beforehand, starting with an initial partition and then alternating between finding the majority
-color of clusters and finding better clusters. An improved heuristic algorithm is given in
-\url{http://ieeexplore.ieee.org/document/7732322/}. Unfortunately, the maximum degree of a graph can be
+color of clusters and finding better clusters. An improved heuristic algorithm is given
+in~\autocite{CCCheuristic16}. Unfortunately, the maximum degree of a graph can be
 as large as $n$. However, \textcite{Anava2015} present constant factor approximations. Namely, they
 show the problem can be reduced to classical \pcc{} by setting all edges incident to a node $u$ to
 negative if they are not of the majority color of $u$. They then apply the regular \ccpivot{} and
@@ -138,7 +138,7 @@ where singleton and giant clusters are uninformative~\autocite{Hou2016}
 \Textcite{pmlr-v48-puleo16} also modify the \mind{} objective to make it more general. Based on the
 classic \pcc{} linear program, they define a \enquote{\emph{fractional clustering} of $G$ as a
 vector $x$ indexed by $V$ such that $x_{uv} \in [0, 1]$ for all $uv \in \binom{V}{2}$ and such that
-$x_{vz} \leq x_{vw} + x_{wz}$ for all distinct $v, w, z \in V$}. They also define \enquote{The
+$x_{vz} \leq x_{vw} + x_{wz}$ for all distinct $v, w, z \in V$}. They also define \enquote{the
 error vector $err(x)$ of $x$, as a real vector indexed by $V$ whose coordinates are}
 \begin{equation*}
   \mathrm{err}(x)_u = \sum_{v\in\nei^+(u)} x_{uv} + \sum_{v\in\nei^-(u)} (1-x_{uv})
@@ -249,7 +249,7 @@ and $\mu$ respectively, then $u$ is an eigenvector of $A+B$ with eigenvalue $\la
 eigenvector of $A\#B$ with eigenvalue $\sqrt{\lambda\mu}$. Therefore, the $k$ smallest eigenvalues
 of the geometric mean Laplacian will be influenced by both smallest eigenvalues of $L^+$
 (corresponding to assortative clusters in $G^+$) and of $Q^-$ (corresponding to disassortative
-clusters in $G^-$), while this is note the case for the arithmetic mean of Laplacians.
+clusters in $G^-$), while this is not the case for the arithmetic mean of Laplacians.
 
 \paragraph{Community detection}
 

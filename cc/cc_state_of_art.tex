@@ -14,7 +14,7 @@ the active and online settings.
 Because of the complexity of the \pcc{}, one has to rely on approximations to solve large instances
 of the problem. However, we can imagine offline signed social networks with only few nodes, in which
 case it is reasonable to expect finding the optimal clustering. Furthermore, this can also be useful
-to evaluate in practice the quality of heuristic methods, albeit in non asymptotic setting. The
+to evaluate in practice the quality of heuristic methods, albeit in non asymptotic settings. The
 methods used to solve \pcc{} exactly depends on the type of graph considered. More precisely, the
 fixed parameter algorithms we describe now only handle complete graphs, while the next set of
 methods also work on general graphs.
@@ -27,7 +27,7 @@ methods also work on general graphs.
 Let us first describe the cluster editing problem, where one is given a general unsigned input graph
 $H=(V,E)$ and wants to
 find the smallest number of edges that have to be added or deleted to turn $H$ into node-disjoint
-union of cliques. It is possible to navigate between an instance $H$ of cluster editing and an
+union of cliques. It is possible to alternate between an instance $H$ of cluster editing and an
 instance $G$ of \pcc{} on complete graphs in polynomial time. To see why, let $G=(V,(E^+,E^-))$
 be a complete signed graph with nodeset $V$, $E^+$ be the set $E$ of edges of $H$ and $E^-$ be all
 the edges that are not in $H$. The optimal clusters of $G$ are the cliques of $H$, the negative
@@ -134,7 +134,7 @@ then there is little hope to obtain an optimal solution.
 Although the same problem was considered earlier~\autocites{Early96}{Ben-Dor99}, \textcite{Bansal2002}
 coin the term \pcc{} and are the first to study this problem complexity. Namely, for complete,
 unweighted signed graphs, they show that both \mind{} and \maxa{} are \NPc{}. Along the way, they
-give a $17429$-approximation of \mind{} and a PTAS%
+give a $17429$-approximation of \mind{} and a PTAS
 that, for any $\epsilon \in [0,1]$, runs in
 $O(n^2e^{O(\epsilon^{-10}\log \epsilon^{-1})})$ and returns with probability
 $1-\nicefrac{\epsilon}{3}$ a solution with at most $\epsilon n^2$ fewer agreements than the optimal
@@ -189,19 +189,20 @@ $H_G$ be the graph induced by $E^+$ with the same weight. Then for every negativ
 weight $w_{uv}^-$, we create a new vertex $v_{\widehat{uv}}$, connect $u$ to $v_{\widehat{uv}}$ with
 weight $w_{uv}^-$ and let $(v_{\widehat{uv}}, v)$ be a source-target pair added to $S_G$. This
 construction is depicted in \autoref{fig:cc_mmc} and one can show (\autocite[Theorem
-4.4]{Demaine2006})\Todo{give the intuition of the proof} that it takes a linear time to construct a
+4.4]{Demaine2006}) that it takes a linear time to construct a
 multicut of weight $W$ in $H_G$ from a clustering of weight $W$ in $G$, and vice versa.
+%\Todo{give the intuition of the proof}
 
 \begin{figure}[htpb]
    \centering
    \includegraphics[width=0.8\linewidth]{assets/raw/cc_to_mmc.png}
-   \caption{The transformation from \pcc{} on $G$ to \mmc{} on $H$ (temporarily reproduced from
+   \caption{The transformation from \pcc{} on $G$ to \mmc{} on $H$ (reproduced from
    \autocite{Demaine2006}) \label{fig:cc_mmc}}
 \end{figure}
 
 If a certain conjecture in computational complexity is true\footnote{Namely, the Unique Game
 Conjecture of~\textcite{UGC02}.}, then for every constant $c>0$ it is \NPh{} to approximate \mmc{}
-within a factor $c$~\autocite{}. On general graphs, the best known approximation factor in $O(\log
+within a factor $c$~\autocite{MulticutHardness06}. On general graphs, the best known approximation factor in $O(\log
 k)$~\autocite{RegionGrowing93}, which according to the presented reduction translates to
 $O(\log|E^-|)=O(\log n^2)=O(\log n)$. This approximation ratio is achieved by first solving the
 relaxation of the integer problem \eqref{eq:mindIP}, where the constraint \eqref{eq:mindInteger} is
@@ -212,9 +213,10 @@ larger it is and the more we want $u$ and $v$ to be in different clusters. We ca
 to $u$'s cluster all the nodes at distance less than $r$ from $u$ before removing that cluster and
 repeating the process. $r<\shalf$ is chosen adaptively such that the weight of positive edges
 leaving the cluster is less than $c\log(n+1)$ times the fractional weights of the positive edges
-inside the cluster.\Todo{The full proof can be found in pages 7--9 of
-\href{http://erikdemaine.org/papers/Clustering_TCS/paper.pdf}{this online pdf} but in my opinion, it
-doesn't have much to do with machine learning.}
+inside the cluster.
+%\Todo{The full proof can be found in pages 7--9 of
+%\href{http://erikdemaine.org/papers/Clustering_TCS/paper.pdf}{this online pdf} but in my opinion, it
+%doesn't have much to do with machine learning.}
 
 However, \textcite[Theorem 2]{Charikar2003} note that the LP formulation has a poor integrality gap
 when it comes to \maxa{}, thus they turn to a Semi Definite Program. Say that each cluster is
@@ -252,8 +254,8 @@ approximation guarantee~\autocite{derandomCCPivot08}). At each iteration, we pic
 (called the pivot) and we create a cluster containing $u$ and all its neighbors
 linked by a positive edges. On weighted complete graphs, they tweak this algorithm by using the
 solution of the canonical LP to obtain different approximation factor depending on the
-constraints imposed on the weight.\Todo{Comment on those constraints, especially the triangular ones
-in the context of consensus clustering.} Recall that in the general formulation of the problem, each
+% \Todo{Comment on those constraints, especially the triangular ones in the context of consensus clustering.}
+constraints imposed on the weight. Recall that in the general formulation of the problem, each
 edge carries two positive numbers: $w_{u,v}^+$ and $w_{u,v}^-$. If the weights respect the
 probability constraints stating that for all edge $(u,v)$ in $E$, $w_{u,v}^+ + w_{u,v}^- = 1$, this
 tweaking provide a $2.5$-approximation. Note that unweighted graphs naturally fit into that case, as
@@ -294,7 +296,7 @@ constant factor approximation are ruled out for \mind{} on general graphs, as sh
 equivalence with \mmc{}.
 Currently there are three main approaches to approximate \mind{}. On a general graph,
 one first solve the canonical LP, and use the \regionGrow{} method to round the fractional solution,
-resulting in an $O(log n)$ approximation. On complete graphs, the simplest solution is the
+resulting in an $O(\log n)$ approximation. On complete graphs, the simplest solution is the
 \ccpivot{} algorithm, that grows clusters out of randomly selected pivots, in a way reminiscent of
 the proof of \autoref{thm:weakbal-consistent}. The approximation factor of this general idea can be
 improved by interpreting the fractional solution of the linear program as probability to be included
@@ -446,8 +448,9 @@ before the perturbation. The authors note that both the outer loop and the neigh
 be run in parallel, which allow them to process a \np{10000} nodes graph on 10 cores in around 700
 seconds. \Textcite{heuristicCE16} show how to use ILS to generate initial solutions of the Cluster
 Editing problem that are then fed to an integer program.
-This local search followed by random perturbation is reminiscent of genetic algorithms, and such an
-approach is sketched in~\autocite{GeneticCC08}.\footnote{but that's a terrible paper!} Instead of
+% This local search followed by random perturbation is reminiscent of genetic algorithms, and such an
+% approach is sketched in~\autocite{GeneticCC08}.\footnote{but that's a terrible paper!}
+Instead of
 moving nodes, \textcite{restoreNeighborhood13} starts from the observation that in a balanced
 graph, $G^+$ is a disjoint union of cliques in which all the nodes of a given cluster share the shame
 neighbors. Their algorithm is initialized with the set $E_s^+$ of edges where $w^+_{uv} > w^-_{uv}$,
@@ -582,7 +585,7 @@ This state of the art depicts a nuanced landscape for the \pcc{} problem. On one
 the disagreements is difficult, although it is the most natural way given our bias. On the other
 hand, it can be solved with approximation guarantees, at least in theory. Indeed, the best methods
 requires solving linear programs with $m$ variables and up to $O(n^3)$ constraints, which results in
-a high complexity of $O(m^{4.5})$~\autocite[Section 7.2]{LPBook07}. Fortunately we can obtain
+a high complexity of $O(m^{4.5})$~\autocite[Section 7.2]{LPBook07}. Fortunately, we can obtain
 reasonable solutions in practice, thanks to efficient heuristics (using the output of \ccpivot{} as
 initialization for instance). Furthermore, instances obeying our bias can be solved more easily and
 almost exactly. We next present settings where instances are indeed close to our bias.

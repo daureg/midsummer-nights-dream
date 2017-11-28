@@ -5,7 +5,7 @@ other while being dissimilar to objects from all the other clusters.
 In \pcc{}, we formalize this problem by considering objects as the nodes of a graph $G$, whose edge
 weights encode similarity. Namely, in the most general case, for nodes $u$ and $v$, the edge between
 $u$ and $v$ is associated with two positive numbers:
-$w_{u,v}^+$ denotes the strength of the similarity between $u$ and $v$;
+$w_{u,v}^+$ denotes the strength of the similarity between $u$ and $v$, while
 $w_{u,v}^-$ denotes the strength of the dissimilarity between $u$ and $v$.
 Note, however, that in many applications, only one of these two numbers is nonzero, in which case
 we more conveniently set $w_{u,v} = \begin{cases}
@@ -77,7 +77,7 @@ this class the hypothesis minimizing the empirical risk, and use it to predict t
 the testing set. In contrast, \pcc{} in an agnostic problem. More precisely, the hypothesis class is
 fixed, as it consists of all possible partitions of the nodeset. We are trying to find the partition
 that best approximates the observed signs, but each weakly unbalanced cycle is gonna cost us at
-least one unavoidable mistakes. Despite this fundamental difference in their nature, \pcc{} is
+least one unavoidable mistake. Despite this fundamental difference in their nature, \pcc{} is
 connected with \esp{} at two levels, theoretical and practical. On the theoretical side, computing
 the minimum number of disagreements gives a measure of the \esp{} problem complexity.  Intuitively,
 given a labelled subgraph $H$ of $G$ (that is the training set), if there are few disagreements, the
@@ -87,7 +87,7 @@ More formally, one can show that by finding a clustering $\cluster^\star$ of $H$
 disagreements than $\kappa$ times the smallest number of disagreements $\Delta$, the number of
 errors on the testing set will be at most of order $\kappa\Delta + \sqrt{mn\log
 n}$~\autocite[Theorem 6]{Cesa-Bianchi2012b}. These theoretical considerations naturally lead to
-practical batch algorithm, which first finds a clustering minimizing as much as possible the number
+practical a batch algorithm, which first finds a clustering minimizing as much as possible the number
 of disagreements on the training set and then predicts signs according to this clustering. Our
 assumption in doing so is that, according to our bias, our graph has few disagreements. Therefore,
 provided we can find a clustering close to the optimal, we will not make too many prediction
@@ -111,7 +111,8 @@ Besides the special case of predicting edge sign, \textcite[Section 5]{Demaine20
       edges and solve the resulting \pcc{} problem. 
 \end{itemize}
 
-Furthermore, as mentioned in the introduction of this thesis, \pcc{} has also been used in several
+Furthermore, as mentioned in the introduction of this thesis \vpageref{sub:intro_signed_graphs},
+\pcc{} have been used in many
 domains. For instance in computer vision, it is used to segment images in
 2D~\autocites{Kim2011}{Bagon2011}{CellSeg14} or 3D~\autocites{VolumeSegmentation12}{Beier2015}, to
 simplify 3D shapes~\autocite{Shape3D17} and to track target across sequential video

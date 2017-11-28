@@ -1,6 +1,6 @@
 From a narrow practical point of view, balance theories specify which sign assignments of a triangle
 are possible. By forbidding triangles with a single negative edge, weak balance gives rise to a
-$K$-\emph{consistent} clusters structure on complete graphs. After making these notions more precise
+$K$-\emph{consistent} clusters structure on complete graphs. After making these notions more detailed
 in the rest of this section, we conclude by precisely exposing our learning bias.
 
 \begin{aside}
@@ -99,8 +99,8 @@ We say that $L$ and $R$ are $2$-consistent clusters and more generally, we defin
   \end{enumerate}
 \end{definition}
 
-We just saw that if a complete graphs is strongly balanced, then it admits a $2$-consistent
-clustering (\autoref{thm:structural} proves the converse is true). It is natural to ask under which
+We just saw that if a complete graph is strongly balanced, then it admits a $2$-consistent
+clustering (\autoref{thm:structural} proves that the converse is true). It is natural to ask under which
 conditions a complete signed graph admits a $K>2$ consistent clustering. This is where the notion of
 weak balance comes handy. It was noted by
 sociologists that among triangles with odd number of negative edges, one is more stable and common
@@ -201,9 +201,9 @@ given to longer cycles compared with triads~\autocites{Facchetti2011isingmodel}{
 % index) which they claimed has been peer reviewed?
 % For the same reason, in virtually any real instances of the \pcc{} problem, the optimal solution
 % will incur some disagreements. 
-\marginpars{The proof makes essential use of the strong balance (which is ok since next section also
-deal with 2-CC) and the completeness of the graph (which is a far less realistic assumption) yet
-it would be interesting to see if it can be extended.}
+%\marginpars{The proof makes essential use of the strong balance (which is ok since next section also
+%deal with 2-CC) and the completeness of the graph (which is a far less realistic assumption) yet
+%it would be interesting to see if it can be extended.}
 \Textcite[Section 5.5]{BookKleinberg2010}
 nonetheless prove that even when only a fraction of the triangle are strongly balanced in a complete
 graph, the two clusters structure is still present, although it does not cover the whole graph
@@ -231,7 +231,8 @@ the previous generative model, we assume that each node $u$ is endowed with an i
 $\cluster(u) = \cluster(v)$ and negative otherwise. In other words, this corresponds to picking an
 arbitrary partition of $V$ and setting the signs of $E$ in such a way that the partition becomes a
 consistent clustering. This can still be seen as a generative process because of the initial integer
-drawn \uar{},\Todo{Although I'm not sure how I would write this likelihood to be fair} but one that
+drawn \uar{}, but one that
+%\Todo{Although I'm not sure how I would write this likelihood to be fair}
 avoids the two pitfalls discussed before. Indeed, there is no decision to be made by nodes, since
 the previous probability has been replaced by a binary function (either both nodes are in the same
 cluster or not). Furthermore, since the clustering function is symmetric, the model is inherently
