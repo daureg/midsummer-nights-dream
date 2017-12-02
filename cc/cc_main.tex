@@ -40,3 +40,16 @@ topic~\autocites{bonchi2014correlation}{surveyCC16}{CCWirth2017} and highlight t
 \label{sub:variants_and_extensions}
 \input{cc_variants}
 \end{aside}
+
+Let us review this material about \pcc{} in the light of our thesis objective: efficiently and
+accurately characterize edges in complex networks, or rather signed graphs in this chapter. The
+results on the hardness of \pcc{}, and the fact that the best approximations rely on a linear
+program with a large number of constraints seems to run counter to such efficiency and accuracy
+requirements. To avoid this pitfall, we presented many existing heuristics. More importantly, recall
+that our learning bias is that nodes are assigned to $K$ groups, and that signs are consistent
+with those groups. Informally, the closer an input signed graph is to this ideal situation, the more
+regular it is with respect to this bias, and thus the easier the \esp{} problem is. Accordingly, the
+works described in \autoref{sub:cc_non_worst_case} point out that such non worst case instances are
+indeed where we expect clustering algorithms to be able to identify those $K$ groups with little to
+no error. In the next section, we present an algorithm relying on a similar intuition, in an active
+setting and where $K=2$.

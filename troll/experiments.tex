@@ -66,10 +66,11 @@ multi-edges which are all of the same sign.}
 positive. Hence, test set accuracy is not an appropriate measure of prediction performance. We
 instead evaluated our performance using the so-called Matthews Correlation Coefficient
 (MCC)~\autocite{MCC00}, defined as
-\[
+\begin{equation}
+  \label{eq:troll_mcc}
 	\mathrm{MCC} = \frac{tp\times tn-fp\times fn}%
         {\sqrt{ (tp + fp) ( tp + fn ) ( tn + fp ) ( tn + fn ) } }% = \pm \sqrt{\frac{\chi^2}{n}}
-\]
+\end{equation}
 MCC combines all the four quantities found in a binary confusion matrix ($t$rue $p$ositive, $t$rue
 $n$egative, $f$alse $p$ositive and $f$alse $n$egative) into a single metric which ranges from $-1$
 (when all predictions are incorrect) to $+1$ (when all predictions are correct) through $0$ (when

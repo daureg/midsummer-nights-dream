@@ -1,7 +1,7 @@
-In this \nameref{sub:gtx_empirical_evaluation}, we provide empirical evidences of the properties of
-\gtx{} over several classes of graph, and compare it with a \bfs{} baseline.\marginpars{If time
-allows, it would be interesting to implement some methods of \vref{sub:gtx_state_of_the_art} and add
-them to the comparison}\todo*{implement more low stretch methods} Namely, we consider three kinds of
+In this section, we provide empirical evidences of the properties of
+\gtx{} over several classes of graph, and compare it with a \bfs{} baseline.
+%\marginpars{If time allows, it would be interesting to implement some methods of \vref{sub:gtx_state_of_the_art} and add them to the comparison}\todo*{implement more low stretch methods}
+Namely, we consider three kinds of
 graph topology (with both synthetic and real world instances that carry signs on their edges) and
 evaluate $(i)$ what average stretch is reached by various trees and $(ii)$ how accurate is the sign
 prediction.
@@ -9,7 +9,7 @@ prediction.
 \subsubsection{Graph topology}
 
 The three kinds of topology we consider are:
-\begin{description}
+\begin{description}[leftmargin=*]
 	\item[\grid{}] which are 2D lattices, where each node has four neighbors except on the boundary.
 		The synthetic ones are square, while the \enquote{real world} ones represents the four neighbors
 		pixel connectivity of the pictures showed in \autoref{fig:gtx_xp_bwpics}.
@@ -21,14 +21,15 @@ The three kinds of topology we consider are:
 		node, we pick $3$ or $4$ existing neighbors such the initial expected number of neighbors for
 		each new nodes is $3.13$. Such graphs are quite sparse and have short diameter, thus providing a
 		crude but reasonable approximation of online social networks. Therefore, the real world
-		instances of the \lpa{} model are \wik{}, \sla{} and \epi{}\marginpars{as used in the first
-		chapter}\todo*{add a ref to first chapter} along with \gplus{}. The last one is constructed from
+		instances of the \lpa{} model are \wik{}, \sla{} and \epi{} networks from \autoref{chap:troll}
+		 along with \gplus{}. The last one is constructed from
 		ego networks of \gplus{}\footnote{Available at
 		\url{http://snap.stanford.edu/data/egonets-Gplus.html}} by keeping the largest connected
 		component of users whose gender is known. Basic statistics of those real \lpa{} graphs are
 		presented in (\autoref{tab:gtx_xp_dataset}). 
-	\item[\triangle{}] which consists of a Delaunay triangulation of random 2D points\footnote{As
-		implemented by the \textsf{graph-tool} library (\url{https://graph-tool.skewed.de})}.
+	\item[\triangle{}] which consists of a Delaunay triangulation of a set of points randomly
+		located in a 2D space.\footnote{As
+		implemented by the \textsf{graph-tool} library (\url{https://graph-tool.skewed.de})}
 \end{description}
 
 \begin{table}[htpb]
@@ -99,22 +100,20 @@ The three kinds of topology we consider are:
 \subsubsection{Stretch}
 
 The first property of Galaxy trees we wish to evaluate is their stretch, which depends only of graph
-topology. Namely, let $G$ be a graph over vertex set $V$ with $|V|=n$ and edge set
-$E$.\Todo[MOVE]{Stretch definition is likely to happen somewhere earlier} Furthermore, let $T$ be a
-spanning tree of $G$ and $\etest{}$ the edges of $G$ not in $T$. Then we define the \emph{average
-test edge stretch} as $\frac{1}{|\etest{}|} \sum_{(u,v) \in \etest{}} |\mathrm{path}^T_{u,v}|$,
+topology. Recall that following equation~\autoref{eq:test_stretch_def}, we define the average test
+edge stretch as $\frac{1}{|\etest{}|} \sum_{(u,v) \in \etest{}} |\mathrm{path}^T_{u,v}|$,
 where $|\mathrm{path}^T_{u,v}|$ is the unique path between $u$ and $v$ in $T$.
 
 As we consider unweighted graphs, we compare \gtx{} with a natural baseline, namely a spanning tree
 rooted at the highest degree node and obtained through a breadth first visit of the graph. This
-involves randomness in order in which nodes are visited. Likewise in \gtx{}, the choice of the edge
+involves randomness in the order in which nodes are visited. Likewise in \gtx{}, the choice of the edge
 linking two stars is not always unique, meaning that we have to break ties at random.  Therefore,
-for each graph, we repeat the tree construction 12 times and present the average result, noting that
+for each graph, we repeat the tree construction \np{12} times and present the average result, noting that
 the variance (showed as error bar in \autoref{fig:gtx_xp_st}) is small.
 
-On \lpa{} and \triangle{}, we see that both trees exhibits logarithmic stretch, although with a
+On \lpa{} and \triangle{}, we see in \autoref{fig:gtx_xp_st} that both trees exhibits logarithmic stretch, although with a
 larger constant for \gtx{}. Note that this is also the case for others low stretch tree methods
-\autocite[\S 5.3.1]{papplow}. On \grid{} however, \gtx{} preserves this logarithmic stretch growth
+\autocite[Section 5.3.1]{papplow}. On \grid{} however, \gtx{} preserves this logarithmic stretch growth
 while this is visually no longer the case for \bfs{}.
 In that case, we cannot expect a better stretch than $\frac{\log n}{2048}$ according to
 \autocite[Theorem 6.6]{LowerBound95}.
@@ -142,30 +141,18 @@ In that case, we cannot expect a better stretch than $\frac{\log n}{2048}$ accor
 
 The second design goal of Galaxy trees is to accurately predict the sign of edges in $\etest{}$.
 Except for the three real datasets that already include signs\footnote{We nonetheless perform some
-preprocessing in order to make them undirected to remove the small proportion of conflicting edges
+preprocessing in order to make them undirected and to remove the small proportion of conflicting edges
 (e.g. positive from $u$ to $v$ but negative from $v$ to $u$).}, all the other are constructed,
 meaning we have to set sign on their edges in the first place. This is done by partitioning the
 nodes into two clusters. For \gplus{} we use node gender, for pictures we use node color (black or
 white), and for all others, we propagate labels $0$ and $1$ from randomly selected high degree nodes.
 Once each node belongs to one of the two clusters, we set the sign of an edge between two nodes to
 be $+$ if they are in the same cluster and $-$ otherwise.  Predicting using path parity will thus
-gives perfect result. To test performance in real or adversarial situation, we then add noise, that
+gives perfect result. To test performance in real situations, we then add noise, that
 is we select a fraction of edges uniformly at random and flip their sign. 
 
-We evaluate the performance of our prediction using the Matthews Correlation\Todo{merge this
-definition of MCC with the one in first chapter} Coefficient (MCC)~\autocite{MCC00} \[
-	\mathrm{MCC} = \frac{ TP \times TN - FP \times FN } {\sqrt{ (TP + FP) ( TP + FN ) (
-			TN + FP ) ( TN + FN ) } } = \pm \sqrt{\frac{\chi^2}{n}}
-\]
-Since we do not have confidence score, we cannot use AUC. Yet we have to account for the large sign
-unbalance and thus cannot rely on accuracy or $F_1$ measure.  Therefore we choose MCC, which
-combines all the four numbers of the confusion matrix in a single metric. It ranges from $+1$
-(perfect prediction) to $-1$ (inverse prediction) through $0$ (random prediction). As a
-demonstration of MCC usefulness, predicting all edges but one to be positive on Slashdot gives
-$.764$ accuracy, $.886$ $F_1$ score\marginpars{Actually the $F_1$ score is $.866$ for positive
-edges, $0$ for negative ones and $.661$ if we can take an average weighted by class size.} but
-$-0.0007$ MCC.
-
+Like in \autoref{s:exp}, we evaluate the performance of our prediction using the Matthews
+Correlation Coefficient (MCC), defined in equation~\autoref{eq:troll_mcc} \vpageref{eq:troll_mcc}.
 As showed in \autoref{fig:gtx_xp_mcc}, when the noise level is low, \gtx{} performs better than
 \bfs{}. As the noise level gets higher, they have similar performance. Note also than in
 \autoref{fig:gtx_xp_pasynthmcc}, \gtx{} is less sensible to the size of the graph.
@@ -195,22 +182,21 @@ As showed in \autoref{fig:gtx_xp_mcc}, when the noise level is low, \gtx{} perfo
 	\caption{MCC over various graphs}\label{fig:gtx_xp_mcc}
 \end{figure}
 
-To further assess the quality of our trees, we plug them in them into a successful heuristic method
-to predict edge sign: \asym{}~\autocite{Kunegis2009}. \Todo{It might also be interesting to see if
-that would be a good training set for our troll method, although it has to be checked it makes sense
-from a running time point of view.} It computes the exponential of the adjacency matrix after it has
+To further assess the quality of our trees, we plug them in them into an existing heuristic method
+to predict edge sign: \asym{}~\autocite{Kunegis2009}.
+%\Todo{It might also be interesting to see if that would be a good training set for our troll method, although it has to be checked it makes sense from a running time point of view.}
+It computes the exponential of the adjacency matrix after it has
 been reduce to $z$ dimension. This allows to count the sign of all paths between two pairs of nodes
 with decreasing weight depending of their length. To simulate an active learning setting, we reveal
 only a subset of edge in $A$. This subset can be: $i)$ the edges forming a \bfs{}, $ii)$ the edges
 forming a \gtx{} $iii)$ $|V|-1$ edges chosen uniformly at random.
-
 We set the parameter $z$ equal to $15$ because $i)$ it is one of the best in \cite[Fig.
-11]{Kunegis2009}, $ii)$ it performs well on real dataset in \cite[Fig.3]{Cesa-Bianchi2012a}, and
-$iii)$ it was good in our initial testing (\texttt{20150401\_wed\_spectral.ipynb}).
+11]{Kunegis2009} and $ii)$ it performs well on real datasets in \cite[Fig.3]{Cesa-Bianchi2012a}.
+% , and $iii)$ it was good in our initial testing (\texttt{20150401\_wed\_spectral.ipynb}).
 
 As the \asym{} has a $O(n^3)$ complexity and uses quite some memory at prediction time, the larger
 graphs used previously are not all included. The conclusion of \autoref{fig:gtx_xp_asym} is that
-except on social network, it is better to use spanning trees than random edges. Specifically, \gtx{}
+except on social networks, it is better to use spanning trees than random edges. Specifically, \gtx{}
 on \grid{} and \bfs{} elsewhere.
 
 \begin{figure}[tbh]
@@ -238,6 +224,8 @@ on \grid{} and \bfs{} elsewhere.
 	\caption{\asym{} over various graphs}\label{fig:gtx_xp_asym}
 \end{figure}
 
+\iffalse
 Finally\marginpars{Actually I never did it because \shz{} wasn't implemented at the time, so now is
 a good occasion}\todo*{Run shazoo on galaxy tree} we also compare \gtx{} with \bfs{} and \rst{} on
 the task of nodes prediction using \shz{} algorithm~\autocite{Vitale2012}.
+\fi

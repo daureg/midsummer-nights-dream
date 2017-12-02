@@ -1,7 +1,7 @@
 To achieve our objective of building a spanning tree that minimizes the distances between all
 connected pair of nodes in the original graph, we rely on a particular subgraph structure, namely
-the star.  We therefore introduce two algorithmic primitives: \extractStar{}, which partition a
-graph $G$ into a set of disjoint stars; and \collapseStar{}, which selects edges from $E$ to
+the star.  We therefore introduce two algorithmic primitives. \extractStar{}, which partition a
+graph $G$ into a set of disjoint stars. And \collapseStar{}, which selects edges from $E$ to
 assemble these stars into a new, smaller graph. Given a graph topology $G_0=(V_0, E_0)$ and assuming
 for simplicity that $G_0$ consists of a single connected component,\footnote{For we can otherwise
 run our algorithm in parallel on each connected components of $G_0$.} the \gtx{} algorithm
@@ -16,8 +16,8 @@ This can be seen as a simple instantiation of a general procedure described in \
 
 In the following, we provide a more precise description of our two primitives and analyze their
 complexity. Then we state formally the complete \gtx{} algorithm, prove its termination and
-correctness, and show a detailed example of its execution.  Finally, we study its properties, such
-as the number of iterations needed to finish and the stretch of the resulting tree.
+correctness, and show a detailed example of its execution.  Finally, we provide a conjecture on
+the number of iterations needed to finish.
 
 \paragraph{\extractStar{}}\label{par:extractstar}%
 \extractStar{} takes as input a graph $G_t=(V_t, E_t)$.
@@ -61,8 +61,9 @@ by~\textcite[section 6.5]{CormenAlgo09}: \textsc{Extract-Max}$(Q)$ removes and r
 node of $Q$ with the largest degree and \textsc{Decrease-Key}$(Q$, $u$, $\Delta)$ decrements
 the degree of the node $u$ by an amount $\Delta$.
 We also assume that $G$ is the adjacency list of the graph, so that $G[u]$ is the set of neighbors of
-$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. Finally $membership$ is a map and we
-define the \textsc{Star} function, which creates a star given a center $c$, a list $periphery$ of
+$u$, \ie{} $G[u] \equiv \mathcal{N}(u)$. Finally $membership$ is the map storing for each node the
+index of the star it belongs to. This map is updated by the
+\textsc{Star} function, which creates a star given a center $c$, a list $periphery$ of
 peripheral nodes, and a star index $i$. After creating the \ith{} star, for every node $u$ belonging
 to that star, the \textsc{Star} function sets $membership[u] = i$.
 \vspace{-\baselineskip}
@@ -109,7 +110,8 @@ all the nodes according to their degree (line 2), which requires $|V|$ insertion
 we execute $|V|$ iterations of the while loop. However, the main idea here is that we process each
 node and each edge exactly once. We first find the center $c$ of the next star by extracting the
 maximum of the queue (line 8) and testing if $c$ is still part of the graph, which happens $|V|$
-time. Then we build the corresponding star (line 11--14). In total, we test the membership of $|V|$
+times in total. Then we build the corresponding star (line 11--14). In total, we test the membership
+of $|V|$
 nodes in line 11, $\textsc{Star}$ updates the $membership$ map $|V|$ times in line 12,
 $inner\_edges$ consists of $|E|$ edges at most in line 13 and $remaining$ is only updated $|V|$
 times in line 14. Finally, we decrease the priority (\ie{} the degree) of all nodes adjacent to the
@@ -123,7 +125,7 @@ since $G$ is connected.
 
 The second primitive, \collapseStar{} takes as input the edges $E_t$ of the current graph, along
 with the $membership$ result of \extractStar{} and an $eccentricity$ array. It builds a new graph
-$G_{t+1}$ where each star from \extractStar{} becomes a node and where there is a link between two
+$G_{t+1}$ where each star $s_u$ from \extractStar{} becomes a node and where there is a link between two
 nodes $s_u$ and $s_v$ if the nodes in $V_t$ making up $s_u$ and $s_v$ are connected in $E_t$. The
 $eccentricity$ array is needed because when connecting two stars, we would prefer to join their
 center rather than two of their peripheral points. Therefore, we maintain an eccentricity count for
@@ -136,8 +138,9 @@ extent it has been pushed to the border of the galaxy.
   \includegraphics[width=0.92\linewidth]{assets/tikz/gtx_cross_edges_tikz.pdf}
   \caption[Cross edge representation]{In this graph, there are four possible edges between the two
   stars $s_1$ and $s_2$, and all are part of $cross\_edges[(s_1, s_2)]$, here represented in light
-red. Those edges are labeled with the sum of eccentricity of their underlying endpoints, and the
-minimal one is linking a peripheral node of $s_1$ directly to the center of $s_2$.}
+red. Those edges are labeled with the sum of eccentricity of their underlying endpoints. White node
+have an eccentricity of $0$, and gray node an eccentricity of $1$. The edge with the
+minimal eccentricity is linking a peripheral node of $s_1$ directly to the center of $s_2$.}
   \label{fig:gtx_cross_edge}
 \end{marginfigure}%
 \collapseStar{} not only returns the new graph $G_{t+1}$ but also a map $cross\_edges$. This map is
@@ -153,19 +156,19 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
     \Function{\collapseStar{}}{$E_t,\,membership,\,eccentricity$}
       \State Let $G_{t+1}$ be an empty graph
       \State Let $cross\_edges$ be the map described above
-      \ForAll{edge $(u, v)$ in $E_t$}
+      \For{\textbf{every} edge $(u, v)$ in $E_t$}
       \Let{$s_u$}{$membership[u]$}
       \Let{$s_v$}{$membership[v]$}
         \If{$u$ and $v$ are not in the same star (\ie{} $s_u \neq s_v$)}
           \Let{$cross\_edges[(s_u, s_v)]$}{$cross\_edges[(s_u, s_v)] \bigcup \{(u, v)\}$}
         \EndIf
       \EndFor
-      \ForAll{pair of will-be connected stars $(s_u,s_v)$ in $cross\_edges$}
+      \For{\textbf{every} pair of will-be connected stars $(s_u,s_v)$ in $cross\_edges$}
         \Let{$possible\_underlying\_edges$}{$cross\_edges[(s_u, s_v)]$}
-        \marginpars{\small Line 11 is actually a simplification since the $eccentricity$ array is only
-        defined for nodes in $V_0$ so when \collapseStar{} is called on $G_3$ for instance, $u$ and $v$
-        are nodes of $V_3$ and we have to retrieve the actual corresponding edge in $E_0$. Maybe I could
-        simply add a map from $E_t$ to $E_0$ like in the real python code…}
+        %\marginpars{\small Line 11 is actually a simplification since the $eccentricity$ array is
+        %only defined for nodes in $V_0$ so when \collapseStar{} is called on \eg{} $G_3$, $u$
+        %and $v$ are nodes of $V_3$ and we have to retrieve the actual corresponding edge in $E_0$.
+        %Maybe I could simply add a map from $E_t$ to $E_0$ like in the real python code…}
         \State $$(u_0, v_0) \gets \argmin_{(u,v)\in possible\_underlying\_edges} eccentricity[u]+eccentricity[v]$$
         \Let{$cross\_edges[(s_u, s_v)]$}{$\{(u_0, v_0)\}$}
         \Let{$E_{t+1}$}{$E_{t+1} \bigcup \{(s_u, s_v)\}$}
@@ -194,11 +197,12 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
 final spanning tree, we need additional work, namely updating the eccentricity of the nodes of
 $V_0$ and keeping track of each edge within and between stars along every collapse steps. Despite
 our earlier promise, this entails showing some bookkeeping code, because it has an influence on the
-runtime of \gtx{}. \Todo{Those maps could probably use better names}
+runtime of \gtx{}. %\Todo{Those maps could probably use better names}
 Namely in the listing of \autoref{alg:gtx} \vpageref{alg:gtx}, we use the three following maps:
 
 \vspace{0.5\baselineskip}
-\noindent\begin{tabulary}{187mm}{lllL}
+\setlength{\fullpage}{\textwidth+\marginparsep+\marginparwidth}
+\noindent\begin{tabulary}{\fullpage}{lllL}
   \toprule
   name               & keys set at $t$ & values set at $t$   & comment \\
   \midrule
@@ -243,7 +247,7 @@ Namely in the listing of \autoref{alg:gtx} \vpageref{alg:gtx}, we use the three 
 As described in \autoref{alg:gtx}, at every collapse level, we first extract stars from the current
 graph (line 5), then update the eccentricity and node mappings (lines 7--8) and finally collapse the
 graph (line 9). We perform these operations until there are no edge connecting stars anymore. At
-this point, we revisit every outer edges to build the spanning tree (line 13).
+this point, we revisit every outer edge to build the spanning tree (line 13).
 
 \begin{prop}
   \label{prop:gtx_correct}
@@ -270,8 +274,8 @@ We will need the following lemma.
   according to \autoref{lem:gtx_stay_connected}, $G_t$ is connected so at least two nodes of $V_t$
   are joined by an edge and will form a star, \ie{} a single node. We can thus claim that $|V_{t+1}| <
   |V_t|$. Note also that for all $t$, $|V_t| > 0$ and that when $|V_t|=1$, \extractStar{} creates a
-  singleton and \collapseStar{} does not return any outer edges so \gtx{} finishes, proving that the
-  number of iterations $K$ satisfies $K \leq |V_0|$.
+  singleton and \collapseStar{} does not return any outer edges. At this point, \gtx{} finishes,
+  proving that the number of iterations $K$ satisfies $K \leq |V_0|$.
 
  Then we analyze the time complexity. We already now that during the \tth{} iteration,
  \extractStar{} and \collapseStar{} take time $O(|E_t|)$. We only provide the actual python code
@@ -279,7 +283,7 @@ We will need the following lemma.
  algorithmic aspect. However, we can say that \textsc{Update-Eccentricity} and\marginpars{We can get
  rid of this $O(|V_0|)$ at each iteration by ignoring eccentricity and taking a random edge between
  star, although it's difficult to tell how it would affect the quality of the resulting tree.}
- \textsc{Update-Nodes-Mapping} take $O(|V_0|)$ time since they go through every node of the original
+ \textsc{Update-Nodes-Mapping} take $O(|V_0|)$ time, since they go through every node of the original
  graph. Because $G_0$ is connected, $|V_0| \leq |E_0|$, and since for all $t$, $|E_t| \leq |E_0|$,
  we have that the \gtx{} inner loop takes $O(K|E_0|)$ time. Finally, since
  \textsc{Assemble-Spanning-Tree} goes again through every edge visited at every collapse step, it
@@ -330,10 +334,8 @@ We will need the following lemma.
 \end{figure*}
 
 The bound of \autoref{prop:gtx_correct} amounts to $O(|V_0||E_0|)$, which we believe is overly
-pessimistic. First because we expect the number of nodes to decrease by more than one at each step,
-maybe leading to only $O(\log |V_0|)$ iterations. More importantly, instead of bounding
-$\sum_{t=0}^K |E_t|$ by $K|E_0|$, we hope to show that $E_{t+1} = rE_t$ with $r<1$ so that this sum
-is $O(|E_0|)$.
+pessimistic. Indeed, we expect the number of nodes to decrease by more than one at each step,
+potentially leading to only $O(\log |V_0|)$ iterations.
 
 \paragraph{Example of \gtx{}}
 \label{par:exemple_of_gtx}
@@ -391,7 +393,7 @@ eccentricity and is chosen to connect $\starone{1}$ and $\starone{2}$. The full 
 \collapseStar{} procedure is $G_1$, which can be seen on \autoref{fig:gtx_run1}.
 
 We now run \extractStar{} on $G_1$. Because all nodes have degree $2$, they could all be chosen to
-be the center of a star yet we again they are picked according to their index and therefore we
+be the center of a star. We again assume they are picked according to their index and therefore we
 choose $\starone{1}$ to be the center of the star $\startwo{1}$ with peripheral nodes $\starone{2}$
 and $\starone{3}$. The original nodes belonging to those peripheral stars (nodes $4$ to $15$) have
 their eccentricity incremented by $1$. The next node with highest degree in $G_1$ is now
@@ -409,12 +411,14 @@ $G_3$ showed in \autoref{fig:gtx_run3} and an empty list of outer edges, meaning
 of \gtx{} is finished and we can go through every edges we chose between stars at every level to
 recover the final spanning tree, a process illustrated in \autoref{fig:gtx_spanning_tree}
 \vpageref{fig:gtx_spanning_tree}. For completeness, we can also look at the edges which are not part
-of the spanning tree and therefore contribute to the stretch of the tree. In that case the average
-stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
+of the spanning tree, that is the test edges, and compute how long are the paths joining their
+endpoints. Indeed, this is the second quantity appearing in the mistakes bound of
+equation~\eqref{eq:stretch_mistakes}. As shown in \autoref{tab:gtx_example_stretch}, this average
+length is $7$.
 
 \begin{table}[htpb]
   \centering
-  \caption{Stretch of the example tree}
+  \caption{Length of the paths not in the resulting spanning tree.}
   \label{tab:gtx_example_stretch}
   \begin{tabulary}{\linewidth}{lLr}
     \toprule
@@ -431,9 +435,7 @@ stretch is $7$, as showed in \autoref{tab:gtx_example_stretch}.
   \end{tabulary}
 \end{table}
 
-\paragraph{Number of iterations needed}\label{par:number_of_iteration}%
-
-\textcolor{red}{\LARGE Draft}
+\paragraph{Discussion on the number of iterations needed}\label{par:number_of_iteration}%
 
 A crucial quantity of the \gtx{} algorithm, both in terms of complexity and resulting stretch, is
 the number of collapses $K$ needed before termination. While this is still elusive to express in the
@@ -445,18 +447,32 @@ and two nodes stars, as in \autoref{fig:gtx_line_graph}.%
 \begin{marginfigure}
   \centering
   \includegraphics[width=0.9\linewidth]{assets/tikz/gtx_line_tikz.pdf}
-  \caption{A line graph with stars in blue}
+  \caption{A line graph with stars in blue.}
   \label{fig:gtx_line_graph}
 \end{marginfigure}
-This will results in $\nicefrac{2n}{5}$ stars, which is less than half of $n$ and because in that
-case $n=m+1$, \gtx{} will finish after $O(\log m)$ iterations. Note that a barbell graph (two
+This will results in $\nicefrac{2n}{5}$ stars organized in a line, which is less than half of $n$.
+Thus we can conclude that in this case, \gtx{} will finish after $O(\log n)$ iterations. Note that a barbell graph (two
 cliques connected by a line) would requires a number of iterations logarithmic in the length of that
-central line, despite having many more edges. This suggests unsurprisingly that the diameter of the graph
+central line, despite having many more nodes and edges.
+
+In fact, it is helpful to look at this question from the other direction. Namely, we can wonder what
+is the minimum number $n(K)$ of nodes necessary for a graph to requires at least $K$ collapses
+before being reduced to a single node. Checking by hand, we have that $n(1)=2$, $n(2)=4$ and
+$n(3)=8$. Furthermore, this number is achieved by a line or circle consisting of exactly $2^K$
+nodes. By induction, we can even show that on any line or circle graphs with $2^n$ nodes, the \gtx{}
+algorithm will terminate after $n$ collapses. Assuming we could prove that $n(K)=2^K$, given a graph
+$G$ with $n=2^{\log_2 n}$ nodes, by definition of $n(K)=2^K$, it would require less than
+$\ceil{\log_2 n} = O(\log n)$ collapses before being reduced to a single node. However, we were not
+able to rule out the possibility that there is a graph more parsimonious than a line still able to
+survive the same number of collapses. Therefore, we cannot conclude that $n(K)=2^K$ and we leave
+this statement as a conjecture.
+
+\iffalse
+This suggests unsurprisingly that the diameter of the graph
 could be a good parameter to quantify the number of iterations needed. Indeed, take a tree and consider
 the length $p$ of its longest path from the root to a leaf. By a similar argument as the one used in
 the line case, it seems \gtx{} will terminate after $O(\log p)$ iterations.
 
-\iffalse
 While all $G_t$ are connected according to \autoref{lem:gtx_stay_connected}, it might happen during
 the execution of \extractStar{} that%
 \begin{marginfigure}
@@ -612,9 +628,9 @@ a large number of singletons is carried over several consecutive iterations?
 \label{ssec:gtx_center_choice}
 
 The execution of \extractStar{} is mainly deterministic, except for the fact the ties between nodes
-with the same highest degree are broken arbitrarily. While this allows for an efficient
-implementation, and simplify the analysis of the resulting sequence of stars and therefore the
-induced spanning tree, in can be detrimental in an adversarial context, where we could end up with a
+with the same highest degree are broken arbitrarily. This allows for an efficient
+implementation, and simplifies the analysis of the resulting sequence of stars and therefore the
+induced spanning tree. However, it can be detrimental in an adversarial context, where we could end up with a
 tree forcing a lot of mistakes. We add an element of randomization to \extractStar{} by letting it
 use of two optional arguments, a \emph{threshold function} $\tau$ or a \emph{degree function}
 $\widetilde{d}$. Such functions modify the center sampling process in the following way:
@@ -651,9 +667,9 @@ When degrees are updated (or graph node removed), we update the weights along a 
 corresponding leaves to the root of the tree.
 
 A variant of the \gtx{} algorithm as a whole we did not explore so much in practice is its ability
-to produce spanner by stopping early. Basically if we stop at iteration $t$, we output the graph
+to produce spanners by stopping early. Basically if we stop at iteration $t$, we output the graph
 $G_t$ (which in general is not a tree) with its edges unfolded to lie in $E_0$. This corresponds to
-a trade off between having more edges than $|V_0|-1$ but potentially making shorter connection and
-thus having a lower stretch. This would also be interesting in the sign prediction setting. Assuming
-the treewidth of $G_t$ is decreasing with $t$, maybe we could show there is \enquote{reasonable}
+a trade off between having more edges than $|V_0|-1$ but potentially making shorter connection.
+This would also be interesting \esp{} problem. Assuming
+the treewidth of $G_t$ is decreasing with $t$, we could try to show there is \enquote{reasonable}
 number of paths between $u$ and $v$, compute their parity and take a majority vote on the results.
