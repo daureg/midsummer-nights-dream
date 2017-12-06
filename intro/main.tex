@@ -1,4 +1,4 @@
-Graphs are a natural way to represent the relationships between a set of entities. Because of the
+Graphs are a natural way to represent the relationships over a set of entities. Because of the
 simplicity and flexibility of this formalism, graphs are ubiquitous and have been used in countless
 fields. To make the rest of our explanations more concrete, we now give three examples of graphs
 that we consider later on.
@@ -11,7 +11,7 @@ can be promoted to administrators after a vote from their peers. An edge \euv{} 
 means that user $u$ has voted on the possible promotion of $v$.
 \item In computer vision, we can represent an image as a graph. Each pixel is a node, and those
 nodes are connected to four neighbors, namely the adjacent pixel from the top, bottom, left and
-right sides.
+right sides. The relationship in this graph is therefore adjacency in an image.
 \item In e-commerce, we can consider a co-purchase network. Nodes are products being sold on a
 website, and two nodes are connected if the corresponding products are frequently bought
 together by customers, for instance a phone and a memory card.
@@ -20,7 +20,7 @@ together by customers, for instance a phone and a memory card.
 Not only are there graphs in many domains, but the progress of technology in the last few decades
 has made it easier to collect many graphs in every single domain, sometimes with up to billion of
 nodes and hundred of billions of edges. The availability of such large amount of structured data has
-prompted the development of automated methods to extract insight from it. For instance, it is
+prompted the development of automated methods to extract insights from them. For instance, it is
 possible to cluster nodes into coherent groups, predict the category of the nodes or study how to
 best propagate information within a graph. We describe in more details these possibilities and
 others in \autoref{sec:learning_in_graphs}. By doing so, our goal is to illustrate the wide
@@ -29,7 +29,10 @@ potential of \emph{learning in graphs}.
 \medskip
 
 At this point of the discussion though, we have only considered the most common and simple kind of
-graph, one representing a single type of relation between nodes. However, in many situations, there
+graph, one representing a single type of relation between nodes.\footnote{Note that by \enquote{type
+of relation}, we do not refer to some graph-theoretical characteristic of an edge such as being directed or weighted.
+Indeed, all the graphs we consider have homogeneous edges with that respect. Instead we mean domain
+specific semantic, as we will make clear in examples.} However, in many situations, there
 are two dimensions along which graphs exhibit more complexity. First, nodes have more than one type
 of relation among each other. Second, two nodes are not only connected because of their global
 similarity but also for more nuanced reasons. As a case in point, let us look again at our
@@ -41,9 +44,9 @@ Likewise in an image, an edge between two pixels is positive if the two pixels b
 object (say a car or a building) and negative otherwise. This information could be used to segment
 the image. In the co-purchase network, there are even more than two types of relation. Assuming the
 products are movies, two movies can be frequently bought together because they are part of a series
-(like Star Wars), because they have the same director but different gender, because they receive the
+(like Star Wars), because they have the same director but different genre, because they receive the
 same prestigious awards in different years, and so on. The second type of relation (\enquote{same
-director} and \enquote{different gender}) is actually an example of a mixed relation, for it mixes
+director} and \enquote{different genre}) is actually an example of a mixed relation, for it mixes
 similarity and dissimilarity.
 
 We call \emph{complex networks} graphs where edges have different \emph{semantics}, or types, and
@@ -51,7 +54,8 @@ where connections are explained by more than simple global similarity. In
 \autoref{sec:edge_semantics}, we give additional examples of such complex networks. As
 showed in our three previous examples, we distinguish between two cases. The first is when there are two types of
 edge having opposite semantics. Such graphs are called \emph{signed graphs} and have been
-extensively studied since the fifties, for we shall see they have many applications. The second case
+extensively studied since the fifties, for we shall see they have many applications. Their name
+comes from the fact that edges are typically labeled $+1$ and $-1$. The second case
 is when there are more than two types of edge. Such graphs have also been studied for a long time
 under different names and we refer to them as \emph{multilayer graphs}.
 
