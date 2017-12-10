@@ -1,0 +1,169 @@
+\label{chap:conclusion}
+
+\section{Contributions}
+
+The objective of this thesis was to provide \enquote{efficient and accurate methods to predict edge
+type in complex networks}. By complex networks, we mean graphs where edges can have one among $k$
+semantics (or types) and where nodes are connected by both partial homophily and heterophily. 
+
+\begin{itemize}
+
+  \item In \autoref{chap:troll}~\autocite{trollSign17}, we first focused on directed signed graphs,
+    as they model social interactions in several domains, such as e-commerce and collaborations.
+    Here edges have two possible semantics, positive or negative. Our goal was to solve a supervised
+    binary classification problem by predicting the sign of test edges. For that, we first
+    introduced a simple sign generative model. It endows nodes with two parameters --trollness and
+    unpleasantness--, governing their incoming and outgoing behavior. This might seem like a
+    simplistic way of expressing the notion of partial homophily and heterophily. However, we
+    presented two methods to approximate this Bayes predictor, suggesting a trade off between
+    theoretical guarantees and input requirement. We showed experimentally that those methods are
+    competitive with the state of the art, while being more scalable. Motivated by the regularity
+    measure offered by trollness and unpleasantness, and the inability of existing methods to cope
+    with new nodes joining the graph, we furthermore develop the first online algorithm for the
+    \esp{} problem.
+
+  \item We started \autoref{chap:cc} by showing that the methods of the previous chapter are not
+    straightforward to extend to undirected signed graphs. Therefore, we changed our learning bias
+    from a generative model to a clustering assumption inspired by social balance theories. Namely,
+    we posit that the nodes are assigned to one of $K$ groups, and that the sign of the edge $(u,v)$
+    is positive if the nodes $u$ and $v$ belong to the same group and negative otherwise. We then
+    presented two approaches to leverage this bias. First, we drew a connection between the \esp{}
+    problem and the \pcc{} problem. While \pcc{} is hard to approximate in general, we suggested,
+    based on existing works, that the more an instance complies with our bias, the better \pcc{}
+    methods could recover the $K$ underlying groups and thus provide accurate prediction. Second, we
+    addressed the problem in an active setting, where $K=2$. For that, we implemented a promising
+    spanning tree algorithm~\autocite{gtxFabio}, that queries some edges in order to connect the
+    remaining edges by paths as short as possible. Experimentally, we showed that on both synthetic
+    and real graphs, our method is competitive in terms of sign prediction with a strong natural
+    baseline.
+
+  \item Finally, in \autoref{chap:edge}, we considered the case where there are more than two types
+    of edge. This means that instead of signed graphs, our input shifted to multilayer graphs, which
+    are also ubiquitous to describe real world phenomena. Moreover, we modified the learning
+    setting, so that no edge label are available, but instead nodes carry a profile vector. However,
+    our goal remained to predict edge type, in what could then be described as a clustering problem
+    with side information and interpretability requirements. In order to do so, we first defined a
+    similarity between nodes, which accommodate both heterophily and homophily. We then formulate
+    the problem as simultaneously finding $k$ special vectors called directions, and assigning one
+    of them to every edge in order to maximize a scalar \emph{goodness} function. After introducing
+    baselines oblivious of the graph topology, we added constraints resulting in one vectorial and
+    one matricial optimization objectives. Finally, we showed on synthetic data how those methods
+    can recover the planted ground truth.
+
+\end{itemize}
+
+\section{Future work}
+
+In this section, we revisit the problems summarized above by showing how they could be applied in a
+new context or enriched by existing node embedding methods.
+
+\subsection{Reciprocal recommendation}
+
+In this paragraph, we present the reciprocal recommendation problem~\autocite{Pizzato2013}. As we
+shall see, it incorporates aspects from all the problems we discussed previously. Broadly speaking,
+given two sets of users $L$ and $R$, we want to recommend users in $R$ to users in $L$, and vice
+versa. These recommendations are based on mutual interest, but in most cases there is an asymmetry
+between the two groups. To better illustrate this general definition, we now give some concrete
+examples.
+
+\begin{itemize}
+  \item One recent application that quickly rose to prominence is online
+    dating~\autocites{Krzywicki2015}{Xia2016a}{Alanazi}. In the most common case, users are divided
+    between men and women, and we want to recommend users of the opposite gender in order to create
+    couples. A well known example of such a system is Tinder~\autocite{TinderDesc16}.
+  \item In another domain, we can also match job seekers and
+    employers~\autocites{Siting2012}{Hong2013}{Kille2015}.
+  \item As a specific case in point, \textcite{Zhang2016a} propose a method to match prospective PhD
+    students and their future supervisors.
+  \item In large organizations or associations, having a mentor is usually beneficial for
+    both employees and employers~\autocite{mentorBenef04} and finding mentee/mentor pairs can be
+    cast as a reciprocal recommendation problem~\autocite{OSSMentors12}.
+    %\url{http://ieeexplore.ieee.org/abstract/document/7207130/}
+  \item After moving to their new jobs, people also need a place to live. Again, we can match
+    tenants and landlords, or people to share a flat.
+  \item Finally, in a more critical setting, finding relevant matches between patients and organ
+    donors can improve the success of transplants~\autocite{patientDonor17}.
+\end{itemize}
+
+Reciprocal recommendations present specific challenges~\autocite{Andrews2015}. Among them are
+asymmetry and volume.  Asymmetry refers to the imbalance between the two groups, in terms of size
+and bargaining power. For instance, depending of the economic situation and the field, there might
+be a lot of job seekers for a few open positions, in which case employers can be very selective.
+Likewise, it is generally observed that dating websites have a higher proportion of men, meaning
+that women can afford to choose among numerous suitors~\autocite{TinderDesc16}. By volume, we mean
+that users on both side can only handle a few recommendations at the same time. This is sharp
+contrast with traditional user-item recommendation systems, where recommending simultaneously the
+same item (say a movie) to thousands of users is not an issue. On the other hand, we have to keep
+user engaged and prevent them from being idle. This is done by ensuring they are regularly the
+subject or object of some recommendations.
+
+As the name implies, reciprocal recommendation has often be seen as a special case of recommender
+system~\autocite{Andrews2015}. Besides this paradigm, we could also cast it as an adaptive, active,
+cost sensitive \esp{} problem on bipartite directed signed graphs with side information. Let us
+decompose this last sentence, starting with the input graph. It is naturally bipartite, because of
+the presence of two groups in which there is no internal recommendation. Furthermore, every time one
+user expresses interest or disinterest in another user, this creates a directed signed edge. Such a
+graph is thus a special case of the \dssn{} studied in \autoref{chap:troll}. Each nodes carries two
+kind of information. The first is explicitly provided by the user, in order to arise interest in
+users from the other group. The second is implicitly inferred from the user activity. In particular,
+the interactions with other nodes allow us to build an implicit preference model for every user.
+Combining these two sources of information yield a profile of each user, like in
+\autoref{chap:vector}. Making recommendations in such a graph therefore boils down to finding non
+existing positive edges. However, to cope with the two challenges presented in the previous
+paragraph, we follow the setting of \autoref{chap:cc} and use an active approach. More precisely,
+respecting the volume constraints would require an adaptive algorithm, which acquires the most
+useful information without over- or under-loading any nodes. As for the group asymmetry, this could
+be addressed by using a cost sensitive classification error, so that the error rate at a given node
+is inversely proportional to its importance in the network.
+
+Unfortunately, we did not study this problem further in this thesis. Indeed, getting data and
+testing algorithms usually require an industrial partner.\footnote{See for
+instance~\autocites{Andrews2015}{Kille2015}{Krzywicki2015}{Xia2015}{Alanazi}}
+
+\subsection{Representation learning}
+\label{par:representation_learning}
+
+As we mentioned already in \autoref{sec:troll_related} and \autoref{sec:edge_related}, a recent and
+promising trend regarding learning in graph is node embedding. In addition to the references cited
+earlier, this also witnessed by recent works on embedding attributed nodes, either in signed
+graphs~\autocites{SignedFS17}{attributedSNE17}{SHINE18} or in general
+graphs~\autocites{Liao2017}{AANE17}{DynamicEmbedding17}. At first sight, those methods seem
+radically different from traditional graph methods. However, just like word embedding methods have
+been linked to matrix
+factorization~\autocites{WordEmbeddingAsFactorization14}{Hellinger14}{AroraRandWalk16}, so have been
+popular and successful node embedding methods~\autocite{embeddingAsFactorization18}. These methods
+are the simple ones that do not consider node attributes and multiple types of edges, such as
+DeepWalk~\autocite{DeepWalk14}, LINE~\autocite{LINE15} and node2vec~\autocite{node2vec16}. For
+instance, \textcite{embeddingAsFactorization18} show that the node embedding of DeepWalk on the
+weighted graph $G$ are approximately the left singular vectors of the following matrix:
+\begin{equation}
+  \label{eq:deepwalk}
+  \log \left( vol(G) \left( \frac{1}{T} \sum_{r=1}^T (D^{-1}A)^r\right) D^{-1} \right) - \log b
+\end{equation}
+where $vol(G)$ is the sum of all weighted degrees, $T$ is the context window size, $D$ is the
+diagonal matrix of degrees, $A$ is the adjacency matrix of the graph and $r$ is the number of
+negative samples in skip-gram. There are several ways such findings could be used in our context:
+\begin{itemize}
+
+  \item If the edges of the input graph are fully labeled into $k$ types, then we have $k$ matrices
+    $D_k$ and $A_k$, by considering the subgraphs induced by each edge type. If we simply decompose
+    the $k$ matrices constructed according to equation \eqref{eq:deepwalk}, we would have $k$
+    embedding for each node. Instead, it seems natural to stack those matrices together to form two
+    third order tensors $\mathcal{D} \in \Rbb^{n \times n \times k}$ and $\mathcal{A} \in \Rbb^{n
+    \times n \times k}$. One could then use one tensor decomposition
+    methods~\autocites{tensorReview09}{tensorReview17} to extract node embedding taking into account
+    the multiplicity of edge types.
+
+  \item If the edges of the input graph are partially labeled, then predicting edge type can be seen
+    as a tensor completion problem. Like in the matrix case, we seek a low rank tensor that
+    coincides with the observed entries of the input data. Furthermore, when we have access to node
+    profiles, we can use methods tailored to leverage such side information~\autocite[Section
+    4]{tensorCompletion17}.
+
+  \item If the input graph has no edge labels at all but we are given node profiles, we can use
+    existing attributed embedding approaches~\autocites{Liao2017}{AANE17}{DynamicEmbedding17} to
+    generate extra information about each node, before applying the methods presented in
+    \autoref{chap:vector} on these extended profiles. We note however that
+    doing so might reduce the interpretability of the final result.
+
+\end{itemize}
