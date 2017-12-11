@@ -1,0 +1,21 @@
+In this thesis, we develop methods to efficiently and accurately characterize edges in complex
+networks. In simple graphs, nodes are connected by a single semantic. For instance, two users are
+friends in a social networks, or there is a hypertext link from one webpage to another. Furthermore,
+those connections are typically driven by node similarity, in what is known as the homophily
+mechanism. In the previous examples, users become friends because of common features, and webpages
+link to each other based on common topics. By contrast, complex networks are graphs where every
+connection has one semantic among $k$ possible ones. Those connections are moreover based on both
+partial homophily and heterophily of their endpoints. This additional information enable finer
+analysis of real world graphs. However, it can be expensive to acquire, or is sometimes not known
+beforehand. We address the problems of inferring edge semantics in various settings. First, we
+consider graphs where edges have two opposite semantics, and where we observe the label of some
+edges. These so-called \emph{signed graphs} are a convenient way to represent polarized
+interactions. We propose two learning biases suited for directed and undirected signed graphs
+respectively. This leads us to design several algorithms leveraging the graph topology to solve a
+binary classification problem that we call \esp{}. Second, we consider graphs with $k \geq 2$
+available semantics for edge. In that case of \emph{multilayer graphs}, we are not provided with any
+edge label, but instead are given one feature vector for each node. Faced with such an unsupervised
+\ecp{} problem, we devise a quality criterion expressing how well an edge $k$-partition and $k$
+semantical vectors explains the observed connections. We optimize this \emph{goodness of
+explanation} criterion in vectorial and matricial forms, and show how those two methods perform on
+synthetic data.
