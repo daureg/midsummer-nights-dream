@@ -37,7 +37,7 @@ semantics (or types) and where nodes are connected by both partial homophily and
     and real graphs, our method is competitive in terms of sign prediction with a strong natural
     baseline.
 
-  \item Finally, in \autoref{chap:edge}, we considered the case where there are more than two types
+  \item Finally, in \autoref{chap:vector}, we considered the case where there are more than two types
     of edge. This means that instead of signed graphs, our input shifted to multilayer graphs, which
     are also ubiquitous to describe real world phenomena. Moreover, we modified the learning
     setting, so that no edge label are available, but instead nodes carry a profile vector. However,
@@ -59,14 +59,15 @@ new context or enriched by existing node embedding methods.
 
 \subsection{Reciprocal recommendation}
 
-In this paragraph, we present the reciprocal recommendation problem~\autocite{Pizzato2013}. As we
-shall see, it incorporates aspects from all the problems we discussed previously. Broadly speaking,
+We first present a task tightly related to our edge characterization problem, namely the reciprocal
+recommendation problem~\autocite{Pizzato2013}. As we shall see, it indeed incorporates aspects from
+all the problems we discussed previously, along with new constraints. Broadly speaking,
 given two sets of users $L$ and $R$, we want to recommend users in $R$ to users in $L$, and vice
 versa. These recommendations are based on mutual interest, but in most cases there is an asymmetry
 between the two groups. To better illustrate this general definition, we now give some concrete
 examples.
 
-\begin{itemize}
+\begin{itemize}[leftmargin=*]
   \item One recent application that quickly rose to prominence is online
     dating~\autocites{Krzywicki2015}{Xia2016a}{Alanazi}. In the most common case, users are divided
     between men and women, and we want to recommend users of the opposite gender in order to create

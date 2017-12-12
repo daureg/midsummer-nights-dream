@@ -27,8 +27,12 @@ We may then want to minimize the stretch of:
     \estr(u,v)$
   \item all pairs of nodes, \ie{}  minimize $\sum_{(u,v) \in V^2} \estr(u,v)$
 \end{enumerate}
-Note that for an unweighted graph, the second problem reduces to minimizing $\sum_{(u,v) \in E}
-|\pathhuv|$. If furthermore $H$ is tree, this is equivalent to minimize the second term of equation
+Note that for unweighted graphs, the second problem reduces to minimizing
+\begin{equation}
+  \label{eq:test_stretch_def}
+  \estr(H) = \sum_{(u,v) \in E} |\pathhuv|.
+\end{equation}
+If furthermore $H$ is tree, this is equivalent to minimize the second term of equation
 \eqref{eq:stretch_mistakes}. Therefore we focus mainly of that definition of stretch, and consider
 the other two only briefly.
 
