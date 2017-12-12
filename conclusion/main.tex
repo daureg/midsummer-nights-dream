@@ -117,14 +117,29 @@ useful information without over- or under-loading any nodes. As for the group as
 be addressed by using a cost sensitive classification error, so that the error rate at a given node
 is inversely proportional to its importance in the network.
 
-Unfortunately, we did not study this problem further in this thesis. Indeed, getting data and
-testing algorithms usually require an industrial partner.\footnote{See for
-instance~\autocites{Andrews2015}{Kille2015}{Krzywicki2015}{Xia2015}{Alanazi}}
+As in any worthy machine learning endeavor, reliably evaluating and comparing approaches require
+large amount of real data. This is particularly true in such an applied setting, but the most
+realistic evaluation is to perform A/B testing on a live system with enough traffic to give some
+statistical significance. This explains why most previous studies rely on the cooperation of
+industrial partners~\autocites{Andrews2015}{Kille2015}{Krzywicki2015}{Xia2015}{Alanazi}. Thus, this
+is also something we would like to do in the future.
 
 \subsection{Representation learning}
 \label{par:representation_learning}
 
-As we mentioned already in \autoref{sec:troll_related} and \autoref{sec:edge_related}, a recent and
+A fundamental question underlying many machine learning approaches is the representation of data.
+When extracting information from the real world, we are usually given some freedom in how to present
+it to learning algorithms. Ideally, we would like to use the representation providing the best
+performance in the learning task. One solution is to ask expert domains to craft relevant features
+based on their prior knowledge. While this has achieved successes, it is not scalable to the present
+day situation, where the deluge of available data has prompted the use of machine learning in every
+corner of the society. An alluring alternative to expert knowledge is to learn the data
+representation itself, guided by the task.
+
+As an illustration in the context of this thesis, we assume that data was organized as a graph,
+where nodes were possibly associated with a feature vector. However, there might an different
+representation of those nodes that would better suit our needs. Indeed,
+we mentioned already in \autoref{sec:troll_related} and \autoref{sec:edge_related} that a recent and
 promising trend regarding learning in graph is node embedding. In addition to the references cited
 earlier, this also witnessed by recent works on embedding attributed nodes, either in signed
 graphs~\autocites{SignedFS17}{attributedSNE17}{SHINE18} or in general
