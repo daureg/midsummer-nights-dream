@@ -12,7 +12,8 @@ The three kinds of topology we consider are:
 \begin{description}[leftmargin=*]
 	\item[\grid{}] which are 2D lattices, where each node has four neighbors except on the boundary.
 		The synthetic ones are square, while the \enquote{real world} ones represents the four neighbors
-		pixel connectivity of the pictures showed in \autoref{fig:gtx_xp_bwpics}.
+		pixel connectivity of the pictures showed in \autoref{fig:gtx_xp_bwpics}
+		\vpageref{fig:gtx_xp_bwpics}.
 	\item[\lpa{}] which are built synthetically according to the model of \textcite{Barabasi1999}.
 		While this does not follow the more rigorous specification of \textcite{PAmodel04}, informally,
 		we start with a line graph of $m$ nodes and add node one by one until the graph consists of $n$
@@ -111,7 +112,7 @@ linking two stars is not always unique, meaning that we have to break ties at ra
 for each graph, we repeat the tree construction \np{12} times and present the average result, noting that
 the variance (showed as error bar in \autoref{fig:gtx_xp_st}) is small.
 
-On \lpa{} and \triangle{}, we see in \autoref{fig:gtx_xp_st} that both trees exhibits logarithmic stretch, although with a
+On \lpa{} and \triangle{}, we see in \autoref{fig:gtx_xp_st} \vpageref{fig:gtx_xp_st} that both trees exhibits logarithmic stretch, although with a
 larger constant for \gtx{}. Note that this is also the case for others low stretch tree methods
 \autocite[Section 5.3.1]{papplow}. On \grid{} however, \gtx{} preserves this logarithmic stretch growth
 while this is visually no longer the case for \bfs{}.
@@ -153,7 +154,7 @@ is we select a fraction of edges uniformly at random and flip their sign.
 
 Like in \autoref{s:exp}, we evaluate the performance of our prediction using the Matthews
 Correlation Coefficient (MCC), defined in equation~\autoref{eq:troll_mcc} \vpageref{eq:troll_mcc}.
-As showed in \autoref{fig:gtx_xp_mcc}, when the noise level is low, \gtx{} performs better than
+As showed in \autoref{fig:gtx_xp_mcc} \vpageref{fig:gtx_xp_mcc}, when the noise level is low, \gtx{} performs better than
 \bfs{}. As the noise level gets higher, they have similar performance. Note also than in
 \autoref{fig:gtx_xp_pasynthmcc}, \gtx{} is less sensible to the size of the graph.
 
@@ -195,29 +196,29 @@ We set the parameter $z$ equal to $15$ because $i)$ it is one of the best in \ci
 % , and $iii)$ it was good in our initial testing (\texttt{20150401\_wed\_spectral.ipynb}).
 
 As the \asym{} has a $O(n^3)$ complexity and uses quite some memory at prediction time, the larger
-graphs used previously are not all included. The conclusion of \autoref{fig:gtx_xp_asym} is that
+graphs used previously are not all included. The conclusion of \autoref{fig:gtx_xp_asym} \vpageref{fig:gtx_xp_asym} is that
 except on social networks, it is better to use spanning trees than random edges. Specifically, \gtx{}
 on \grid{} and \bfs{} elsewhere.
 
 \begin{figure}[tbh]
 	\centering
-	\begin{subfigure}[b]{0.47\textwidth}
+	\begin{subfigure}[b]{0.475\textwidth}
 		\includegraphics[width=\textwidth]{gtx_exp/grsynthasym}
 		\caption{Synthetic \grid{} \label{fig:gtx_xp_grsynthasym}}
 	\end{subfigure}~
-	\begin{subfigure}[b]{0.47\textwidth}
+	\begin{subfigure}[b]{0.475\textwidth}
 		\includegraphics[width=\textwidth]{gtx_exp/grrwasym}
 		\caption{\enquote{Real} \grid{} }\label{fig:gtx_xp_grrwasym}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.47\textwidth}
+	\begin{subfigure}[b]{0.475\textwidth}
 		\includegraphics[width=\textwidth]{gtx_exp/pasynthasym}
 		\caption{Synthetic \lpa{} }\label{fig:gtx_xp_pasynthasym}
 	\end{subfigure}~
-	\begin{subfigure}[b]{0.47\textwidth}
+	\begin{subfigure}[b]{0.475\textwidth}
 		\includegraphics[width=\textwidth]{gtx_exp/trasym}
 		\caption{\triangle{} }\label{fig:gtx_xp_trasym}
 	\end{subfigure}
-	\begin{subfigure}[b]{0.47\textwidth}
+	\begin{subfigure}[b]{0.475\textwidth}
 		\includegraphics[width=\textwidth]{gtx_exp/parwasym}
 		\caption{Real world network }\label{fig:gtx_xp_parwasym}
 	\end{subfigure}

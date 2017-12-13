@@ -167,11 +167,12 @@ weight as most $W$. In the unweighted case, the reduction is similar but the hea
 are simulated in the following way: include every source and target in a clique of $n$ nodes and
 connect that clique to the corresponding source or target by $n$ negative edges.
 
-\begin{table}[b]
+\begin{table}[tb]
+\begin{adjustwidth}{-2cm}{}
    \centering
    \small
    \caption{Hardness results of \pcc{}} \label{tab:cc_cpx}
-   \begin{tabulary}{187mm}{lCCCC}
+   \begin{tabulary}{179mm}{lCCCC}
       \toprule
                & \multicolumn{2}{c}{\mind{}}   & \multicolumn{2}{c}{\maxa{}}                                   \\
       \cmidrule(r){2-3}
@@ -182,6 +183,7 @@ connect that clique to the corresponding source or target by $n$ negative edges.
       General  & \APXh{}~\autocites{Charikar2003}{Demaine2003} &  \APXh{}~\autocites{Charikar2003}{Emanuel2003}   & \multicolumn{2}{c}{\APXh{}~\autocite[Thm. 9]{Charikar2003}} \\
       \bottomrule
    \end{tabulary}
+\end{adjustwidth}
 \end{table}
 
 We next present the polynomial transformation from \pcc{} to \mmc{}. Given $G=(V, (E^+, E^-), w)$ we let
@@ -591,14 +593,14 @@ initialization for instance). Furthermore, instances obeying our bias can be sol
 almost exactly. We next present settings where instances are indeed close to our bias.
 Before that, we remark that whereas \ccpivot{} is often used on general graphs in practice by
 assuming the missing edges are negative, doing so does not preserve its approximation guarantee.
-\begin{marginfigure}
-  \centering
-  \includegraphics[width=\linewidth]{assets/raw/pivotstar.pdf}
-  \caption{A positive star with few negative edges}
-  \label{fig:cc_star_pivot}
-\end{marginfigure}
 
 \begin{aside}
+\begin{wrapfigure}{i}[10mm]{45mm}
+  \centering
+  \includegraphics[width=.9\linewidth]{assets/raw/pivotstar.pdf}
+  \caption{\small A positive star with few negative edges}
+  \label{fig:cc_star_pivot}
+\end{wrapfigure}
    Consider the graph $G$ showed in \autoref{fig:cc_star_pivot}. Assume there are $n$ nodes
    connected positively to the center of the star, and $k<n-1$ negative edges between the peripheral
    nodes. We define $G'$ as the complete graph obtained from $G$ by setting all missing edges to be

@@ -20,6 +20,15 @@ correctness, and show a detailed example of its execution.  Finally, we provide 
 the number of iterations needed to finish.
 
 \paragraph{\extractStar{}}\label{par:extractstar}%
+\begin{wrapfigure}{o}[10mm]{45mm}
+  \centering
+  \includegraphics[width=.9\linewidth]{assets/tikz/gtx_star_tikz.pdf}
+  \caption[A sample star]{\small A sample star created during the \tth{} collapse level. The black node
+    is the center $c_i$ of the star $S_i^t$, which is also made of the four light gray peripheral nodes
+  as well as the solid edges. The 2-hops neighbors of $c_i$ are the white nodes
+  $h_1$ to $h_3$, whose degree will decrease once $S_i^t$ is removed from $G_t$.}
+  \label{fig:gtx_star_simple}
+\end{wrapfigure}
 \extractStar{} takes as input a graph $G_t=(V_t, E_t)$.
 While the nodeset $V_t$ is not exhausted, it repeatedly samples a
 node $c_i$, creates a star $S_i^t$ with $c_i$ at its center and the neighbors of $c_i$ on the
@@ -35,18 +44,6 @@ According to the definition of \textcite{HashTableBook08}, an associative array 
 type composed of a collection of (key, value) pairs, such that each possible key appears at most
 once in the collection. It efficiently supports the addition, removal and modification of a pair, as
 well as the lookup of a value associated with a particular key.
-\begin{marginfigure}
-  \centering
-  \includegraphics[height=0.15\textheight]{assets/tikz/gtx_star_tikz.pdf}
-  \caption[A sample star]{A sample star created during the \tth{} collapse level. The black node
-    % \tikz{\node[vertex,rare] {$c_i$};}
-    is the center $c_i$ of the star $S_i^t$, which is also made of the four light gray peripheral nodes
-  % \tikz{\node[vertex,medium] {$p_1$};} to \tikz{\node[vertex,medium] {$p_4$};}
-  as well as the solid edges. The 2-hops neighbors of $c_i$ are the white nodes
-  % \tikz{\node[vertex] {$h_1$};} to \tikz{\node[vertex] {$h_3$};}
-  $h_1$ to $h_3$, whose degree will decrease once $S_i^t$ is removed from $G_t$.}
-  \label{fig:gtx_star_simple}
-\end{marginfigure}
 
 As showed in the following pseudo code\footnote{Note that for
 clarity, we removed some bookkeeping code in all listings, mainly the part related to maintaining
@@ -96,9 +93,10 @@ to that star, the \textsc{Star} function sets $membership[u] = i$.
       \State \textbf{return} $stars$, $inner\_edges$, $membership$
     \EndFunction
   \end{algorithmic}
-  \rule{\textwidth}{.3pt}
+  % \rule{\textwidth}{.3pt}
 \end{center}
 
+\vspace*{-2\baselineskip}
 \begin{prop}
   \label{prop:gtx_time_extractstar}
   For any connected graph $G=(V,E)$, \extractStar$(G)$ terminates in $O(|E|)$ time.
@@ -133,22 +131,23 @@ all of the nodes of the original $G_0$, which is incremented by $1$ each time a 
 on the periphery of a star. In other words, the eccentricity of an original node quantifies to which
 extent it has been pushed to the border of the galaxy.
 
-\begin{marginfigure}
-  \centering
-  \includegraphics[width=0.92\linewidth]{assets/tikz/gtx_cross_edges_tikz.pdf}
-  \caption[Cross edge representation]{In this graph, there are four possible edges between the two
-  stars $s_1$ and $s_2$, and all are part of $cross\_edges[(s_1, s_2)]$, here represented in light
-red. Those edges are labeled with the sum of eccentricity of their underlying endpoints. White node
-have an eccentricity of $0$, and gray node an eccentricity of $1$. The edge with the
-minimal eccentricity is linking a peripheral node of $s_1$ directly to the center of $s_2$.}
-  \label{fig:gtx_cross_edge}
-\end{marginfigure}%
 \collapseStar{} not only returns the new graph $G_{t+1}$ but also a map $cross\_edges$. This map is
 used to keep track of which edge in $E_t$ connects any pair of node in $V_{t+1}$ (as illustrated in
 \autoref{fig:gtx_cross_edge}). It associates to any edge in $E_{t+1}$ a set of edges from $E_t$.
 This set can have an arbitrary size during the execution of \collapseStar{}, yet it is guaranteed to
 contain a single edge upon termination. Although this does not appear in the following pseudo code,
 in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge in $cross\_edges$.
+
+\begin{figure}[bpt]
+  \centering
+  \includegraphics[width=0.4\linewidth]{assets/tikz/gtx_cross_edges_tikz.pdf}
+  \caption[Cross edge representation]{In this graph, there are four possible edges between the two
+  stars $s_1$ and $s_2$, and all are part of $cross\_edges[(s_1, s_2)]$, here represented in light
+red. Those edges are labeled with the sum of eccentricity of their underlying endpoints. White node
+have an eccentricity of $0$, and gray node an eccentricity of $1$. The edge with the
+minimal eccentricity is linking a peripheral node of $s_1$ directly to the center of $s_2$.}
+  \label{fig:gtx_cross_edge}
+\end{figure}
 
 \begin{center}
   \rule{\textwidth}{.3pt}
@@ -176,7 +175,8 @@ in practice we ensure that $(s_u, s_v)$ and $(s_v, s_u)$ refer to the same edge 
       \State \textbf{return} $G_{t+1}$, $cross\_edges$
     \EndFunction
   \end{algorithmic}
-  \rule{\textwidth}{.3pt}
+  \vspace*{-.5\baselineskip}
+  % \rule{\textwidth}{.3pt}
 \end{center}
 
 \begin{prop}
@@ -201,7 +201,9 @@ runtime of \gtx{}. %\Todo{Those maps could probably use better names}
 Namely in the listing of \autoref{alg:gtx} \vpageref{alg:gtx}, we use the three following maps:
 
 \vspace{0.5\baselineskip}
-\setlength{\fullpage}{\textwidth+\marginparsep+\marginparwidth}
+\setlength{\fullpage}{179mm}
+\begin{center}
+\begin{adjustwidth}{-2cm}{}
 \noindent\begin{tabulary}{\fullpage}{lllL}
   \toprule
   name               & keys set at $t$ & values set at $t$   & comment \\
@@ -214,6 +216,8 @@ Namely in the listing of \autoref{alg:gtx} \vpageref{alg:gtx}, we use the three 
   $full\_membership$ and it is the one needed to update the eccentricity of the original nodes. \\
   \bottomrule
 \end{tabulary}
+\end{adjustwidth}
+\end{center}
 \vspace{0.5\baselineskip}
 
 \begin{algorithm}[tbh]
@@ -323,7 +327,8 @@ We will need the following lemma.
     \centering
 		\includegraphics[width=\textwidth]{assets/tikz/gtx_st_g1_tikz.pdf}
 		\caption{Spanning tree of $G_1$}\label{fig:gtx_spanning_tree_1}
-	\end{subfigure}~
+	\end{subfigure}
+
 	\begin{subfigure}[b]{53mm}
     \centering
 		\includegraphics[width=\textwidth]{assets/tikz/gtx_st_g0_tikz.pdf}
@@ -444,16 +449,16 @@ is the line graph. While it is already a tree, let us look how the \gtx{} algori
 Say we have $n$ nodes and $m$ edges in that line. Here, a star is made at most of three
 consecutive nodes. In the worst case, centers will be chosen such that we have a succession of three
 and two nodes stars, as in \autoref{fig:gtx_line_graph}.%
-\begin{marginfigure}
-  \centering
-  \includegraphics[width=0.9\linewidth]{assets/tikz/gtx_line_tikz.pdf}
-  \caption{A line graph with stars in blue.}
-  \label{fig:gtx_line_graph}
-\end{marginfigure}
 This will results in $\nicefrac{2n}{5}$ stars organized in a line, which is less than half of $n$.
 Thus we can conclude that in this case, \gtx{} will finish after $O(\log n)$ iterations. Note that a barbell graph (two
 cliques connected by a line) would requires a number of iterations logarithmic in the length of that
 central line, despite having many more nodes and edges.
+\begin{figure}[bth]
+  \centering
+  \includegraphics[width=0.9\linewidth]{assets/tikz/gtx_line_tikz.pdf}
+  \caption{A line graph with stars in blue.}
+  \label{fig:gtx_line_graph}
+\end{figure}
 
 In fact, it is helpful to look at this question from the other direction. Namely, we can wonder what
 is the minimum number $n(K)$ of nodes necessary for a graph to requires at least $K$ collapses
