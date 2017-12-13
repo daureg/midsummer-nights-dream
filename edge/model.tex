@@ -46,10 +46,14 @@ We now present our modelling choice:
       s(u, v) = x_u \circ x_v = s_{uv} \in \Rbb^d \, ,
     \end{equation*}
     where $\circ$ stands for the Hadamard (or component wise) product. As showed in
-    \begin{marginfigure}
+    \autoref{tab:edge_sim}, for each dimension $i \in \rangesd$, the $s_{uv}$ holds a value
+    indicating whether the profiles of $u$ and $v$ agree, disagree or are indifferent along that
+    dimension.
+    \begin{table}[hb]
+      \centering
       % \small
-      \captionsetup{font=small,type=table}
-      \captionof{table}{We show the effect of the Hadamard product in combining information from two
+      % \captionsetup{font=small,type=table}
+      \caption{\small We show the effect of the Hadamard product in combining information from two
         users $u$ and $v$. Instead of actual numbers, in this table we use $+$ to denote a large
         positive value, $-$ to denote a large negative value, $0$ to denote a small absolute value
         and $\star$ to denote an arbitrary value.
@@ -64,10 +68,7 @@ We now present our modelling choice:
         $0$          & $\star$      & $0$             \\
         \bottomrule
       \end{tabular}
-    \end{marginfigure}
-    \autoref{tab:edge_sim}, for each dimension $i \in \rangesd$, the $s_{uv}$ holds a value
-    indicating whether the profiles of $u$ and $v$ agree, disagree or are indifferent along that
-    dimension.
+    \end{table}
   \item The $k$ explanations take the form of bounded norm vectors $\mathcal{D}_k = \{w_1, w_2,
     \ldots, w_k\} \subset \dball$, where $\dball$ is the $\ell_2$-unit ball of $\Rbb^d$. We call such a
     vector $w_\ell$, for $\ell \in \rangesk$, a \emph{direction}. As we shall explain more formally
@@ -215,8 +216,8 @@ choice of $k$ is a legitimate question.
 At one extreme, picking $k=|E|$ renders the topology of the graph
 irrelevant, as we can simply exploit the trivial
 solution of having a single direction $w_{uv} = \frac{s_{uv}}{||s_{uv}||}$ for every edge $(u,v)$.
-More generally, as $k$ increases, we expect the value $\max_{\mathcal{D}_k} \sum_{u,v \in E}
-\max_{\ell \in \rangesk} g(s_{uv}, w_{\ell})$ to increase as
+More generally, as $k$ increases, we expect the value \[\max_{\mathcal{D}_k} \sum_{u,v \in E}
+\max_{\ell \in \rangesk} g(s_{uv}, w_{\ell})\] to increase as
 well, at the cost of interpretability. There could be a principled approach to finding the
 \enquote{best} $k$, based on a information theoretical measure of the complexity of $\mathcal{D}_k$
 and the minimum description length principle~\autocite{grunwald2005tutorial}. However, in the
@@ -355,8 +356,8 @@ the following heuristic, inspired by the Lloyd algorithm for $k$-means, but wher
 $\mathcal{D}_k$ play the role of centroids. Namely, we alternate between two steps:
 \begin{enumerate}[(i), nosep]
   \item create a new partition $\{E'_1, \ldots, E'_k\}$ by assigning every edge $(u,v)$ to the
-    direction $w$ maximizing its goodness ${s_{uv}}^T w$, that is $E'_\ell = \theset{(u,v) \in E}{
-    w_\ell = \argmax_{w_i \in \mathcal{D}_k} {s_{uv}}^T w_i}$, and
+    direction $w$ maximizing its goodness ${s_{uv}}^T w$, that is \[E'_\ell = \theset{(u,v) \in E}{
+    w_\ell = \argmax_{w_i \in \mathcal{D}_k} {s_{uv}}^T w_i}\]
   \item update the directions to make them optimal with respect to the edges currently assigned to
     them. Specifically, set $\mathcal{D}_k = \left\{ w_\ell = \frac{s_\ell}{\left\| s_\ell
     \right\|}\right\}_{\ell=1}^k $, where $s_\ell = \sum_{u,v \in E'_\ell} s_{uv}$ is the sum of all

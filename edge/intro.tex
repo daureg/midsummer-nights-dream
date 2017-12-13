@@ -48,8 +48,9 @@ networks whose edges are currently unlabeled and what type of relations they cou
 In other words, given a small list of possible reasons in terms of attributes and two nodes, why are
 they connected?
 
-\setlength{\fullpage}{\textwidth+\marginparsep+\marginparwidth}
+\setlength{\fullpage}{179mm}
 \begin{table}[h]
+\begin{adjustwidth}{-2cm}{}
   \small
   \setlength{\tabcolsep}{4pt}
   \centering
@@ -80,6 +81,7 @@ they connected?
     geography, professional, leisure \\
     \bottomrule
   \end{tabulary}}
+\end{adjustwidth}
 \end{table}
 
 \medskip
@@ -94,10 +96,10 @@ This raises the question of why we cannot simply extend the troll/trust method o
 of edges incident to every node and learn a model from such features.
 A similar tension between relying solely on always available yet sparse topological information or
 leveraging possibly richer attributes information also exists in link
-prediction~\autocite{linkPredSurvey16}\stodo{What they actually write is \enquote{Topology-based
-techniques are more versatile than attribute-based methods since they are not domain specific} which
-sounds a bit unfair: only the attributes are domain specific, not necessarily the methods
-themselves}.
+prediction~\autocite{linkPredSurvey16}. %\stodo{What they actually write is \enquote{Topology-based
+%techniques are more versatile than attribute-based methods since they are not domain specific} which
+%sounds a bit unfair: only the attributes are domain specific, not necessarily the methods
+%themselves}.
 % examples of using node attributes for link prediction, taken from that survey:
 % https://doi.org/10.1007/s11432-014-5237-y
 % - http://dl.acm.org/citation.cfm?id=2124378

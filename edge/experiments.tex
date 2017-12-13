@@ -89,17 +89,9 @@ Then it selects \uar{} a palette from $P$, or an arbitrary palette if $P$ is emp
 \autoref{fig:edge_palette} for a small illustration. Once all nodes have been colored, we count the
 number of edges that are colorless. We repeat this procedure, keeping track of the palettes assignment
 minimizing the number of colorless edges.
-
-\item
-Once we colored the nodes of every block, we look at pair
-of blocks, build a list of all edges between blocks that are not colorless and sample from it to
-connect blocks. The last step is to a assign a color $y_{uv}$ to each edge $(u,v)$ from the shared color of its
-endpoint (or an arbitrary color for colorless edges). We note that this is reminiscent of the stochastic
-block model, although the probabilities of edges between blocks are not uniform, for they depend of
-the palette assigned to every node.
-\begin{figure}[bht]
+\begin{figure}[ht]
   \centering
-  \includegraphics[width=0.4\textwidth]{tikz/edge_palette_tikz.pdf}
+  \includegraphics[width=0.6\textwidth]{tikz/edge_palette_tikz.pdf}
   \caption{A small example of the node palette assignment, with $k=4$ colors (blue, green, red and
     orange) and palettes of size $k_\mathrm{local}=3$. We assume nodes $1$ and $2$ have already been
     visited, and got assigned the palette $(\text{blue, green, red})$ and $(\text{blue, green,
@@ -109,6 +101,14 @@ the palette assigned to every node.
     red, and green.
   \label{fig:edge_palette}}
 \end{figure}
+
+\item
+Once we colored the nodes of every block, we look at pair
+of blocks, build a list of all edges between blocks that are not colorless and sample from it to
+connect blocks. The last step is to a assign a color $y_{uv}$ to each edge $(u,v)$ from the shared color of its
+endpoint (or an arbitrary color for colorless edges). We note that this is reminiscent of the stochastic
+block model, although the probabilities of edges between blocks are not uniform, for they depend of
+the palette assigned to every node.
 
   \item 
 We then generate $k$ sparse, unit-norm directions $\mathcal{D}_k=\{w_1, \ldots, w_k\}$,
@@ -279,6 +279,7 @@ we divide all the AMI scores by this natural score, in order to obtain a \enquot
 % \newline\vspace{1\baselineskip}\noindent%
 
 \begin{table}[htb]
+\begin{adjustwidth}{-1.5cm}{}
   \centering
   \small
   \caption{The degree to which the edge assignment of step 2 agree with the directions and profiles
@@ -293,6 +294,7 @@ we divide all the AMI scores by this natural score, in order to obtain a \enquot
   AMI & $.922 \pm .03$ & $.925 \pm .03$ & $.905 \pm .02$ & $.880 \pm .04$ & $.874 \pm .05$ & $.893 \pm .03$ & $.973 \pm .01$ \\
   \bottomrule
 \end{tabular}
+\end{adjustwidth}
 \end{table}
 
 As showed in \autoref{tab:edge_Wvaries_nami}, \combined{} is always the best method and, excluding
@@ -311,7 +313,8 @@ difficult when each nodes is involved in four directions instead of three. On th
 whereas we expect the performance to decrease with increase in the overall number of directions or
 their overlap, there is not consistent evidence of that.
 
-\begin{table}[htb]
+\begin{table*}[htb]
+\begin{adjustwidth}{-2cm}{}
   \centering
   % \setlength{\tabcolsep}{3pt}
   \small
@@ -324,7 +327,7 @@ their overlap, there is not consistent evidence of that.
     distributions have the same mean), we furthermore show in parenthesis the supporting
     $p$-value of a paired Student's $t$-test.
   \label{tab:edge_Wvaries_nami}}
-  \begin{tabular}{llll|ll}
+  \begin{tabulary}{179mm}{llll|ll}
     \toprule
     \thead{$\mathcal{D}_k$ parameters} &         \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &  \thead{\fwa{}} &  \thead{\pqt{}} \\
     \midrule
@@ -336,8 +339,9 @@ their overlap, there is not consistent evidence of that.
     {\fdirs{}}   &            $.772 \pm .07$ &  $\esecondSig{.814 \pm .07}\,\,\spval{6.02}{-42}$ &  $\efirstSig{.853 \pm .06}\,\,\spval{2.13}{-47}$ &  $.320 \pm .06$ &  $.853 \pm .06$ \\
     {\larged{}}  &            $.905 \pm .05$ &  $\esecondSig{.933 \pm .04}\,\,\spval{1.32}{-31}$ &  $\efirstSig{.941 \pm .03}\,\,\spval{1.77}{-22}$ &  $.222 \pm .10$ &  $.931 \pm .04$ \\
     \bottomrule
-  \end{tabular}
-\end{table}
+  \end{tabulary}
+\end{adjustwidth}
+\end{table*}
 
 Similar conclusions carry out when we evaluate methods according to their ability of recovering the
 original directions. Keeping in mind that in the case of perfect recovery, $d(\mathcal{D}_k,
@@ -351,14 +355,15 @@ completely recover is not surprising, for in absence of prior information the pr
 under-constrained. Indeed, while \combined{} and \pqt{} deliver almost the exact same prediction,
 their directions are clearly different.
 
-\begin{table}[hbt]
+\begin{table*}[hbt]
+\begin{adjustwidth}{-2cm}{}
   \centering
   % \setlength{\tabcolsep}{3pt}
   \small
   \caption{Same as \autoref{tab:edge_Wvaries_nami}, but reporting $d(\mathcal{D}_k,
   \mathcal{\wh{D}}_k)$, which should be as close as possible to $0$.
   \label{tab:edge_Wvaries_dst}}
-    \begin{tabular}{llll|ll}
+  \begin{tabulary}{179mm}{llll|ll}
       \toprule
       \thead{$\mathcal{D}_k$ parameters} &                                 \thead{\kmeans{}} &                                  \thead{\lloyd{}} &                              \thead{\combined{}} &   \thead{\fwa{}} &  \thead{\pqt{}} \\
       \midrule
@@ -370,8 +375,9 @@ their directions are clearly different.
       {\fdirs{}}   &                                    $.565 \pm .08$ &                          $\esecond{.564 \pm .09}$ &   $\efirstSig{.546 \pm .05}\,\,\spval{6.30}{-8}$ &   $.928 \pm .06$ &  $.588 \pm .06$ \\
       {\larged{}}  &  $\esecondSig{.571 \pm .07}\,\,\spval{2.02}{-89}$ &                                    $.602 \pm .07$ &                          $\efirst{.567 \pm .05}$ &  $1.033 \pm .06$ &  $.641 \pm .05$ \\
       \bottomrule
-    \end{tabular}
-\end{table}
+    \end{tabulary}
+\end{adjustwidth}
+\end{table*}
 
 \iffalse
 \begin{aside}
