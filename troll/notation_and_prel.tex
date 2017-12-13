@@ -14,9 +14,9 @@ $G(Y)$ is $-1$. We call $tr(u) = \dout^-(u)/\dout(u)$ the \emph{trollness} of no
 = \din^-(u)/\din(u)$ the \emph{untrustworthiness} of node $u$. Finally, we also use the notation
 $\NNin(u)$ and $\NNout(u)$ to represent, respectively, the in-neighborhood and the out-neighborhood
 of node $u \in V$. Most of these notations are illustrated on \autoref{fig:troll_Gexample}.
-\begin{figure}[htpb]
+\begin{figure}[hbpt]
   \centering
-  \includegraphics[width=0.9\linewidth]{tikz/troll_notations_tikz}
+  \includegraphics[width=0.8\linewidth]{tikz/troll_notations_tikz}
   \caption{Part of a DSSN centered on node $u$. \label{fig:troll_Gexample}}
 \end{figure}
 
@@ -50,7 +50,7 @@ knowledge of the edge label, meaning it can be done in parallel with potential l
 Furthermore, it can be updated incrementally if new nodes or edges are added to the original graph
 $G$.
 
-\begin{figure*}[t]
+\begin{figure*}[tbp]
   \centering
   \begin{subfigure}[b]{0.28\textwidth}
     \centering \includegraphics[height=.10\textheight]{raw/g_latex-crop}
@@ -181,12 +181,15 @@ the number of edges in $G'$ connecting nodes that have mismatching labels.
   and $-1$ otherwise. For instance, given the trollness and untrustworthiness values for the graph $G$ of
   \autoref{fig:troll_reduction_g} reported in \autoref{tab:troll_psi}, following this construction
   would result in a label version of $G'$ showed on \autoref{fig:troll_psi}.
+  %TODO side by side with the table?
 \begin{marginfigure}
+  % \begin{wrapfigure}{o}[7mm]{44mm}
 	\centering
-	\includegraphics[width=0.98\linewidth]{assets/raw/troll_labeled_gprime.pdf}
+	\includegraphics[width=0.89\linewidth]{assets/raw/troll_labeled_gprime.pdf}
 	\caption{The node-labeling of $G'$ illustrating the relation between the edge label
 	  complexity and the cutsize. Here the four edges part of the cut are in heavy black.
 	\label{fig:troll_psi}}
+% \end{wrapfigure}
 \end{marginfigure}
   We see that by labeling circle nodes by the majority label of the square nodes there are connected
   to, we have that the cutsize of $G'(Y)$ equals  $\Psiin(Y) + \Psiout(Y)$.%

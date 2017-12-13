@@ -1,0 +1,49 @@
+\documentclass[a4paper,svgnames,twoside,onecolumn,final,titlepage,11pt]{report}
+\input{pmin}
+\input{abbreviations}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\title{Characterizing edges in signed and vector-valued graphs}
+\author{Géraud Le Falher}
+
+\begin{document}
+\newgeometry{vmargin=1.5cm,inner=3.8cm,bindingoffset=0.0cm,outer=3.3cm,marginparsep=0pt,marginparwidth=0pt}
+
+\maketitle
+
+% \section*{Abstract}
+% \input{abstract}
+%
+% \tableofcontents
+% \newpage
+%
+% \input{notations}
+%
+% \chapter{Introduction}
+% \subimport*{intro/}{main}
+
+\chapter{On the Troll-Trust Model for edge sign prediction in Social Networks}
+\subimport*{troll/}{main}
+\end{document}
+
+\chapter{Edge sign prediction in general graphs and Correlation Clustering}
+\subimport*{cc/}{main}
+
+\chapter{Edge clustering in node attributed graphs}
+\subimport*{edge/}{main}
+
+\chapter{Conclusion}
+\subimport*{conclusion/}{main}
+
+\vspace{\baselineskip}
+\begingroup
+\newgeometry{hmargin=1.5cm,vmargin=1.3cm}
+\setstretch{0.87}
+\setlength\bibitemsep{1pt}
+\todos
+\printbibliography
+\restoregeometry
+\endgroup
+\end{document}
+
