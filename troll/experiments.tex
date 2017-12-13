@@ -124,37 +124,32 @@ obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}\footn
 these figures are normalized histogram, meaning the counts are scale down so that the bars total
 area sums up to one.}, giving $71.9\%$ of positive edges.
 
-% TODO: do a proper subfigure instead of minipage?
-\vspace{\baselineskip}
-\noindent\begin{minipage}{187mm} 
-  \begin{minipage}{46mm}
+\begin{figure*}[hbtp]
+  \centering
+  \begin{subfigure}[b]{0.401\textwidth} 
     \centering
     \includegraphics[width=.95\linewidth]{raw/synth_wik_pdense.pdf}
-    \captionof{subfigure}{Density of $p$.}
-    % \label{fig:figure1}
-  \end{minipage}%
-  \begin{minipage}{46mm}
-    \centering 
-    \includegraphics[width=.95\linewidth]{raw/synth_wik_qdense.pdf} 
-    \captionof{subfigure}{Density of $q$.} 
-    % \label{fig:figure2} 
-  \end{minipage} 
-  \begin{minipage}{46mm}
-    \centering 
-    \includegraphics[width=.95\linewidth]{raw/synth_wik_etadense.pdf} 
-    \captionof{subfigure}{Density of $\eta$.} 
-    % \label{fig:figure2} 
-  \end{minipage} 
-  \begin{minipage}{46mm}
-    \centering 
+    \caption{Density of $p$.}
+  \end{subfigure}\quad
+  \begin{subfigure}[b]{0.401\textwidth} 
+    \centering
+    \includegraphics[width=.95\linewidth]{raw/synth_wik_qdense.pdf}
+    \caption{Density of $q$.}
+  \end{subfigure}
+
+  \begin{subfigure}[b]{0.401\textwidth} 
+    \centering
+    \includegraphics[width=.95\linewidth]{raw/synth_wik_etadense.pdf}
+    \caption{Density of $\eta$.}
+  \end{subfigure}\quad
+  \begin{subfigure}[b]{0.401\textwidth} 
+    \centering
     \includegraphics[width=.95\linewidth]{raw/synth_wik_signdense.pdf}
-    \captionof{subfigure}{Density of $\eta$ for both signs.} 
-    % \label{fig:figure2} 
-  \end{minipage} 
-  \captionof{figure}{Synthetic distributions on \wik{}.} 
+    \caption{Density of $\eta$ for both signs.}
+  \end{subfigure}
+  \caption{Synthetic distributions on \wik{}.} 
   \label{fig:troll_synth_distrib} 
-\end{minipage}
-\vspace{\baselineskip}
+\end{figure*}
 
 Once the signs are generated, we select a training set \trainset{} \uar{}, and predict
 the signs of the remaining edges in the testing set $E\setminus \trainset{}$. The Bayes optimal
@@ -166,6 +161,7 @@ some node), we use the equation \eqref{eq:predictor}\footnote{We reproduce this 
 convenience: $\sgn\Big(\big(1-\htr(u)\big) + \big(1-\hun(v)\big) -\tau - \tfrac{1}{2}\Big)$.},
 having estimated $\tau$ on $E_0$.
 
+\input{synth_res}
 The result of this comparison on the six datasets is showed in \autoref{tab:troll_synth_global}.
 For each network, we generated the signs once. Then, for different training size (20\%, 40\% or 80\%
 of $E$), we sampled a training set and predict using the knowledge of the true $\eta$ (Bayes
@@ -180,8 +176,6 @@ absolute error (MAE) between $\eta$ and $\wh{\eta}$ for all testing edges, and t
 the testing edges whose both endpoints have been sampled above a certain threshold in the training
 set. As expected, the estimation is more accurate with increasing training set size, and with
 increasing number of samples for a given edge.
-
-\input{synth_res}
 
 Finally, we can also look in more details at the role of $p$ and $q$ by building a 2D histogram of
 the testing edges \euv{} based on their coordinate $(p_u, q_v)$. For instance on

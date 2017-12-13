@@ -1,4 +1,5 @@
 \begin{table}[tbh]
+\begin{adjustwidth}{-1cm}{}
 \centering
 % \begin{center}
 \setlength{\tabcolsep}{3pt}
@@ -8,7 +9,7 @@
    % \captionof{table}{%
 Same as \autoref{tab:all_mcc}, but when selecting the training set by the timestamp of the edges.
 \label{tab:troll_ts_mcc}}
-\begin{tabular}{lrcccc|ccccc}
+\begin{tabulary}{159mm}{lrcccc|ccccc}
 \toprule
 & $\frac{|\trainset{}|}{|E|}$ &               \uslpropGsec{} &                    \usrule{} &                 \uslogregp{} &       \usoptim{} &               \complowrank{} &  \compmaxnorm{} &                 \comptriads{} &              \compranknodes{} &  \compbayesian{} \\
 \midrule
@@ -30,6 +31,7 @@ Same as \autoref{tab:all_mcc}, but when selecting the training set by the timest
                                                   & $90\%$ &  $38.6 \pm 0.0$  &  $32.1 \pm 0.0$  &  $33.9 \pm 0.0$  &  $25.2 \pm 0.8$  &  $24.9 \pm 0.8$  &   $8.2 \pm 1.2$  &  $\vsecondSig{40.8} \pm 0.5$  &   $\vfirstSig{42.5} \pm 0.0$  &               $36.8 \pm 0.3$  \\
                                                   % & time   &      $\np{1341}$ &      $\np{11.3}$ &      $\np{87.8}$ &    $\np{395531}$ &    $\np{123699}$ &    $\np{649668}$ &                    $\np{230}$ &                   $\np{2838}$ &                 $\np{113536}$ \\
 \bottomrule
-\end{tabular}
+\end{tabulary}
+\end{adjustwidth}
 \end{table}
 % \end{center}

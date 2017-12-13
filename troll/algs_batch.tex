@@ -50,8 +50,8 @@ model, $\E\left(Z \right) = \sum_{\euv \in E} \frac{p_u+q_v}{2} = \sum_{u \in V_
   \sum_{u \in V_{\mathrm{out}}} \left( \sum_{v \in \NNout(u)} p_u \right) &=
   \sum_{v \in V_{\mathrm{in}}} \left( \sum_{u \in \NNin(v)} p_u \right) =
   \sum_{v \in V_{\mathrm{in}}} \din(v) \pbar_v \approx
-  \sum_{v \in V_{\mathrm{in}}} \din(v) \mu_p = |E| \mu_p \label{eq:troll_mup}\quad \text{and} \\
-  \sum_{u \in V_{\mathrm{out}}} \left( \sum_{v \in \NNout(u)} q_v \right) &=
+  \sum_{v \in V_{\mathrm{in}}} \din(v) \mu_p = |E| \mu_p \label{eq:troll_mup} \\
+	&\text{and} \\ \sum_{u \in V_{\mathrm{out}}} \left( \sum_{v \in \NNout(u)} q_v \right) &=
   \sum_{u \in V_{\mathrm{out}}} \dout(u) \qbar_u \approx
   \sum_{u \in V_{\mathrm{out}}} \dout(u) \mu_q = |E| \mu_q \,.% \label{eq:troll_muq} \,.
 \end{align*}
@@ -168,8 +168,8 @@ outline given earlier to justify the equation~\eqref{eq:predictor}, culminating 
 for any $0 < \ve < \tfrac{1}{16}$,
 \[ \left| \left( 1 - \htr(u) \right) + \left( 1 - \hun(v) \right) - \tauhat
   - \frac{p_u+q_v}{2} \right| \le 8\ve \]
-simultaneously holds with high probability for each $(u,v) \in \theset{(u,v) \in E}{\din(v) \ge
-  \theta,\, \dout(u) \ge \theta} \setminus E_0$.
+simultaneously holds with high probability for each \[(u,v) \in \theset{(u,v) \in E}{\din(v) \ge
+\theta,\, \dout(u) \ge \theta} \setminus E_0.\]
 
 \medskip
 
@@ -317,12 +317,12 @@ $p_i, q_i$ and $\yuv$ so as they all lie in the interval $[-1,+1]$.
 After this step, one can see that, once we get back to the original variables, label propagation
 computes the harmonic solution minimizing the function
 
-\begin{equation*}
+\begin{align*}
 {\widehat f}\big(\bp,\bq,{\yuv}_{(u,v) \in E\setminus E_0}\big)
-= f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq)
-+ \frac{1}{2}\sum_{u\in V}
+= &f_{E_0}(\bp,\bq) + f_{E\setminus E_0}(\bp,\bq) +\\
+  &\frac{1}{2}\sum_{u\in V}
 \left(\dout(u)\Bigl(p_u-\frac{1}{2}\Bigl)^2+\din(u)\Bigl(q_i-\frac{1}{2}\Bigl)^2\right)
-\end{equation*}
+\end{align*}
 
 The function ${\widehat f}$ is thus a regularized version of the target function $f_{E_0} +
 f_{E\setminus E_0}$ in \eqref{e:quadratic}, where the regularization term tries to enforce the extra

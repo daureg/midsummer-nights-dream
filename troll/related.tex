@@ -126,9 +126,9 @@ node) are computed using a variety of methods, including
 	\item	Bias and Deserve~\autocite{mishra2011finding}, which are defined in terms of each other in
 		weighted graphs. The bias is the tendency of a node $u$ to trust/mistrust others, that is the
 		difference between its opinion of a neighbor $v$ and what $v$ truly deserve according to the
-		network: $bias(u) = \frac{1}{\dout(u)}\sum_{v\in\NNout(u)}(\wuv - deserve(v))$. The deserve of a
-		node $v$ is the aggregated opinion of its in-neighbors, discounted by their bias: $deserve(v) =
-		\frac{1}{\din(v)}\sum_{u\in\NNin(v)}\left(\wuv(1-\max\{0, \sgn(\wuv)\times bias(u)\})\right)$.
+		network: \[bias(u) = \frac{1}{\dout(u)}\sum_{v\in\NNout(u)}(\wuv - deserve(v)).\] The deserve of a
+		node $v$ is the aggregated opinion of its in-neighbors, discounted by their bias: \[deserve(v) =
+		\frac{1}{\din(v)}\sum_{u\in\NNin(v)}\left(\wuv(1-\max\{0, \sgn(\wuv)\times bias(u)\})\right).\]
 	\item	Reputation and Optimism~\autocite{shahriari2014ranking}, defined for a node $u$ by
 		$\frac{\sum_{v \in \NNin(u)} y_{v,u}\sigma(v)}{\sum_{v \in \NNin(u)} \sigma(v)}$ and $
 		\frac{\sum_{v \in \NNout(u)} \yuv\sigma(v)}{\sum_{v \in \NNout(u)} \sigma(v)}$, where

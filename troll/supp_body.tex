@@ -187,24 +187,24 @@ is drawn uniformly at random from $E$ without replacement.
 We can write
 
 \begin{align*}
-  \Pr&\left(E_0\,\Big|\, \{p_u, q_u\}_{u=1}^{|V|}\right) = 
-  \frac{1}{\binom{|E|}{m}\,m!}\prod_{k=1}^m \left(\frac{p_{u_k}+q_{v_k}}{2} \right)^{\Ind{y_{u_k,v_k}=+1}}\,
-  \times\,\prod_{k=1}^m\left(1-\frac{p_{u_k}+q_{v_k}}{2} \right)^{\Ind{y_{u_k,v_k}=-1}}\\
-  &=
+  \Pr\left(E_0\,\Big|\, \{p_u, q_u\}_{u=1}^{|V|}\right) =& 
+  \frac{1}{\binom{|E|}{m}\,m!}\prod_{k=1}^m \left(\frac{p_{u_k}+q_{v_k}}{2} \right)^{\Ind{y_{u_k,v_k}=+1}}\\
+  &\times\prod_{k=1}^m\left(1-\frac{p_{u_k}+q_{v_k}}{2} \right)^{\Ind{y_{u_k,v_k}=-1}}\\
+  =&
   \frac{1}{\binom{|E|}{m}\,m!}
   \prod_{\ell=1}^{|V|}\Biggl(\prod_{k=1}^m\,
-    \left(\frac{p_{\ell}+q_{v_k}}{2} \right)^{\Ind{u_k = \ell,\,y_{\ell,v_k}=+1}}\,\times\,
-    \prod_{k=1}^m\left(1-\frac{p_{\ell}+q_{v_k}}{2} \right)^{\Ind{u_k = \ell,\,y_{\ell,v_k}=-1}}\Biggl)
+    \left(\frac{p_{\ell}+q_{v_k}}{2} \right)^{\Ind{u_k = \ell,\,y_{\ell,v_k}=+1}}\,\times\\
+    &\prod_{k=1}^m\left(1-\frac{p_{\ell}+q_{v_k}}{2} \right)^{\Ind{u_k = \ell,\,y_{\ell,v_k}=-1}}\Biggl)
 \end{align*}
 
 so that $\log \Pr\left(E_0\,\Big|\, \{p_u, q_u\}_{u=1}^{|V|}\right)$ is proportional to
 
-\begin{equation*}
-  \sum_{\ell=1}^{|V|}\left(\sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=+1}\,
-  \log\left(\frac{p_{\ell}+q_{v_k}}{2} \right)\, +\,
-  \sum_{\ell=1}^{|V|}\sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=+1}\, 
-\log\left(1-\frac{p_{\ell}+q_{v_k}}{2} \right)\right)
-\end{equation*}
+\begin{align*}
+  \sum_{\ell=1}^{|V|}\Bigl(&\sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=+1}\,
+  \log\left(\frac{p_{\ell}+q_{v_k}}{2} \right)\, +\\
+  &\sum_{k=1}^m \Ind{u_k = \ell,y_{\ell,v_k}=+1}\, 
+\log\left(1-\frac{p_{\ell}+q_{v_k}}{2} \right)\Bigl)
+\end{align*}
 
 and
 
@@ -222,10 +222,10 @@ By a similar argument,
   \Pr\left(E_0\,\Big|\, \{p_u, q_u\}_{u=1}^{|V|}\right) 
 =
   \frac{1}{\binom{|E|}{m}\,m!}
-  \prod_{\ell=1}^{|V|}\Biggl(\prod_{k=1}^m\,
+  \prod_{\ell=1}^{|V|}\Biggl(&\prod_{k=1}^m\,
     \left(\frac{p_{u_k}+q_{\ell}}{2} \right)^{\Ind{v_k = \ell,\,y_{u_k,\ell}=+1}}\,
-\times\,
-    \prod_{k=1}^m\left(1-\frac{p_{u_k}+q_{\ell}}{2} \right)^{\Ind{v_k = \ell,\,y_{u_k,\ell}=-1}}\Biggl)
+\times\\
+&\prod_{k=1}^m\left(1-\frac{p_{u_k}+q_{\ell}}{2} \right)^{\Ind{v_k = \ell,\,y_{u_k,\ell}=-1}}\Biggl)
 \end{align*}
 
 so that

@@ -1,11 +1,12 @@
 \begin{table}[htb]
+\begin{adjustwidth}{-2cm}{}
   \centering
   \scriptsize
   % \setlength{\tabcolsep}{3pt}
   \caption{The time taken (in milliseconds) to train, for each dataset, on a $15\%$ training set and
     predict the remaining $85\%$. The experimental setting is the same as in \autoref{tab:all_mcc}.
   \label{tab:all_time}}
-  \begin{tabular}{lrrrr|rrrrr}
+  \begin{tabulary}{179mm}{lrrrr|rrrrr}
     \toprule
     Dataset & \uslpropGsec{} & \usrule{}   & \uslogregp{} & \usoptim{}    & \complowrank{} & \compmaxnorm{} & \comptriads{} & \compranknodes{} & \compbayesian{} \\
     \midrule
@@ -16,5 +17,6 @@
     \epi{}  & $\np{1447}$    & $\np{10.6}$ & $\np{72.5}$  & $\np{142507}$ & $\np{127641}$  & $\np{692560}$  & $\np{234}$    & $\np{3381}$      & $\np{111435}$   \\
     \kiw{}  & $\np{897}$     & $\np{9.6}$  & $\np{60.2}$  & $\np{208676}$ & $\np{125884}$  & $\np{632663}$  & $\np{188}$    & $\np{4233}$      & $\np{95374}$    \\
     \bottomrule
-  \end{tabular}
+  \end{tabulary}
+\end{adjustwidth}
 \end{table}

@@ -169,6 +169,13 @@ That is, if the \esp{} prediction problem is
 easy for a given $G(Y) = (V,E(Y))$, then the corresponding node sign prediction problems on $G'(Y)
 = (V'(Y),E')$ and $G''(Y) = (V''(Y),E)$ are also easy, and vice versa.
 Let us first introduce the notion of cutsize of an undirected node-labeled graph $G'(Y)$, which is
+\begin{wrapfigure}{o}[10mm]{45mm}
+	\centering
+	\includegraphics[width=0.85\linewidth]{assets/raw/troll_labeled_gprime.pdf}
+	\caption{\small The node-labeling of $G'$ illustrating the relation between the edge label
+	  complexity and the cutsize. Here the four edges part of the cut are in heavy black.
+	\label{fig:troll_psi}}
+\end{wrapfigure}
 the number of edges in $G'$ connecting nodes that have mismatching labels.
   Now, because the only nodes in $G'$ we are
   interested in predicting are those corresponding to the edges in $G$ (the colored squares in
@@ -181,16 +188,6 @@ the number of edges in $G'$ connecting nodes that have mismatching labels.
   and $-1$ otherwise. For instance, given the trollness and untrustworthiness values for the graph $G$ of
   \autoref{fig:troll_reduction_g} reported in \autoref{tab:troll_psi}, following this construction
   would result in a label version of $G'$ showed on \autoref{fig:troll_psi}.
-  %TODO side by side with the table?
-\begin{marginfigure}
-  % \begin{wrapfigure}{o}[7mm]{44mm}
-	\centering
-	\includegraphics[width=0.89\linewidth]{assets/raw/troll_labeled_gprime.pdf}
-	\caption{The node-labeling of $G'$ illustrating the relation between the edge label
-	  complexity and the cutsize. Here the four edges part of the cut are in heavy black.
-	\label{fig:troll_psi}}
-% \end{wrapfigure}
-\end{marginfigure}
   We see that by labeling circle nodes by the majority label of the square nodes there are connected
   to, we have that the cutsize of $G'(Y)$ equals  $\Psiin(Y) + \Psiout(Y)$.%
   \footnote{In fact, for the sake of
