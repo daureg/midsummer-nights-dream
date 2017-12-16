@@ -12,7 +12,7 @@ edges is an interesting problem, especially in the following three situations:
     connected users of a social network are tied to each other through family, work, school or
     hobby. The labeling function in this case simply asks users to label their relationships,
     assuming the answers do not contain any noise. At the scale of Facebook, this would require
-    asking hundred of questions to each user on average, which is quite time consuming. Furthermore,
+    asking hundred of questions to each user on average, which is quite time-consuming. Furthermore,
     it would also cost marketing resource to convince users this is beneficial for them, and
     engineering time to ensure this information remain confidential. Likewise, in a biological
     network, determining whether two proteins interact positively or negatively with each other is
@@ -43,7 +43,7 @@ In this thesis, we consider three versions of the problem of predicting edge typ
     seen as a supervised binary classification problem.
 
   \item The same \esp{} problem, where the input graph is undirected. In this case, we consider an
-    active variant where instead of being given a random training set of labels, we have a budget of
+    active variant where, instead of being given a random training set of labels, we have a budget of
     queries we can use to request arbitrary labels.
 
   \item The \ecp{} problem, which takes as input an unlabeled, undirected multilayer graph, the
@@ -52,7 +52,7 @@ In this thesis, we consider three versions of the problem of predicting edge typ
     Therefore, it can be seen as an unsupervised clustering problem with side information.
 \end{enumerate}
 
-We now review existing approaches addressing these problems, in order to highlight our contribution
+We now briefly review existing approaches addressing these problems, in order to highlight our contribution
 in the next section.
 
 The modern formulation of the \esp{} on directed graphs can be attributed to
@@ -66,7 +66,7 @@ are accurate, fast ---for they are local, and interpretable ---for the features 
 The drawback is that this feature engineering is done mostly in an ad hoc way. On the other hand, it
 is also possible to look at the problem from a global point of view, by completing the
 signed adjacency matrix through low rank
-factorization~\autocites{LowRankCompletion14}{OnlineCompletion17}. These methods are also accurate
+factorization~\autocites{LowRankCompletion14}{OnlineCompletion17}. These methods are also accurate,
 and bypass feature engineering, but by nature, they require careful algorithms to scale with larger
 networks. Finally, during the writing of this manuscript, several papers have been published, which
 use embedding of the nodes in a low dimensional space, based on the training
@@ -80,11 +80,11 @@ satisfactory, both from a theoretical but also practical point of view (see
 between the \esp{} problem and the \pcc{} problem. Recall that given a fully labeled signed graph,
 the solution to \pcc{} is a partition of the nodes that minimize the number of disagreement
 edges~\autocite{Bansal2002}. \Textcite{Cesa-Bianchi2012b} assume that the signs are originally
-consistent with an underlying, hidden $2$-clustering, but we only observe the signs after they have
+consistent with an underlying, hidden $2$-clustering, but that we only observe the signs after they have
 been flipped \uar{}. In this case, they show that the optimal number of disagreements is a lower
-bound of the number of mistakes of any active \esp{} algorithm. One natural approach would then be
+bound of the number of mistakes made by any active \esp{} algorithm. One natural approach would then be
 to solve \pcc{} based on the observed signs, and predict the remaining signs consistently with the
-inferred clusters. At first it seems hopeless, as \pcc{} is difficult to approximate on general
+inferred clusters. At first, it seems hopeless, as \pcc{} is difficult to approximate on general
 graphs~\autocite{Charikar2003}, even when there are only two clusters~\autocite{Giotis2006}.
 However, this worst case analysis does not forbid more positive results on signed graphs that
 exhibit stability under perturbation~\autocites{clusteringFeasibility15}{StableCC09}{StableLP09} or
@@ -93,7 +93,7 @@ Furthermore, in the active setting, the learner gets to choose which signs are o
 idea of \textcite{Cesa-Bianchi2012b} is thus to use the query budget to build fully labeled paths
 between each connected nodes. Those paths must be as short as possible, since the predicted sign of
 $(u,v)$ is the product of the signs along the path from $u$ to $v$. Therefore, the shorter the path
-and the less influence of the random perturbations. At the same times, those paths must span the
+and the less influence of the random perturbations. At the same time, those paths must span the
 whole graph. This is the topic of an active research area~\autocites{Abraham2012}{Spanner17}.
 
 As for the \ecp{} problem, to the best of our knowledge, it has not been studied under our
@@ -106,7 +106,7 @@ distance~\autocite{Aggarwal2016a} and edge embedding in knowledge graphs~\autoci
 they all rely on having training labels as supervision. A simple unsupervised method is to cluster
 the line graph of the input graph~\autocite{LineGraph09}, but this does not take advantage of
 attributes. Another method uses topological features~\autocite{ahmed2017roles} but is rather complex
-and thus not very interpretable. If we further assume that each edge type is associated with an
+and thus not very interpretable. If we further assume that each edge type is associated with a
 Euclidean space, and that the position of nodes in one space are not correlated with their position
 in another space, then it is possible to recover an approximation of these Euclidean metrics in
 polynomial time without any supervision~\autocite{Abraham2012a}.

@@ -3,10 +3,10 @@
    \paragraph{Computer Vision}
       The ubiquitous task of segmenting an image into homogeneous regions is a prerequisite for many
       further processing. As we mentioned earlier in one example, building a signed graph can help,
-      although it might be costly to do it at the pixel level. For instance, to segment cell in
+      although it might be costly to do it at the pixel level. For instance, to segment cells in
       microscopy imagery, \textcite{CellSeg14} first use generic image features to classify pixel in
       belonging to region boundaries or not. Then, they extract small scale regions called
-      superpixels. After building the adjacency graph of these superpixels, they assigned edge
+      superpixels. After building the adjacency graph of these superpixels, they assign edge
       weights by averaging the boundary probabilities of the pixels separating adjacent
       superpixels. They also add strong negative constraints between distant superpixels, and lastly
       cluster these superpixels according to the \pcc{} objective to obtain the final segmentation.
@@ -49,7 +49,7 @@
       model on which performing inference is equivalent to \pcc{}. On small scale instances,
       \textcite{Elsner2009} use the signed graph procedure outlined above. They first obtain an
       upper bound of the optimal solution by solving a SDP
-      relaxation of the problem. They then compare various heuristics and show that best performing
+      relaxation of the problem. They then compare various heuristics and show that the best performing
       ones are within few percents of the optimum, provided they are followed by a local search
       step, such as the Best One Element Move~\autocite{Gionis2007}. Further NLP tasks amenable to
       a signed graph representation are referenced in their paper. Another task is
@@ -58,10 +58,10 @@
 
       \paragraph{Biology}
       Signed graphs are also abundant in biology.
-      A typical input is a similarity matrix between genes expression level in various experimental conditions
-      and the goal is to cluster those genes into groups which react similarly. \Textcite[Section
+      A typical input is a similarity matrix between genes expression level in various experimental conditions,
+      and the goal is to cluster those genes into groups that react similarly. \Textcite[Section
       4]{Ben-Dor99} gives three examples: 112 genes involved in the rat central nervous system, 1246
-      genes of the roundworm \emph{C. elegans} and 2000 human genes obtained from 40 tumor and 22
+      genes of the roundworm \emph{C. elegans} and 2000 human genes obtained from 40 tumorous and 22
       normal colon samples. \Textcite{Mason2009} analyze a signed co-expression network of genes
       involved in embryonic stem cells to find which genes are related to pluripotency (the ability
       to differentiate into any type of cell in the body) or self-renewal (the ability to replicate
@@ -69,7 +69,7 @@
       DNA~\autocite{Das2015}. In the human organism, chromosomes are organized in pair, and both
       chromosomes of a pair have similar but not identical DNA sequences. This is mostly because of
       single nucleotide polymorphisms (SNPs), where a single base differs between the two DNA
-      sequences, leading to different alleles of the corresponding gene. An haplotype is the list of
+      sequences, leading to different alleles of the corresponding gene. A haplotype is the list of
       all alleles at a contiguous region of a single chromosome, and this information is
       used in several medical applications. The high-throughput sequencing of one individual genome
       yields many short \emph{reads} that provides information about the order of nucleotides in a
@@ -99,7 +99,8 @@
       \paragraph{Network science}
       One early use of signed graphs was to model social
       interactions~\autocites{harary1953}{HeiderBook58}. Here we present
-      some recent references. For instance, one can extract all the votes of the members of a
+      some recent references within this line of research. For instance, one can extract all the
+      votes of the members of a
       political parliament and form a graph whose nodes are politicians and edge weights quantify how
       much they agree or disagree on various issues they have been voting on. This can be used to
       study various social science questions such as loyalty, leadership, coalitions, political
@@ -122,7 +123,7 @@
 	    objects, define a similarity between them and run a \pcc{} algorithm.
 	    % This was indeed this kind of problems at Whizbang! Labs that partly motivated one of the early \pcc{} paper~\autocite{Bansal2002}.
 	    The main challenge
-	    thus lies in devising an appropriate similarity measure, given that object can have very
+	    thus lies in devising an appropriate similarity measure, given that objects can have very
 	    different features from one database to another. \Textcite{LargeScaleDeDup09} propose a
 	    declarative language, expressing both hard constraints (that have to be satisfied) and
 	    soft constraints (that can be seen as cues guiding the process). Because of these hard
