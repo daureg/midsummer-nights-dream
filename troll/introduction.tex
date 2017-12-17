@@ -1,8 +1,8 @@
 As we saw in the introduction, many situations in various fields can be modeled by signed graphs.
-One of the most natural usage of signed graphs, though, is the study of social networks. That is
+Nonetheless, one of the most natural usage of signed graphs is the study of social networks. It is
 indeed what first motivated their inception. Quite naturally, we thus begin our exploration of the
 role of edges in complex networks by a binary classification problem in signed graphs. Namely, we
-want to predict whether an observed interaction between two nodes is positive or negative and we
+want to predict whether an observed interaction between two nodes is positive or negative, and we
 call this problem \esp{}.\footnote{This chapter is closely based on a paper written with several
 co-authors~\autocite{trollSign17}.} To motivate this problem from a practical point of view, let us
 first define precisely the type of social networks we consider. We call \emph{Directed Signed Social
@@ -23,7 +23,8 @@ processing to be given a sign. The typical situation where this happens is when 
 mediated through text, for instance in Twitter or in the comment section of some online content. It
 is then possible to extract signs using sentiment analysis methods~\autocite{signedText12}.
 
-Another distinction is that in most cases, only the owner of the network can observe its graph.
+Another distinction is that in most cases, only the owner of the network can observe the detail of
+all those interactions.
 Think for instance of \textsc{YouTube}, where users can like or dislike the video of another user
 but where only aggregate anonymous statistics are available publicly. The situation is similar on
 the \textsc{Stack Overflow} community, where users can upvote or downvote answers according to their
@@ -31,13 +32,13 @@ perceived quality, but where only the total score are available.
 
 \bigskip
 
-With this definition of social networks, we now look at how the learning problem of \esp{} can be
+With this definition of social networks at hand, we now look at how the learning problem of \esp{} can be
 used in real world applications. More precisely, we present four possible applications, and order
-them by how severely negative interactions impact the well-being of users of the networks.
+them by how severely negative interactions impact the well-being of users of the network.
 First, it could help improve the quality of link recommendation in solely positive networks. Such
 networks indeed contain implicit negative links~\autocite{Yang2012}. By asking users to label a
 small proportion of existing links as truly positive or actually negative, recommended links could
-be discarded if they are predicted to be negative.
+later be discarded if they are predicted to be negative.
 %
 Second, this could be used to monitor news textual comments in a scalable fashion and thus ensure
 that online debates remain courteous and constructive. For instance, \textcite{betterDebate14} show
@@ -93,7 +94,10 @@ data, a major concern in developing learning methods for \esp{} is algorithmic
 scalability. Many successful, yet simple heuristics for \esp{} are based on the
 troll-trust features, \ie{} on the fraction of outgoing negative links (trollness) and incoming
 positive links (trustworthiness) at each node. We first define these notions and more notations in
-\autoref{s:prel}, along with others tools and precise problem statements. Then we study such
+\autoref{s:prel}, along with others tools and precise problem statements.
+We also introduce suitable graph transformations defining reductions from \esp{} to
+node sign prediction problems.
+Then we study such
 troll-trust heuristics by defining in \autoref{s:gen} a probabilistic
 generative model for the signs on the directed links of a given network. We also show that these
 heuristics can be understood and analyzed as approximators to the Bayes optimal classifier for our
@@ -104,8 +108,7 @@ that a logistic model trained on trollness and trustworthiness features alone is
 weights that, on all datasets considered in our experiments, consistently satisfy the properties
 predicted by our model.
 
-We then introduce suitable graph transformations defining reductions from \esp{} to
-node sign prediction problems. This opens up the possibility of using the arsenal of known
+Our graph transformations opens up the possibility of using the arsenal of known
 algorithmic techniques developed for node classification. In particular, we introduce in
 \autoref{ss:passive} our second batch algorithm. It takes the form of a Label
 Propagation algorithm that, combined with our problem reduction, approximates the maximum likelihood

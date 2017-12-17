@@ -3,9 +3,8 @@
 Given $G(Y) =(V,E(Y))$, in the batch setting we have at our disposal a training set \trainset{} of
 labeled edges from $E(Y)$. Formally, we have a training set $\trainset
 = \big((u_1,v_1),y_{u_1,v_1}), ((u_2,v_2),y_{u_2,v_2}), \ldots, ((u_m,v_m),y_{u_m,v_m}\big)$, that
-has been drawn from $E\times Y$ \uar{} with replacement, with
-$m = |E_0|$. Then a reasonable approach to approximate $y^*(u,v)$ would be to resort to a maximum
- We want to build a predictive model for the labels of the remaining
+has been drawn from $E\times Y$ \uar{} without replacement, with
+$m = |E_0|$. We want to build a predictive model for the labels of the remaining
 edges. We present two algorithms to do so, which both compute estimates of the all parameters $p$
 and $q$ of our generative model. They differ in the approximation guarantees they provide, and in
 the class of graphs to which they apply. The first algorithm runs on the graph $G$ and estimates
@@ -62,7 +61,7 @@ $\tauhat$ is the quantity $\tau$ computed on the training, then $\tauhat$ is clo
 justification of the rule \eqref{eq:predictor}.
 
 We are now ready to describe our algorithm, which follows naturally from the formula derived above.
-It takes as input a training set \trainset{} drawn at random with replacement and outputs a sign
+It takes as input a training set \trainset{} drawn at random without replacement and outputs a sign
 prediction for all the edges in $E\setminus \trainset$. We call it \usrule{}, which stands for Bayes
 Learning Classifier based on \emph{tr}ollness and \emph{un}trustworthiness.
 \iffalse
@@ -189,14 +188,14 @@ based on label propagation.
 
 \subsection{Approximation to Maximum Likelihood via Label Propagation}\label{ss:passive}
 
-Remember we suppose that the training set \trainset{} has been drawn \uar{} with replacement, with
+Remember we suppose that the training set \trainset{} has been drawn \uar{} without replacement, with
 $m = |E_0|$. Then a reasonable approach to approximate $y^*(u,v)$ would be to resort to a maximum
 likelihood estimator of the parameters $\{p_u, q_u\}_{u=1}^{|V|}$ based on \trainset{}.
 If we further assume, in order to make the computation more tractable, that
 the joint prior distribution $\mu(p,q)$ is uniform over $[0,1]^2$ with
 independent marginals,\footnote{As we will see, in real data, around $80\%$ if the edges are
 positive, meaning this assumption of uniformity over $[0,1]^2$ is unlikely to fully holds, for
-otherwise the signs would more balanced}
+otherwise the signs would more balanced.}
 we show in the supplementary material \vpageref{ssec:troll_mle_deriv} that for $\ell \in \{1,
 \ldots, |V|\}$ the gradient of the log-likelihood function with respect to a given $p_\ell$ and
 $q_\ell$ satisfies
@@ -330,7 +329,7 @@ constraint that whenever a node $u$ has a high out-degree then the corresponding
 close to \shalf. Thus, on any edge $(u,v)$ departing from $u$, the Bayes optimal predictor $y^*(u,v)
 = \sgn(p_u+q_v-1)$ will mainly depend on $q_v$ being larger or smaller than \shalf{} (assuming $v$
 has small in-degree). Similarly, if $u$ has a high in-degree, then the corresponding $q_u$ should be
-close to \shalf{} implying that on any edge $(v,u)$ arriving at $u$ the Bayes optimal predictor
+close to \shalf{}, implying that on any edge $(v,u)$ arriving at $u$, the Bayes optimal predictor
 $y^*(v,u)$ will mainly depend on $p_v$ (assuming $v$ has small out-degree). Put differently, a node
 having a huge out-neighborhood makes each outgoing edge \enquote{count less} than a node having only
 a small number of outgoing edges, and similarly for in-neighborhoods.

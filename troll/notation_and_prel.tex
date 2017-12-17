@@ -1,14 +1,14 @@
 \section{Notation and Preliminaries}\label{s:prel}
 
-In this chapter and the next one, we let $G=(V,E)$ be a \emph{directed} graph, whose edges $(u,v)
-\in E$ carry a
+In this chapter\footnote{And in the next chapter when applicable.}, we let $G=(V,E)$ be a
+\emph{directed} graph, whose edges $(u,v) \in E$ carry a
 binary label $\yuv\in \spin$. The edge labeling will sometimes be collectively denoted by the
 $|V|\times |V|$ matrix $Y = [\yuv]$, where $Y_{u,v} = \yuv$ if $(u,v) \in E$, and $\yuv = 0$
 otherwise. The corresponding edge-labeled graph will be denoted by $G(Y) = (V,E(Y))$. We use
 $\Nin(u)$ and $\Nout(u)$ to denote, respectively, the set of edges incoming to and outgoing from
 node $u \in V$, with $\din(u) = \big|\Nin(u)\big|$ and $\dout(u) = \big|\Nout(u)\big|$ being the
-in-degree and the out-degree of $u$. Moreover, $\din^+(u)$ is the number of edges $(k,u)\in\Nin(u)$
-such that $y_{k,u} = +1$. We define $\din^-(u)$, $\dout^+(u)$, and $\dout^-(u)$ similarly, so that,
+in-degree and the out-degree of $u$. Moreover, $\din^+(u)$ is the number of edges $(w,u)\in\Nin(u)$
+such that $y_{w,u} = +1$. We define $\din^-(u)$, $\dout^+(u)$, and $\dout^-(u)$ similarly, so that,
 for instance, $\dout^-(u)/\dout(u)$ is the fraction of outgoing edges from node $u$ whose label in
 $G(Y)$ is $-1$. We call $tr(u) = \dout^-(u)/\dout(u)$ the \emph{trollness} of node $u$, and $un(u)
 = \din^-(u)/\din(u)$ the \emph{untrustworthiness} of node $u$. Finally, we also use the notation
@@ -64,7 +64,8 @@ $G$.
     \centering \includegraphics[height=.14\textheight]{raw/gsecond_latex-crop}
     \caption{\label{fig:troll_reduction_gsecond}}
   \end{subfigure}
-  \caption{\label{f:etnr}
+  \caption[Illustration of the graph transformations turning \esp{} into node
+  classification]{\label{f:etnr}
     \textbf{(a)} A directed edge-labeled graph $G$. \textbf{(b)} Its corresponding graph $G'$
     resulting from the first reduction we describe. The square nodes in $G'$ correspond to the
     edges in $G$, and carry the same labels as their corresponding edges. On the other hand, the
@@ -165,10 +166,10 @@ similar (see \autoref{tab:all_mcc} \vpageref{s:exp}).
 
 The reductions presented above are meaningful only if they are able to approximately preserve the
 two label regularity measures $\Psi_G(Y)$ and $\Psi^2_{G''}(Y)$ when moving from edges to nodes.
-That is, if the \esp{} prediction problem is
+That is, if the \esp{} problem is
 easy for a given $G(Y) = (V,E(Y))$, then the corresponding node sign prediction problems on $G'(Y)
 = (V'(Y),E')$ and $G''(Y) = (V''(Y),E)$ are also easy, and vice versa.
-Let us first introduce the notion of cutsize of an undirected node-labeled graph $G'(Y)$, which is
+
 \begin{wrapfigure}{o}[10mm]{45mm}
 	\centering
 	\includegraphics[width=0.85\linewidth]{assets/raw/troll_labeled_gprime.pdf}
@@ -176,6 +177,7 @@ Let us first introduce the notion of cutsize of an undirected node-labeled graph
 	  complexity and the cutsize. Here the four edges part of the cut are in heavy black.
 	\label{fig:troll_psi}}
 \end{wrapfigure}
+Let us first introduce the notion of cutsize of an undirected node-labeled graph $G'(Y)$, which is
 the number of edges in $G'$ connecting nodes that have mismatching labels.
   Now, because the only nodes in $G'$ we are
   interested in predicting are those corresponding to the edges in $G$ (the colored squares in
@@ -187,7 +189,7 @@ the number of edges in $G'$ connecting nodes that have mismatching labels.
   $un(u) \leq \shalf$,
   and $-1$ otherwise. For instance, given the trollness and untrustworthiness values for the graph $G$ of
   \autoref{fig:troll_reduction_g} reported in \autoref{tab:troll_psi}, following this construction
-  would result in a label version of $G'$ showed on \autoref{fig:troll_psi}.
+  would result in a labeled version of $G'$ shown in \autoref{fig:troll_psi}.
   We see that by labeling circle nodes by the majority label of the square nodes there are connected
   to, we have that the cutsize of $G'(Y)$ equals  $\Psiin(Y) + \Psiout(Y)$.%
   \footnote{In fact, for the sake of

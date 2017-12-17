@@ -94,8 +94,8 @@ can belong to one of the 16 node-types based of whether the number of its positi
 negative) outgoing (respectively incoming) edges is zero or not. The number of unobserved incoming
 and outgoing edges of each node $u$ let us define a 16-dimensional vector $V_u$ containing the
 probability of transitioning to any other type once the unobserved signs are revealed. Then each
-edge \euv is associated with a feature vector consisting of the outer
-product of $V_u$ with $V_v$ and also include additional features such as triads count and degree
+edge \euv{} is associated with a feature vector consisting of the outer
+product of $V_u$ with $V_v$ and also including additional features such as triads count and degree
 information before training a Logistic Regression model. We refer to this method as
 \emph{\compbayesian{}}.
 
@@ -104,7 +104,7 @@ from $u$ to $v$ denotes that user $u$ considers user $v$ as having a higher stat
 herself~\autocite{Leskovec2010}. This has implications on the distribution of the so called
 \emph{triads} in the network. A triad is a triangle formed by \euv{} together with $u \rightarrow w$
 (or $w \rightarrow u$) and $v \rightarrow w$ (or $w \rightarrow v$) for any $w \in \NNout(u) \cap
-\NNin(v)$. Taking signs and direction into account, there are 16 possible triads but according to
+\NNin(v)$. Taking signs and directions into account, there are 16 possible triads but according to
 the status theory some must be more represented than others. The \emph{\comptriads{}}
 method~\autocite{Leskovec2010} exploits this fact by counting for each edge in the training set how
 frequently it is involved in each of the 16 triad types. It also adds 7 degree features before
@@ -125,7 +125,7 @@ node) are computed using a variety of methods, including
 		that is double exponentially distributed with parameter $\mu$.
 	\item	Bias and Deserve~\autocite{mishra2011finding}, which are defined in terms of each other in
 		weighted graphs. The bias is the tendency of a node $u$ to trust/mistrust others, that is the
-		difference between its opinion of a neighbor $v$ and what $v$ truly deserve according to the
+		difference between its opinion of a neighbor $v$ and what $v$ truly deserves according to the
 		network: \[bias(u) = \frac{1}{\dout(u)}\sum_{v\in\NNout(u)}(\wuv - deserve(v)).\] The deserve of a
 		node $v$ is the aggregated opinion of its in-neighbors, discounted by their bias: \[deserve(v) =
 		\frac{1}{\din(v)}\sum_{u\in\NNin(v)}\left(\wuv(1-\max\{0, \sgn(\wuv)\times bias(u)\})\right).\]
@@ -135,7 +135,7 @@ node) are computed using a variety of methods, including
 		$\sigma(v)$ is the ranking score assigned to node $v$. The former can be seen as a weighted
 		version of Prestige, while the latter is its outgoing counterpart.
 	\item	TrollTrust~\autocite{wu2016troll}, which builds upon \autocite{shahriari2014ranking} but
-		defined the ranking $\sigma(u)$ as the trustworthiness of $u$. It is follows from a recursive
+		defines the ranking $\sigma(u)$ as the trustworthiness of $u$. It follows from a recursive
 		definition of trollness based on the opinion of one node's neighbors weighted by their own
 		trollness, which allow to assign a $\sigma(u)$ to each node $u$ through a set of non linear
 		equations solved by an iterative method. These $\sigma$ values are used to compute Reputation
@@ -156,7 +156,7 @@ one of the future direction.}
 considered versions of the problem where side information related to the network is available to
 the learning system. For instance, \autocite{EdgeSignsRating15} uses the product purchased on
 \epi{} in conjunction with a neural network, \autocite{TrollDetection15} identifies trolls by
-analysing the textual content of their post, \autocite{attributedSNE17} improve
+analysing the textual content of their post, \autocite{attributedSNE17} improves
 the embedding approach of \textcite{neuralSigned17} by considering the words
 written in reviews as attributes of the users,  and~\autocite{SNTransfer13} uses SVM to perform
 transfer learning from one network to another.
@@ -191,7 +191,7 @@ converge to a balanced state with as little change as possible, they express fin
 transformation as a Multidimensional Scaling problem, and the resulting graph to characterize
 unlabeled edges.
 %
-Finally, \textcite{edgeWeights16} explicitly consider the weight prediction problem in signed graph.
+Finally, \textcite{edgeWeights16} explicitly consider the weight prediction problem in signed graphs.
 They use a procedure similar to the ranking methods discussed above. Namely, they defined two scores
 for each node that are computed iteratively from a uniform initialization. Assuming that weights lie
 in $[-1,1]$, the fairness $f(u)$ of $u$ is a measure of how fair or reliable $u$ is when rating
@@ -200,12 +200,12 @@ complete fairness.  Formally, $f(u) =  1 - \frac{1}{2\NNout(u)} \sum_{v\in\NNout
 \frac{|\wuv-g(v)|}{2}$ and $g(v) = \frac{1}{\NNin(v)}\sum_{u\in\NNin(v)}f(u)\wuv$. Note that these
 definitions are very close to bias and deserve from \textcite{mishra2011finding}, but the absolute
 value in the factor $2$ in the expression of fairness allows for better convergence property.
-Finally, the weight of a test edge \euv is predicted as $f(u)\times g(v)$.
+Finally, the weight of a test edge \euv{} is predicted as $f(u)\times g(v)$.
 
 \medskip
 
 While we presented methods that operate in the batch setting, and will present an online algorithm
-as well in \autoref{s:algonline}, other works have attacked the \esp{} problem from an active
+as well in \autoref{s:algonline}, other works have addressed the \esp{} problem from an active
 learning point of view~\autocites{Cesa-Bianchi2012a}{Cesa-Bianchi2012b}.  Recall that in the active
 setting, we are given a budget of edge labels to observe, and are free to select them the way we
 want within $E(Y)$. Again, the goal is to make as few mistakes as possible when predicting the sign

@@ -15,7 +15,7 @@ scenario since all competing methods we are aware of have been developed in that
 
 We consider six real-world classification datasets. The first four are \dssn{} widely
 used as benchmarks for this
-task~(\eg{}\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}{OnlineCompletion17}):
+task~\autocites{Leskovec2010}{shahriari2014ranking}{wu2016troll}{OnlineCompletion17}.
 In \adv{}, a trust-based social network for open source developers, a user $u$ can certify another
 user $v$ with different degrees of trust: \enquote{Observer}, \enquote{Apprentice} (both of which we
 consider negative), \enquote{Journeyer} and \enquote{Master} (both of which we consider
@@ -42,7 +42,7 @@ multi-edges which are all of the same sign.}
 \begin{table}[bt]
   \centering
   \small
-  \caption{Dataset properties. The 5\thup{} column gives the fraction of positive labels. The next two
+  \caption[\dssn{} dataset properties]{Dataset properties. The 5\thup{} column gives the fraction of positive labels. The next two
   columns provide two different measures of label regularity, while the last two columns give the
   proportion of reciprocal edges, and among them the fraction with different signs.\label{tab:dataset}}
   \begin{tabular}{lrrrrrrrr}
@@ -97,10 +97,10 @@ regularity measures.
 Finally, there is a low fraction of reciprocal edges (\ie{} both $\euv \in E$ and $\evu
 \in E$), which is a common mechanism of link formation in directed
 networks~\autocites{DirectedReciprocity04}{Reciprocity13}). Moreover, in most cases, such reciprocal edges do not disagree,
-\ie{} they have the same sign. In practice, we can use this fact to improve our accuracy at no
+\ie{} they have the same sign. In practice, we can use this fact to improve our prediction at no
 additional computational cost: when predicting $\euv \in E_{\mathrm{test}}$, if the reciprocal edge
 \evu{} is part of the training set, we set $\yhat_{u,v} = y_{v,u}$. For clarity, when comparing
-our methods with existing approaches, we not use that trick. But afterwards, we show in
+our methods with existing approaches, we dot not use that heuristic. But afterwards, we show in
 \autoref{tab:twin} when it can be beneficial.
 % more references in  http://www.nature.com/articles/srep02729
 
@@ -121,7 +121,7 @@ positive than negative edges, we apply an exponential transformation \[ p = \fra
 \left( 1-e^{-\lambda p'} \right) \,,\] where we choose $\lambda=3$. We do the same for $q$, then for
 every edge \euv{}, we set it positive with probability \etauv{}. An example of the distributions we
 obtain for the \wik{} graph is showed on \autoref{fig:troll_synth_distrib}\footnote{More precisely,
-these figures are normalized histogram, meaning the counts are scale down so that the bars total
+these figures are normalized histograms, meaning the counts are scaled down so that the bars total
 area sums up to one.}, giving $71.9\%$ of positive edges.
 
 \begin{figure*}[hbtp]
@@ -228,7 +228,7 @@ We compared the following algorithms:
   \item The label propagation algorithm of \autoref{ss:passive} (referred to as \uslpropGsec{}).
     The actual binarizing threshold was set by cross-validation on the training set.
 
-  \item The \usrule{} algorithm described in \autoref{ss:passive}.
+  \item The \usrule{} algorithm described in \autoref{ss:bayes_approx}.
 
   \item A logistic regression model where each edge $(u,v)$ is associated with the features
     $[1-\htr(u), 1-\hun(v)]$ computed again on \trainset{} (we call this method \uslogregp{}). The best
@@ -237,7 +237,7 @@ We compared the following algorithms:
     \autoref{s:gen} is a good fit for the data.
 
   \item  The solution obtained by directly solving the unregularized problem \eqref{e:quadratic}
-    through a fast constrained minimization algorithm (referred to as \qoptim{}). Again, the actual
+    through a constrained minimization algorithm (referred to as \qoptim{}). Again, the actual
     binarizing threshold was set by cross-validation on the training set.\footnote{We have also
     tried to minimize \eqref{e:quadratic} by removing the $[-1,+1]$ constraints, but got similar MCC
     results as the ones we report for \qoptim{}}
@@ -302,10 +302,10 @@ Our main results are summarized in \autoref{tab:all_mcc}, reporting MCC test set
 training on sets of varying size (from 5\% to 25\%, plus 50\% and 90\%). Results have been averaged
 over 12 repetitions.
 Because scalability is a major concern when training on sizeable datasets, we also give an idea of
-relative training times (in milliseconds) by reporting separately in \autoref{tab:all_time} the time it took to train a single run of
+relative training times by reporting separately in \autoref{tab:all_time} the time (in milliseconds) it took to train a single run of
 each algorithm on a training set of size\footnote{Comparison of training time performances is fair
 since all algorithms have been carefully implemented using the same stack of Python libraries, and
-run on the same machine (16 Xeon cores and 192Gb Ram).} 15\% of $|E|$, and then predict on the test
+run on the same machine (16 Xeon cores and 192GB Ram).} 15\% of $|E|$, and then predict on the test
 set. Some conclusions emerge from those experiments:
 
 
@@ -376,7 +376,7 @@ why these two sampling strategies produce so different results can be inferred f
 least one outgoing edge, and defining similarly $V_{\mathrm{in}}$, we see that the node coverage is
 naturally larger when sampling at random. Yet, when the training set reaches 90\% size, both
 sampling strategies cover roughly 90\% of the nodes in $V_{\mathrm{out}}$ and in
-$V_{\mathrm{out}}$. The difference in MCC is thus explained by the last three columns. It shows, for
+$V_{\mathrm{in}}$. The difference in MCC is thus explained by the last three columns. It shows, for
 testing edges \euv{}, the breakdown between three situations, from the least to the most
 informative:
 \begin{enumerate}[(i),nosep]
