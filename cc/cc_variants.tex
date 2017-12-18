@@ -74,14 +74,15 @@ bring down this approximation factor to $3$, even for $K\geq 2$-partite graphs. 
 the graph biadjacency matrix, \textcite{Asteris2016} obtain a efficient PTAS, that is a $(1-\delta)$
 approximation running in time exponential in $k$ and $\delta^{-1}$ but linear in $n$. By an
 appropriate choice of $k$, it is possible to use this PTAS to solve the general \maxa{} problem.
+Beyond those results on \pcc{}, we further discuss bipartite signed graphs in \autoref{ssec:conc_rr}.
 
 \paragraph{Categorical edge labelling}
 
 In the so called \textsc{Chromatic}-\pcc{} setting, \enquote{positive} edges are now associated with
 one of $L$ possible colors and the goal is to form clusters mostly made up of edges with the one same
 color. Namely, a disagreement is now a negative edge between clusters or a within-cluster edge
-whose color differs from the majority color of that cluster. This is motivated by edge-labeled graph
-in social networks, biology and citation networks and will discuss such applications in
+whose color differs from the majority color of that cluster. This is motivated by edge-labeled graphs
+in social networks, biology and citation networks and we will further discuss such applications in
 \autoref{chap:vector}. As a generalisation of \pcc{}, it is \NPc{} but \textcite{Bonchi2012a}
 present a modification of the \ccpivot{} algorithm that pick edges instead of nodes as pivots, and
 grow clusters by adding monochromatic triangles. This gives an approximation factor of six times the
@@ -90,7 +91,7 @@ beforehand, starting with an initial partition and then alternating between find
 color of clusters and finding better clusters. An improved heuristic algorithm is given
 in~\autocite{CCCheuristic16}. Unfortunately, the maximum degree of a graph can be
 as large as $n$. However, \textcite{Anava2015} present constant factor approximations. Namely, they
-show the problem can be reduced to classical \pcc{} by setting all edges incident to a node $u$ to
+show that the problem can be reduced to classical \pcc{} by setting all edges incident to a node $u$ to
 negative if they are not of the majority color of $u$. They then apply the regular \ccpivot{} and
 show this gives an $11$-approximation to the original problem. Furthermore, they also write a linear
 program and round it using the \regionGrow{} method to obtain an
@@ -104,9 +105,9 @@ While in \pcc{}, each node is assigned to a single cluster, in other settings we
 this constraint. Given a complete weighted graph, \textcite{Bonchi2012} want to output a clustering
 \cluster{} that minimizes the following cost: \[ \sum_{(u,v)\in E} \left| H(\cluster(u),
 \cluster(v)) - w_{uv}\right|\] where $H$ is a similarity function between two sets of labels, chosen
-here to be the Jaccard similarity or a $0/1$ indicator of nonempty intersection. These problems are
-showed \NPc{} and approximated by a local search algorithm, iteratively optimizing the assignment of
-one node while all others are fixed. As one of the demonstration on their theoretical work,
+in their paper to be the Jaccard similarity or a $0/1$ indicator of nonempty intersection. These problems are
+showed to be \NPc{}, and approximated by a local search algorithm, iteratively optimizing the assignment of
+one node while all others are fixed. As one of the demonstration of their theoretical work,
 \textcite{WeightedTheta15} show a faster solution based on a weighted extension of the Lovász's
 theta function, the corresponding geometric embedding of graphs and a solver derived from one-class
 SVM, while \textcite{GeneticOCC14} propose a genetic algorithm to solve this problem. Finally,
@@ -117,8 +118,8 @@ iterative scheme for maximizing polynomial functions in probability domains}.
 \paragraph{Local \pcc{}}
 
 In classical \pcc{}, all nodes have an identical role, in the sense that they contribute equally to
-the final objective in terms of (dis)agreements. Here we instead look at approaches where we either
-add a local penalty to each in order to better control their behavior or where we altogether modify
+the final objective in terms of (dis)agreements. Here, we instead look at approaches where we either
+add a local penalty to each in order to better control their behavior, or where we altogether modify
 the objective to focus on (dis)agreements at specific nodes.
 
 % that one is not really local, except for the node penalty
@@ -163,9 +164,9 @@ bounds on expected disagreements of an edge does not translate easily on their m
 \Textcite{Charikar2017} improve these two factors to $7$, using a simpler version of the algorithm
 of \textcite{pmlr-v48-puleo16}. Namely, find the ball of radius $\nicefrac{1}{7}$ with the largest
 number node and create a cluster from its center with a radius of $\nicefrac{3}{7}$. They also show
-that on general weighted graphs, the LP has a large integrality gap of $\nicefrac{n}{2}$ yet they
+that on general weighted graphs, the LP has a large integrality gap of $\nicefrac{n}{2}$. Yet they
 combine it with a combinatorial approach to reach a $O(\sqrt{n})$ approximation. Finally, they
-consider the complementary problem of maximizing the minimum number of agreements reach at a single
+consider the complementary problem of maximizing the minimum number of agreements at a single
 node, and provide a $\frac{1}{2+\epsilon}$ approximation.
 
 \paragraph{Spectral Clustering}
@@ -242,7 +243,7 @@ Laplacian.
 Finally, \textcite{mGeometricMean16} show that the Laplacians defined so far can be seen as
 arithmetic means of the Laplacian $L^+$ of the positive subgraph $G^+=(V, E^+)$ and the signless
 Laplacian $Q^-$ of the negative subgraph $G^-=(V, E^-)$, where $Q^- = D^- + A^-$. They suggest
-instead to use a geometric mean defined for two positive matrices $A$ and $B$ as $A\#B =
+instead to use a geometric mean, defined for two positive matrices $A$ and $B$ as $A\#B =
 A^{\shalf{}} \left(A^{-\shalf{}} BA^{-\shalf{}} \right)^{\shalf{}} A^{\shalf{}}$. This suggestion is
 based on the fact that if $u$ is a common eigenvector of both $A$ and $B$ with eigenvalue $\lambda$
 and $\mu$ respectively, then $u$ is an eigenvector of $A+B$ with eigenvalue $\lambda+\mu$ and an
@@ -260,11 +261,11 @@ overview of them, as they tend to have been more tested experimentally. For inst
 cluster of node $u$, \textcite{Yang2007} use a random walk approach on the positive subgraph $G^+$
 to compute the probability of each node to reach $u$ in $T$ steps, sort the nodes accordingly and
 then find a threshold  based on the number of disagreements.
-The one node moves local heuristic that we described in the Physics-inspired paragraph
+The one node move local heuristic that we described in the Physics-inspired paragraph
 \vpageref{par:cc_physics} can also be formulated as genetic algorithms that simultaneously try to
 minimize the number of disagreements and maximize a signed variant of the
 modularity~\autocites{Li2013}{Amelio2013}. \Textcite{Anchuri2012} also consider these two objectives
-by seeing them as eigenvalue problems and devise a iterative splitting procedure.
+by seeing them as eigenvalue problems and devise an iterative splitting procedure.
 The overlapping community detection variant is considered by \textcite{Chen14}, who used a signed
 probabilistic mixture model. Namely, an edge selects a pair of cluster $r,s$ with probability
 $\omega_{rs}$ (where $r=s$ if the edge is positive and $r\neq s$ otherwise) and chooses its endpoints

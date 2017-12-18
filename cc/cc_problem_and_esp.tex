@@ -76,7 +76,7 @@ every edge a feature vector in $\Rbb^d$, pick an hypothesis class like linear mo
 this class the hypothesis minimizing the empirical risk, and use it to predict the sign of edges in
 the testing set. In contrast, \pcc{} in an agnostic problem. More precisely, the hypothesis class is
 fixed, as it consists of all possible partitions of the nodeset. We are trying to find the partition
-that best approximates the observed signs, but each weakly unbalanced cycle is gonna cost us at
+that best approximates the observed signs, but each weakly unbalanced cycle will cost us at
 least one unavoidable mistake. Despite this fundamental difference in their nature, \pcc{} is
 connected with \esp{} at two levels, theoretical and practical. On the theoretical side, computing
 the minimum number of disagreements gives a measure of the \esp{} problem complexity.  Intuitively,
@@ -87,7 +87,7 @@ More formally, one can show that by finding a clustering $\cluster^\star$ of $H$
 disagreements than $\kappa$ times the smallest number of disagreements $\Delta$, the number of
 errors on the testing set will be at most of order $\kappa\Delta + \sqrt{mn\log
 n}$~\autocite[Theorem 6]{Cesa-Bianchi2012b}. These theoretical considerations naturally lead to
-practical a batch algorithm, which first finds a clustering minimizing as much as possible the number
+a practical batch algorithm, which first finds a clustering minimizing as much as possible the number
 of disagreements on the training set and then predicts signs according to this clustering. Our
 assumption in doing so is that, according to our bias, our graph has few disagreements. Therefore,
 provided we can find a clustering close to the optimal, we will not make too many prediction
@@ -115,7 +115,7 @@ Furthermore, as mentioned in the introduction of this thesis \vpageref{sub:intro
 \pcc{} have been used in many
 domains. For instance in computer vision, it is used to segment images in
 2D~\autocites{Kim2011}{Bagon2011}{CellSeg14} or 3D~\autocites{VolumeSegmentation12}{Beier2015}, to
-simplify 3D shapes~\autocite{Shape3D17} and to track target across sequential video
+simplify 3D shapes~\autocite{Shape3D17} and to track targets across sequential video
 frames~\autocite{multiTracking15}. When the nodes are words, \pcc{} is employed to identify
 coreference~\autocites{graphicalCoreference04}{Elsner2009} or cluster synonym
 words~\autocite{SignedWordRatings}. It plays a large role in biology, to clusters

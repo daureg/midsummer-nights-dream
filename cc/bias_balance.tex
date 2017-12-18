@@ -85,7 +85,8 @@ We use triangles as the building block of our definition of strongly balanced gr
 It is interesting to note that this local property of triangles gives raise to a global structure.
 Namely, a strongly balanced complete graph can be split in two (possibly empty) clusters $L$ and $R$
 such that all edges within $L$ and $R$ are positive, while all edges between $L$ and $R$ are
-negative. Indeed, let us pick an arbitrary node $u$ and let $L=\neip(u)\setminus \{u\}$ and $R=V\setminus L$. Now
+negative. Indeed, let us pick an arbitrary node $u$ and let $L=\neip(u)\setminus \{u\}$ and
+$R=V\setminus L$ (where $\neip(u)$ denotes the set of all positive neighbors of $u$). Now
 let $v,w\in L\setminus \{u\}$ and $x,y\in R$. From \autoref{fig:cc_twostrongcc} and the fact that
 every triangle is balanced, we can see that $(v,w)$ and $(x,y)$ are positive edges, while $(w,y)$ is
 a negative edge.

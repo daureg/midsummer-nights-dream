@@ -1,10 +1,10 @@
 \label{sub:gtx_state_of_the_art}
 
-Looking for a subgraph $H$ of $G$ that best preserve the distance in $G$ while being sparse is an old
+Looking for a subgraph $H$ of $G$ that best preserves the distance in $G$ while being sparse is an old
 problem, driven originally by network design in fields such as transportation~\autocite{RoadNetworks60}
 and electrical circuits~\autocite{electricalNetworks60}. The way we define \enquote{preserving the
 distance}, and the exact form of $H$ give rise to several problems, which we summarize later in
-\autoref{tab:gtx_related_stretch} \vpageref{tab:gtx_related_stretch}. We first give some
+\autoref{tab:gtx_related_stretch}. We first give some
 definitions, then cover the most relevant problems in details, and finally give some pointers for
 the others problems.
 
@@ -102,7 +102,7 @@ taking into account the number of edges joining cluster, while \collapseStar{} p
 direct one.
 
 Another interesting idea from this paper is to consider a distribution over trees instead of a
-single instance, especially when one is concern about the maximum stretch instead of the average
+single instance, especially when one is concerned about the maximum stretch instead of the average
 one. For instance, on a cycle with $n$ nodes, a tree is obtained by removing one edge, and that edge
 incurs a stretch of $n-1$. The uniform distribution over such trees has a maximum stretch of
 $2\left(1 - \frac{1}{n}\right)$~\autocite{circle2k89}.
@@ -167,7 +167,7 @@ then, for it has many applications in network design. It was also showed to be \
 approximate~\autocite{SpannerNPHard07}. The most simple construction is a greedy
 algorithm~\autocite{greedySpanner93} that works similarly to the minimum spanning tree construction.
 Starting from an empty subgraph $H$, it goes through every edge $(u, v)$ of $G$ sorted by weight and
-check if there is a path between $u$ and $v$ in $H$ of length at most $t$. If it is case the edge
+check if there is a path between $u$ and $v$ in $H$ of length at most $t$. If this is the case, the edge
 $(u,v)$ is dropped, otherwise it is inserted in $H$. This results in a $(2t - 1)$-spanner with
 $O(n^{1+1/t})$ edges, which is an optimal trade-off between those two quantifies.  Furthermore on
 weighted graphs, the greedy spanner total weight is essentially optimal~\autocite{GreedyOpt16}.

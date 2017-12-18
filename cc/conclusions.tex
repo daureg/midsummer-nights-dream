@@ -31,7 +31,7 @@ Beyond those preliminary experiments, we could push further our methods along se
 
 \begin{enumerate}[1)]
 
-	\item The basic analysis \autoref{prop:gtx_correct} shows that on any graph with $n$ nodes, the
+	\item The basic analysis of \autoref{prop:gtx_correct} shows that on any graph with $n$ nodes, the
 		\gtx{} will perform at most $n$ collapses before terminating. However, as we mentioned
 		\vpageref{par:number_of_iteration} at the end of \autoref{sub:gtx_algo}, we believe that this
 		maximum number of collapses might be as low as $O(\log n)$. It turns out we were not able to
@@ -54,7 +54,7 @@ Beyond those preliminary experiments, we could push further our methods along se
 		might want to avoid extra evaluation of that function by predicting the signed weight of some
 		new edges. A natural way to modify the \gtx{} algorithm is the following. When choosing the
 		center of stars, pick the node with the current highest weighted degree. When choosing an edge
-		to connect two center, pick among the edges with the lowest endpoints eccentricity the one with
+		to connect two centers, pick among the edges with the lowest endpoints eccentricity the one with
 		the lowest weight. What is less clear is to which extent such changes would affect the analysis.
 
 	\item We wish we had more time to further explore \pcc{} under stability assumptions, especially
@@ -62,7 +62,7 @@ Beyond those preliminary experiments, we could push further our methods along se
 		graph and a partition objective, is \emph{$\alpha$-stable} (with $\alpha>1$) if its optimal
 		partition remains the same whenever every weight $w_i$ is multiplied by a factor $c_i$ between
 		$1$ and $\alpha$. Furthermore, we say that an algorithm is \emph{robust} if, given a clustering
-		instance $\mathcal{I}$, it yields of the two following outcomes in polynomial time:
+		instance $\mathcal{I}$, it yields one of the two following outcomes in polynomial time:
 		\begin{enumerate}[(i),nosep]
 			\item if $\mathcal{I}$ is $\alpha$-stable, returns the optimal solution of $\mathcal{I}$;
 			\item if $\mathcal{I}$ is not $\alpha$-stable, either returns the optimal solution of
@@ -76,7 +76,7 @@ Beyond those preliminary experiments, we could push further our methods along se
 		set of $k$ terminal nodes, the goal is to partition $G$ into $k$ clusters, each containing
 		exactly one terminal, such that the total weight of edges across clusters is minimized. This
 		bears some superficial similarity with \mmc{}. Recall from \autoref{ssub:cc_harness_approx} that
-		\mmc{} requires us the find the lightest set of edges to cut in order to separate $k$ pairs of
+		\mmc{} requires us to find the lightest set of edges to cut in order to separate $k$ pairs of
 		nodes.  Recall further that \mmc{} is equivalent to \pcc{}. As for \minmc{}, we can cast it as a
 		\pcc{} problem~\autocite[Theorem 24]{Bansal2004}. Interestingly, there exists a robust
 		algorithm for $2-\nicefrac{2}{k}$-stable instances of \minmc{}~\autocite{StableCC17}.  Under the
