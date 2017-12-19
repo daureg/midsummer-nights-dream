@@ -20,7 +20,7 @@ We try those five methods on data generated synthetically to fit our model descr
 \label{sub:edge_generation}
 
 While there exists several methods to generate attributed graph with community
-structure~\autocites{Yang2013}{XuBayesian14}{Kataoka2016}, here we present the one we adopted for
+structure~\autocites{Yang2013}{XuBayesian14}{Kataoka2016}, here we present the one we devised for
 our initial experiments, as it is specifically tailored to the model introduced in \autoref{sub:edge_setting}.
 It takes the following parameters as input:
 \begin{itemize}[nosep]
@@ -92,7 +92,8 @@ minimizing the number of colorless edges.
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.6\textwidth]{tikz/edge_palette_tikz.pdf}
-  \caption{A small example of the node palette assignment, with $k=4$ colors (blue, green, red and
+  \caption[Finding the $k_\mathrm{local}$ directions of node when generating synthetic graph]{A
+    small example of the node palette assignment, with $k=4$ colors (blue, green, red and
     orange) and palettes of size $k_\mathrm{local}=3$. We assume nodes $1$ and $2$ have already been
     visited, and got assigned the palette $(\text{blue, green, red})$ and $(\text{blue, green,
     orange})$ respectively. Moreover, we are currently visiting node $3$ while node $4$ is yet uncolored. In that
@@ -158,9 +159,9 @@ non-zero components are \enquote{overlapping} with the black ones:
 
 \item
 Returning to directions instead of colors, we have a direction $w_{y_{uv}} \in \mathcal{D}_k$
-assigned to every edge $(u,v)$. For simplicity, in that paragraph, we will let $w_{uv} = w_{y_{uv}}$.
+assigned to every edge $(u,v)$. For easy of notation, in that paragraph, we will let $w_{uv} = w_{y_{uv}}$.
 The final step in generating our node-attributed graph is to
-find a set of user profiles $X=\{x_u\}_{u\in V}$ that maximize the edge goodness and minimize the node
+find a set of user profiles $X=\{x_u\}_{u\in V}$ that maximizes the edge goodness and minimizes the node
 loss term, defined respectively as:
 \begin{align*}
   \mathcal{L}_{\mathrm{edge}} &=
@@ -216,7 +217,7 @@ $G$ with roughly $\np{1350}$ edges. We then generate the directions $\mathcal{D}
 step 3 and the following choice of parameters: $d=35$, $k=7$, $k_{\mathrm{local}}=3$ and $n_o=0$.
 Finally, we create the profiles $X$ as described in step 4.
 To account for the randomness of this generation process, we repeat our
-measurement over \np{200} such generation of $\mathcal{D}_k$ and $X$. On the other hand, we verify experimentally that
+measurement over \np{200} such generations of $\mathcal{D}_k$ and $X$. On the other hand, we verify experimentally that
 generating various graphs while keeping $\mathcal{D}_k$ fixed gives the same results, hence we will
 not report them in the main text.
 
@@ -239,7 +240,7 @@ Let us now describe how we evaluate the results of our methods on such instances
 beginning of this section, we extract from the output of each method a set $\mathcal{\wh{D}}_k =
 \{\wh{w}_1, \ldots, \wh{w}_k\}$ of $k$ directions, and assign a 
 direction to an edge $(u,v)$ as $\mathcal{E}(u,v) = \argmax_{\ell \in \rangesk} g(s_{uv}, \wh{w}_\ell)$.
-Recall that during the second of the step of the instance generation, we assign a direction index
+Recall that during the second of the step of the instance generation, we assigned a direction index
 $y_{uv}$ to every edge.
 However, we cannot simply evaluate our predictions by simply comparing $\mathcal{E}(u,v)$ and
 $y_{uv}$. Indeed, here is no guarantee that the $\mathcal{\wh{D}}_k$
@@ -282,7 +283,8 @@ we divide all the AMI scores by this natural score, in order to obtain a \enquot
 \begin{adjustwidth}{-1.5cm}{}
   \centering
   \small
-  \caption{The degree to which the edge assignment of step 2 agree with the directions and profiles
+  \caption[Qualite of our synthetic instances according to generation parameters]{The degree to
+    which the edge assignment of step 2 agree with the directions and profiles
     of steps 3 and 4. This is measured by the AMI between the assignment $\{y_{uv}\}_{uv \in E}$ and
     what maximal goodness would assign, \ie{} $\{\mathcal{E}(u,v)\}_{uv \in E}$. We report the
     average AMI and standard deviation over 200 generations of $\mathcal{D}_k$, for different
@@ -308,7 +310,7 @@ node loss are respectively higher and lower at the end of the optimization. Fina
 \fwa{} are much worse than all the others, despite the optimization leading to edge scores
 comparable to the other methods. This suggests that the subsequent clustering is not
 adequate. Regarding the generative parameters, and compared with the default configuration, the
-problem is easier when the $k$ directions are spread in a larger number of dimension, and more
+problem is easier when the $k$ directions are spread in a larger number of dimensions, and more
 difficult when each nodes is involved in four directions instead of three. On the other hand,
 whereas we expect the performance to decrease with increase in the overall number of directions or
 their overlap, there is not consistent evidence of that.
@@ -318,7 +320,8 @@ their overlap, there is not consistent evidence of that.
   \centering
   % \setlength{\tabcolsep}{3pt}
   \small
-  \caption{Standardized AMI of 5 methods, when generating directions with 7 configurations. For each
+  \caption[Performance of our proposed methods on synthetic instances]{Standardized AMI of 5
+    methods, when generating directions with 7 configurations. For each
     configuration, we generate directions 200 times, and report the mean standardized AMI along with
     the standard deviation. Among the first three methods (that do not use matrix formulation), we
     highlight the best one in \textbf{\textcolor{brown}{bold brown}} and the second best one in

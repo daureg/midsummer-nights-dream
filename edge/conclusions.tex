@@ -11,7 +11,7 @@ We could extend our approach to more general types of graphs and tasks:
     \textcite{TimedUSSenate10} study the \np{110} congresses of the US senate between the years 1789
     and 2008, where \np{1884} individual Senators are linked by their voting similarity. They show
     how it improves the detection of relevant communities. Beyond predicting the relative order of
-    links, it would also be interesting to include time into nodes similarity itself.
+    links, it would also be interesting to include time into node similarity itself.
     %
     For instance, while the photo similarity between two Flickr users rises before they connect, it
     later decreases if they have the same level of popularity, as both try to differentiate
@@ -29,14 +29,14 @@ We could extend our approach to more general types of graphs and tasks:
     offer competing explanations for network autocorrelation, which refers to the greater similarity
     in the attributes of closely connected nodes.}
 
-  \item Another rich class of graphs were predicting edge types would be a challenging and rewarding
+  \item Another rich class of graphs where predicting edge types would be a challenging and rewarding
     task is \textbf{multigraph}, which allow several edges between two
     nodes~\autocite{typedMultigraph11}. It can also be seen as
     the flattening of several graphs sharing the same nodeset, but where the provenance of each edge
-    would have been lost and need to be recover. With our original formulation of goodness as
+    would have been lost and need to be recovered. With our original formulation of goodness as
     ${s_{uv}}^T w_{uv}$, only one direction can achieve the higher score (discarding the rare case
     of tie). One alternative we proposed was to let each $w_{uv}$ be a linear combination of a small
-    number of base directions, although experimentally it did not fit well our synthetic data.
+    number of base directions.
     Symmetrically, another idea could be to have more than one way to compute the similarity
     $s_{uv}$ between two nodes.
 
@@ -44,12 +44,12 @@ We could extend our approach to more general types of graphs and tasks:
     short cycles, only certain combinations of directions are valid (or at least desirable).
     Interestingly, this would likely require different optimization algorithms, probably non convex.
     However, while this is a general concept, its exact implementation might be
-    application-dependant. Furthermore, in our current setting, we do not know in advance in the
-    semantic of each direction, and we have no labeled edges. Therefore, it is not clear how those
-    constraints would be specified or whether they can be learned, if applicable. A limited solution
+    application-dependant. Furthermore, in our current setting, we do not know in advance the
+    semantic of each direction, nor do we have labeled edges. Therefore, it is not clear how those
+    constraints would be specified, or whether they can be learned, if applicable. A limited solution
     exists in the context of heterogeneous information networks, where in addition to having several
-    types of edges, there are also several types of nodes. Since not all type of node can be
-    connected with any type of edges, the possible connections are themselves represented as a meta
+    types of edges, there are also several types of nodes. Since not all types of node can be
+    connected with any types of edge, the possible connections are themselves represented as a meta
     graph called the network schema~\autocite[Definition 3]{HINSurvey17}. This approach would need
     to be extended to deal with higher order patterns, for instance in a manner reminiscent of
     composition of paths in multilayer graphs~\autocites{metapath11}[Section

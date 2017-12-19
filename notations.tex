@@ -16,7 +16,11 @@ In this thesis we will sometimes write remarks in a smaller font and with a ligh
     Symbol & Meaning \\
     \midrule
     \rangek{} & The natural integers from $1$ to $K$, \ie{} $\{1, 2, \ldots, K \}$ \\
-    $G$ & An arbitrary graph. It should be clear from the context whether it is weighted or not, and directed or not \\
+    $\Ind{p}$ & An indicator function evaluating to $1$ if the predicate $p$ is true and $0$ otherwise \\
+    $x_{;i}$ & For a vector $x\in \Rbb^d$, $x_{;i}$ denotes the value of its \ith{} component. \\
+    $\dsphere{}$ & The sphere of $\ell_2$ unit vectors in dimension $d$, \ie{} $\theset{x \in
+    \Rbb^d}{\|x\|_2 = 1}$ \\
+    $G$ & An unweighted graph. It should be clear from the context whether it is directed or not \\
     $V$ & The set of all the nodes of a graph, with $|V|=n$. Unless noted otherwise, nodes are indexed from $1$ to $n$ \\
     $u$ & A generic node of $G$. When referring to several nodes, we naturally use $u$, $v$, $w$ and so on. \\
     $E$ & The set of all the edges of a graph, with $|E|=m$ \\
@@ -29,10 +33,19 @@ In this thesis we will sometimes write remarks in a smaller font and with a ligh
     regardless of their direction) \\
     $\nei(u)$ & The set of all neighbors of $u$, regardless of edge direction. It thus holds
     that $|\nei(u)| = \degr(u)$ \\
+    $\neip(u)$ & The set of all positive neighbors of $u$, regardless of edge direction. That is,
+    $\forall v \in \neip(u),\, \yuv{} = +1$. \\
+    $\nein(u)$ & The set of all negative neighbors of $u$, regardless of edge direction. That is,
+    $\forall v \in \neip(u),\, \yuv{} = -1$. \\
     $T$ & An unweighted and undirected tree \\
     $\pathtuv$ & The unique path between $u$ and $v$ in the tree $T$, represented by an ordered list of edges \\
     $|\pathtuv|$ & The length of the path between $u$ and $v$ in the tree $T$, that is its number of edges \\
+    $\diam(G)$ & The diameter of $G$, that is the longest shortest path between any two nodes. \\
     \bottomrule
   \end{tabulary}
 \end{adjustwidth}
 \end{table*}
+
+% LP
+% NLP
+% SDP

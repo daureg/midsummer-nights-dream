@@ -2,12 +2,12 @@ In this chapter, we extend the problem of predicting edge types beyond the binar
 Furthermore, we assume that we are provided with node attributes in addition to the mere graph
 topology we used in the previous chapters. Our motivation is twofold: intrinsic and extrinsic.
 First, we want an interpretable model that, given two connected nodes, can explain why they are
-linked. This lead us to use a linear model, for it is both easily amenable to
+linked. This leads us to use a linear model, for it is both easily amenable to
 interpretation and computationally efficient. Second, edge-labeled graphs are susceptible to further
 studies by existing networks analysis methods, as we will describe shortly. Thus, our method is a
 useful way of enriching data to extract new insights from it.
 
-As demonstrated by our prior extensive coverage, predicting edge signs is an interesting and
+As demonstrated by our prior extensive coverage, predicting edge sign is an interesting and
 challenging problem in its own right. Yet it is natural to extend and generalize it.  First, there
 are other edge binary classification problems that arise in graphs. For instance, predicting whether
 a link in a social network is strong or weak~\autocites{communityWeakTies14}{communityWeakTies17};
@@ -94,7 +94,7 @@ truth communities~\autocite{FortunatoGroundTruth14}, casting further doubt on th
 extra information.
 This raises the question of why we cannot simply extend the troll/trust method of counting the type
 of edges incident to every node and learn a model from such features.
-A similar tension between relying solely on always available yet sparse topological information or
+A similar tension between relying solely on always available albeit sparse topological information or
 leveraging possibly richer attributes information also exists in link
 prediction~\autocite{linkPredSurvey16}. %\stodo{What they actually write is \enquote{Topology-based
 %techniques are more versatile than attribute-based methods since they are not domain specific} which
@@ -112,7 +112,7 @@ problems. In this chapter, we do not have access to any direct supervision in th
 Rather than a strict classification problem, we are thus faced with unsupervised clustering, guided
 by the information contained in node profiles. Note that contrary to the relation between \pcc{} and
 \esp{}, this time the objects we seek to cluster are edges and not nodes. Furthermore, we stress
-that the profiles crucially increases the interpretability of our models.
+that the profiles crucially increase the interpretability of our models.
 
 It would be tempting to assume that nodes are connected because they share the same attributes.
 Indeed, a common learning bias in graphs is

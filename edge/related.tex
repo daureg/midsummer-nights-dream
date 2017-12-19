@@ -28,7 +28,7 @@ model where each node is an edge. The label of an edge is influenced by the attr
 endpoints, the correlation between the type of neighboring edges and some global constraints. These
 three influences are modeled by pairwise factors. The parameters of the model are learned by
 maximizing the likelihood of the observed labels through gradient descent. Those parameters are then
-use to predict the remaining label that further maximize the total
+use to predict the remaining labels that further maximize the total
 likelihood~\autocite{graphicalModelTies11}. An extension of this graphical model is to actively
 query the most informative edges, in the case where it is costly to ask social network users to label
 their relationships~\autocite{Zhuang2012}. Another way to leverage additional supervision is to use
@@ -37,8 +37,8 @@ graphs, where the fraction of labelled edges is much higher for the first graph 
 is to fully label the edges of the second graph, exploiting the rich information of the first one.
 This requires the attributes to be comparable between the two graphs, and such attributes are
 therefore computed based on topological features. Finally, a last direct approach to labelling edges
-is presented by \textcite{Aggarwal2016a}. They consider that the input graph has three type of
-edges: labeled by $-1$, labeled by $+1$ or unlabeled. In each of the three induced subgraphs, they
+is presented by \textcite{Aggarwal2016a}. They consider that the input graph has three types of
+edges labeled by $-1$, labeled by $+1$ or unlabeled. In each of the three induced subgraphs, they
 define a similarity between two nodes $u$ and $v$ as the Jaccard coefficient of the two sets of
 edges incident to $u$ and $v$. A weighted combination of these three coefficients is the final
 similarity between $u$ and $v$. Then, $S_k(u)$ are the top-$k$ most similar nodes to $u$, and the
@@ -49,7 +49,7 @@ they do not use attributes, and in both cases they provide little interpretabili
 \paragraph{Prediction in knowledge graphs}
 \label{par:erw_pred_kg}
 
-Besides social network, the task of predicting the semantic of an edge has also been addressed in
+Besides social networks, the task of predicting the semantic of an edge has also been addressed in
 the context of knowledge graphs. In such graphs, nodes are abstract concepts and concrete entities
 from the real world, and edges are directed predicates representing facts connecting two
 entities~\autocite{KnowledgeGraphSurvey16}. A typical example is an edge $(h, \ell, t) =
@@ -62,13 +62,13 @@ one usually has to rely on low dimensional embeddings. \autocite{transE13} is pr
 with learning such embeddings in $\Rbb^k$ for both nodes and relations, that are denoted by the
 boldface letters $\bm{h}$, $\bm{\ell}$, $\bm{t}$. Similarly to word embedding, the intuition is that
 relations can be modeled by translations. Thus, the existence of an $(h,l,t)$ edge offers evidence that
-$\bm{h} + \bm{\ell} \approx \bm{l}$. Given a training set of existing triplets $S$ and a
+$\bm{h} + \bm{\ell} \approx \bm{t}$. Given a training set of existing triplets $S$ and a
 dissimilarity measure $D$, the authors learn an embedding in a fashion reminiscent of metric
 learning~\autocite{MetricLearning15}. Namely, they create negative examples by corrupting at random
 training examples and then minimize with a margin the positive part of the difference between
 dissimilarity of positive and negative examples. More generally, we refer the interested reader to a
 recent survey on embedding knowledge graphs~\autocite{KnowledgeGraphSurvey17}, which among other
-ideas present the interesting notion of composing relation along paths between two entities. We note
+ideas present the interesting notion of composing relations along paths between two entities. We note
 that, in contrast with us, those methods require some form of supervision when it comes to predict
 edge types.  One way to avoid supervision is to rely on a large amount of unstructured text, extract
 entities from this corpus, map entities and possible relations to a knowledge base and finally embed
@@ -86,12 +86,12 @@ when performing random walks, learn an embedding from this corpus using word2vec
 then cluster these representations using $k$-means~\autocite{edgerep17}. We cannot directly compare
 this with our work since there is no attribute and thus the clustering is not interpretable (indeed
 the goal of \autocite{edgerep17} is eventually to find an overlapping clustering of the nodes, not
-the edges). More closely related to our work, \textcite{ahmed2017roles} seek to assign a role to the
+of the edges). More closely related to our work, \textcite{ahmed2017roles} seek to assign a role to the
 edges of a graph. First they learn edge features as follow: starting from topological features, they
 use combination operators (like max, min, mean, sum, product and so on) to iteratively learn higher
 order features while pruning those that are correlated in order to avoid a combinatorial explosion.
 Once they obtain such a $d$-dimensional feature vector for each edge, they stack them in a matrix $S
-\in \Rbb^{|E|\times d}$ and look for $U^{|E| \times r}$ and $B^{r \times d}$ such that the distance
+\in \Rbb^{|E|\times d}$ and look for $U\in \Rbb^{|E| \times r}$ and $V\in \Rbb^{r \times d}$ such that the distance
 between $S$ and $UV^T$ is minimized. $V$ is a description of $r$ roles in terms of features while
 $U$ is the mixed membership of each edge. Finally the authors choose the number of roles $r$ using
 the Minimum Description Length principle. Their approach bears some similarities with our \pqt{}
@@ -126,7 +126,7 @@ optimal subspaces, when formulated directly over the $\{s_{uv}\}_{(u,v) \in E}$,
 graph topology, as we consider each edge independently of all others. As an example of applying
 related ideas to graph data, \textcite{Huang2015} build a $d$-dimensional grid of the attributes
 space and use subspace clustering to find cells that have low entropy and high connectivity, before
-merging such cells into node clusters.
+merging such cells into clusters of nodes.
 % \textcite{subgraphEdgeLabels13} propose a method to extract subgraphs that are dense across
 % several edge types. (was updated in \autocite{Boden2017}
 
@@ -141,7 +141,7 @@ first cluster nodes based solely on their attributes and then count the links be
 keep only the maximally frequent ones, arguing this reveals the sets of attributes that support the
 connection between two nodes. In the same data mining vein, and related to our departure from global
 homophily, \textcite{beyondHome16} look for link patterns whose support and confidence are not only
-above some given thresholds, but that also diverge from homophily. Indeed, the author explicitly exclude
+above some given thresholds, but that also diverge from homophily. Indeed, the authors explicitly exclude
 attributes taking the same value within such link patterns.
 The objective of \textcite{ZhangModelFree16} is eventually to hard cluster the nodes into
 communities but their work shares similarities with ours. Namely, they tweak the traditional modularity
@@ -163,7 +163,7 @@ associated point in each of these spaces. The key assumption is that space have 
 correlation: informally, the intersection of any two small balls from two distinct spaces is small.
 These $K$ spaces give rise to small world networks $\mathcal{G}_i$, where the edge probability
 is proportional to $\mathcal{D}_i(u, v)^{-d}$ and we observe the real network $\mathcal{G} =\bigcup_i
-\mathcal{G}_i$. From $\mathcal{G}$, the proposed algorithm recovers in $n \mathrm{polylog} n$ time a
+\mathcal{G}_i$. From $\mathcal{G}$, the proposed algorithm recovers in $O(n \polylog n)$ time a
 bounded approximation $\mathcal{D}'_i$ of all $\mathcal{D}_i$, that is there exists positive
 constants $\sigma$, $\delta$ and $\Delta$ such that $
 \sigma \mathcal{D}_i(u, v) \leq \mathcal{D}'_i(u, v) \leq \delta \mathcal{D}_i(u, v) + \Delta$.
@@ -176,7 +176,7 @@ wealth of papers on clustering nodes in such networks. Since this is not exactly
 mention a selection of the most relevant to our objective (especially the overlapping ones), and
 refer the interested reader to the survey of
 \textcite{surveyAttributedClustering15}\footnote{Especially the section 2 dealing with edge labeled
-graphs.}. We also reiterate the warning given in the introduction that in large graphs, node
+graphs.}. We also reiterate the warning given in the introduction of this chapter. Namely, in large graphs, node
 attributes are not necessarily aligned with annotated communities. Such attributes thus need to be
 used \emph{in addition} to topological information. This is further covered in~\autocite[Section
 3.4]{Fortunato2016}.
@@ -230,7 +230,8 @@ edges clustering.
 \begin{adjustwidth}{-2cm}{}
   \centering
   \small
-  \caption{We summarize how each model generates: 1) the membership of a node $u$ to a community $c
+  \caption[Generative model of node attributed graphs with community structure]{We summarize how
+    each model generates: 1) the membership of a node $u$ to a community $c
   \in \rangesk$, 2) the attributes of $u$ knowing its community membership and 3) the edges between
 nodes.}
   \label{tab:edge_genmodel}
@@ -286,7 +287,7 @@ nodes.}
 
 We also point to the work of~\textcite{DeBacco2017}, which despite not considering node attributes,
 present a model with interesting applications. Specifically, the nodes have mixed membership to $K$
-overlapping groups and each $L$ layer is generated by a specific $K\times K$ block matrix, taking
+overlapping groups and each of the $L$ layers is generated by a specific $K\times K$ block matrix, taking
 into account the group membership, like in a degree corrected SBM. Unlike us, this allows for
 multigraphs, although the authors assume for simplicity that this does not happen. Once its
 parameters are found, this model can then be used to predict the existence of extra edges in each

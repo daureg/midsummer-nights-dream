@@ -46,7 +46,7 @@ We now present our modelling choice:
       s(u, v) = x_u \circ x_v = s_{uv} \in \Rbb^d \, ,
     \end{equation*}
     where $\circ$ stands for the Hadamard (or component wise) product. As showed in
-    \autoref{tab:edge_sim}, for each dimension $i \in \rangesd$, the $s_{uv}$ holds a value
+    \autoref{tab:edge_sim}, for each dimension $i \in \rangesd$, the vector $s_{uv}$ holds a value
     indicating whether the profiles of $u$ and $v$ agree, disagree or are indifferent along that
     dimension.
     \begin{table}[hb]
@@ -120,7 +120,7 @@ linearity.
 
 We conclude with a last comment on the norm of the directions. While being exactly of norm one is
 not primordial, the role of bounding the norm of the directions (\ie{} having $\sum_{i=1}^d
-{w_\ell}_{;i}^2 \leq B^2$) is to tie the $d$ dimensions together. Without such a constraint, and we
+{w_\ell}_{;i}^2 \leq B^2$) is to tie the $d$ dimensions together. Without such a constraint, and with
 our choice of $s$ and $g$, we could simply study each dimension separately, whereas this bound adds
 a coupling across different attributes, since increasing the weight of an attribute mechanically
 affects the weights of the other attributes.
@@ -159,7 +159,7 @@ each user, either \textsf{G} or \textsf{F}. Instead of a classic binary one-hot 
 additionally use $-1$ to denote that a user had been employed by a given company. \textsf{Gender} is
 encoded as presented earlier, and we also apply a pre processing to transform \textsf{age} between
 $-1$ and $1$. Finally, \textsf{opinion} represents the view of former \textsf{F} employees about a
-societal issue, with $0$ denoting a neutral position. In Table~\ref{tab:edge_exe}, we also show two
+societal issue, with $0$ denoting a neutral or unknown position. In Table~\ref{tab:edge_exe}, we also show two
 directions that explain the connections in the graph $G$. The first covers being of the same age and
 same companies, especially at \textsf{G}, while the second directions covers former employees of
 \textsf{F} having different \textsf{age} and \textsf{opinion}. Not only are the results
@@ -229,7 +229,7 @@ too large.
 
 \paragraph{Topological constraints}
 
-In addition to assume that the input graph is the superposition of a small number of layers,
+In addition to assuming that the input graph is the superposition of a small number of layers,
 another way to leverage the graph topology is to define local constraints at the node level.
 Indeed, one of our motivation is that it is not enough to look at edges in isolation, but rather we
 expect the connections of one node to influence the connections of its neighbors. We now present two
@@ -247,7 +247,7 @@ picking a direction $w_\ell \in \mathcal{D}_k$ and add to their base vector $b_u
   \sum_{u\in V} \left|\left| x_u - b_u -
   \sum_{v \in \nei(u)} a_{uv} w_{\mathcal{E}(u,v)} \right|\right|^2_2
 \end{equation}
-from \eqref{eq:edge_full}. The cost we pay is introducing the extra parameters $\{a_{uv}\}_{uv \in
+from \eqref{eq:edge_full}. The cost we pay is introducing the extra parameters $\{a_{uv}\}_{\euv{} \in
 E}$ and $\{b_u\}_{u \in V}$ to be learned, but we will see in the next section how to handle that in
 practice. On the other hand, it has two advantages. First, this is another way, besides goodness, in
 which the (given) profiles provide prior information about the (unknown) directions, and thus
@@ -274,7 +274,7 @@ This is not a convex constraint but we can relax it, for such sparsity inducing 
 well studied~\autocite{sparseOptim12}. Namely, we let $y_{uv}$ be a softmax membership
 $k$-dimensional vector, that is we set, $\forall i \in \rangesk$,
 \begin{equation*}
-  y_{uv,i} = \frac{\exp(\beta g(s_{uv}, w_i))}{\sum_{j=1}^k \exp(\beta g(s_{uv}, w_j))}\,,
+  {y_{uv}}_{;i} = \frac{\exp(\beta g(s_{uv}, w_i))}{\sum_{j=1}^k \exp(\beta g(s_{uv}, w_j))}\,,
 \end{equation*}
 with $\beta>0$ a large
 positive constant.  And we replace the $\ell_0$ norm by a $\ell_1$ norm (or even a $k$-support
@@ -313,10 +313,10 @@ describe a convex relaxation of the objective in equation \eqref{eq:edge_full}, 
 \eqref{eq:edge_node_loss}. \newline
 Finally, we depart slightly from finding $k$ directions by
 considering a low-rank matrix formulation, where each edge is assigned a linear combination of a
-small number of base directions, paving the way to overlapping clustering. More precisely, we
+small number of base directions, paving the way to overlapping edge clustering. More precisely, we
 give a convex formulation of that objective that can be solved by a \newline
 \hspace*{14pt} 4) \fwa{} algorithm, \newline
-as well an alternating optimization method, where we make the low-rank factorization \newline
+as well as by an alternating optimization method, where we make the low-rank factorization \newline
 \hspace*{14pt} 5) \pqt{}.
 
 \subsection{\kmeans{} baseline and improvement}
@@ -383,12 +383,11 @@ objective as
 \end{equation}
 The difficulty in optimizing directly \eqref{eq:edge_unroll} stems from the inner $\max$ operator, which we
 replace here by a convex relaxation. Indeed, one can check that given a set of numbers $S=\{a_1,
-a_2, \ldots, a_{|S|}\}$ and real number $\beta > 0$, we have
+a_2, \ldots, a_{|S|}\}$ and a real number $\beta > 0$, we have
 \begin{equation*}
   \max_{a_i \in S} a_i = \lim_{\beta \rightarrow + \infty} \frac{1}{\beta}
   \log\left( \sum_{i=1}^{|S|} \exp{(\beta a_i)} \right)
 \end{equation*}
-  \label{}
 Using this fact, and dividing the goodness term and the $\mathcal{L}_{\mathrm{node}}$ term of
 \eqref{eq:edge_node_loss} respectively by the number of edges and nodes so that they have comparable
 magnitude, we now have the following objective:
@@ -446,7 +445,7 @@ avoid this, we add the constraint that all those $|E|$ directions are linear com
 number $k$ of basis directions. In order to formulate this more clearly, we rewrite the previous
 objectives with matrices. We first show this can be expressed in a form that is amenable to the
 Frank--Wolfe algorithm. Then we take the alternative road of explicit low-rank matrix factorization,
-and we conclude by commenting on these approaches.
+and we conclude by commenting on the respective merits and disadvantage of all these approaches.
 
 \subsubsection{\fwa{} method}
 \label{ssub:edge_frank_wolfe}
@@ -517,7 +516,7 @@ then:
 
 Because \eqref{eq:edge_FW} is of the form $\min_{x\in \mathcal{X}} f(x)$ where $f$ and $\mathcal{X}$
 are convex, we can solve it using the Frank--Wolfe algorithm~\autocites{FrankWolfe56}{Jaggi2013a},
-which enjoy properties like a $O(\frac{1}{t})$ convergence rate, a low computational cost by avoiding
+which enjoys properties like a $O(\frac{1}{t})$ convergence rate, a low computational cost by avoiding
 projection step and the sparsity of its solution. It is an iterative procedure that maintains an estimate
 $x^{(t)}$ of the solution and works succinctly as follow: it linearizes the objective $f$ at the
 current position $x^{(t)}$ by computing $\nabla f(x^{(t)})$, it finds a minimum $s^{(t)}$ of that
@@ -536,12 +535,12 @@ time linear in the number of non-zero entries of $S^T - 2\mu W^{(t)}$~\autocite{
 Thus the overall complexity of this method, which we call \fwa{}, is $O(Td|E|)$.
 
 As said at the beginning of this section, the matrix formulation is not exactly solving
-\autoref{p:edge_full}. However, for evaluation purposes, here we describe two ways to extract $k$
+\autoref{p:edge_full}. Therefore, for evaluation purposes, here we describe two ways to extract $k$
 directions and an edge assignment from the matrix $W$ obtained through this \fwa{} method. The first
 is rather straightforward. It performs a $k$-means clustering of the columns of $W$ and use it as
 assignment, while the directions are the normalized cluster centers. The second involves an extra
 optimization step. Specifically, letting $r$ be the rank of $W$, we first compute a reduced SVD such
-that $W = U \Sigma V^T$ and let $P = U \in \mathbb{M}^{d\times r}$ and $Q^T = \Sigma V^T \in \Rbb^{r
+that $W = U \Sigma V^T$, and then let $P = U \in \mathbb{M}^{d\times r}$ and $Q^T = \Sigma V^T \in \Rbb^{r
 \times |E|}$. We then note that for any invertible matrix $R \in \Rbb^{r \times r}$, we have $W =
 PR^{-1} RQ^T$. Thus we look for a matrix $R$ that makes the columns of $RQ^T$ as close as possible
 of having unit $\ell_2$-norm, that is $R = \min_{R \in \Rbb^{r \times r}} \sum_{i=1}^E \left| \left\|
@@ -607,7 +606,7 @@ cannot guarantee on the decomposition of the matrix $W$ obtained by the \fwa{} m
 hand, if we run the \fwa{} algorithm for more than $k$ iterations, the rank of $W$ can be higher
 than $k$, which might allow a finer clustering of the edges.
 
-Compared with the \combined{} approach of the previous \autoref{sub:edge_vector}, these two matrix
+Compared with the \combined{} approach of \autoref{sub:edge_vector}, these two matrix
 formulations require learning more parameters. Indeed, it increases from $dk$ to $d|E|$, as it each
 edge has a different direction, albeit made up of a small number of basis directions. In the case of
 \pqt{}, we could furthermore impose a sparsity constraint on the columns of $Q$ to reduces the
