@@ -10,7 +10,7 @@ semantics (or types) and where nodes are connected by both partial homophily and
 
   \item In \autoref{chap:troll}~\autocite{trollSign17}, we first focused on directed signed graphs,
     as they model social interactions in several domains, such as e-commerce and collaborations.
-    Here edges have two possible semantics, positive or negative. Our goal was to solve a supervised
+    In such graphs, edges have two possible semantics, positive or negative. Our goal was to solve a supervised
     binary classification problem by predicting the sign of test edges. For that, we first
     introduced a simple sign generative model. It endows nodes with two parameters --trollness and
     unpleasantness--, governing their incoming and outgoing behavior. This might seem like a
@@ -19,7 +19,7 @@ semantics (or types) and where nodes are connected by both partial homophily and
     theoretical guarantees and input requirement. We showed experimentally that those methods are
     competitive with the state of the art, while being more scalable. Motivated by the regularity
     measure offered by trollness and unpleasantness, and the inability of existing methods to cope
-    with new nodes joining the graph, we furthermore develop the first online algorithm for the
+    with new nodes joining the graph, we furthermore developed the first online algorithm for the
     \esp{} problem.
 
   \item We started \autoref{chap:cc} by showing that the methods of the previous chapter are not
@@ -39,11 +39,11 @@ semantics (or types) and where nodes are connected by both partial homophily and
 
   \item Finally, in \autoref{chap:vector}, we considered the case where there are more than two types
     of edge. This means that instead of signed graphs, our input shifted to multilayer graphs, which
-    are also ubiquitous to describe real world phenomena. Moreover, we modified the learning
+    are also ubiquitous in describing real world phenomena. Moreover, we modified the learning
     setting, so that no edge label are available, but instead nodes carry a profile vector. However,
     our goal remained to predict edge type, in what could then be described as a clustering problem
     with side information and interpretability requirements. In order to do so, we first defined a
-    similarity between nodes, which accommodate both heterophily and homophily. We then formulate
+    similarity between nodes, which accommodates both heterophily and homophily. We then formulated
     the problem as simultaneously finding $k$ special vectors called directions, and assigning one
     of them to every edge in order to maximize a scalar \emph{goodness} function. After introducing
     baselines oblivious of the graph topology, we added constraints resulting in one vectorial and
@@ -58,6 +58,7 @@ In this section, we revisit the problems summarized above by showing how they co
 new context or enriched by existing node embedding methods.
 
 \subsection{Reciprocal recommendation}
+\label{ssec:conc_rr}
 
 We first present a task tightly related to our edge characterization problem, namely the reciprocal
 recommendation problem~\autocite{Pizzato2013}. As we shall see, it indeed incorporates aspects from
@@ -95,7 +96,7 @@ that women can afford to choose among numerous suitors~\autocite{TinderDesc16}. 
 that users on both side can only handle a few recommendations at the same time. This is sharp
 contrast with traditional user-item recommendation systems, where recommending simultaneously the
 same item (say a movie) to thousands of users is not an issue. On the other hand, we have to keep
-user engaged and prevent them from being idle. This is done by ensuring they are regularly the
+users engaged and prevent them from being idle. This is done by ensuring they are regularly the
 subject or object of some recommendations.
 
 As the name implies, reciprocal recommendation has often be seen as a special case of recommender
@@ -105,7 +106,7 @@ decompose this last sentence, starting with the input graph. It is naturally bip
 the presence of two groups in which there is no internal recommendation. Furthermore, every time one
 user expresses interest or disinterest in another user, this creates a directed signed edge. Such a
 graph is thus a special case of the \dssn{} studied in \autoref{chap:troll}. Each nodes carries two
-kind of information. The first is explicitly provided by the user, in order to arise interest in
+kind of (side) information. The first is explicitly provided by the user, in order to arise interest in
 users from the other group. The second is implicitly inferred from the user activity. In particular,
 the interactions with other nodes allow us to build an implicit preference model for every user.
 Combining these two sources of information yield a profile of each user, like in
@@ -118,8 +119,8 @@ be addressed by using a cost sensitive classification error, so that the error r
 is inversely proportional to its importance in the network.
 
 As in any worthy machine learning endeavor, reliably evaluating and comparing approaches require
-large amount of real data. This is particularly true in such an applied setting, but the most
-realistic evaluation is to perform A/B testing on a live system with enough traffic to give some
+large amount of real data. This is particularly true in such an applied setting, where the most
+realistic evaluation is to perform A/B testing on a live system with enough traffic to deliver
 statistical significance. This explains why most previous studies rely on the cooperation of
 industrial partners~\autocites{Andrews2015}{Kille2015}{Krzywicki2015}{Xia2015}{Alanazi}. Thus, this
 is also something we would like to do in the future.
@@ -136,7 +137,7 @@ day situation, where the deluge of available data has prompted the use of machin
 corner of the society. An alluring alternative to expert knowledge is to learn the data
 representation itself, guided by the task.
 
-As an illustration in the context of this thesis, we assume that data was organized as a graph,
+As an illustration in the context of this thesis, we assumed that data was organized as a graph,
 where nodes were possibly associated with a feature vector. However, there might an different
 representation of those nodes that would better suit our needs. Indeed,
 we mentioned already in \autoref{sec:troll_related} and \autoref{sec:edge_related} that a recent and
