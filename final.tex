@@ -1,4 +1,4 @@
-\documentclass[a4paper,svgnames,twoside,onecolumn,final,titlepage,11pt]{report}
+\documentclass[a4paper,svgnames,twoside,onecolumn,final,titlepage,11pt]{book}
 \input{pmin}
 \input{abbreviations}
 \setcounter{secnumdepth}{3}
@@ -11,6 +11,7 @@
 \newgeometry{vmargin=1.5cm,inner=3.8cm,bindingoffset=0.0cm,outer=3.3cm,marginparsep=0pt,marginparwidth=0pt}
 
 \maketitle
+\frontmatter
 
 \section*{Abstract}
 \input{abstract}
@@ -21,9 +22,14 @@
 \end{otherlanguage}
 
 \tableofcontents
+\listoffigures
+\listoftables
 \newpage
 
 \input{notations}
+
+\mainmatter
+\pagestyle{fancy}
 
 \chapter{Introduction}
 \subimport*{intro/}{main}
@@ -40,12 +46,12 @@
 \chapter{Conclusion}
 \subimport*{conclusion/}{main}
 
+\backmatter
 \vspace{\baselineskip}
 \begingroup
 \newgeometry{hmargin=1.5cm,vmargin=1.3cm}
 \setstretch{0.87}
 \setlength\bibitemsep{1pt}
-\todos
 \printbibliography
 \restoregeometry
 \endgroup

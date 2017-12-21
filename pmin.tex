@@ -1,9 +1,18 @@
-\usepackage[english,french]{babel}
+\usepackage[french,english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{charter}
-% \usepackage{microtype}
+\usepackage{microtype}
 \usepackage[heightrounded]{geometry}
+\usepackage{fancyhdr}
+\usepackage{emptypage}
+\fancyhead{}
+\fancyhead[LO]{\slshape \nouppercase{\rightmark}}
+\fancyhead[LE]{\slshape \nouppercase{\leftmark}}
+\fancyfoot{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.0pt}
 
 \usepackage{xcolor}
 \usepackage{bm}
@@ -27,7 +36,7 @@
     breaklinks=true, pdfpagemode=UseNone, pageanchor=true, pdfpagemode=UseOutlines,%
     plainpages=false, bookmarksnumbered, bookmarksopen=true, bookmarksopenlevel=1,%
     hypertexnames=true, pdfhighlight=/O, %nesting=true,%frenchlinks,%
-    urlcolor=Chocolate, linkcolor=RoyalBlue, citecolor=LimeGreen, %pagecolor=RoyalBlue,%
+    urlcolor=Chocolate, linkcolor=DarkBlue, citecolor=DarkGreen!80!Black, %pagecolor=RoyalBlue,%
 }
 
 \usepackage[autostyle=true]{csquotes}
@@ -61,7 +70,7 @@ skip=6pt,list=false,hypcap=false]{subcaption}
 
 \newcommand{\marginpars}[1]{\footnote{#1}}
 \usepackage[citestyle=alphabetic, bibstyle=ieee-alphabetic, isbn=false, maxnames=1, minnames=1,
-sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
+maxbibnames=5, sorting=nyvt, backref=true, backend=biber, defernumbers=true]{biblatex}
 \renewcommand*{\bibfont}{\normalfont\footnotesize}
 \AtEveryBibitem{
    % \clearfield{arxivId}
