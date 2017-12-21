@@ -1,0 +1,24 @@
+Dans cette thèse, nous proposons des méthodes pour caractériser efficacement et précisément les
+arêtes au sein de réseaux complexes. Dans les graphes simples, les nœuds sont liés au travers d'une
+sémantique unique. Par exemple, deux utilisateurs sont amis dans un réseau social, ou une page web
+contient un lien hypertexte pointant vers un autre page. De plus, ces connexions sont généralement
+guidées par la similarité entre les nœuds, au travers d'un mécanisme appelé homophilie. Dans les
+exemples précédents, les utilisateurs deviennent amis à cause de caractéristiques communes, et les
+pages web sont reliées les unes aux autres sur la base de sujets communs. En revanche, les réseaux
+complexes sont des graphes où chaque connexion possède une sémantique parmi $k$ possibles. Ces
+connexions sont en outre basées à la fois sur une homophilie et une hétérophilie partielle des nœuds
+à leurs extrémité. Cette information supplémentaire permet une analyse plus fine des graphes issus
+d'applications réelles. Cependant, elle peut être coûteuse à acquérir, ou n'est pas toujours
+disponible a priori. Nous abordons donc le problème d'inférer la sémantique des arêtes dans
+plusieurs contextes. Tout d'abord, nous considérons les graphes où les arêtes ont deux sémantiques
+opposées, et où nous observons l'étiquette de certaines arêtes. Ces \enquote{graphes signés} sont
+une façon élégante de représenter des interactions polarisées. Nous proposons deux biais
+d'apprentissage, adaptés respectivement aux graphes signés dirigés et non dirigés. Ceci nous amène à
+concevoir plusieurs algorithmes utilisant la topologie du graphe pour résoudre un problème de
+classification binaire que nous appelons \esp{}. Deuxièmement, nous considérons les graphes avec $k
+\geq 2$ sémantiques possibles pour les arêtes. Dans ce cas, nous ne recevons pas d'étiquette
+d'arêtes, mais plutôt un vecteur de caractéristiques pour chaque nœud. Face à ce problème non
+supervisé d'\ecp{}, nous concevons un critère de qualité exprimant dans quelle mesure une
+$k$-partition des arêtes et $k$ vecteurs sémantiques expliquent les connexions observées. Nous
+optimisons ce critère \enquote{qualité explicative} sous une forme vectorielle et matricielle et
+illustrons le comportement de ces deux méthodes sur des données synthétiques.
