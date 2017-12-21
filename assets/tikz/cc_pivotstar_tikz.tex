@@ -1,0 +1,27 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=5mm},
+  edge/.append style={line width=1.6pt,color=DodgerBlue!90!Black}]
+
+  \node[vertex,medium,] (n1) at (0.000, -0.000) {};
+
+  \node[vertex,medium,] (n2) at (0.000, 1.315) {};
+  \node[vertex,medium,] (n3) at (-1.251, 0.406) {};
+  \node[vertex,medium,] (n4) at (-0.773, -1.064) {};
+  \node[vertex,medium,] (n5) at (0.773, -1.064) {};
+  \node[vertex,medium,] (n6) at (1.251, 0.406) {};
+
+
+
+  \draw[edge,Green] (n1) -- (n2);
+  \draw[edge,Green] (n1) -- (n3);
+  \draw[edge,Green] (n1) -- (n4);
+  \draw[edge,Green] (n1) -- (n5);
+  \draw[edge,Green] (n1) -- (n6);
+
+  \draw[edge,Red,dashed] (n2) -- (n3);
+  \draw[edge,Red,dashed] (n4) -- (n6);
+
+\end{tikzpicture}
+\end{document}

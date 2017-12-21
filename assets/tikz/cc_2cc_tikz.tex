@@ -1,0 +1,30 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+\begin{tikzpicture}[auto,vertex/.append style={minimum width=5mm},
+  edge/.append style={line width=1.2pt,color=Black}]
+
+  \node[vertex,medium,] (w) at (0.000, -0.000) {$w$};
+  \node[vertex,medium,] (v) at (-.60, -.8315) {$v$};
+  \node[vertex,medium,] (u) at (1.53, -1.03) {$u$};
+
+  \draw[edge,Green] (w) -- node [] {$+$} (u) ;
+  \draw[edge,Green] (v) -- node [below] {$+$} (u) ;
+  \draw[edge,dashed] (v) -- node [] {?} (w) ;
+
+  \draw[color=DodgerBlue] (.5, -.5) circle [x radius=1.8, y radius=1.1]  node[xshift=30, yshift=15,text=Black] {$\mathbf{L}$};
+
+  \node[vertex,medium,] (y) at (-0.200, -4.000) {$y$};
+  \node[vertex,medium,] (x) at (1.400, -4.300) {$x$};
+  \draw[edge,dashed] (x) -- node [] {?} (y) ;
+
+  \draw[edge,dashed] (v) -- node [] {?} (y) ;
+
+  \draw[edge,Red] (y) -- node [] {$-$} (u) ;
+  \draw[edge,Red] (x) -- node [] {$-$} (u) ;
+
+  \draw[color=DodgerBlue] (.4, -4.5) circle [x radius=1.5, y radius=1]  node[xshift=22, yshift=-10,text=Black] {$\mathbf{R}$};
+
+
+\end{tikzpicture}
+\end{document}
