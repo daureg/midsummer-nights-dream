@@ -10,6 +10,87 @@
 \begin{document}
 \newgeometry{vmargin=1.5cm,inner=3.8cm,bindingoffset=0.0cm,outer=3.3cm,marginparsep=0pt,marginparwidth=0pt}
 
+
+\begin{titlepage}
+%\setcounter{page}{0}  % to make the backref work properly on arabic numbers!!
+%\thispagestyle{empty}
+\newgeometry{top=.7in,bottom=0in,left=1.5cm,right=2.1cm}
+\noindent\rule{\textwidth}{0.4pt}\vspace{0.3cm}
+%\vrule height 1pt width.5\hsize
+\begin{center}
+{\LARGE \textbf{\includegraphics[scale=.14]{./assets/raw/univlille.png} \\ \vspace{0.15cm} École Doctorale Sciences Pour l'Ingénieur }}\\ \vspace{0.5cm}
+{\huge \textbf{\textsc{  Th\`ese de Doctorat}}}\\ \vspace{.8cm}
+{\large préparée au sein de  \raisebox{-1.2ex}{\includegraphics[scale=.088]{./assets/raw//logoCristal.jpg}}\\ \vspace{-.1cm} et du centre de recherche~~\raisebox{-.1ex}{\includegraphics[scale=.148]{./assets/raw//logo-inria.pdf}}~ Lille - Nord Europe\\ financée par \quad \raisebox{-.1ex}{\includegraphics[scale=.148]{./assets/raw//logo-inria.pdf}} \quad
+% et \raisebox{-3.0ex}{\includegraphics[scale=.1]{./assets/raw//hautsdefrance.jpg}}
+\\}
+\end{center}
+
+\vspace{.5cm}
+\begin{center}
+
+%présentée pour obtenir le grade de\\
+
+%\textbf{DOCTEUR EN SCIENCES DE L'USTL}\\
+
+{\LARGE Spécialité : \textbf{Informatique}}
+\end{center}
+
+
+\vspace{0.6cm}
+
+\begin{center}
+{\large présentée par \\
+\LARGE \textbf{Géraud \textsc{Le Falher}} \\}
+\end{center}
+
+\vspace{1cm}
+\addtolength{\oddsidemargin}{.275in}
+	\addtolength{\evensidemargin}{.225in}
+	\addtolength{\textwidth}{1.25in}
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{center}
+\rule{\textwidth}{0.4pt}%\vspace{.1cm}
+\begin{Huge}\textsc{ \textbf{Characterizing edges in signed \\[.2cm] and vector-valued graphs  }}\end{Huge}
+\vspace{-.31cm}
+\rule{\textwidth}{0.4pt}
+%\begin{large}Subtitle\end{large}
+\end{center}
+
+
+\end{minipage}
+
+\end{center}
+\vspace{1.4cm}
+\begin{center}
+{\large sous la direction de \textbf{Dr. Marc \textsc{Tommasi}} \\}
+{\large et l'encadrement de \textbf{Fabio VITALE} \\}
+\end{center}
+\vspace{2.8cm}
+\begin{center}
+\vrule height .4pt width.5\hsize
+
+\vspace{0.3cm}
+{Soutenue publiquement à \textbf{Villeneuve d'Ascq}, le \textbf{16 avril 2018} devant le jury composé de :}
+
+\vspace{0.3cm}
+\begin{large}
+  \begin{tabular}{l@{\hskip 0.6in}l@{\hskip 0.5in}l}
+    M. Liva \textbf{RALAIVOLA}      & Univ. Marseille           & Rapporteur  \\
+    M. Alessandro \textbf{PROVETTI} & Birbeck College in London & Rapporteur  \\
+    Mme Elisa \textbf{FROMONT}      & Univ. Rennes              & Examinateur \\
+    Mme Sophie \textbf{TISON}       & Univ. Lille               & Examinateur \\
+    M. Claudio \textbf{GENTILE}     & Inria                     & Invité      \\
+    M. Fabio \textbf{VITALE}        & Univ. Lille               & Encadrant   \\
+    M. Marc \textbf{TOMMASI}        & Univ. Lille               & Directeur   \\
+  \end{tabular}
+\end{large}
+
+\end{center}\restoregeometry
+
+\end{titlepage}
+
+
 \maketitle
 \frontmatter
 
@@ -20,6 +101,10 @@
   \section*{Résumé}
   \input{abstract.fr.tex}
 \end{otherlanguage}
+
+\section*{Acknowledgements}
+\label{sec:acknowledgements}
+\input{ack}
 
 \tableofcontents
 \listoffigures
