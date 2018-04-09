@@ -1,0 +1,119 @@
+\usepackage{stmaryrd}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\dball}{\ensuremath{\mathbb{B}^d}}
+\newcommand{\rangesk}{\ensuremath{\llbracket k \rrbracket}}
+\newcommand{\Rbb}{\ensuremath{\mathbb{R}}}
+
+\newcommand{\efirst}[1]{\mathbf{\textcolor{brown}{#1}}}
+\newcommand{\efirstSig}[1]{\mathbf{\textcolor{brown}{{#1}}}}
+\newcommand{\esecond}[1]{\mathit{\textcolor{red}{#1}}}
+\newcommand{\esecondSig}[1]{\esecond{{#1}}}
+\newcommand{\thead}[1]{#1}
+% \newcommand{\spval}[2]{\ensuremath{{\scriptstyle(#1 \cdot 10^{#2})}}}
+\newcommand{\spval}[2]{\ensuremath{{\scriptstyle ^\star}}}
+
+\newcommand{\smallk}{$k=5$}
+\newcommand{\default}{default}
+\newcommand{\largek}{$k=9$} % ,d=36
+\newcommand{\smallo}{$n_o=6$}
+\newcommand{\largeo}{$n_o=12$}
+\newcommand{\fdirs}{$k_{\mathrm{local}}=4$}
+\newcommand{\larged}{$d=77$}
+
+\newcommand{\kmeans}{\textsc{$k$-means}}  
+\newcommand{\lloyd}{\textsc{Lloyd}}   
+\newcommand{\combined}{\textsc{Combined}}
+\newcommand{\fwa}{\textsc{Frank--Wolfe}}     
+\newcommand{\pqt}{\textsc{Explicit}}     
+
+\newcommand{\etest}{\ensuremath{E_{\mathrm{test}}}}
+\newcommand{\etrain}{\ensuremath{E_{\mathrm{train}}}}
+\newcommand{\Psiin}{\Psi_{\mathrm{in}}}
+\newcommand{\Psiout}{\Psi_{\mathrm{out}}}
+\newcommand{\Nin}{\mathcal{E}_{\mathrm{in}}}
+\newcommand{\Nout}{\mathcal{E}_{\mathrm{out}}}
+\newcommand{\NNin}{\nei_{\mathrm{in}}}
+\newcommand{\NNout}{\nei_{\mathrm{out}}}
+\newcommand{\field}[1]{\mathbb{#1}}
+\newcommand{\E}{\field{E}}
+\newcommand{\bp}{\bm{p}}
+\newcommand{\bq}{\bm{q}}
+
+\makeatletter
+\def\mathcolor#1#{\@mathcolor{#1}}
+\def\@mathcolor#1#2#3{%
+  \protect\leavevmode
+  \begingroup
+    \color#1{#2}#3%
+  \endgroup
+}
+\makeatother
+
+\newcommand{\trainset}{\ensuremath{E_0}}
+\newcommand{\ctrainset}{\textcolor{Black!60}{\mathbf{E_0}}}
+\newcommand{\Etrain}{\ensuremath{E_0}}
+\newcommand{\vfirst}[1]{\textbf{\textcolor{Brown}{#1}}}
+\newcommand{\vsecond}[1]{\textbf{\textcolor{DarkViolet}{#1}}}
+\newcommand{\vfirstSig}[1]{\textbf{\textcolor{Brown}{\underline{#1}}}}
+\newcommand{\vsecondSig}[1]{\vsecond{#1}}
+
+
+\newcommand{\wik}{\textsc{Wikipedia}}
+\newcommand{\sla}{\textsc{Slashdot}}
+\newcommand{\epi}{\textsc{Epinion}}
+\newcommand{\kiw}{\textsc{Wik. Edits}}
+\newcommand{\aut}{\textsc{Citations}}
+\newcommand{\cit}{\textsc{Citations}}
+
+\newcommand{\comptriads}{\textsc{16 Triads}}
+\newcommand{\complowrank}{\textsc{LowRank}}
+\newcommand{\compranknodes}{\textsc{RankNodes}}
+\newcommand{\compbayesian}{\textsc{Bayesian}}
+\newcommand{\uslogregp}{\textsc{LogReg}}
+\newcommand{\usrule}{\textsc{blc}$(tr,un)$}
+\newcommand{\uslprop}{\textsc{L. Prop.}}
+\newcommand{\uslpropGsec}{\textsc{L. Prop.}}% $G''$}
+\newcommand{\uslogregpTwin}{\textsc{Log. Reg.}$^\star$}
+\newcommand{\usruleTwin}{\textsc{blc}$(t, u)^\star$}
+\newcommand{\uslpropTwin}{\textsc{L. Prop.}$^\star$}
+\definecolor{lightyellow}{RGB}{255,240,210}
+
+
+\usepackage[citestyle=numeric-comp,bibstyle=ieee,isbn=false,maxnames=1,minnames=1,sorting=none,backend=biber,defernumbers=true]{biblatex}
+\AtEveryBibitem{
+   \clearfield{arxivId}
+   % \clearfield{booktitle}
+   \clearfield{doi}
+   \clearfield{eprint}
+   \clearfield{eventdate}
+   \clearfield{isbn}
+   \clearfield{issn}
+   % \clearfield{journaltitle}
+   \clearfield{month}
+   % \clearfield{number}
+   % \clearfield{pages}
+   \clearfield{series}
+   % \clearfield{url}
+   \clearfield{urldate}
+   \clearfield{venue}
+   % \clearfield{volume}
+   \clearlist{location} % alias to field 'address'
+   \clearlist{publisher}
+   \clearname{editor}
+}
+\addbibresource{../short_biber.bib}
+
+\newcommand{\outqt}[1]{{\textcolor{DarkOrange}{#1}}}
+\newcommand{\inqt}[1]{{\textcolor{Blue}{#1}}}
+\newcommand{\biasqt}[1]{{\textcolor{Teal}{#1}}}
+\newcommand{\din}{d_{\mathrm{in}}}
+\newcommand{\hdout}{\wh{d}_{\mathrm{out}}}
+\newcommand{\hdin}{\wh{d}_{\mathrm{in}}}
+\newcommand{\dout}{d_{\mathrm{out}}}
+\newcommand{\htr}{\wh{p}}
+\newcommand{\hun}{\wh{q}}
+\newcommand{\ve}{\varepsilon}
+\newcommand{\nei}{\ensuremath{\mathcal{N}}}
+\newcommand{\wh}{\widehat}
+\newcommand{\tauhat}{\wh{\tau}}

@@ -1,0 +1,26 @@
+\documentclass[svgnames,10pt]{standalone}
+\input{preambule}
+\tikzstyle{legend}=[inner sep=0pt,black,font=\small]
+\tikzstyle{pose}=[line width=1.2pt,solid,Green]
+\tikzstyle{nege}=[line width=1.2pt,solid,Red]
+\tikzstyle{c1}=[fill=DodgerBlue]
+\tikzstyle{c2}=[fill=Orange]
+\tikzstyle{c3}=[fill=SpringGreen]
+\tikzset{>=latex}
+\begin{document}
+  \begin{tikzpicture}[auto, vertex/.append style={minimum width=6mm}]
+    \foreach \place/\name in { {(-0.5,2.6)/1}, {(0.6,3.3)/2}, {(0,1.4)/4}}
+      \node[vertex,c1] (\name) at \place {\name};
+    \foreach \place/\name in {{(2.2,3)/3}, {(2.1,1)/5}, {(3.5,2)/6}}
+      \node[vertex,c2] (\name) at \place {\name};
+    \foreach \place/\name in  {{(4.5,3.3)/7}, {(5.1,1.3)/8}}
+      \node[vertex,c3] (\name) at \place {\name};
+    \foreach \source/\dest in {1/2, 1/4, 5/3, 3/6, 8/7}
+      \draw[pose] (\source) edge  (\dest);
+    \foreach \source/\dest in {3/2,4/5, 8/6}
+      \draw[nege] (\source) edge  (\dest);
+
+    \draw[pose,dashed] (6) edge  (7);
+    \draw[nege,dashed] (2) edge  (4);
+  \end{tikzpicture}
+\end{document}

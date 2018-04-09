@@ -1,0 +1,31 @@
+
+Sur les slides, trop de textes rédigés. C'est bien pour moi car je vois ce que tu veux dire. Mais cela va faire l'effet d'une lecture à l'oral je crois.
+
+
+  Commentaires par slide
+
+Slide 3, il faut sans doute dire qu'on s'intéresse à exploiter les relations entre données. Puis que les graphes (et extensions) sont un formalisme pour les représenter et raisonner dessus. Puis qu'on n'est pas les seuls  à faire cela.
+
+Plutôt que more complex, je crois que je me limiterais à donner des exemples puis terminer sur la nature variée des relations qui entraîne de considérer des graphes de différente nature : pondérés, bipartite, signés, ... (on ne voit pas trop more complex than what or richer than what; mais on peut dire qu'on go beyond classical undirected graphs)
+
+s10 : à quoi sert l'abrev DSSN
+
+s12 : peut être un peu justifier que le modèle génératif est réaliste ? Peut être aussi (moins sûr) situer la difficulté de la tâche en référence au correlation clustering etc... (à discuter si il faut le faire). ; Repositionner le pb de ML après l'introduction du modèle generatif. Que cherche-t-on ?
+
+s14 : pas facile en 1 slide : signification de \tau ; explication du résultat.
+
+s14-15: Bien expliquer. colonne global? Signification des 2 parties, de la partie colorée jaune pâle, du violet, des différents classifieurs comparés etc...
+
+s17: vraiment because? en fait je ne comprends pas pourquoi
+
+s19: we first select -> the learner ? ; préciser l'entrée.
+
+s20 : plusieurs notions pas introduites: balance theory ; assortative/dissortative. Plus que le biais dans cette slide
+
+s23. Là encore il faut bien expliquer les expés.
+
+Derniere partir : on voit plusieurs approches. Elles ne sont pas nommées. On les revoit sans doute dans les expés mais on ne fait pas le lien. On a pas de retour un peu analytique sur ces approches : avantages inconvénients. Est-ce qu'il faut présenter FW si ça marche pas bien?
+
+La conclusion est bien, mais il aurait sans doute mettre plus en avant les complexités dans les parties précédentes.
+
+Future work. Laisse peut être Liva poser sa question mais prépare la réponse ;-)

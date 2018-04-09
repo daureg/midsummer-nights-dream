@@ -1,0 +1,26 @@
+\documentclass[svgnames,11pt]{standalone}
+\input{preambule}
+\begin{document}
+       \begin{tikzpicture}[auto, every node/.style={transform shape},baseline=(b.base)]
+         \tikzset{>=latex}
+         \tikzstyle{peers}=[draw,circle,black,minimum width=9mm,inner sep=2pt]
+         \tikzstyle{nedge}=[draw,rectangle,black,minimum width=8.5mm,minimum height=8.5mm, inner sep=0]
+         \tikzstyle{edge}=[line width=2pt,color=Black,->]
+         \tikzstyle{uedge}=[line width=2pt,color=Black]
+         \tikzstyle{pnode}=[fill=White]
+         \tikzstyle{elabel}=[color=Black]
+         \tikzstyle{qnode}=[fill=White]
+         \tikzstyle{posc}=[color=Green]
+         \tikzstyle{negc}=[color=red]
+         \foreach \place/\name in { {(0,0)/1}, {(3,0)/2}, {(0,-3)/3}, {(3,-3)/4}}
+         \node[peers,pnode] (\name) at \place {\large $\name$};
+         \draw[edge] (3) -- node [posc]                            {$+$}  (1);
+         \draw[edge] (3) -- node [posc]                           {$+$}  (4);
+         \draw[edge, dashed] (3) -- node [negc]                    {$-$}  (2);
+         \draw[edge, dashed] (2) -- node [negc]                    {$-$}  (4);
+         \draw[edge] (1) edge [bend left =10] node [posc]         {$+$} (2);
+         \draw[edge, dashed] (2) edge [bend left =10] node [negc] {$-$} (1);
+         \node[] (caption) at (0.5, 0.5) {$G$};
+         \node[] (b) at (1.5, -1.5) {};
+       \end{tikzpicture}
+\end{document}
